@@ -21,11 +21,10 @@ if ( ! class_exists( 'WC_Nfe_Integration' ) ) :
 		 * Init and hook in the integration.
 		 */
 		public function __construct() {
-			$this->plugin_id 		  = 'nfe-woo-integration';
+			$this->plugin_id		  = 'nfe-woo-integration';
 			$this->id                 = 'nfe-woo';
 			$this->method_title 	  = __( 'Nfe Integration', 'nfe-woocommerce' );
 			$this->method_description = __( 'This is the Nfe.io integration/settings page.', 'nfe-woocommerce' );
-			$this->enabled            = 'yes';
 
 			// Load the settings.
 			$this->init_form_fields();
@@ -71,7 +70,7 @@ if ( ! class_exists( 'WC_Nfe_Integration' ) ) :
 		 */
 		public function sanitize_settings( $settings ) {
 			if ( isset( $settings ) && isset( $settings['api_key'] ) ) {
-				$settings['api_key'] = strtoupper( $settings['api_key'] );
+				$settings['api_key'] = strtolower( $settings['api_key'] );
 			}
 
 			return $settings;
