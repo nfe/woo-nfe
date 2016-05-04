@@ -94,7 +94,8 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
          * @since 1.0.0
          */
         private function includes() {
-            require( $this->admin . 'class-wc-integration.php'              );
+            require( $this->admin . 'class-wc-nfe-integration.php'  );
+            require( $this->admin . 'class-wc-admin-meta-boxes.php' );
         }
 
         /**
@@ -111,8 +112,15 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
                 return;
             }
 
+            // Checks if WooCommerce Extra Checkout Fields for Brazil is installed.
+            // if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+               //  add_action( 'admin_notices', array( $this, 'extra_checkout_fields_missing_notice' ) );
+                // return;
+            //}
+
             // Register the integration.
             add_filter( 'woocommerce_integrations', array( $this, 'add_nfe_integration' ) );
+            add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
         }
 
         /**
@@ -135,6 +143,31 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
          */
         public function woocommerce_missing_notice() {
             include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce.php';
+        }
+
+        /**
+         * WooCommerce Extra Checkout Fields for Brazil missing notice.
+         *
+         * @since 1.0.0
+         *
+         * @return string
+         */
+        public function extra_checkout_fields_missing_notice() {
+            include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce-checkout-fields.php';
+        }
+
+        /**
+         * Action links.
+         *
+         * @since 1.0.0
+         *
+         * @param array $links
+         * @return array
+         */
+        public function plugin_action_links( $links ) {
+            $plugin_links = array();
+            $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) . '">' . __( 'Settings', 'nfe-wordpress-woocommerce' ) . '</a>';
+            return array_merge( $plugin_links, $links );
         }
 
         /**
