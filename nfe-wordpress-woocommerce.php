@@ -86,6 +86,7 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
             $this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
             $this->admin         = trailingslashit( $this->includes_dir . 'admin'   );
             $this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
+            $this->assets        = trailingslashit( $this->plugin_url . 'assets'    );
         }
 
         /**
@@ -121,6 +122,29 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
             // Register the integration.
             add_filter( 'woocommerce_integrations', array( $this, 'add_nfe_integration' ) );
             add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
+
+            // Load assets
+            add_action( 'admin_enqueue_scripts',  array( $this, 'enqueue_scripts' ) );
+        }
+
+        /**
+         * Adds the admin script
+         *
+         * @since 1.0.0
+         */
+        public function enqueue_scripts() {
+            // Get admin screen id
+            $screen = get_current_screen();
+
+            $is_woocommerce_screen = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
+
+            if ( $is_woocommerce_screen ) {
+                wp_enqueue_script( 'nfe-woo-metabox-script', 
+                    $this->assets . 'js/admin/admin.js', 
+                    array( 'jquery' ),
+                    $this->assets . 'js/admin/admin.js' 
+                );
+            }
         }
 
         /**

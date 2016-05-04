@@ -21,36 +21,99 @@ class WC_Nfe_Admin_Meta_Boxes {
 	 * Constructor
 	 */
 	public function __construct() {
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 25 );
-		add_action( 'save_post',      array( $this, 'save'         ) );
+		add_action( 'add_meta_boxes',         array( $this, 'add_meta_boxes' ), 25 );
+		add_action( 'save_post',              array( $this, 'save'         ) );
 	}
 
 	/**
-	 * Add WC Meta boxes
+	 * Add WC Meta box
 	 */
 	public function add_meta_boxes() {
 		add_meta_box( 'nfe-woocommerce-data', 
-			_x( 'Fiscal Activities', 'meta box title', 'nfe-woocommerce' ), 
+			_x( 'Nfe.io - Product Fiscal Activities', 'meta box title', 'nfe-woocommerce' ), 
 			array( $this, 'output' ), 
-			'product', 'normal', 'high' );
+			'product', 'normal', 'default' );
 	}
 
 	/**
+	 * Meta box display callback.
+	 *
+	 * @param WP_Post $post Current post object.
+	 */
+	public function output( $post ) {
+        $fiscal_activities = get_post_meta( $post->ID, 'nfe_woo_fiscal_activities', true );
+
+	    // Add an nonce field so we can check for it later.
+        wp_nonce_field( 'nfe_woocommerce_box_nonce', 'nfe_woocommerce_box_nonce' ); ?>
+  
+        <table id="nfe-woo-fieldset-one" width="100%">
+            <thead>
+                <tr>
+                    <th width="50%"><?php esc_html_e( 'Activity Name', 'nfe-woocommerce' ); ?></th>
+                    <th width="42%"><?php esc_html_e( 'Code', 'nfe-woocommerce' ); ?></th>
+                    <th width="8%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ( $fiscal_activities ) :
+                
+                    foreach ( (array) $fiscal_activities as $activity ) { ?>
+                    <tr>
+                        <td>
+                            <input type="text" class="widefat" name="name[]" value="<?php if( $activity['name'] !== '' ) echo esc_attr( $activity['name'] ); ?>" />
+                        </td>
+                    
+                        <td>
+                            <input type="text" class="widefat" name="code[]" value="<?php if ( $activity['code'] !== '') echo esc_attr( $activity['code'] ); ?>" />
+                        </td>
+                    
+                        <td>
+                            <a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a>
+                        </td>
+                    </tr>
+                    <?php }
+                
+                else : // show a blank one ?>
+
+                    <tr>
+                        <td><input type="text" class="widefat" name="name[]" /></td>
+                        <td><input type="text" class="widefat" name="code[]" value="" /></td>
+                        <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a></td>
+                    </tr>
+
+                <?php endif; ?>
+                
+                <!-- empty hidden one for jQuery -->
+                <tr class="empty-row screen-reader-text">
+                    <td><input type="text" class="widefat" name="name[]" /></td>
+                    <td><input type="text" class="widefat" name="code[]" value="" /></td>
+                    <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a></td>
+                </tr>
+            </tbody>
+        </table>
+    
+        <p>
+            <a id="add-row" class="button" href="#">
+                <?php esc_html_e( 'Add Another', 'nfe-woocommerce' ); ?>
+            </a>
+        </p>
+        <?php
+	}
+
+    /**
      * Save the meta when the post is saved.
      *
      * @param int $post_id The ID of the post being saved.
      */
     public function save( $post_id ) {
- 
-        // Check if our nonce is set.
-        if ( ! isset( $_POST['nfe_woocommerce_box_nonce'] ) ) {
-            return $post_id;
+        if ( 'product' !== get_post_type() ) {
+            return;
         }
- 
+    
         $nonce = $_POST['nfe_woocommerce_box_nonce'];
- 
-        // Verify that the nonce is valid.
-        if ( ! wp_verify_nonce( $nonce, 'nfe_woocommerce_box' ) ) {
+
+        // Check if our nonce is set and verify that the nonce is valid.
+        if ( ! isset( $nonce ) || ! wp_verify_nonce( $nonce, 'nfe_woocommerce_box_nonce' ) ) {
             return $post_id;
         }
  
@@ -63,43 +126,35 @@ class WC_Nfe_Admin_Meta_Boxes {
         }
  
         // Check the user's permissions.
-        if ( 'product' === $_POST['post_type'] ) {
-            if ( ! current_user_can( 'edit_page', $post_id ) ) {
-                return $post_id;
-            }
-        } else {
-            if ( ! current_user_can( 'edit_post', $post_id ) ) {
-                return $post_id;
-            }
+        if ( ! current_user_can( 'edit_post', $post_id ) ) {
+            return $post_id;
         }
- 
-        // Sanitize the user input.
-        $mydata = sanitize_text_field( $_POST['nfe_woocommerce_fiscal_activity'] );
- 
-        // Update the meta field.
-        update_post_meta( $post_id, '_nfe_woocommerce_fiscal_activity_key', $mydata );
-    }
 
-	/**
-	 * Meta box display callback.
-	 *
-	 * @param WP_Post $post Current post object.
-	 */
-	public function output( $post ) {
-	    // Add an nonce field so we can check for it later.
-        wp_nonce_field( 'nfe_woocommerce_box', 'nfe_woocommerce_box_nonce' );
- 
-        // Use get_post_meta to retrieve an existing value from the database.
-        $value = get_post_meta( $post->ID, '_nfe_woocommerce_fiscal_activity_key', true );
- 
-        // Display the form, using the current value.
-        ?>
-        <label for="nfe_woocommerce_fiscal_activity">
-            <?php _e( 'Add the Fiscal Activity for this product', 'nfe-woocommerce' ); ?>
-        </label>
-        <input type="text" id="nfe_woocommerce_fiscal_activity" name="nfe_woocommerce_fiscal_activity" value="<?php echo esc_attr( $value ); ?>" size="25" />
-        <?php
-	}
+        $old = get_post_meta( $post_id, 'nfe_woo_fiscal_activities', true );
+        $new = array();
+
+        $names = $_POST['name'];
+        $codes = $_POST['code'];
+
+        $count = count( $names );
+
+        for ( $i = 0; $i < $count; $i++ ) {
+            if ( $names[$i] !== '' ) :
+                $new[$i]['name'] = sanitize_text_field( $names[$i] );
+            endif;
+
+             if ( $codes[$i] !== '' ) :
+                $new[$i]['code'] = sanitize_text_field( sanitize_key( $codes[$i] ) );
+            endif;
+        }
+
+        // Update meta fields
+        if ( !empty( $new ) && $new !== $old ) {
+            update_post_meta( $post_id, 'nfe_woo_fiscal_activities', $new );
+        } elseif ( empty($new) && $old ) {
+            delete_post_meta( $post_id, 'nfe_woo_fiscal_activities', $old );
+        }
+    }
 }
 
 new WC_Nfe_Admin_Meta_Boxes();
