@@ -1,13 +1,11 @@
 <?php
 
 /**
- * Missing dependencies notice.
+ * WooCommerce Nfe.io - missing dependencies notice.
  *
- * @since 1.0.0
- *
- * @package  Nfe_WooCommerce/Admin/Notices
- * @category Integration
  * @author   Renato Alves
+ * @package  Nfe_WooCommerce/Classes/Notices
+ * @version  1.0.0
  */
 
 // Exit if accessed directly

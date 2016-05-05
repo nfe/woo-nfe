@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Nfe Integration
+ * WooCommerce Nfe.io Integration
  *
- * @since 1.0.0
- *
- * @package  Nfe_WooCommerce/Classes/Integration
  * @author   Renato Alves
+ * @category Admin
+ * @package  Nfe_WooCommerce/Classes/Integration
+ * @version  1.0.0
  */
 
 // Exit if accessed directly
@@ -36,6 +36,7 @@ class WC_Nfe_Integration extends WC_Integration {
 		// Define user set variables.
 		$this->api_key          = $this->get_option( 'api_key' );
 		$this->debug            = $this->get_option( 'debug' );
+		$this->nfe_enable       = $this->get_option( 'nfe_enable' );
 
 		// Debug.
 		if ( 'yes' === $this->debug ) {
@@ -44,9 +45,19 @@ class WC_Nfe_Integration extends WC_Integration {
 
 		// Actions.
 		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
+		add_action( 'admin_notices', array( $this, 'display_errors' ) );
 
 		// Filters.
 		add_filter( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_settings' ) );
+	}
+
+	/**
+	 * Gets the admin url.
+	 *
+	 * @return string
+	 */
+	protected function admin_url() {
+		return admin_url( 'admin.php?page=wc-settings&tab=integration' );
 	}
 
 	/**
@@ -65,7 +76,14 @@ class WC_Nfe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'API Key', 'nfe-woocommerce' ),
 				'default'           => '',
-				'description'       => __( 'Enter your API Key. You can find this in you Nfe.io - Account -> Access Keys.', 'nfe-woocommerce' ),
+				'description'       => __( 'Enter your API Key. You can find this in your Nfe.io - Account -> Access Keys.', 'nfe-woocommerce' ),
+			),
+			'company_id' => array(
+				'title'             => __( 'Company ID', 'nfe-woocommerce' ),
+				'type'              => 'text',
+				'label'             => __( 'Company ID', 'nfe-woocommerce' ),
+				'default'           => '',
+				'description'       => __( 'Enter your company ID. You can find this in your Nfe.io account.', 'nfe-woocommerce' ),
 			),
 			'where_note' => array(
 				'title'             => __( 'Nfe.io Filling', 'nfe-woocommerce' ),
@@ -111,10 +129,16 @@ class WC_Nfe_Integration extends WC_Integration {
 	 * @see process_admin_options()
 	 */
 	public function sanitize_settings( $settings ) {
-		if ( isset( $settings ) && isset( $settings['api_key'] ) ) {
-			if ( strlen( $settings['api_key'] ) > 10 ) {
-				$settings['api_key'] = strtolower( $settings['api_key'] );
-			}
+		if ( ! isset( $settings ) ) {
+			return $settings;
+		}
+
+		if ( isset( $settings['api_key'] ) && strlen( $settings['api_key'] ) === 33 ) {
+			$settings['api_key'] = strtolower( $settings['api_key'] );
+		}
+
+		if ( isset( $settings['company_id'] ) && strlen( $settings['company_id'] ) === 25 ) {
+			$settings['company_id'] = strtolower( $settings['company_id'] );
 		}
 
 		return $settings;
@@ -157,18 +181,17 @@ class WC_Nfe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Display errors by overriding the display_errors() method;
-	 * 
-	 * @see display_errors()
+	 * Displays notifications when the admin has something wrong with the configuration.
+	 *
+	 * @return void
 	 */
-	public function display_errors( ) {
-		// loop through each error and display it
-		foreach ( $this->errors as $key => $value ) {
-			?>
-			<div class="error">
-				<p><?php _e( 'Looks like you made a mistake with the ' . $value . ' field.', 'nfe-woocommerce' ); ?></p>
-			</div>
-			<?php
+	public function display_errors() {
+		if ( 'yes' == $this->nfe_enable && empty( $this->api_key ) ) {
+			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'nfe-woocommerce' ) . '</strong>: ' . 
+		sprintf( __( 'You should inform your API Key and Company ID. %s', 'nfe-woocommerce' ), 
+			'<a href="' . $this->admin_url() . '">' .
+			 __( 'Click here to configure!', 'nfe-woocommerce' ) . '</a>' ) . '</p></div>';
+			
 		}
 	}
 }
