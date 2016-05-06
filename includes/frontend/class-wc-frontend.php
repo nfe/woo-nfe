@@ -36,12 +36,12 @@ class WC_NFe_FrontEnd {
 		if ( $order->has_status( 'completed' ) && strtotime( $order->post_date ) < strtotime('-1 year') ) {
 			$actions['nfe-issue'] = array(
 				'url'  => '', // todo
-				'name' => __( 'Issue NFe', 'nfe-woocommerce' )
+				'name' => __( 'Issue NFe', 'woocommerce-nfe' )
 			);
 
 			$actions['nfe-download'] = array(
 				'url'  => '', // todo
-				'name' => __( 'Download Issue', 'nfe-woocommerce' )
+				'name' => __( 'Download Issue', 'woocommerce-nfe' )
 			);
 		}
 		return $actions;

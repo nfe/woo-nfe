@@ -26,8 +26,8 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function __construct() {
 		$this->id 				  = 'nfe-woo-integration';
-		$this->method_title 	  = __( 'NFe Integration', 'nfe-woocommerce' );
-		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'nfe-woocommerce' );
+		$this->method_title 	  = __( 'NFe Integration', 'woocommerce-nfe' );
+		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woocommerce-nfe' );
 
 		// Load the settings.
 		$this->init_form_fields();
@@ -66,58 +66,58 @@ class WC_NFe_Integration extends WC_Integration {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'nfe_enable' => array(
-				'title'             => __( 'Enable/Disable', 'nfe-woocommerce' ),
+				'title'             => __( 'Enable/Disable', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable NFe.io', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable NFe.io', 'woocommerce-nfe' ),
 				'default'           => 'no',
 			),
 			'api_key' => array(
-				'title'             => __( 'API Key', 'nfe-woocommerce' ),
+				'title'             => __( 'API Key', 'woocommerce-nfe' ),
 				'type'              => 'text',
-				'label'             => __( 'API Key', 'nfe-woocommerce' ),
+				'label'             => __( 'API Key', 'woocommerce-nfe' ),
 				'default'           => '',
-				'description'       => sprintf( __( 'Enter your API Key. - %s', 'nfe-woocommerce' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'nfe-woocommerce' ) . '</a>' ),
+				'description'       => sprintf( __( 'Enter your API Key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'woocommerce-nfe' ) . '</a>' ),
 			),
 			'company_id' => array(
-				'title'             => __( 'Company ID', 'nfe-woocommerce' ),
+				'title'             => __( 'Company ID', 'woocommerce-nfe' ),
 				'type'              => 'text',
-				'label'             => __( 'Company ID', 'nfe-woocommerce' ),
+				'label'             => __( 'Company ID', 'woocommerce-nfe' ),
 				'default'           => '',
-				'description'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'nfe-woocommerce' ),
+				'description'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
 			),
 			'where_note' => array(
-				'title'             => __( 'NFe.io Filling', 'nfe-woocommerce' ),
+				'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
 				'type'              => 'select',
-				'label'             => __( 'NFe.io Filling', 'nfe-woocommerce' ),
+				'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
 				'default'           => '',
 				'options' 			=> array(
-					'after'     	=> __( 'After Checkout', 'nfe-woocommerce' ),
-					'manual'    	=> __( 'Manual (Requires admin to issue)', 'nfe-woocommerce' )
+					'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
+					'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
-				'description'       => __( 'Option for user to fill the NFe.io information.', 'nfe-woocommerce' ),
+				'description'       => __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
 			),
 			'issue_past_notes' => array(
-				'title'             => __( 'Enable Retroactive Issue', 'nfe-woocommerce' ),
+				'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable to issue NFe.io in past products', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable to issue NFe.io in past products', 'woocommerce-nfe' ),
 				'default'           => 'no',
-				'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'nfe-woocommerce' ),
+				'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
 			),
 			'send_email_copy' => array(
-				'title'             => __( 'Enable Safe Copy', 'nfe-woocommerce' ),
+				'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable or disable safe issue copy', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable or disable safe issue copy', 'woocommerce-nfe' ),
 				'default'           => 'no',
-				'description'       => __( 'If enabled, a copy of every note issued is sent to the blog admin email.', 'nfe-woocommerce' ),
+				'description'       => __( 'If enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
 			),
 			'debug' => array(
-				'title'             => __( 'Debug Log', 'nfe-woocommerce' ),
+				'title'             => __( 'Debug Log', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable logging', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable logging', 'woocommerce-nfe' ),
 				'default'           => 'no',
-				'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'nfe-woocommerce' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'nfe-woocommerce' ) . '</a>' ),
+				'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'woocommerce-nfe' ) . '</a>' ),
 			),
 		);
 	}
@@ -186,10 +186,10 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function display_errors() {
 		if ( 'yes' == $this->nfe_enable && empty( $this->api_key ) ) {
-			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'nfe-woocommerce' ) . '</strong>: ' . 
-		sprintf( __( 'You should inform your API Key and Company ID. %s', 'nfe-woocommerce' ), 
+			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
+		sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
 			'<a href="' . $this->admin_url() . '">' .
-			 __( 'Click here to configure!', 'nfe-woocommerce' ) . '</a>' ) . '</p></div>';
+			 __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) . '</p></div>';
 			
 		}
 	}

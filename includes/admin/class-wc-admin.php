@@ -25,16 +25,24 @@ class WC_NFe_Admin {
 		add_action( 'add_meta_boxes',         array( $this, 'add_meta_boxes' ), 25 );
 		add_action( 'save_post',              array( $this, 'save'         ) );
 
+        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_c' ) );
+        add_action( 'woocommerce_order_actions', array( $this, 'order_meta_box_actions' ) );
+
         // Filters
         add_filter( 'woocommerce_admin_order_actions', array( $this, 'order_actions'), 10, 2 );
+        add_filter( 'manage_edit-shop_order_columns', array( $this, 'order_status_column_header' ), 20 );
+
+        // add_action( 'woocommerce_order_action_wc_nfe_emitir', array( $this, 'process_order_meta_box_actions' ) );
+        // add_action( 'admin_footer-edit.php', array( $this, 'order_bulk_actions' ) );
+        // add_action( 'load-edit.php', array( 'WooCommerceNFe_Backend', 'process_order_bulk_actions' ) );
 	}
 
 	/**
 	 * Add WC Meta box
 	 */
 	public function add_meta_boxes() {
-		add_meta_box( 'nfe-woocommerce-data', 
-			_x( 'NFe.io - Product Fiscal Activities', 'meta box title', 'nfe-woocommerce' ), 
+		add_meta_box( 'woocommerce-nfe-data', 
+			_x( 'NFe.io - Product Fiscal Activities', 'meta box title', 'woocommerce-nfe' ), 
 			array( $this, 'output' ), 
 			'product', 'normal', 'default' );
 	}
@@ -53,8 +61,8 @@ class WC_NFe_Admin {
         <table id="nfe-woo-fieldset-one" width="100%">
             <thead>
                 <tr>
-                    <th width="50%"><?php esc_html_e( 'Activity Name', 'nfe-woocommerce' ); ?></th>
-                    <th width="42%"><?php esc_html_e( 'Code', 'nfe-woocommerce' ); ?></th>
+                    <th width="50%"><?php esc_html_e( 'Activity Name', 'woocommerce-nfe' ); ?></th>
+                    <th width="42%"><?php esc_html_e( 'Code', 'woocommerce-nfe' ); ?></th>
                     <th width="8%"></th>
                 </tr>
             </thead>
@@ -72,7 +80,7 @@ class WC_NFe_Admin {
                         </td>
                     
                         <td>
-                            <a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a>
+                            <a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a>
                         </td>
                     </tr>
                     <?php }
@@ -82,7 +90,7 @@ class WC_NFe_Admin {
                     <tr>
                         <td><input type="text" class="widefat" name="name[]" /></td>
                         <td><input type="text" class="widefat" name="code[]" value="" /></td>
-                        <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a></td>
+                        <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a></td>
                     </tr>
 
                 <?php endif; ?>
@@ -91,14 +99,14 @@ class WC_NFe_Admin {
                 <tr class="empty-row screen-reader-text">
                     <td><input type="text" class="widefat" name="name[]" /></td>
                     <td><input type="text" class="widefat" name="code[]" value="" /></td>
-                    <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'nfe-woocommerce' ); ?></a></td>
+                    <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a></td>
                 </tr>
             </tbody>
         </table>
     
         <p>
             <a id="add-row" class="button" href="#">
-                <?php esc_html_e( 'Add Another', 'nfe-woocommerce' ); ?>
+                <?php esc_html_e( 'Add Another', 'woocommerce-nfe' ); ?>
             </a>
         </p>
         <?php
@@ -160,6 +168,95 @@ class WC_NFe_Admin {
         }
     }
 
+    public function order_status_column_header( $columns ) {
+        $new_columns = array();
+
+        foreach ( $columns as $column_name => $column_info ) {
+
+            $new_columns[ $column_name ] = $column_info;
+
+            if ( 'order_status' == $column_name ) {
+                $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
+            }
+        }
+
+        return $new_columns;
+    }
+
+    public function order_status_column_c( $column ) {
+        global $post;
+
+        if ( 'sales-receipt' === $column ) {
+
+            $nfe = get_post_meta( $post->ID, 'nfe', true );
+            $order = new WC_Order( $post->ID );
+            
+            if ( $order->get_status() == 'pending' || $order->get_status() == 'cancelled' ) {
+                echo '<span class="nfe_none">-</span>';
+
+            } elseif ($nfe) {
+
+                echo '<div class="nfe_success">' . __( 'NFe Issued', 'woocoomerce-nfe' ) . '</div>';
+
+            } else { 
+                echo '<div class="nfe_alert">' . __( 'NFe not issued', 'woocoomerce-nfe' ) . '</div>';
+            } 
+        }   
+    }
+
+    public function order_meta_box_actions( $actions ) {
+        $actions['wc_nfe_emitir'] = __( 'Issue NFe', 'woocommerce-nfe' );
+
+        return $actions;
+    }
+
+   /*  public function order_bulk_actions() {
+        global $post_type, $post_status;
+
+        if ( $post_type == 'shop_order' ) {
+
+            if (get_option( 'sefaz' ) == 'offline') return false;
+            if ($post_status == 'trash' || $post_status == 'wc-cancelled' || $post_status == 'wc-pending') return false;
+
+            ?>
+             <script type="text/javascript">
+                jQuery( document ).ready( function ( $ ) {
+                          var $emitir_nfe = $('<option>').val('wc_nfe_emitir').text('<?php _e( 'Emitir NF-e' )?>');
+                          $( 'select[name^="action"]' ).append( $emitir_nfe );
+                      });
+            </script>
+        }
+    } */
+
+    function process_order_bulk_actions(){
+        
+        global $typenow;
+
+        if ( 'shop_order' == $typenow ) {
+
+            $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
+            $action        = $wp_list_table->current_action();
+
+            if ( ! in_array( $action, array( 'wc_nfe_emitir') ) ) return false;
+            if ( isset( $_REQUEST['post'] ) ) $order_ids = array_map( 'absint', $_REQUEST['post'] );
+            if ( empty( $order_ids ) ) return false;
+            
+            if ($action == 'wc_nfe_emitir') WC_NFe()->emitirNFe( $order_ids );
+            
+        }
+        
+    }
+    
+    function process_order_meta_box_actions( $post ){
+        
+        $order_id = $post->id;
+        $post_status = $post->post_status;
+        if ($post_status == 'trash' || $post_status == 'wc-cancelled') return false;
+        
+        parent::emitirNFe( array( $order_id ) );
+        
+    }
+
     /**
      * Adds the NFe actions on the Orders
      * 
@@ -169,13 +266,13 @@ class WC_NFe_Admin {
         if ( $order->has_status( 'completed' ) && strtotime( $order->post_date ) < strtotime('-1 year') ) {
             $actions['nfe-issue'] = array(
                 'url'       => '', // todo
-                'name'      => __( 'Issue NFe', 'nfe-woocommerce' ),
+                'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
                 'action'    => "issue"
             );
 
             $actions['nfe-download'] = array(
                 'url'       => '', // todo
-                'name'      => __( 'Download Issue', 'nfe-woocommerce' ),
+                'name'      => __( 'Download Issue', 'woocommerce-nfe' ),
                 'action'    => "download"
             );
         }

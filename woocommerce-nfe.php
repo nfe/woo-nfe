@@ -1,22 +1,22 @@
 <?php
 
 /**
- * WooCommerce NFe.io plugin
+ * WooCommerce NFe plugin
  *
  * @link              https://github.com/nfe/nfe-wordpress-woocommerce
  * @since             1.0.0
- * @package           WooCommerce NFe.io
+ * @package           WooCommerce NFe
  *
  * @wordpress-plugin
- * Plugin Name:       WooCommerce NFe.io
+ * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/nfe-wordpress-woocommerce
- * Description:       WooCommerce extension for the NFe.io API
+ * Description:       WooCommerce extension for the NFe API
  * Version:           1.0.0
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
- * Text Domain:       nfe-woocommerce
+ * Text Domain:       woocommerce-nfe
  * Domain Path:       /languages
  *
  * Copyright: © 2016 NFe.io
