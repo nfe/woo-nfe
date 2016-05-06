@@ -1,11 +1,11 @@
 <?php
 
 /**
- * WooCommerce Nfe.io Admin Meta Boxes
+ * WooCommerce NFe.io WC_NFe_Admin Class
  *
  * @author   Renato Alves
  * @category Admin
- * @package  Nfe_WooCommerce/Classes/Admin
+ * @package  NFe_WooCommerce/Classes/WC_NFe_Admin
  * @version  1.0.0
  */
 
@@ -13,16 +13,20 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * WC_Nfe_Admin_Meta_Boxes
+ * WC_NFe_Admin
  */
-class WC_Nfe_Admin_Meta_Boxes {
+class WC_NFe_Admin {
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
+        // Actions
 		add_action( 'add_meta_boxes',         array( $this, 'add_meta_boxes' ), 25 );
 		add_action( 'save_post',              array( $this, 'save'         ) );
+
+        // Filters
+        add_filter( 'woocommerce_admin_order_actions', array( $this, 'order_actions'), 10, 2 );
 	}
 
 	/**
@@ -30,7 +34,7 @@ class WC_Nfe_Admin_Meta_Boxes {
 	 */
 	public function add_meta_boxes() {
 		add_meta_box( 'nfe-woocommerce-data', 
-			_x( 'Nfe.io - Product Fiscal Activities', 'meta box title', 'nfe-woocommerce' ), 
+			_x( 'NFe.io - Product Fiscal Activities', 'meta box title', 'nfe-woocommerce' ), 
 			array( $this, 'output' ), 
 			'product', 'normal', 'default' );
 	}
@@ -155,6 +159,29 @@ class WC_Nfe_Admin_Meta_Boxes {
             delete_post_meta( $post_id, 'nfe_woo_fiscal_activities', $old );
         }
     }
+
+    /**
+     * Adds the NFe actions on the Orders
+     * 
+     * @return array
+     */
+    public function order_actions( $actions, $order ) {
+        if ( $order->has_status( 'completed' ) && strtotime( $order->post_date ) < strtotime('-1 year') ) {
+            $actions['nfe-issue'] = array(
+                'url'       => '', // todo
+                'name'      => __( 'Issue NFe', 'nfe-woocommerce' ),
+                'action'    => "issue"
+            );
+
+            $actions['nfe-download'] = array(
+                'url'       => '', // todo
+                'name'      => __( 'Download Issue', 'nfe-woocommerce' ),
+                'action'    => "download"
+            );
+        }
+
+        return $actions;
+    }
 }
 
-new WC_Nfe_Admin_Meta_Boxes();
+new WC_NFe_Admin();

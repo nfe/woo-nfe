@@ -1,25 +1,25 @@
 <?php
 
 /**
- * WooCommerce Nfe.io plugin
+ * WooCommerce NFe.io plugin
  *
  * @link              https://github.com/nfe/nfe-wordpress-woocommerce
  * @since             1.0.0
- * @package           WooCommerce Nfe.io
+ * @package           WooCommerce NFe.io
  *
  * @wordpress-plugin
- * Plugin Name:       WooCommerce Nfe.io
+ * Plugin Name:       WooCommerce NFe.io
  * Plugin URI:        https://github.com/nfe/nfe-wordpress-woocommerce
- * Description:       WooCommerce extension for the Nfe.io API
+ * Description:       WooCommerce extension for the NFe.io API
  * Version:           1.0.0
- * Author:            Nfe.io
+ * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
  * Text Domain:       nfe-woocommerce
  * Domain Path:       /languages
  *
- * Copyright: © 2016 Nfe.io
+ * Copyright: © 2016 NFe.io
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
@@ -27,14 +27,14 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
+if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 
     /**
-    * WooCommerce Nfe.io Main Class
+    * WooCommerce NFe.io Main Class
     *
     * @since 1.0.0
     */
-    class Nfe_WooCommerce {
+    class NFe_WooCommerce {
 
         /**
          * Main instance
@@ -50,7 +50,7 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
 
             // Only run these methods if they haven't been run previously
             if ( null === $instance ) {
-                $instance = new Nfe_WooCommerce;
+                $instance = new NFe_WooCommerce;
                 $instance->setup_globals();
                 $instance->includes();
                 $instance->setup_hooks();
@@ -61,11 +61,11 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
         }
 
         /**
-         * A dummy constructor to prevent Nfe_WooCommerce from being loaded more than once.
+         * A dummy constructor to prevent NFe_WooCommerce from being loaded more than once.
          *
          * @since 1.0.0
          * 
-         * @see Nfe_WooCommerce::instance()
+         * @see NFe_WooCommerce::instance()
          */
         private function __construct() { /* Do nothing here */ }
 
@@ -78,13 +78,14 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
             /** Plugin globals ********************************************/
             $this->version       = '1.0.0';
             $this->domain        = 'nfe-wordpress-woocommerce';
-            $this->name          = 'WooCommerce Nfe.io';
+            $this->name          = 'WooCommerce NFe.io';
             $this->file          = __FILE__;
             $this->basename      = plugin_basename( $this->file                     );
             $this->plugin_dir    = plugin_dir_path( $this->file                     );
             $this->plugin_url    = plugin_dir_url( $this->file                      );
             $this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
             $this->admin         = trailingslashit( $this->includes_dir . 'admin'   );
+            $this->frontend      = trailingslashit( $this->includes_dir . 'frontend');
             $this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
             $this->assets        = trailingslashit( $this->plugin_url . 'assets'    );
         }
@@ -95,8 +96,12 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
          * @since 1.0.0
          */
         private function includes() {
-            require( $this->admin . 'class-wc-nfe-integration.php'  );
-            require( $this->admin . 'class-wc-admin-meta-boxes.php' );
+            // Admin
+            require( $this->admin . 'class-wc-nfe-integration.php'      );
+            require( $this->admin . 'class-wc-admin.php'                );
+
+            // Front-end
+            require( $this->frontend . 'class-wc-frontend.php'          );
         }
 
         /**
@@ -119,11 +124,11 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
                 // return;
             //}
 
-            // Register the integration.
+            // Filters
             add_filter( 'woocommerce_integrations', array( $this, 'add_nfe_integration' ) );
             add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
 
-            // Load assets
+            // Actions
             add_action( 'admin_enqueue_scripts',  array( $this, 'enqueue_scripts' ) );
         }
 
@@ -139,7 +144,7 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
             $is_woocommerce_screen = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
 
             if ( $is_woocommerce_screen ) {
-                wp_enqueue_script( 'nfe-woo-metabox-script', 
+                wp_enqueue_script( 'nfe-woo-metabox', 
                     $this->assets . 'js/admin/admin.js', 
                     array( 'jquery' ),
                     $this->assets . 'js/admin/admin.js' 
@@ -148,12 +153,14 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
         }
 
         /**
-         * Adds our custom WC_Nfe_Integration integration to WooCommerce.
+         * Adds our custom WC_NFe_Integration integration to WooCommerce.
          *
          * @since 1.0.0
+         *
+         * @return array
          */
         public function add_nfe_integration( $integrations ) {
-            $integrations[] = 'WC_Nfe_Integration';
+            $integrations[] = 'WC_NFe_Integration';
 
             return $integrations;
         }
@@ -219,15 +226,15 @@ if ( ! class_exists( 'Nfe_WooCommerce' ) ) :
 endif;
 
 /**
- * The main function responsible for returning the one true Nfe_WooCommerce Instance.
+ * The main function responsible for returning the one true NFe_WooCommerce Instance.
  *
  * @since 1.0.0
  *
- * @return Nfe_WooCommerce The one true Nfe_WooCommerce Instance.
+ * @return NFe_WooCommerce The one true NFe_WooCommerce Instance.
  */
-function Nfe_WooCommerce() {
-    return Nfe_WooCommerce::instance();
+function NFe_WooCommerce() {
+    return NFe_WooCommerce::instance();
 }
-add_action( 'plugins_loaded', 'Nfe_WooCommerce');
+add_action( 'plugins_loaded', 'NFe_WooCommerce');
 
 // That's it! =)

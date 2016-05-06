@@ -1,21 +1,21 @@
 <?php
 
 /**
- * WooCommerce Nfe.io Integration
+ * WooCommerce NFe.io Integration
  *
  * @author   Renato Alves
  * @category Admin
- * @package  Nfe_WooCommerce/Classes/Integration
+ * @package  NFe_WooCommerce/Classes/Integration
  * @version  1.0.0
  */
 
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-class WC_Nfe_Integration extends WC_Integration {
+class WC_NFe_Integration extends WC_Integration {
 
 	/**
-	 * Nfe.io API URL
+	 * NFe.io API URL
 	 *
 	 * @var string
 	 */
@@ -25,9 +25,9 @@ class WC_Nfe_Integration extends WC_Integration {
 	 * Init and hook in the integration.
 	 */
 	public function __construct() {
-		$this->id		  		  = 'nfe-woo-integration';
-		$this->method_title 	  = __( 'Nfe Integration', 'nfe-woocommerce' );
-		$this->method_description = __( 'This is the Nfe.io integration/settings page.', 'nfe-woocommerce' );
+		$this->id 				  = 'nfe-woo-integration';
+		$this->method_title 	  = __( 'NFe Integration', 'nfe-woocommerce' );
+		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'nfe-woocommerce' );
 
 		// Load the settings.
 		$this->init_form_fields();
@@ -37,7 +37,6 @@ class WC_Nfe_Integration extends WC_Integration {
 		$this->api_key          = $this->get_option( 'api_key' );
 		$this->debug            = $this->get_option( 'debug' );
 		$this->nfe_enable       = $this->get_option( 'nfe_enable' );
-		$this->where_note       = $this->get_option( 'where_note' );
 
 		// Debug.
 		if ( 'yes' === $this->debug ) {
@@ -50,7 +49,6 @@ class WC_Nfe_Integration extends WC_Integration {
 
 		// Filters.
 		add_filter( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_settings' ) );
-		add_filter( 'woocommerce_checkout_fields', array( $this, 'removes_fields' ) );
 	}
 
 	/**
@@ -70,7 +68,7 @@ class WC_Nfe_Integration extends WC_Integration {
 			'nfe_enable' => array(
 				'title'             => __( 'Enable/Disable', 'nfe-woocommerce' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable Nfe.io', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable NFe.io', 'nfe-woocommerce' ),
 				'default'           => 'no',
 			),
 			'api_key' => array(
@@ -78,32 +76,32 @@ class WC_Nfe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'API Key', 'nfe-woocommerce' ),
 				'default'           => '',
-				'description'       => sprintf( __( 'Enter your API Key. - %s', 'nfe-woocommerce' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'Nfe.io - Account -> Access Keys', 'nfe-woocommerce' ) . '</a>' ),
+				'description'       => sprintf( __( 'Enter your API Key. - %s', 'nfe-woocommerce' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'nfe-woocommerce' ) . '</a>' ),
 			),
 			'company_id' => array(
 				'title'             => __( 'Company ID', 'nfe-woocommerce' ),
 				'type'              => 'text',
 				'label'             => __( 'Company ID', 'nfe-woocommerce' ),
 				'default'           => '',
-				'description'       => __( 'Enter your company ID. You can find this in your Nfe.io account.', 'nfe-woocommerce' ),
+				'description'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'nfe-woocommerce' ),
 			),
 			'where_note' => array(
-				'title'             => __( 'Nfe.io Filling', 'nfe-woocommerce' ),
+				'title'             => __( 'NFe.io Filling', 'nfe-woocommerce' ),
 				'type'              => 'select',
-				'label'             => __( 'Nfe.io Filling', 'nfe-woocommerce' ),
-				'default'           => 'before',
+				'label'             => __( 'NFe.io Filling', 'nfe-woocommerce' ),
+				'default'           => '',
 				'options' 			=> array(
 					'after'     	=> __( 'After Checkout', 'nfe-woocommerce' ),
 					'manual'    	=> __( 'Manual (Requires admin to issue)', 'nfe-woocommerce' )
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
-				'description'       => __( 'Option for user to fill the Nfe.io information.', 'nfe-woocommerce' ),
+				'description'       => __( 'Option for user to fill the NFe.io information.', 'nfe-woocommerce' ),
 			),
 			'issue_past_notes' => array(
 				'title'             => __( 'Enable Retroactive Issue', 'nfe-woocommerce' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable to issue Nfe.io in past products', 'nfe-woocommerce' ),
+				'label'             => __( 'Enable to issue NFe.io in past products', 'nfe-woocommerce' ),
 				'default'           => 'no',
 				'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'nfe-woocommerce' ),
 			),
@@ -158,7 +156,7 @@ class WC_Nfe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Checks the Nfe.io api
+	 * Checks the NFe.io api
 	 *
 	 * @param string $key
 	 * @return stdClass
@@ -194,26 +192,6 @@ class WC_Nfe_Integration extends WC_Integration {
 			 __( 'Click here to configure!', 'nfe-woocommerce' ) . '</a>' ) . '</p></div>';
 			
 		}
-	}
-
-	/**
-	 * Removes the WooCommerce fields on checkout
-	 * 
-	 * @return void
-	 */
-	public function removes_fields( $fields ) {
-		if ( $this->where_note === 'after' ) {
-	        unset($fields['billing']['billing_phone']);
-	        unset($fields['billing']['billing_country']);
-	        unset($fields['billing']['billing_address_1']);
-	        unset($fields['billing']['billing_address_2']);
-	        unset($fields['billing']['billing_city']);
-	        unset($fields['billing']['billing_state']);
-	        unset($fields['billing']['billing_neighborhood']);
-	        unset($fields['billing']['billing_postcode']);
-	    }
-        
-        return $fields;
 	}
 }
 
