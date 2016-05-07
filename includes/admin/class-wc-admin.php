@@ -149,13 +149,13 @@ class WC_NFe_Admin {
         $count = count( $names );
 
         for ( $i = 0; $i < $count; $i++ ) {
-            if ( $names[$i] !== '' ) :
+            if ( $names[$i] !== '' ) {
                 $new[$i]['name'] = sanitize_text_field( $names[$i] );
-            endif;
+            }
 
-             if ( $codes[$i] !== '' ) :
-                $new[$i]['code'] = sanitize_text_field( sanitize_key( $codes[$i] ) );
-            endif;
+            if ( $codes[$i] !== '' ) {
+                $new[$i]['code'] = sanitize_text_field( $codes[$i] );
+            }
         }
 
         // Update meta fields
@@ -177,7 +177,7 @@ class WC_NFe_Admin {
         foreach ( $columns as $column_name => $column_info ) {
             $new_columns[ $column_name ] = $column_info;
 
-            if ( 'order_actions' == $column_name ) {
+            if ( 'order_actions' === $column_name ) {
                 $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
             }
         }
