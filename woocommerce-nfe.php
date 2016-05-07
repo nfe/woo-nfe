@@ -150,6 +150,11 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
                     $this->assets . 'js/admin/admin.js' 
                 );
             }
+
+            wp_register_style( 'nfe-woo-admin-css',
+                $this->assets . 'css/admin.css',
+                false, '1.0.0' );
+            wp_enqueue_style( 'nfe-woo-admin-css' );
         }
 
         /**

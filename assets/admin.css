@@ -1,6 +1,0 @@
-.nfe_alert { display: inline; padding: .2em .6em .3em; font-size: 11px; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25em; background-color: #d9534f; }
-		.nfe_success { display: inline; padding: .2em .6em .3em; font-size: 11px; font-weight: 700; line-height: 1; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25em;  background-color: #5cb85c; }
-		.nfe_none { color: #999; text-align:center; }
-		.nfe_danfe { padding: 0px 12px 2px; border: 1px solid #CCC; margin-top: 5px; float: left; }
-		.nfe_danfe:hover { background:#FFF; }
-		.nfe_danfe a { color: #333; text-transform: uppercase; font-weight: bold; font-size: 11px; } 

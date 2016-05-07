@@ -23,29 +23,53 @@ class WC_NFe_FrontEnd {
 	public function __construct() {
 
 		// Filters
-		add_filter( 'woocommerce_my_account_my_orders_actions', array( $this, 'user_account_actions'), 10, 2 );
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'removes_fields' ) );
+		add_filter( 'woocommerce_my_account_my_orders_columns', array( $this, 'nfe_column' ) );
+
+		// Actions
+		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', array( $this, 'nfe_column_content' ) );
 	}
 
 	/**
-	 * Adds the NFe actions on the My Orders
-	 * 
-	 * @return array
-	 */
-	public function user_account_actions( $actions, $order ) {
-		if ( $order->has_status( 'completed' ) && strtotime( $order->post_date ) < strtotime('-1 year') ) {
-			$actions['nfe-issue'] = array(
-				'url'  => '', // todo
-				'name' => __( 'Issue NFe', 'woocommerce-nfe' )
-			);
+     * NFe Column Header on Recent Orders
+     * 
+     * @return array
+     */
+	public function nfe_column( $columns ) {
+		$new_column = array();
 
-			$actions['nfe-download'] = array(
-				'url'  => '', // todo
-				'name' => __( 'Download Issue', 'woocommerce-nfe' )
-			);
-		}
-		return $actions;
+        foreach ( $columns as $column_name => $column_info ) {
+            $new_columns[ $column_name ] = $column_info;
+
+            if ( 'order-total' == $column_name ) {
+                $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
+            }
+        }
+
+        return $new_columns;
 	}
+
+	/**
+     * NFe Sales Receipt Column Content on Recent Orders
+     * 
+     * @return string
+     */
+    public function nfe_column_content( $order ) {   	
+        $nfe = get_post_meta( $order->ID, 'nfe_issued', true );
+
+     	if ( $order->has_status('completed') && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+            echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
+
+        } elseif ( $order->has_status('completed') && $nfe == false ) {
+            echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
+
+        } elseif ( $nfe == true ) {
+            echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocoomerce-nfe' ) . '</a>';
+
+        } else {
+            echo '<span class="nfe_woo_none">-</span>';
+        }
+    }
 
 	/**
 	 * Removes the WooCommerce fields on checkout

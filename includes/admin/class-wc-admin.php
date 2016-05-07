@@ -25,16 +25,14 @@ class WC_NFe_Admin {
 		add_action( 'add_meta_boxes',         array( $this, 'add_meta_boxes' ), 25 );
 		add_action( 'save_post',              array( $this, 'save'         ) );
 
-        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_c' ) );
+        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'nfe_order_status_column_c' ) );
         add_action( 'woocommerce_order_actions', array( $this, 'order_meta_box_actions' ) );
+        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_order_meta_box_actions' ) );
+        add_action( 'admin_footer-edit.php', array( $this, 'order_bulk_actions' ) );
+        add_action( 'load-edit.php', array( $this, 'process_order_bulk_actions' ) );
 
         // Filters
-        add_filter( 'woocommerce_admin_order_actions', array( $this, 'order_actions'), 10, 2 );
-        add_filter( 'manage_edit-shop_order_columns', array( $this, 'order_status_column_header' ), 20 );
-
-        // add_action( 'woocommerce_order_action_wc_nfe_emitir', array( $this, 'process_order_meta_box_actions' ) );
-        // add_action( 'admin_footer-edit.php', array( $this, 'order_bulk_actions' ) );
-        // add_action( 'load-edit.php', array( 'WooCommerceNFe_Backend', 'process_order_bulk_actions' ) );
+        add_filter( 'manage_edit-shop_order_columns', array( $this, 'nfe_order_status_column_header' ), 20 );
 	}
 
 	/**
@@ -168,14 +166,18 @@ class WC_NFe_Admin {
         }
     }
 
-    public function order_status_column_header( $columns ) {
+    /**
+     * NFe Column Header on Order Status
+     * 
+     * @return array
+     */
+    public function nfe_order_status_column_header( $columns ) {
         $new_columns = array();
 
         foreach ( $columns as $column_name => $column_info ) {
-
             $new_columns[ $column_name ] = $column_info;
 
-            if ( 'order_status' == $column_name ) {
+            if ( 'order_actions' == $column_name ) {
                 $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
             }
         }
@@ -183,101 +185,114 @@ class WC_NFe_Admin {
         return $new_columns;
     }
 
-    public function order_status_column_c( $column ) {
+    /**
+     * NFe Column Content on Order Status
+     * 
+     * @return string
+     */
+    public function nfe_order_status_column_c( $column ) {
         global $post;
 
         if ( 'sales-receipt' === $column ) {
-
-            $nfe = get_post_meta( $post->ID, 'nfe', true );
+            $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
-            
-            if ( $order->get_status() == 'pending' || $order->get_status() == 'cancelled' ) {
-                echo '<span class="nfe_none">-</span>';
+        
+            if ( $order->has_status('completed') && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+                echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
 
-            } elseif ($nfe) {
+            } elseif ( $order->has_status('completed') && $nfe == false ) {
+                echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
 
-                echo '<div class="nfe_success">' . __( 'NFe Issued', 'woocoomerce-nfe' ) . '</div>';
+            } elseif ( $nfe == true ) {
+                echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocoomerce-nfe' ) . '</a>';
 
-            } else { 
-                echo '<div class="nfe_alert">' . __( 'NFe not issued', 'woocoomerce-nfe' ) . '</div>';
-            } 
+            } else {
+                echo '<span class="nfe_woo_none">-</span>';
+            }
         }   
     }
 
-    public function order_meta_box_actions( $actions ) {
-        $actions['wc_nfe_emitir'] = __( 'Issue NFe', 'woocommerce-nfe' );
-
-        return $actions;
-    }
-
-   /*  public function order_bulk_actions() {
-        global $post_type, $post_status;
-
-        if ( $post_type == 'shop_order' ) {
-
-            if (get_option( 'sefaz' ) == 'offline') return false;
-            if ($post_status == 'trash' || $post_status == 'wc-cancelled' || $post_status == 'wc-pending') return false;
-
-            ?>
-             <script type="text/javascript">
-                jQuery( document ).ready( function ( $ ) {
-                          var $emitir_nfe = $('<option>').val('wc_nfe_emitir').text('<?php _e( 'Emitir NF-e' )?>');
-                          $( 'select[name^="action"]' ).append( $emitir_nfe );
-                      });
-            </script>
-        }
-    } */
-
-    function process_order_bulk_actions(){
-        
-        global $typenow;
-
-        if ( 'shop_order' == $typenow ) {
-
-            $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
-            $action        = $wp_list_table->current_action();
-
-            if ( ! in_array( $action, array( 'wc_nfe_emitir') ) ) return false;
-            if ( isset( $_REQUEST['post'] ) ) $order_ids = array_map( 'absint', $_REQUEST['post'] );
-            if ( empty( $order_ids ) ) return false;
-            
-            if ($action == 'wc_nfe_emitir') WC_NFe()->emitirNFe( $order_ids );
-            
-        }
-        
-    }
-    
-    function process_order_meta_box_actions( $post ){
-        
-        $order_id = $post->id;
-        $post_status = $post->post_status;
-        if ($post_status == 'trash' || $post_status == 'wc-cancelled') return false;
-        
-        parent::emitirNFe( array( $order_id ) );
-        
-    }
-
     /**
-     * Adds the NFe actions on the Orders
+     * Adds the Meta Box on the Order Page
      * 
      * @return array
      */
-    public function order_actions( $actions, $order ) {
-        if ( $order->has_status( 'completed' ) && strtotime( $order->post_date ) < strtotime('-1 year') ) {
-            $actions['nfe-issue'] = array(
-                'url'       => '', // todo
-                'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
-                'action'    => "issue"
-            );
-
-            $actions['nfe-download'] = array(
-                'url'       => '', // todo
-                'name'      => __( 'Download Issue', 'woocommerce-nfe' ),
-                'action'    => "download"
-            );
-        }
+    public function order_meta_box_actions( $actions ) {
+        $actions['wc_nfe_issue'] = __( 'Issue NFe', 'woocommerce-nfe' );
 
         return $actions;
+    }
+
+    /**
+     * Order Bulk Actions JavaScript
+     * 
+     * @return string
+     */
+    public function order_bulk_actions() {
+        global $post_type, $post_status;
+
+        if ( $post_type === 'shop_order' ) {
+
+            // Bail if NFe is disabled
+            if ( get_option( 'nfe_enable' ) == 'no') {
+                return false;
+            }
+            
+            // Bail if post status is true for the following ones
+            if ( $post_status == 'trash' || $post_status == 'cancelled' || $post_status == 'pending') {
+                return false;
+            } ?>
+             <script type="text/javascript">
+                if ( typeof jq == 'undefined' ) { var jq = jQuery; }
+
+                jq( function() {
+                    var IssueNFe = jq('<option>').val('wc_nfe_issue').text('<?php _e( 'Issue NFe', 'woocommerce-nfe' ); ?>');
+                    jq('select[name^="action"]' ).append( IssueNFe );
+                });
+            </script>
+            <?php
+        }
+    }
+
+    /**
+     * Issue the nfe on bulk action
+     * 
+     * @return bool True|False
+     */
+    public function process_order_bulk_actions() {
+        global $typenow;
+
+        if ( 'shop_order' === $typenow ) {
+            $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
+            $action        = $wp_list_table->current_action();
+
+            if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
+                return false;
+            }
+
+            if ( isset( $_REQUEST['post'] ) ) {
+                $order_ids = array_map( 'absint', $_REQUEST['post'] );
+            }
+
+            if ( empty( $order_ids ) ) {
+                return false;
+            }
+            
+            if ( $action === 'wc_nfe_issue') {
+                // WC_NFe()->emitirNFe( $order_ids );
+            }
+        }
+    }
+    
+    function process_order_meta_box_actions( $post ) {
+        $order_id       = $post->id;
+        $post_status    = $post->post_status;
+
+        if ( $post_status === 'trash' || $post_status === 'cancelled') {
+            return false;
+        }
+        
+        // parent::emitirNFe( array( $order_id ) );
     }
 }
 
