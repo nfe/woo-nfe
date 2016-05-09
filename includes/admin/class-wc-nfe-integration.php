@@ -149,6 +149,9 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function display_errors() {
+
+		// var_dump(NFe_Woo::issue_invoice());
+
 		if ( 'yes' == $this->nfe_enable && empty( $this->api_key ) ) {
 			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
 		sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 

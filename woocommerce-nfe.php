@@ -102,6 +102,10 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          * @since 1.0.0
          */
         private function includes() {
+            
+            // NFe.io API
+            require( $this->includes_dir . 'client-php/lib/Nfe.php'     );
+
             // Admin
             require( $this->admin . 'class-wc-nfe-integration.php'      );
             require( $this->admin . 'class-wc-admin.php'                );
