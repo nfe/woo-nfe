@@ -19,7 +19,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 *
 	 * @var string
 	 */
-	protected $api_url = 'http://requestb.in/13w9wi91';
+	protected $api_url = '';
 
 	/**
 	 * Init and hook in the integration.
@@ -45,7 +45,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 		// Actions.
 		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
-		add_action( 'admin_notices', array( $this, 'display_errors' ) );
+		add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
 	}
 
 	/**

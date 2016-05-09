@@ -108,7 +108,6 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 
             // Front-end
             require( $this->frontend . 'class-wc-frontend.php'          );
-            
             require( $this->includes_dir . 'nfe-functions.php'          );
         }
 
@@ -135,20 +134,6 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
             // Filters
             add_filter( 'woocommerce_integrations',                array( $this, 'add_nfe_integration' ) );
             add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
-
-            // Actions
-            add_action( 'woocommerce_email_footer',                 array( $this, 'nfe_email_completed' ) );
-        }
-
-        /**
-         * Email Template
-         *
-         * @since 1.0.0
-         * 
-         * @return string
-         */
-        public function nfe_email_completed() {
-            wc_get_template( 'emails/nfe-completed.php', array(), '', $this->templates );
         }
 
         /**
