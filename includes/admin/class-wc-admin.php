@@ -196,20 +196,25 @@ class WC_NFe_Admin {
         if ( 'sales-receipt' === $column ) {
             $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
-        
-            if ( $order->has_status('completed') && nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
-                echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
 
-            } elseif ( $order->has_status('completed') && $nfe == false ) {
-                echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
+            if ( $order->has_status('completed') ) {
+                if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+                    echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
+                }
 
-            } elseif ( $nfe == true ) {
-                echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocoomerce-nfe' ) . '</a>';
-
-            } else {
-                echo '<span class="nfe_woo_none">-</span>';
+                if ( nfe_get_field('nfe_enable') === 'yes' && $nfe == false ) {
+                    echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocommerce-nfe' ) . '</a>';
+                } 
             }
-        }   
+
+            if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') === 'no' ) {
+                echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocommerce-nfe' ) . '</a>';
+            } 
+
+            if ( $nfe == true ) {
+                echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocommerce-nfe' ) . '</a>';
+            }
+        }
     }
 
     /**

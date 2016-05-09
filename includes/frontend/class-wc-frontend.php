@@ -81,15 +81,18 @@ class WC_NFe_FrontEnd {
 
      	if ( $order->has_status('completed') && nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
             echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
+        }
 
-        } elseif ( $order->has_status('completed') && $nfe == false ) {
-            echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
+        if ( nfe_get_field('nfe_enable') === 'yes' && $order->has_status('completed') && $nfe == false ) {
+			echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
+        } 
 
-        } elseif ( $nfe == true ) {
+        if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') === 'no' ) {
+         	echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocoomerce-nfe' ) . '</a>';
+        } 
+
+        if ( $nfe == true ) {
             echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocoomerce-nfe' ) . '</a>';
-
-        } else {
-            echo '<span class="nfe_woo_none">-</span>';
         }
     }
 
