@@ -21,13 +21,35 @@ class WC_NFe_FrontEnd {
 	 * Constructor
 	 */
 	public function __construct() {
-
 		// Filters
-		add_filter( 'woocommerce_checkout_fields', array( $this, 'removes_fields' ) );
-		add_filter( 'woocommerce_my_account_my_orders_columns', array( $this, 'nfe_column' ) );
+		add_filter( 'woocommerce_checkout_fields', 								array( $this, 'removes_fields' ) );
+		add_filter( 'woocommerce_my_account_my_orders_columns', 				array( $this, 'nfe_column' ) );
+		add_filter( 'woocommerce_my_account_my_address_description', 			array( $this, 'my_account_nfe_description' ) );
 
 		// Actions
-		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', array( $this, 'nfe_column_content' ) );
+		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', 	array( $this, 'nfe_column_content' ) );
+		add_action( 'woocommerce_order_details_after_order_table', 				array( $this, 'nfe_column_content' ) );
+		add_action( 'woocommerce_before_edit_address_form_billing', 			array( $this, 'nfe_billing_notice' ) );
+	}
+
+	/**
+	 * Notice added on the WooCommerce edit-address page
+	 * 
+	 * @return string
+	 */
+	public function nfe_billing_notice() {
+		if ( nfe_get_field('nfe_enable') === 'yes' ) {
+			echo '<div class="woocommerce-message">' . __( 'The following addresses will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
+		}
+	}
+
+	/**
+	 * Notice added in the My Account page
+	 * 
+	 * @return string
+	 */
+	public function my_account_nfe_description() {
+		return __( 'The following addresses will be used on the checkout page by default and also when issuing a NFe Sales Receipt.', 'woocommerce-nfe' );
 	}
 
 	/**
@@ -57,7 +79,7 @@ class WC_NFe_FrontEnd {
     public function nfe_column_content( $order ) {   	
         $nfe = get_post_meta( $order->ID, 'nfe_issued', true );
 
-     	if ( $order->has_status('completed') && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+     	if ( $order->has_status('completed') && nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
             echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
 
         } elseif ( $order->has_status('completed') && $nfe == false ) {
@@ -72,14 +94,12 @@ class WC_NFe_FrontEnd {
     }
 
 	/**
-	 * Removes the WooCommerce fields on checkout
+	 * Removes the WooCommerce fields on the checkout
 	 * 
 	 * @return void
 	 */
 	public function removes_fields( $fields ) {
-		$where_note = get_option( 'where_note' );
-
-		if ( $where_note === 'after' ) {
+		if ( nfe_get_field('nfe_enable') === 'yes' && nfe_get_field('where_note') === 'after' ) {
 	        unset($fields['billing']['billing_phone']);
 	        unset($fields['billing']['billing_number']);
 	        unset($fields['billing']['billing_country']);
@@ -95,4 +115,4 @@ class WC_NFe_FrontEnd {
 	}
 }
 
-new WC_NFe_FrontEnd();
+$run = new WC_NFe_FrontEnd();

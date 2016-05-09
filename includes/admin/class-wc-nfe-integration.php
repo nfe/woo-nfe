@@ -46,9 +46,6 @@ class WC_NFe_Integration extends WC_Integration {
 		// Actions.
 		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'admin_notices', array( $this, 'display_errors' ) );
-
-		// Filters.
-		add_filter( 'woocommerce_settings_api_sanitized_fields_' . $this->id, array( $this, 'sanitize_settings' ) );
 	}
 
 	/**
@@ -123,39 +120,6 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Santize our settings.
-	 * 
-	 * @see process_admin_options()
-	 */
-	public function sanitize_settings( $settings ) {
-		if ( ! isset( $settings ) ) {
-			return $settings;
-		}
-
-		if ( isset( $settings['api_key'] ) && strlen( $settings['api_key'] ) === 33 ) {
-			$settings['api_key'] = strtolower( $settings['api_key'] );
-		}
-
-		if ( isset( $settings['company_id'] ) && strlen( $settings['company_id'] ) === 25 ) {
-			$settings['company_id'] = strtolower( $settings['company_id'] );
-		}
-
-		return $settings;
-	}
-
-	/**
-	 * Validate the API key
-	 * 
-	 * @see validate_settings_fields()
-	 */
-	public function validate_api_key_field( $key ) {
-		// get the posted value
-		$value = $_POST[ $this->plugin_id . $this->id . '_' . $key ];
-
-		return $value;
-	}
-
-	/**
 	 * Checks the NFe.io api
 	 *
 	 * @param string $key
@@ -180,7 +144,7 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Displays notifications when the admin has something wrong with the configuration.
+	 * Displays notifications when the admin has something wrong with the NFe configuration.
 	 *
 	 * @return void
 	 */

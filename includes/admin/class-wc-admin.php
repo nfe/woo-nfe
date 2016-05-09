@@ -21,18 +21,18 @@ class WC_NFe_Admin {
 	 * Constructor
 	 */
 	public function __construct() {
-        // Actions
-		add_action( 'add_meta_boxes',         array( $this, 'add_meta_boxes' ), 25 );
-		add_action( 'save_post',              array( $this, 'save'         ) );
-
-        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'nfe_order_status_column_c' ) );
-        add_action( 'woocommerce_order_actions', array( $this, 'order_meta_box_actions' ) );
-        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_order_meta_box_actions' ) );
-        add_action( 'admin_footer-edit.php', array( $this, 'order_bulk_actions' ) );
-        add_action( 'load-edit.php', array( $this, 'process_order_bulk_actions' ) );
-
         // Filters
-        add_filter( 'manage_edit-shop_order_columns', array( $this, 'nfe_order_status_column_header' ), 20 );
+        add_filter( 'manage_edit-shop_order_columns',        array( $this, 'nfe_order_status_column_header' ), 20 );
+
+        // Actions
+		add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
+		add_action( 'save_post',                             array( $this, 'save' ) );
+        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'nfe_order_status_column_content' ) );
+        add_action( 'woocommerce_order_actions',             array( $this, 'order_meta_box_actions' ) );
+        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_order_meta_box_actions' ) );
+        add_action( 'admin_footer-edit.php',                 array( $this, 'order_bulk_actions' ) );
+        add_action( 'load-edit.php',                         array( $this, 'process_order_bulk_actions' ) );
+        add_action( 'admin_enqueue_scripts',                 array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -190,14 +190,14 @@ class WC_NFe_Admin {
      * 
      * @return string
      */
-    public function nfe_order_status_column_c( $column ) {
+    public function nfe_order_status_column_content( $column ) {
         global $post;
 
         if ( 'sales-receipt' === $column ) {
             $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
         
-            if ( $order->has_status('completed') && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+            if ( $order->has_status('completed') && nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
                 echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
 
             } elseif ( $order->has_status('completed') && $nfe == false ) {
@@ -234,7 +234,7 @@ class WC_NFe_Admin {
         if ( $post_type === 'shop_order' ) {
 
             // Bail if NFe is disabled
-            if ( get_option( 'nfe_enable' ) == 'no') {
+            if ( nfe_get_field('nfe_enable') === 'no' ) {
                 return false;
             }
             
@@ -255,7 +255,7 @@ class WC_NFe_Admin {
     }
 
     /**
-     * Issue the nfe on bulk action
+     * Issue the NFe on bulk action
      * 
      * @return bool True|False
      */
@@ -279,11 +279,17 @@ class WC_NFe_Admin {
             }
             
             if ( $action === 'wc_nfe_issue') {
-                // WC_NFe()->emitirNFe( $order_ids );
+                // issueNFe( $order_ids );
             }
         }
     }
     
+    /**
+     * Issue the NFe
+     * 
+     * @param  object $post Current post
+     * @return bool True|False
+     */
     function process_order_meta_box_actions( $post ) {
         $order_id       = $post->id;
         $post_status    = $post->post_status;
@@ -292,8 +298,36 @@ class WC_NFe_Admin {
             return false;
         }
         
-        // parent::emitirNFe( array( $order_id ) );
+        // issueNFe( array( $order_id ) );
+    }
+
+     /**
+     * Adds the admin script
+     *
+     * @since 1.0.0
+     */
+    public function enqueue_scripts() {
+        // Get admin screen id
+        $screen         = get_current_screen();
+        $is_woo_screen  = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
+
+        $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+        if ( $is_woo_screen ) {
+            wp_enqueue_script( 'nfe-woo-metabox', 
+                plugins_url( 'woocommerce-nfe/assets/js/admin' ) . $suffix . '.js',
+                array( 'jquery' ),
+                NFe_WooCommerce::VERSION, true
+            );
+        }
+
+        wp_register_style( 'nfe-woo-admin', 
+            plugins_url( 'woocommerce-nfe/assets/css/nfe-admin' ) . $suffix . '.css', 
+            false, NFe_WooCommerce::VERSION 
+        );
+
+        wp_enqueue_style( 'nfe-woo-admin' );
     }
 }
 
-new WC_NFe_Admin();
+$run = new WC_NFe_Admin();

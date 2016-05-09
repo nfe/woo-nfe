@@ -3,13 +3,13 @@
 /**
  * WooCommerce NFe plugin
  *
- * @link              https://github.com/nfe/nfe-wordpress-woocommerce
+ * @link              https://github.com/nfe/woocommerce-nfe
  * @since             1.0.0
  * @package           WooCommerce NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
- * Plugin URI:        https://github.com/nfe/nfe-wordpress-woocommerce
+ * Plugin URI:        https://github.com/nfe/woocommerce-nfe
  * Description:       WooCommerce extension for the NFe API
  * Version:           1.0.0
  * Author:            NFe.io
@@ -35,6 +35,13 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
     * @since 1.0.0
     */
     class NFe_WooCommerce {
+
+        /**
+         * Plugin version.
+         *
+         * @var string
+         */
+        const VERSION = '1.0.0';
 
         /**
          * Main instance
@@ -75,10 +82,8 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          * @since 1.0.0
          */
         private function setup_globals() {
-            /** Plugin globals ********************************************/
-            $this->version       = '1.0.0';
-            $this->domain        = 'nfe-wordpress-woocommerce';
-            $this->name          = 'WooCommerce NFe.io';
+            $this->domain        = 'woocommerce-nfe';
+            $this->name          = 'WooCommerce NFe';
             $this->file          = __FILE__;
             $this->basename      = plugin_basename( $this->file                     );
             $this->plugin_dir    = plugin_dir_path( $this->file                     );
@@ -88,6 +93,7 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
             $this->frontend      = trailingslashit( $this->includes_dir . 'frontend');
             $this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
             $this->assets        = trailingslashit( $this->plugin_url . 'assets'    );
+            $this->templates     = trailingslashit( $this->plugin_url . 'templates' );
         }
 
         /**
@@ -102,6 +108,8 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 
             // Front-end
             require( $this->frontend . 'class-wc-frontend.php'          );
+            
+            require( $this->includes_dir . 'nfe-functions.php'          );
         }
 
         /**
@@ -125,36 +133,22 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
             //}
 
             // Filters
-            add_filter( 'woocommerce_integrations', array( $this, 'add_nfe_integration' ) );
+            add_filter( 'woocommerce_integrations',                array( $this, 'add_nfe_integration' ) );
             add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
 
             // Actions
-            add_action( 'admin_enqueue_scripts',  array( $this, 'enqueue_scripts' ) );
+            add_action( 'woocommerce_email_footer',                 array( $this, 'nfe_email_completed' ) );
         }
 
         /**
-         * Adds the admin script
+         * Email Template
          *
          * @since 1.0.0
+         * 
+         * @return string
          */
-        public function enqueue_scripts() {
-            // Get admin screen id
-            $screen = get_current_screen();
-
-            $is_woocommerce_screen = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
-
-            if ( $is_woocommerce_screen ) {
-                wp_enqueue_script( 'nfe-woo-metabox', 
-                    $this->assets . 'js/admin/admin.js', 
-                    array( 'jquery' ),
-                    $this->assets . 'js/admin/admin.js' 
-                );
-            }
-
-            wp_register_style( 'nfe-woo-admin-css',
-                $this->assets . 'css/admin.css',
-                false, '1.0.0' );
-            wp_enqueue_style( 'nfe-woo-admin-css' );
+        public function nfe_email_completed() {
+            wc_get_template( 'emails/nfe-completed.php', array(), '', $this->templates );
         }
 
         /**
@@ -202,7 +196,7 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          */
         public function plugin_action_links( $links ) {
             $plugin_links = array();
-            $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) . '">' . __( 'Settings', 'nfe-wordpress-woocommerce' ) . '</a>';
+            $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>';
             return array_merge( $plugin_links, $links );
         }
 
@@ -218,12 +212,12 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 
             // Setup paths to current locale file
             $mofile_local  = $this->lang_dir . $mofile;
-            $mofile_global = WP_LANG_DIR . '/nfe-wordpress-woocommerce/' . $mofile;
+            $mofile_global = WP_LANG_DIR . '/woocommerce-nfe/' . $mofile;
 
-            // Look in global /wp-content/languages/nfe-wordpress-woocommerce folder
+            // Look in global /wp-content/languages/woocommerce-nfe folder
             load_textdomain( $this->domain, $mofile_global );
 
-            // Look in local /wp-content/plugins/nfe-wordpress-woocommerce/languages/ folder
+            // Look in local /wp-content/plugins/woocommerce-nfe/languages/ folder
             load_textdomain( $this->domain, $mofile_local );
         }
     }
