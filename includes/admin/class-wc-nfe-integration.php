@@ -105,9 +105,9 @@ class WC_NFe_Integration extends WC_Integration {
 			'send_email_copy' => array(
 				'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
-				'label'             => __( 'Enable or disable safe issue copy', 'woocommerce-nfe' ),
+				'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
 				'default'           => 'no',
-				'description'       => __( 'If enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
+				'description'       => __( 'When enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
 			),
 			'debug' => array(
 				'title'             => __( 'Debug Log', 'woocommerce-nfe' ),

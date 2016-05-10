@@ -11,6 +11,12 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Function to fetch field from the NFe WooCommerce Integration
+ * 
+ * @param  string $value Value to fetch
+ * @return string
+ */
 function nfe_get_field( $value = '' ) {
 	$nfe_fields = get_option( 'woocommerce_nfe-woo-integration_settings' );
 
@@ -25,11 +31,6 @@ function nfe_get_field( $value = '' ) {
 
 class NFe_Woo {
     
-    /**
-     * 
-     * 
-     * @param array $vars [description]
-     */
     private function __construct( array $vars ) {
     	// Bail if not enabled
 		if ( nfe_get_field('nfe_enable') == 'no' ) {
@@ -45,78 +46,27 @@ class NFe_Woo {
     }
     
     /**
-     * Issue a NFe
-     *
-     * @since 1.0.0
-     * 
-     * @param  array  $data [description]
-     * @return [type]       [description]
+     * Issue a NFe Invoice
      */
-    public static function issue_invoice() {
-		$key = nfe_get_field('api_key');
-		$company_id = nfe_get_field('company_id');
+	public static issue_invoice( $order_ids = array() ) {
+        $key = nfe_get_field('api_key');
+        $company_id = nfe_get_field('company_id');
 
-		Nfe::setApiKey($key);
-
-		Nfe_ServiceInvoice::create(
-		  // ID da empresa, você deve copiar exatamente como está no painel
-		  $company_id,
-
-		  // Dados da nota fiscal de serviço
-		  Array (
-		    // Código do serviço de acordo com o a cidade
-		    'cityServiceCode' => '2690',
-		    // Descrição dos serviços prestados
-		    'description' => 'Renato Testing WebHook',
-		    // Valor total do serviços
-		    'servicesAmount' => 0.01,
-		    // Dados do Tomador dos Serviços
-		    'borrower' => Array(
-		      // CNPJ ou CPF (opcional para tomadores no exterior)
-		      'federalTaxNumber' => 191,
-		      // Nome da pessoa física ou Razão Social da Empresa
-		      'name' => 'BANCO ÍTAU',
-		      // Email para onde deverá ser enviado a nota fiscal
-		      'email' => 'espellcaste@gmail.com',
-		      // Endereço do tomador
-		      'address' => Array(
-		        // Código do pais com três letras
-		        'country' => 'BRA',
-		        // CEP do endereço (opcional para tomadores no exterior)
-		        'postalCode' => '70073901',
-		        // Logradouro
-		        'street' => 'Outros Quadra 1 Bloco G Lote 32',
-		        // Número (opcional)
-		        'number' => 'S/N',
-		        // Complemento (opcional)
-		        'additionalInformation' => 'QUADRA 01 BLOCO G',
-		        // Bairro
-		        'district' => 'Asa Sul',
-		        // Cidade é opcional para tomadores no exterior
-		        'city' => Array(
-		            // Código do IBGE para a Cidade
-		            'code' => '5300108',
-		            // Nome da Cidade
-		            'name' => 'Brasilia'
-		        ),
-		        // Sigla do estado (opcional para tomadores no exterior)
-		        'state' => 'DF'
-		      )
-		    )
-		  )
-		);
-	}
-
-	public function emitirNFe( $order_ids = array() ) {
+        Nfe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
 		
 			$data = self::order_data( $order_id );
-            $webmaniabr = new NFe( WC_NFe()->settings );
 
-            $response = $webmaniabr->emissaoNotaFiscal( $data );
+            $response = Nfe_ServiceInvoice::create( 
+                $company_id,
+                $data 
+            );
+            
+            // $webmaniabr = new NFe( WC_NFe()->settings );
+            // $response = $webmaniabr->emissaoNotaFiscal( $data );
            
-            if ( isset($response->error ) || $response->status == 'reprovado' ) {
+            if ( isset( $response->error ) || $response->status == 'reprovado' ) {
                 
                 $mensagem = 'Erro ao emitir a NF-e do Pedido #'.$order_id.':';
                 
@@ -143,7 +93,7 @@ class NFe_Woo {
                 
                 $mensagem .= '</ul>';
                 
-                WC_NFe()->add_error( $mensagem );
+                // WC_NFe()->add_error( $mensagem );
                 
             } else {
                 
@@ -154,15 +104,15 @@ class NFe_Woo {
                 
                 $nfe[] = array(
 					'status' 	=> (string) $response->status,
-					'api_key' 	=> $response->chave,
-					'n_recibo' 	=> (int) $response->recibo,
+					'api_key' 	=> $response->key,
+					'n_invoice' => (int) $response->invioce,
 					'n_nfe' 	=> (int) $response->nfe,
 					'data' 		=> date_i18n('d/m/Y'),
 				);
 				
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
                 
-                WC_NFe()->add_success( 'NF-e emitida com sucesso do Pedido #' . $order_id );
+                // WC_NFe()->add_success( 'NF-e emitida com sucesso do Pedido #' . $order_id );
             }
 		}
 	}
