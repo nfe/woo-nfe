@@ -13,14 +13,7 @@
 defined( 'ABSPATH' ) || exit;
 
 class WC_NFe_Integration extends WC_Integration {
-
-	/**
-	 * NFe.io API URL
-	 *
-	 * @var string
-	 */
-	protected $api_url = '';
-
+	
 	/**
 	 * Init and hook in the integration.
 	 */
@@ -34,12 +27,12 @@ class WC_NFe_Integration extends WC_Integration {
 		$this->init_settings();
 
 		// Define user set variables.
-		$this->api_key          = $this->get_option( 'api_key' );
-		$this->debug            = $this->get_option( 'debug' );
-		$this->nfe_enable       = $this->get_option( 'nfe_enable' );
+		$this->api_key     = $this->get_option( 'api_key' );
+		$this->debug       = $this->get_option( 'debug' );
+		$this->nfe_enable  = $this->get_option( 'nfe_enable' );
 
 		// Debug.
-		if ( 'yes' === $this->debug ) {
+		if ( 'yes' == $this->debug ) {
 			$this->log = new WC_Logger();
 		}
 
@@ -80,7 +73,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'Company ID', 'woocommerce-nfe' ),
 				'default'           => '',
-				'description'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
+				'desc_tip'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
 			),
 			'where_note' => array(
 				'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
@@ -93,7 +86,14 @@ class WC_NFe_Integration extends WC_Integration {
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
-				'description'       => __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
+				'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
+			),
+			'nfe_prefix' => array(
+				'title'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
+				'type'              => 'text',
+				'label'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
+				'default'           => 'NFe-',
+				'desc_tip'       	=> __( 'Used in the webhook', 'woocommerce-nfe' ),
 			),
 			'issue_past_notes' => array(
 				'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
@@ -149,15 +149,11 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function display_errors() {
-
-		// var_dump(NFe_Woo::issue_invoice());
-
 		if ( 'yes' == $this->nfe_enable && empty( $this->api_key ) ) {
 			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
 		sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
 			'<a href="' . $this->admin_url() . '">' .
 			 __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) . '</p></div>';
-			
 		}
 	}
 }
