@@ -19,7 +19,7 @@ class NFe_Woo {
     /**
      * Construct
      */
-    private function __construct( array $vars ) {
+    private function __construct() {
     	// Bail if not enabled
 		if ( nfe_get_field('nfe_enable') == 'no' ) {
 			return;
@@ -105,10 +105,12 @@ class NFe_Woo {
 		}
 	}
 
+	/**
+     * Ordering data to send to NFe
+     */
 	public function order_data( $post_id ) {
 		global $wpdb;
         
-        $WooCommerceNFe_Format = new WooCommerceNFe_Format;
 		$order = new WC_Order( $post_id );
  
         // Order
@@ -136,7 +138,7 @@ class NFe_Woo {
         
         if ( $tipo_pessoa == 1 ) { 
             $data['cliente'] = array(
-                'cpf' => $WooCommerceNFe_Format->cpf(get_post_meta($post_id, '_billing_cpf', true)), // (pessoa fisica) Número do CPF
+                'cpf' => $this->cpf(get_post_meta($post_id, '_billing_cpf', true)), // (pessoa fisica) Número do CPF
                 'nome_completo' => get_post_meta($post_id, '_billing_first_name', true).' '.get_post_meta($post_id, '_billing_last_name', true), // (pessoa fisica) Nome completo
                 'endereco' => get_post_meta($post_id, '_shipping_address_1', true), // Endereço de entrega dos produtos
                 'complemento' => get_post_meta($post_id, '_shipping_address_2', true), // Complemento do endereço de entrega
@@ -144,7 +146,7 @@ class NFe_Woo {
                 'bairro' => get_post_meta($post_id, '_shipping_neighborhood', true), // Bairro do endereço de entrega
                 'cidade' => get_post_meta($post_id, '_shipping_city', true), // Cidade do endereço de entrega
                 'uf' => get_post_meta($post_id, '_shipping_state', true), // Estado do endereço de entrega
-                'cep' => $WooCommerceNFe_Format->cep(get_post_meta($post_id, '_shipping_postcode', true)), // CEP do endereço de entrega
+                'cep' => $this->cep(get_post_meta($post_id, '_shipping_postcode', true)), // CEP do endereço de entrega
                 'telefone' => get_user_meta($post_id, 'billing_phone', true), // Telefone do cliente
                 'email' => get_post_meta($post_id, '_billing_email', true) // E-mail do cliente para envio da NF-e
             );
@@ -152,7 +154,7 @@ class NFe_Woo {
         
         if ( $tipo_pessoa == 2 ) {
             $data['cliente'] = array(
-                'cnpj' => $WooCommerceNFe_Format->cnpj(get_post_meta($post_id, '_billing_cnpj', true)), // (pessoa jurídica) Número do CNPJ
+                'cnpj' => $this->cnpj(get_post_meta($post_id, '_billing_cnpj', true)), // (pessoa jurídica) Número do CNPJ
                 'razao_social' => get_post_meta($post_id, '_billing_company', true), // (pessoa jurídica) Razão Social
                 'ie' => get_post_meta($post_id, '_billing_ie', true), // (pessoa jurídica) Número da Inscrição Estadual
                 'endereco' => get_post_meta($post_id, '_shipping_address_1', true), // Endereço de entrega dos produtos
@@ -161,7 +163,7 @@ class NFe_Woo {
                 'bairro' => get_post_meta($post_id, '_shipping_neighborhood', true), // Bairro do endereço de entrega
                 'cidade' => get_post_meta($post_id, '_shipping_city', true), // Cidade do endereço de entrega
                 'uf' => get_post_meta($post_id, '_shipping_state', true), // Estado do endereço de entrega
-                'cep' => $WooCommerceNFe_Format->cep(get_post_meta($post_id, '_shipping_postcode', true)), // CEP do endereço de entrega
+                'cep' => $this->cep(get_post_meta($post_id, '_shipping_postcode', true)), // CEP do endereço de entrega
                 'telefone' => get_user_meta($post_id, 'billing_phone', true), // Telefone do cliente
                 'email' => get_post_meta($post_id, '_billing_email', true) // E-mail do cliente para envio da NF-e
             );
@@ -225,5 +227,59 @@ class NFe_Woo {
 		}
         
 		return $data;	
+	}
+
+	public function cpf( $cpf ) {
+		if ( ! $cpf ) {
+			return;
+		}
+
+		$cpf = $this->clear( $cpf );
+		$cpf = $this->mask($cpf,'###.###.###-##');
+
+		return $cpf;	
+	}
+
+	public function cnpj( $cnpj ) {
+		if ( ! $cpf ) {
+			return;
+		}
+
+		$cnpj = $this->clear( $cnpj );
+		$cnpj = $this->mask($cnpj,'##.###.###/####-##');
+		
+		return $cnpj;	
+	}
+
+	public function cep( $cep ) {
+		if ( ! $cep ) {
+			return;
+		}
+
+		$cep = $thisclear( $cep );
+		$cep = $thismask($cep,'#####-###');
+
+		return $cep;	
+	}
+
+	public function clear( $string ) {
+        $string = str_replace( array(',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'), '', $string );
+
+        return $string;
+	}
+    
+	public function mask( $val, $mask ) {
+	   $maskared = '';
+	   $k = 0;
+	   for($i = 0; $i<=strlen($mask)-1; $i++){
+           if($mask[$i] == '#'){
+               if(isset($val[$k]))
+                   $maskared .= $val[$k++];
+           }
+           else {
+               if(isset($mask[$i])) $maskared .= $mask[$i];
+           }
+	   }
+	   return $maskared;
 	}
 }
