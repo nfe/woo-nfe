@@ -102,17 +102,17 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          * @since 1.0.0
          */
         private function includes() {
-            
             // NFe.io API
             require( $this->includes_dir . 'client-php/lib/Nfe.php'     );
 
             // Admin
             require( $this->admin . 'class-wc-nfe-integration.php'      );
             require( $this->admin . 'class-wc-admin.php'                );
+            require( $this->admin . 'class-wc-nfe.php'                  );
+            require( $this->includes_dir . 'nfe-functions.php'          );
 
             // Front-end
             require( $this->frontend . 'class-wc-frontend.php'          );
-            require( $this->includes_dir . 'nfe-functions.php'          );
         }
 
         /**
@@ -122,6 +122,12 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          */
         private function setup_hooks() {
             add_action( 'init', array( $this, 'load_textdomain' ) );
+
+            // Check for SOAP.
+            if ( ! class_exists( 'SoapClient' ) ) {
+                add_action( 'admin_notices', array( $this, 'soap_missing_notice' ) );
+                return;
+            }
 
             // Checks if WooCommerce is installed.
             if ( ! class_exists( 'WooCommerce' ) ) {
@@ -154,6 +160,15 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
         }
 
         /**
+        * SOAPClient missing notice.
+        *
+        * @return string
+        */ 
+        public function soap_missing_notice() {
+            include $this->admin .  'views/html-notice-missing-soap-client.php';
+        }
+
+        /**
          * WooCommerce missing notice.
          *
          * @since 1.0.0
@@ -161,7 +176,7 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          * @return string
          */
         public function woocommerce_missing_notice() {
-            include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce.php';
+            include $this->admin . 'views/html-notice-missing-woocommerce.php';
         }
 
         /**
@@ -172,7 +187,7 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
          * @return string
          */
         public function extra_checkout_fields_missing_notice() {
-            include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce-checkout-fields.php';
+            include $this->admin . 'views/html-notice-missing-woocommerce-checkout-fields.php';
         }
 
         /**
