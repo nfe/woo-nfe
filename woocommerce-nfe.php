@@ -27,14 +27,14 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'NFe_WooCommerce' ) ) :
+if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 
     /**
     * WooCommerce NFe.io Main Class
     *
     * @since 1.0.0
     */
-    class NFe_WooCommerce {
+    class WooCommerce_NFe {
 
         /**
          * Plugin version.
@@ -57,7 +57,7 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 
             // Only run these methods if they haven't been run previously
             if ( null === $instance ) {
-                $instance = new NFe_WooCommerce;
+                $instance = new WooCommerce_NFe;
                 $instance->setup_globals();
                 $instance->includes();
                 $instance->setup_hooks();
@@ -68,11 +68,11 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
         }
 
         /**
-         * A dummy constructor to prevent NFe_WooCommerce from being loaded more than once.
+         * A dummy constructor to prevent WooCommerce_NFe from being loaded more than once.
          *
          * @since 1.0.0
          * 
-         * @see NFe_WooCommerce::instance()
+         * @see WooCommerce_NFe::instance()
          */
         private function __construct() { /* Do nothing here */ }
 
@@ -229,15 +229,15 @@ if ( ! class_exists( 'NFe_WooCommerce' ) ) :
 endif;
 
 /**
- * The main function responsible for returning the one true NFe_WooCommerce Instance.
+ * The main function responsible for returning the one true WooCommerce_NFe Instance.
  *
  * @since 1.0.0
  *
- * @return NFe_WooCommerce The one true NFe_WooCommerce Instance.
+ * @return WooCommerce_NFe The one true WooCommerce_NFe Instance.
  */
-function NFe_WooCommerce() {
-    return NFe_WooCommerce::instance();
+function WooCommerce_NFe() {
+    return WooCommerce_NFe::instance();
 }
-add_action( 'plugins_loaded', 'NFe_WooCommerce');
+add_action( 'plugins_loaded', 'WooCommerce_NFe');
 
 // That's it! =)

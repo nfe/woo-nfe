@@ -4,7 +4,7 @@
  * WooCommerce NFe.io Custom Functions
  *
  * @author   Renato Alves
- * @package  NFe_WooCommerce
+ * @package  WooCommerce_NFe/Functions
  * @version  1.0.0
  */
 

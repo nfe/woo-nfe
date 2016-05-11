@@ -5,7 +5,7 @@
  *
  * @author   Renato Alves
  * @category Admin
- * @package  NFe_WooCommerce/Classes/WC_NFe_Admin
+ * @package  WooCommerce_NFe/Classes/WC_NFe_Admin
  * @version  1.0.0
  */
 
@@ -322,13 +322,13 @@ class WC_NFe_Admin {
             wp_enqueue_script( 'nfe-woo-metabox', 
                 plugins_url( 'woocommerce-nfe/assets/js/admin' ) . $suffix . '.js',
                 array( 'jquery' ),
-                NFe_WooCommerce::VERSION, true
+                WooCommerce_NFe::VERSION, true
             );
         }
 
         wp_register_style( 'nfe-woo-admin', 
             plugins_url( 'woocommerce-nfe/assets/css/nfe-admin' ) . $suffix . '.css', 
-            false, NFe_WooCommerce::VERSION 
+            false, WooCommerce_NFe::VERSION 
         );
 
         wp_enqueue_style( 'nfe-woo-admin' );
