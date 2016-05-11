@@ -119,3 +119,5 @@ class WC_NFe_FrontEnd {
 }
 
 $run = new WC_NFe_FrontEnd();
+
+// That's it! =)

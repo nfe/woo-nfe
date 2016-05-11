@@ -22,16 +22,19 @@ class WC_NFe_Admin {
 	 */
 	public function __construct() {
         // Filters
-        add_filter( 'manage_edit-shop_order_columns',        array( $this, 'nfe_order_status_column_header' ), 20 );
+        add_filter( 'manage_edit-shop_order_columns',        array( $this, 'order_status_column_header' ), 20 );
 
         // Actions
 		add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
 		add_action( 'save_post',                             array( $this, 'save' ) );
-        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'nfe_order_status_column_content' ) );
-        add_action( 'woocommerce_order_actions',             array( $this, 'order_meta_box_actions' ) );
-        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_order_meta_box_actions' ) );
+        
+        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ) );
+        add_action( 'woocommerce_order_actions',             array( $this, 'nfe_order_actions' ), 10, 1 );
+        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_nfe_order_actions' ), 10, 1 );
+        
         add_action( 'admin_footer-edit.php',                 array( $this, 'order_bulk_actions' ) );
         add_action( 'load-edit.php',                         array( $this, 'process_order_bulk_actions' ) );
+
         add_action( 'admin_enqueue_scripts',                 array( $this, 'enqueue_scripts' ) );
 	}
 
@@ -169,9 +172,10 @@ class WC_NFe_Admin {
     /**
      * NFe Column Header on Order Status
      * 
-     * @return array
+     * @param  array $columns Array of Columns
+     * @return array           NFe Custom Column
      */
-    public function nfe_order_status_column_header( $columns ) {
+    public function order_status_column_header( $columns ) {
         $new_columns = array();
 
         foreach ( $columns as $column_name => $column_info ) {
@@ -187,10 +191,10 @@ class WC_NFe_Admin {
 
     /**
      * NFe Column Content on Order Status
-     * 
+     *
      * @return string
      */
-    public function nfe_order_status_column_content( $column ) {
+    public function order_status_column_content( $column ) {
         global $post;
 
         if ( 'sales-receipt' === $column ) {
@@ -218,25 +222,45 @@ class WC_NFe_Admin {
     }
 
     /**
-     * Adds the Meta Box on the Order Page
+     * Adds the NFe Action on the Order Page
      * 
      * @return array
      */
-    public function order_meta_box_actions( $actions ) {
+    public function nfe_order_actions( $actions ) {
         $actions['wc_nfe_issue'] = __( 'Issue NFe', 'woocommerce-nfe' );
 
         return $actions;
     }
 
     /**
-     * Order Bulk Actions JavaScript
+     * Issue the NFe on Box Actions
+     * 
+     * @param  object $post Current post
+     * @return bool True|False
+     */
+    public function process_nfe_order_actions( $post ) {
+        $order_id       = $post->ID;
+        $post_status    = $post->post_status;
+
+        if ( $post_status === 'trash' || $post_status === 'cancelled') {
+            return false;
+        }
+        
+        NFe_Woo::issue_invoice( $order_id );
+    }
+
+    /**
+     * Order Bulk Actions - JavaScript
+     *
+     * @todo Maybe use get_post_type(), check var_dump( $post_type ) if has proper output
+     * @todo The same for $post_status
      * 
      * @return string
      */
     public function order_bulk_actions() {
         global $post_type, $post_status;
 
-        if ( $post_type === 'shop_order' ) {
+        if ( $post_type == 'shop_order' ) {
 
             // Bail if NFe is disabled
             if ( nfe_get_field('nfe_enable') === 'no' ) {
@@ -251,7 +275,7 @@ class WC_NFe_Admin {
                 if ( typeof jq == 'undefined' ) { var jq = jQuery; }
 
                 jq( function() {
-                    var IssueNFe = jq('<option>').val('wc_nfe_issue').text('<?php _e( 'Issue NFe', 'woocommerce-nfe' ); ?>');
+                    var IssueNFe = jq('<option>').val('wc_nfe_issue').text('<?php esc_html_e( 'Issue NFe', 'woocommerce-nfe' ); ?>');
                     jq('select[name^="action"]' ).append( IssueNFe );
                 });
             </script>
@@ -267,13 +291,13 @@ class WC_NFe_Admin {
     public function process_order_bulk_actions() {
         global $typenow;
 
-        if ( 'shop_order' === $typenow ) {
+        if ( 'shop_order' == $typenow ) {
             $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
             $action        = $wp_list_table->current_action();
 
-            if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
-                return false;
-            }
+            // if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
+               // return false;
+            // }
 
             if ( isset( $_REQUEST['post'] ) ) {
                 $order_ids = array_map( 'absint', $_REQUEST['post'] );
@@ -283,33 +307,14 @@ class WC_NFe_Admin {
                 return false;
             }
             
-            if ( $action === 'wc_nfe_issue') {
-                // issueNFe( $order_ids );
-            }
+            // if ( $action === 'wc_nfe_issue') {}
+            
+            NFe_Woo::issue_invoice( $order_ids );
         }
     }
-    
+
     /**
-     * Issue the NFe
-     * 
-     * @param  object $post Current post
-     * @return bool True|False
-     */
-    function process_order_meta_box_actions( $post ) {
-        $order_id       = $post->id;
-        $post_status    = $post->post_status;
-
-        if ( $post_status === 'trash' || $post_status === 'cancelled') {
-            return false;
-        }
-        
-        // issueNFe( array( $order_id ) );
-    }
-
-     /**
      * Adds the admin script
-     *
-     * @since 1.0.0
      */
     public function enqueue_scripts() {
         // Get admin screen id
