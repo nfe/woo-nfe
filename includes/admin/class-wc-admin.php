@@ -27,14 +27,11 @@ class WC_NFe_Admin {
         // Actions
 		add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
 		add_action( 'save_post',                             array( $this, 'save' ) );
-        
         add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ) );
         add_action( 'woocommerce_order_actions',             array( $this, 'nfe_order_actions' ), 10, 1 );
         add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_nfe_order_actions' ), 10, 1 );
-        
         add_action( 'admin_footer-edit.php',                 array( $this, 'order_bulk_actions' ) );
         add_action( 'load-edit.php',                         array( $this, 'process_order_bulk_actions' ) );
-
         add_action( 'admin_enqueue_scripts',                 array( $this, 'enqueue_scripts' ) );
 	}
 
@@ -173,7 +170,7 @@ class WC_NFe_Admin {
      * NFe Column Header on Order Status
      * 
      * @param  array $columns Array of Columns
-     * @return array           NFe Custom Column
+     * @return array          NFe Custom Column
      */
     public function order_status_column_header( $columns ) {
         $new_columns = array();
@@ -202,7 +199,7 @@ class WC_NFe_Admin {
             $order = new WC_Order( $post->ID );
 
             if ( $order->has_status('completed') ) {
-                if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
+                if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
                     echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
                 }
 
@@ -239,14 +236,13 @@ class WC_NFe_Admin {
      * @return bool True|False
      */
     public function process_nfe_order_actions( $post ) {
-        $order_id       = $post->ID;
-        $post_status    = $post->post_status;
+        $post_status = $post->post_status;
 
-        if ( $post_status === 'trash' || $post_status === 'cancelled') {
+        if ( $post_status === 'wc-trash' || $post_status === 'wc-cancelled') {
             return false;
         }
         
-        NFe_Woo::issue_invoice( $order_id );
+        NFe_Woo()->issue_invoice( array( $post->ID ) );
     }
 
     /**
@@ -267,8 +263,8 @@ class WC_NFe_Admin {
                 return false;
             }
             
-            // Bail if post status is true for the following ones
-            if ( $post_status == 'trash' || $post_status == 'cancelled' || $post_status == 'pending') {
+            // Bail if post status is true for the following post_status
+            if ( $post_status == 'wc-trash' || $post_status == 'wc-cancelled' || $post_status == 'wc-pending') {
                 return false;
             } ?>
              <script type="text/javascript">
@@ -289,15 +285,15 @@ class WC_NFe_Admin {
      * @return bool True|False
      */
     public function process_order_bulk_actions() {
-        global $typenow;
+        global $post, $typenow;
 
         if ( 'shop_order' == $typenow ) {
             $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
             $action        = $wp_list_table->current_action();
 
-            // if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
-               // return false;
-            // }
+            if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
+               return false;
+            }
 
             if ( isset( $_REQUEST['post'] ) ) {
                 $order_ids = array_map( 'absint', $_REQUEST['post'] );
@@ -307,9 +303,9 @@ class WC_NFe_Admin {
                 return false;
             }
             
-            // if ( $action === 'wc_nfe_issue') {}
-            
-            NFe_Woo::issue_invoice( $order_ids );
+            if ( $action === 'wc_nfe_issue') {
+                NFe_Woo()->issue_invoice( array( $order_ids ) );
+            }
         }
     }
 
@@ -320,7 +316,6 @@ class WC_NFe_Admin {
         // Get admin screen id
         $screen         = get_current_screen();
         $is_woo_screen  = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
-
         $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
         if ( $is_woo_screen ) {
@@ -340,4 +335,4 @@ class WC_NFe_Admin {
     }
 }
 
-$run = new WC_NFe_Admin();
+$run = new WC_NFe_Admin;

@@ -26,13 +26,8 @@ class WC_NFe_Integration extends WC_Integration {
 		$this->init_form_fields();
 		$this->init_settings();
 
-		// Define user set variables.
-		$this->api_key     = $this->get_option( 'api_key' );
-		$this->debug       = $this->get_option( 'debug' );
-		$this->nfe_enable  = $this->get_option( 'nfe_enable' );
-
 		// Debug.
-		if ( 'yes' == $this->debug ) {
+		if ( nfe_get_field('debug') === 'yes' ) {
 			$this->log = new WC_Logger();
 		}
 
@@ -126,19 +121,19 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return stdClass
 	 */
 	protected function check_api( $key ) {
-		if ( 'yes' === $this->debug ) {
+		if ( nfe_get_field('debug') === 'yes' ) {
 			$this->log->add( $this->id, sprintf( 'Checking "%s" key on NFe.io api...', $key ) );
 		}
 
 		try {
 			// Sth
 		} catch ( Exception $e ) {
-			if ( 'yes' === $this->debug ) {
+			if ( nfe_get_field('debug') === 'yes' ) {
 				$this->log->add( $this->id, sprintf( 'An error occurred while trying to check the key for "%s": %s', $key, $e->getMessage() ) );
 			}
 		}
 
-		if ( 'yes' == $this->debug ) {
+		if ( nfe_get_field('debug') === 'yes' ) {
 			$this->log->add( $this->id, sprintf( 'Key for "%s" found successfully: %s', $key ) );
 		}
 	}
@@ -149,7 +144,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function display_errors() {
-		if ( 'yes' == $this->nfe_enable && empty( $this->api_key ) ) {
+		if ( nfe_get_field('nfe_enable') === 'yes' && empty( nfe_get_field('api_key') ) ) {
 			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
 		sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
 			'<a href="' . $this->admin_url() . '">' .

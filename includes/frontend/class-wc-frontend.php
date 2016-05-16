@@ -49,7 +49,8 @@ class WC_NFe_FrontEnd {
 	 * @return string
 	 */
 	public function my_account_nfe_description() {
-		return __( 'The following addresses will be used on the checkout page by default and also when issuing a NFe Sales Receipt.', 'woocommerce-nfe' );
+		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales 
+			receipt.', 'woocommerce-nfe' );
 	}
 
 	/**
@@ -77,22 +78,24 @@ class WC_NFe_FrontEnd {
      * @return string
      */
     public function nfe_column_content( $order ) {   	
-        $nfe = get_post_meta( $order->ID, 'nfe_issued', true );
+        $nfe = get_post_meta( $order->id, 'nfe_issued', true );
 
-     	if ( $order->has_status('completed') && nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('-1 year') ) {
-            echo '<div class="nfe_woo">' . __( 'Issue Time Expired', 'woocoomerce-nfe' ) . '</div>';
+        if ( $order->has_status('completed') ) {
+            if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
+                echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
+            } 
+
+            if ( nfe_get_field('nfe_enable') === 'yes' && $nfe == false ) {
+                echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocommerce-nfe' ) . '</a>';
+            } 
         }
 
-        if ( nfe_get_field('nfe_enable') === 'yes' && $order->has_status('completed') && $nfe == false ) {
-			echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocoomerce-nfe' ) . '</a>';
-        } 
-
         if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') === 'no' ) {
-         	echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocoomerce-nfe' ) . '</a>';
+            echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocommerce-nfe' ) . '</a>';
         } 
 
         if ( $nfe == true ) {
-            echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocoomerce-nfe' ) . '</a>';
+            echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocommerce-nfe' ) . '</a>';
         }
     }
 
