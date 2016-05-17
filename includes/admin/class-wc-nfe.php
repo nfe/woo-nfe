@@ -79,16 +79,37 @@ class NFe_Woo {
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ), // Complemento
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ), // Bairro
 			        'country' 				=> get_post_meta( $order, '_billing_country', true ), // País (BRA)
-			        'state' 				=> get_post_meta( $order, '_billing_state', true ), // Sigla do Estado
         			'city' => array(
-            			'code' => '', // Código do IBGE para a Cidade // 5300108
+            			'code' => $this->ibge_code( $order), // Código do IBGE para a Cidade
             			'name' => get_post_meta( $order, '_billing_city', true ), // Nome da Cidade
-        			)
+        			),
+        			'state' 				=> get_post_meta( $order, '_billing_state', true ), // Sigla do Estado
         		)
             )
         );
         
 		return $data;	
+	}
+
+	/**
+	 * Fetches the IBG Code
+	 * 
+	 * @param  int $order_id Order ID
+	 * @return string
+	 */
+	public function ibge_code( $order_id ) {
+		if ( empty( $order_id ) ) {
+			return;
+		}
+
+		$key = nfe_get_field('api_key');
+		$cep = get_post_meta( $order_id, '_billing_postcode', true );
+
+		$url 		= 'http://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
+		$response 	= wp_remote_get( esc_url_raw( $url ) );
+		$address 	= json_decode( wp_remote_retrieve_body( $response ), true );
+
+		return $address['city']['code'];
 	}
 
 	/**
