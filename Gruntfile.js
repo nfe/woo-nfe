@@ -6,12 +6,12 @@ module.exports = function(grunt) {
             target: {
                 options: {
                     domainPath: '/languages/',
-                    mainFile: 'nfe-wordpress-woocommerce.php',
-                    potFilename: 'nfe-wordpress-woocommerce.pot',
+                    mainFile: 'woocommerce-nfe.php',
+                    potFilename: 'woocommerce-nfe.pot',
                     type: 'wp-plugin',
                     exclude: [],
                     processPot: function( pot, options ) {
-                        pot.headers['report-msgid-bugs-to'] = 'https://github.com/nfe/nfe-wordpress-woocommerce';
+                        pot.headers['report-msgid-bugs-to'] = 'https://github.com/nfe/woocommerce-nfe';
                         pot.headers['plural-forms'] = 'nplurals=2; plural=n != 1;';
                         pot.headers['last-translator'] = 'Renato Alves <contato@ralv.es \n';
                         pot.headers['language-team'] = 'Renato Alves <contato@ralv.es \n';

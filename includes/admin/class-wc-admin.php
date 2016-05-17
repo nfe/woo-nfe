@@ -179,7 +179,7 @@ class WC_NFe_Admin {
             $new_columns[ $column_name ] = $column_info;
 
             if ( 'order_actions' === $column_name ) {
-                $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
+                $new_columns['sales_receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
             }
         }
 
@@ -187,16 +187,18 @@ class WC_NFe_Admin {
     }
 
     /**
-     * NFe Column Content on Order Status
+     * Column Content on Order Status
      *
      * @return string
      */
     public function order_status_column_content( $column ) {
         global $post;
 
-        if ( 'sales-receipt' === $column ) {
+        if ( 'sales_receipt' === $column ) {
             $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
+
+            // var_dump( $nfe );
 
             if ( $order->has_status('completed') ) {
                 if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
@@ -236,9 +238,7 @@ class WC_NFe_Admin {
      * @return bool True|False
      */
     public function process_nfe_order_actions( $post ) {
-        $post_status = $post->post_status;
-
-        if ( $post_status === 'wc-trash' || $post_status === 'wc-cancelled') {
+        if ( $post->post_status === 'wc-trash' || $post->post_status === 'wc-cancelled' ) {
             return false;
         }
         
@@ -256,7 +256,7 @@ class WC_NFe_Admin {
     public function order_bulk_actions() {
         global $post_type, $post_status;
 
-        if ( $post_type == 'shop_order' ) {
+        if ( 'shop_order' === get_post_type() ) {
 
             // Bail if NFe is disabled
             if ( nfe_get_field('nfe_enable') === 'no' ) {
@@ -287,7 +287,7 @@ class WC_NFe_Admin {
     public function process_order_bulk_actions() {
         global $post, $typenow;
 
-        if ( 'shop_order' == $typenow ) {
+        if ( 'shop_order' === $typenow ) {
             $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
             $action        = $wp_list_table->current_action();
 

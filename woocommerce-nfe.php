@@ -136,10 +136,10 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
             }
 
             // Checks if WooCommerce Extra Checkout Fields for Brazil is installed.
-            // if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-               //  add_action( 'admin_notices', array( $this, 'extra_checkout_fields_missing_notice' ) );
-                // return;
-            //}
+            if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+                add_action( 'admin_notices', array( $this, 'extra_checkout_fields_missing_notice' ) );
+               return;
+            }
 
             // Filters
             add_filter( 'woocommerce_integrations',                array( $this, 'add_nfe_integration' ) );
@@ -187,7 +187,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          * @return string
          */
         public function extra_checkout_fields_missing_notice() {
-            include $this->admin . 'views/html-notice-missing-woocommerce-checkout-fields.php';
+            include $this->admin . 'views/html-notice-missing-woocommerce-extra-checkout-fields.php';
         }
 
         /**
@@ -199,8 +199,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          * @return array
          */
         public function plugin_action_links( $links ) {
-            $plugin_links = array();
+            $plugin_links   = array();
             $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>';
+
             return array_merge( $plugin_links, $links );
         }
 

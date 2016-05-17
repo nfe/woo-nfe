@@ -18,6 +18,9 @@ class NFe_Woo {
     
     protected static $_instance = NULL;
     
+    /**
+     * Nfe_Woo Instance
+     */
     public static function instance() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
@@ -47,9 +50,10 @@ class NFe_Woo {
                 $company_id,
                 $data 
             );
-		}
 
-		var_dump($invoice);
+
+            // if ( $invoice
+		}
 
 		return $invoice;
 	}
@@ -85,7 +89,7 @@ class NFe_Woo {
             )
         );
         
-		return (array) $data;	
+		return $data;	
 	}
 
 	/**

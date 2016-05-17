@@ -1,0 +1,276 @@
+# Copyright (C) 2016 NFe.io
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce NFe 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe\n"
+"POT-Creation-Date: 2016-05-17 11:06:19+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Renato Alves <contato@ralv.es\n"
+"Language-Team: Renato Alves <contato@ralv.es\n"
+"X-Generator: grunt-wp-i18n 0.5.4\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: \n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: "
+"__;_e;_x;esc_html_e;esc_html__;esc_attr_e;esc_attr__;_ex:1,2c;_nx:4c,1,2;_"
+"nx_noop:4c,1,2;_x:1,2c;_n:1,2;_n_noop:1,2;__ngettext_noop:1,2;_c,_nc:4c,1,2;"
+"\n"
+"X-Textdomain-Support: yes\n"
+
+#: includes/admin/class-wc-admin.php:62
+msgid "Activity Name"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:63
+msgid "Code"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:81 includes/admin/class-wc-admin.php:91
+#: includes/admin/class-wc-admin.php:100
+msgid "Remove"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:107
+msgid "Add Another"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:182
+#: includes/frontend/class-wc-frontend.php:68
+msgid "Sales Receipt"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:205
+#: includes/frontend/class-wc-frontend.php:85
+msgid "NFe Issue Time Expired"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:209 includes/admin/class-wc-admin.php:229
+#: includes/admin/class-wc-admin.php:274
+#: includes/frontend/class-wc-frontend.php:89
+msgid "Issue NFe"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:214
+#: includes/frontend/class-wc-frontend.php:94
+msgid "Enable NFe"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:218
+#: includes/frontend/class-wc-frontend.php:98
+msgid "Download NFe"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:22
+msgid "NFe Integration"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:23
+msgid "This is the NFe.io integration/settings page."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:54
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:56
+msgid "Enable NFe.io"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:60
+#: includes/admin/class-wc-nfe-integration.php:62
+msgid "API Key"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:64
+msgid "Enter your API Key. - %s"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:64
+msgid "NFe.io - Account -> Access Keys"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:67
+#: includes/admin/class-wc-nfe-integration.php:69
+msgid "Company ID"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:71
+msgid "Enter your company ID. You can find this in your NFe.io account."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:74
+#: includes/admin/class-wc-nfe-integration.php:76
+msgid "NFe.io Filling"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:79
+msgid "After Checkout"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:80
+msgid "Manual (Requires admin to issue)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:84
+msgid "Option for user to fill the NFe.io information."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:87
+#: includes/admin/class-wc-nfe-integration.php:89
+msgid "NFe Prefix"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:91
+msgid "Used in the webhook"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:94
+msgid "Enable Retroactive Issue"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:96
+msgid "Enable to issue NFe.io in past products"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:98
+msgid ""
+"Enabling this allows users to issue nfe.io notes on bought products in the "
+"past."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:101
+msgid "Enable Safe Copy"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:103
+msgid "Enable safe copy"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:105
+msgid "When enabled, a copy of every note issued is sent to the blog admin email."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:108
+msgid "Debug Log"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:110
+msgid "Enable logging"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:112
+msgid "Log events such as API requests, you can check this log in %s."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:112
+msgid "System Status &gt; Logs"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:148
+msgid "NFe.io WooCommerce"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:149
+msgid "You should inform your API Key and Company ID. %s"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:151
+msgid "Click here to configure!"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce NFe"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-soap-client.php:15
+msgid "needs %s to works!"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-soap-client.php:15
+msgid "SOAP module"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:24
+#: includes/admin/views/html-notice-missing-woocommerce.php:24
+msgid "WooCommerce Nfe.io"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:24
+msgid ""
+"depends on the last version of WooCommerce Extra Checkout Fields for Brazil "
+"to work!"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:27
+msgid "Active WooCommerce Extra Checkout Fields for Brazil"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:36
+msgid "Install WooCommerce Extra Checkout Fields for Brazil"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:24
+msgid "depends on the last version of WooCommerce to work!"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:27
+msgid "Active WooCommerce"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:36
+msgid "Install WooCommerce"
+msgstr ""
+
+#: includes/frontend/class-wc-frontend.php:42
+msgid ""
+"The following addresses will <strong>also</strong> be used when issuing a "
+"NFe Sales Receipt."
+msgstr ""
+
+#: includes/frontend/class-wc-frontend.php:52
+msgid ""
+"The following address(es) will be used on the checkout page by default and "
+"also when issuing a NFe sales \r\n"
+"\t\t\treceipt."
+msgstr ""
+
+#: templates/emails/nfe-completed.php:2
+msgid "Issue the Nfe."
+msgstr ""
+
+#: templates/emails/nfe-completed.php:4
+msgid ""
+"This product Sales Receipt wasn't issued because you didn't update the "
+"needed information yet"
+msgstr ""
+
+#: woocommerce-nfe.php:203
+msgid "Settings"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/nfe/woocommerce-nfe"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "WooCommerce extension for the NFe API"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "NFe.io"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://nfe.io"
+msgstr ""
+
+#: includes/admin/class-wc-admin.php:43
+msgctxt "meta box title"
+msgid "NFe.io - Product Fiscal Activities"
+msgstr ""
