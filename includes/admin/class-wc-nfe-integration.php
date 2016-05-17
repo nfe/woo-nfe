@@ -50,27 +50,27 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
-			'nfe_enable' => array(
+			'nfe_enable' 		=> array(
 				'title'             => __( 'Enable/Disable', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
 				'label'             => __( 'Enable NFe.io', 'woocommerce-nfe' ),
-				'default'           => 'no',
+				'default'           => 'yes',
 			),
-			'api_key' => array(
+			'api_key' 			=> array(
 				'title'             => __( 'API Key', 'woocommerce-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'API Key', 'woocommerce-nfe' ),
 				'default'           => '',
 				'description'       => sprintf( __( 'Enter your API Key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'woocommerce-nfe' ) . '</a>' ),
 			),
-			'company_id' => array(
+			'company_id' 		=> array(
 				'title'             => __( 'Company ID', 'woocommerce-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'Company ID', 'woocommerce-nfe' ),
 				'default'           => '',
-				'desc_tip'       => __( 'Enter your company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
+				'desc_tip'       	=> __( 'Enter your Company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
 			),
-			'where_note' => array(
+			'where_note' 		=> array(
 				'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
 				'type'              => 'select',
 				'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
@@ -83,7 +83,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
 			),
-			'nfe_prefix' => array(
+			'nfe_prefix' 		=> array(
 				'title'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
@@ -97,14 +97,33 @@ class WC_NFe_Integration extends WC_Integration {
 				'default'           => 'no',
 				'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
 			),
-			'send_email_copy' => array(
+			'send_email_copy' 	=> array(
 				'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
 				'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
 				'default'           => 'no',
 				'description'       => __( 'When enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
 			),
-			'debug' => array(
+			'nfe_title' 		=> array(
+				'title' 			=> __( 'City Service Code Info', 'woocommerce-nfe' ), 
+				'type' 				=> 'title', 
+				'desc' 				=> __( 'Information when issuing a receipt.', 'woocommerce-nfe' ),
+			),
+			'nfe_cityservicecode' => array(
+				'title'             => __( 'Code', 'woocommerce-nfe' ),
+				'type'              => 'text',
+				'label'             => __( 'Code', 'woocommerce-nfe' ),
+				'default'           => '',
+				'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
+			),
+			'nfe_cityservicecode_desc' => array(
+				'title'             => __( 'Description', 'woocommerce-nfe' ),
+				'type'              => 'text',
+				'label'             => __( 'Description', 'woocommerce-nfe' ),
+				'default'           => '',
+				'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woocommerce-nfe' ),
+			),
+			'debug' 			=> array(
 				'title'             => __( 'Debug Log', 'woocommerce-nfe' ),
 				'type'              => 'checkbox',
 				'label'             => __( 'Enable logging', 'woocommerce-nfe' ),

@@ -39,7 +39,7 @@ class WC_NFe_FrontEnd {
 	 */
 	public function nfe_billing_notice() {
 		if ( nfe_get_field('nfe_enable') === 'yes' ) {
-			echo '<div class="woocommerce-message">' . __( 'The following addresses will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
+			echo '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
 		}
 	}
 

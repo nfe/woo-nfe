@@ -198,8 +198,6 @@ class WC_NFe_Admin {
             $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
 
-            // var_dump( $nfe );
-
             if ( $order->has_status('completed') ) {
                 if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
                     echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';

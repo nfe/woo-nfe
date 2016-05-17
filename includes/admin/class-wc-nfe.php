@@ -50,9 +50,6 @@ class NFe_Woo {
                 $company_id,
                 $data 
             );
-
-
-            // if ( $invoice
 		}
 
 		return $invoice;
@@ -65,10 +62,12 @@ class NFe_Woo {
      * @return array Array with the order information to issue the invoice
      */
 	public function order_info( $order ) {
+		$total = new WC_Order( $order );
+
     	$data = array(
-			'cityServiceCode' 	=> '2690', // Código do serviço de acordo com o a cidade
-    		'description' 		=> 'WooCommerce NFe - TESTE EMISSAO', // Descrição dos serviços prestados
-			'servicesAmount' 	=> '08', // $order->order_total, // Valor total do serviços
+			'cityServiceCode' 	=> $this->city_service_info( 'code' ), // Código do serviço de acordo com o a cidade
+    		'description' 		=> $this->city_service_info( 'desc' ), // Descrição dos serviços prestados
+			'servicesAmount' 	=> $total->order_total, // Valor total do serviços
             'borrower' => array(
       			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ), // (CNPJ/CPF)
       			'name' 						=> $this->check_customer_type( 'customer-name', $order ), // Nome Completo
@@ -93,10 +92,31 @@ class NFe_Woo {
 	}
 
 	/**
+	 * City Service Information (Code and Description)
+	 * 
+	 * @param  string $field The field info being fetched
+	 * @return string
+	 */
+	public function city_service_info( $field = '' ) {
+		if ( empty( $field ) ) { 
+			return;
+		}
+
+		if ( $field == 'code' ) {
+			$output = nfe_get_field('nfe_cityservicecode');
+
+		} elseif ( $field == 'desc' ) {
+			$output = nfe_get_field('nfe_cityservicecode_desc');
+		}
+
+		return $output;
+	}
+
+	/**
 	 * Fetching customer info depending on the person type
 	 * 
 	 * @param  string  $field       Field to fetch info from
-	 * @param  int  $order     	The order ID
+	 * @param  int  $order     		The order ID
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
 	public function check_customer_type( $field = '', $order ) {
