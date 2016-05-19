@@ -89,8 +89,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
             $this->plugin_dir    = plugin_dir_path( $this->file                     );
             $this->plugin_url    = plugin_dir_url( $this->file                      );
             $this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
-            $this->admin         = trailingslashit( $this->includes_dir . 'admin'   );
-            $this->frontend      = trailingslashit( $this->includes_dir . 'frontend');
             $this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
             $this->assets        = trailingslashit( $this->plugin_url . 'assets'    );
             $this->templates     = trailingslashit( $this->plugin_url . 'templates' );
@@ -103,16 +101,16 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          */
         private function includes() {
             // NFe.io API
-            require( $this->includes_dir . 'client-php/Nfe.php'         );
+            require( $this->includes_dir . 'client-php/Nfe.php'  );
 
             // Admin
-            require( $this->admin . 'class-wc-nfe-integration.php'      );
-            require( $this->admin . 'class-wc-admin.php'                );
-            require( $this->admin . 'class-wc-nfe.php'                  );
-            require( $this->includes_dir . 'nfe-functions.php'          );
+            require( $this->includes_dir . 'admin/class-wc-nfe-settings.php'  );
+            require( $this->includes_dir . 'admin/class-wc-admin.php'         );
+            require( $this->includes_dir . 'admin/class-wc-nfe-api.php'       );
+            require( $this->includes_dir . 'nfe-functions.php'                );
 
             // Front-end
-            require( $this->frontend . 'class-wc-frontend.php'          );
+            require( $this->includes_dir . 'frontend/class-wc-frontend.php'   );
         }
 
         /**

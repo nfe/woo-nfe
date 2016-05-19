@@ -134,30 +134,6 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Checks the NFe.io api
-	 *
-	 * @param string $key
-	 * @return stdClass
-	 */
-	protected function check_api( $key ) {
-		if ( nfe_get_field('debug') === 'yes' ) {
-			$this->log->add( $this->id, sprintf( 'Checking "%s" key on NFe.io api...', $key ) );
-		}
-
-		try {
-			// Sth
-		} catch ( Exception $e ) {
-			if ( nfe_get_field('debug') === 'yes' ) {
-				$this->log->add( $this->id, sprintf( 'An error occurred while trying to check the key for "%s": %s', $key, $e->getMessage() ) );
-			}
-		}
-
-		if ( nfe_get_field('debug') === 'yes' ) {
-			$this->log->add( $this->id, sprintf( 'Key for "%s" found successfully: %s', $key ) );
-		}
-	}
-
-	/**
 	 * Displays notifications when the admin has something wrong with the NFe configuration.
 	 *
 	 * @return void

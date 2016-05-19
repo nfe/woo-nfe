@@ -52,6 +52,8 @@ class NFe_Woo {
             );
 		}
 
+		var_dump( $invoice->errors );
+
 		return $invoice;
 	}
 
@@ -65,7 +67,12 @@ class NFe_Woo {
 		$total = new WC_Order( $order );
 
     	$data = array(
+    		// Obrigatório - Serviço municipal atrelado ao serviço federal
 			'cityServiceCode' 	=> $this->city_service_info( 'code' ), // Código do serviço de acordo com o a cidade
+    		
+    		// Optional - Código de nível federal
+    		'federalServiceCode'=> '',
+
     		'description' 		=> $this->city_service_info( 'desc' ), // Descrição dos serviços prestados
 			'servicesAmount' 	=> $total->order_total, // Valor total do serviços
             'borrower' => array(
@@ -87,12 +94,22 @@ class NFe_Woo {
         		)
             )
         );
+
+    	// Foreign users
+        // $address[] array(
+        	// Street Number
+        	// Street
+        	// Neighborhood
+        	// District
+        // );
         
 		return $data;	
 	}
 
 	/**
 	 * Fetches the IBG Code
+	 *
+	 * @todo Add a check for non Brazilian countrie to remove it.
 	 * 
 	 * @param  int $order_id Order ID
 	 * @return string
@@ -145,8 +162,10 @@ class NFe_Woo {
 			return;
 		}
 
+		$result = '';
+
 		// Customer Person Type
-		$person_type = get_post_meta( $order, '_billing_persontype', true );
+		(int) $person_type = get_post_meta( $order, '_billing_persontype', true );
 
 		if ( $field === 'tax-number' ) {
 			// Customer ID Number
