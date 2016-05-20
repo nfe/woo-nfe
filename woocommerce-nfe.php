@@ -90,8 +90,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
             $this->plugin_url    = plugin_dir_url( $this->file                      );
             $this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
             $this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
-            $this->assets        = trailingslashit( $this->plugin_url . 'assets'    );
-            $this->templates     = trailingslashit( $this->plugin_url . 'templates' );
         }
 
         /**
