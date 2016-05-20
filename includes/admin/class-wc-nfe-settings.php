@@ -105,14 +105,13 @@ class WC_NFe_Integration extends WC_Integration {
 				'description'       => __( 'When enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
 			),
 			'nfe_title' 		=> array(
-				'title' 			=> __( 'City Service Code Info', 'woocommerce-nfe' ), 
-				'type' 				=> 'title', 
-				'desc' 				=> __( 'Information when issuing a receipt.', 'woocommerce-nfe' ),
+				'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ), 
+				'type' 				=> 'title',
 			),
 			'nfe_cityservicecode' => array(
-				'title'             => __( 'Code', 'woocommerce-nfe' ),
+				'title'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
 				'type'              => 'text',
-				'label'             => __( 'Code', 'woocommerce-nfe' ),
+				'label'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
 				'default'           => '',
 				'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
 			),

@@ -40,7 +40,7 @@ class WC_NFe_Admin {
 	 */
 	public function add_meta_boxes() {
 		add_meta_box( 'woocommerce-nfe-data', 
-			_x( 'NFe.io - Product Fiscal Activities', 'meta box title', 'woocommerce-nfe' ), 
+			_x( 'NFe.io - Product Fiscal Activity', 'meta box title', 'woocommerce-nfe' ), 
 			array( $this, 'output' ), 
 			'product', 'normal', 'default' );
 	}
@@ -51,7 +51,7 @@ class WC_NFe_Admin {
 	 * @param WP_Post $post Current post object.
 	 */
 	public function output( $post ) {
-        $fiscal_activities = get_post_meta( $post->ID, 'nfe_woo_fiscal_activities', true );
+        $fiscal_activities = get_post_meta( $post->ID, 'nfe_woo_fiscal_activity', true );
 
 	    // Add an nonce field so we can check for it later.
         wp_nonce_field( 'nfe_woocommerce_box_nonce', 'nfe_woocommerce_box_nonce' ); ?>
@@ -59,9 +59,8 @@ class WC_NFe_Admin {
         <table id="nfe-woo-fieldset-one" width="100%">
             <thead>
                 <tr>
-                    <th width="50%"><?php esc_html_e( 'Activity Name', 'woocommerce-nfe' ); ?></th>
-                    <th width="42%"><?php esc_html_e( 'Code', 'woocommerce-nfe' ); ?></th>
-                    <th width="8%"></th>
+                    <th width="50%"><?php esc_html_e( 'CityServiceCode', 'woocommerce-nfe' ); ?></th>
+                    <th width="50%"><?php esc_html_e( 'Description', 'woocommerce-nfe' ); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -76,10 +75,6 @@ class WC_NFe_Admin {
                         <td>
                             <input type="text" class="widefat" name="code[]" value="<?php if ( $activity['code'] !== '') echo esc_attr( $activity['code'] ); ?>" />
                         </td>
-                    
-                        <td>
-                            <a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a>
-                        </td>
                     </tr>
                     <?php }
                 
@@ -88,25 +83,11 @@ class WC_NFe_Admin {
                     <tr>
                         <td><input type="text" class="widefat" name="name[]" /></td>
                         <td><input type="text" class="widefat" name="code[]" value="" /></td>
-                        <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a></td>
                     </tr>
 
                 <?php endif; ?>
-                
-                <!-- empty hidden one for jQuery -->
-                <tr class="empty-row screen-reader-text">
-                    <td><input type="text" class="widefat" name="name[]" /></td>
-                    <td><input type="text" class="widefat" name="code[]" value="" /></td>
-                    <td><a class="button remove-row" href="#"><?php esc_html_e( 'Remove', 'woocommerce-nfe' ); ?></a></td>
-                </tr>
             </tbody>
         </table>
-    
-        <p>
-            <a id="add-row" class="button" href="#">
-                <?php esc_html_e( 'Add Another', 'woocommerce-nfe' ); ?>
-            </a>
-        </p>
         <?php
 	}
 
@@ -140,7 +121,7 @@ class WC_NFe_Admin {
             return $post_id;
         }
 
-        $old = get_post_meta( $post_id, 'nfe_woo_fiscal_activities', true );
+        $old = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
         $new = array();
 
         $names = $_POST['name'];
@@ -160,9 +141,9 @@ class WC_NFe_Admin {
 
         // Update meta fields
         if ( !empty( $new ) && $new !== $old ) {
-            update_post_meta( $post_id, 'nfe_woo_fiscal_activities', $new );
+            update_post_meta( $post_id, 'nfe_woo_fiscal_activity', $new );
         } elseif ( empty($new) && $old ) {
-            delete_post_meta( $post_id, 'nfe_woo_fiscal_activities', $old );
+            delete_post_meta( $post_id, 'nfe_woo_fiscal_activity', $old );
         }
     }
 
@@ -197,10 +178,6 @@ class WC_NFe_Admin {
         if ( 'sales_receipt' === $column ) {
             $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
             $order = new WC_Order( $post->ID );
-
-            $b = NFe_Woo()->order_info( $post->ID );
-            $p = get_post_meta( $post->ID, '_billing_persontype', true );
-            // var_dump( (int) $p );
 
             if ( $order->has_status('completed') ) {
                 if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
@@ -320,20 +297,20 @@ class WC_NFe_Admin {
         $is_woo_screen  = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
         $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-        if ( $is_woo_screen ) {
+        /* if ( $is_woo_screen ) {
             wp_enqueue_script( 'nfe-woo-metabox', 
                 plugins_url( 'woocommerce-nfe/assets/js/admin' ) . $suffix . '.js',
                 array( 'jquery' ),
                 WooCommerce_NFe::VERSION, true
             );
-        }
+        } */
 
-        wp_register_style( 'nfe-woo-admin', 
+        wp_register_style( 'nfe-woo-admin-css', 
             plugins_url( 'woocommerce-nfe/assets/css/nfe-admin' ) . $suffix . '.css', 
             false, WooCommerce_NFe::VERSION 
         );
 
-        wp_enqueue_style( 'nfe-woo-admin' );
+        wp_enqueue_style( 'nfe-woo-admin-css' );
     }
 }
 

@@ -16,6 +16,11 @@ defined( 'ABSPATH' ) || exit;
 */
 class NFe_Woo {
     
+    /**
+     * Instance var
+     * 
+     * @var null
+     */
     protected static $_instance = NULL;
     
     /**
@@ -31,11 +36,16 @@ class NFe_Woo {
 
     /**
      * Construct
+     *
+     * @see $this->instance Class Instance
      */
     private function __construct() {}
     
     /**
      * Issue a NFe Invoice
+     * 
+     * @param  array  $order_ids Orders to issue the NFe
+     * @return string Error|Result
      */
 	public function issue_invoice( $order_ids = array() ) {
         $key        = nfe_get_field('api_key');
@@ -52,8 +62,6 @@ class NFe_Woo {
             );
 		}
 
-		var_dump( $invoice->errors );
-
 		return $invoice;
 	}
 
@@ -66,42 +74,32 @@ class NFe_Woo {
 	public function order_info( $order ) {
 		$total = new WC_Order( $order );
 
-    	$data = array(
+        $data = array(
     		// Obrigatório - Serviço municipal atrelado ao serviço federal
-			'cityServiceCode' 	=> $this->city_service_info( 'code' ), // Código do serviço de acordo com o a cidade
-    		
-    		// Optional - Código de nível federal
-    		'federalServiceCode'=> '',
-
-    		'description' 		=> $this->city_service_info( 'desc' ), // Descrição dos serviços prestados
-			'servicesAmount' 	=> $total->order_total, // Valor total do serviços
+			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), // Código do serviço de acordo com o a cidade
+    		'federalServiceCode'=> '', // Optional - Código de nível federal
+    		'description' 		=> $this->city_service_info( 'desc', $order ),
+			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
-      			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ), // (CNPJ/CPF)
-      			'name' 						=> $this->check_customer_type( 'customer-name', $order ), // Nome Completo
-            	'email' 					=> get_post_meta( $order, '_billing_email', true ), // Email
-            	'address' => array(
-			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ), // CEP
-			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ), // Logradouro
-			        'number' 				=> get_post_meta( $order, '_billing_number', true ), // Número 
+      			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ),
+      			'name' 						=> $this->check_customer_type( 'customer-name', $order ),
+            	'email' 					=> get_post_meta( $order, '_billing_email', true ),
+            	'address' 		=> array(
+			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
+			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
+			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ), // Complemento
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ), // Bairro
 			        'country' 				=> get_post_meta( $order, '_billing_country', true ), // País (BRA)
-        			'city' => array(
-            			'code' => $this->ibge_code( $order), // Código do IBGE para a Cidade
-            			'name' => get_post_meta( $order, '_billing_city', true ), // Nome da Cidade
-        			),
-        			'state' 				=> get_post_meta( $order, '_billing_state', true ), // Sigla do Estado
-        		)
+					'city' => array(
+		    			'code' => $this->ibge_code( $order ),
+		    			'name' => get_post_meta( $order, '_billing_city', true ),
+					),
+					'state' 				=> get_post_meta( $order, '_billing_state', true ),
+				),
+				'type' 			=> $this->check_customer_type( 'type', $order ),
             )
         );
-
-    	// Foreign users
-        // $address[] array(
-        	// Street Number
-        	// Street
-        	// Neighborhood
-        	// District
-        // );
         
 		return $data;	
 	}
@@ -135,16 +133,30 @@ class NFe_Woo {
 	 * @param  string $field The field info being fetched
 	 * @return string
 	 */
-	public function city_service_info( $field = '' ) {
+	public function city_service_info( $field = '', $post_id ) {
 		if ( empty( $field ) ) { 
 			return;
 		}
 
-		if ( $field == 'code' ) {
-			$output = nfe_get_field('nfe_cityservicecode');
+		$activity = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
 
-		} elseif ( $field == 'desc' ) {
-			$output = nfe_get_field('nfe_cityservicecode_desc');
+		if ( ! empty( $post_id ) && ! empty( $activity ) ) {
+
+			if ( $field == 'code' ) {
+				$output = $activity['code'];
+
+			} elseif ( $field == 'desc' ) {
+				$output = $activity['name'];
+			}
+
+		} else {
+
+			if ( $field == 'code' ) {
+				$output = nfe_get_field('nfe_cityservicecode');
+
+			} elseif ( $field == 'desc' ) {
+				$output = nfe_get_field('nfe_cityservicecode_desc');
+			}
 		}
 
 		return $output;
@@ -161,8 +173,6 @@ class NFe_Woo {
 		if ( empty($order ) || empty($field) ) {
 			return;
 		}
-
-		$result = '';
 
 		// Customer Person Type
 		(int) $person_type = get_post_meta( $order, '_billing_persontype', true );
@@ -188,6 +198,13 @@ class NFe_Woo {
 			} elseif ( $person_type == 2 ) {
 				$result = $cnpj_name;
 			}
+
+		} elseif ( $field === 'type' ) {
+			if ( $person_type == 1 ) {
+				$result = 'Customers';
+			} elseif ( $person_type == 2 ) {
+				$result = 'Company';
+			}	
 		}
 
         return $result;
@@ -251,6 +268,13 @@ class NFe_Woo {
 	}
 }
 
+/**
+ * The main function responsible for returning the one true NFe_Woo Instance.
+ *
+ * @since 1.0.0
+ *
+ * @return NFe_Woo The one true NFe_Woo Instance.
+ */
 function NFe_Woo() {
     return NFe_Woo::instance();    
 }
