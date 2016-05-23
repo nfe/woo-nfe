@@ -5,7 +5,7 @@
  *
  * @author   Renato Alves
  * @category Admin
- * @package  WooCommerce_NFe/Classes/Integration
+ * @package  WooCommerce_NFe/Class/WC_NFe_Integration
  * @version  1.0.0
  */
 

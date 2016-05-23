@@ -5,7 +5,7 @@
  *
  * @author   Renato Alves
  * @category Admin
- * @package  WooCommerce_NFe/Classes/WC_NFe_Admin
+ * @package  WooCommerce_NFe/Class/WC_NFe_Admin
  * @version  1.0.0
  */
 
@@ -25,8 +25,8 @@ class WC_NFe_Admin {
         add_filter( 'manage_edit-shop_order_columns',        array( $this, 'order_status_column_header' ), 20 );
 
         // Actions
-		add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
-		add_action( 'save_post',                             array( $this, 'save' ) );
+        add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
+        add_action( 'save_post',                             array( $this, 'save' ) );
         add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ) );
         add_action( 'woocommerce_order_actions',             array( $this, 'nfe_order_actions' ), 10, 1 );
         add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_nfe_order_actions' ), 10, 1 );
@@ -292,18 +292,7 @@ class WC_NFe_Admin {
      * Adds the admin script
      */
     public function enqueue_scripts() {
-        // Get admin screen id
-        $screen         = get_current_screen();
-        $is_woo_screen  = ( in_array( $screen->id, array( 'product' ) ) ) ? true : false;
         $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
-        /* if ( $is_woo_screen ) {
-            wp_enqueue_script( 'nfe-woo-metabox', 
-                plugins_url( 'woocommerce-nfe/assets/js/admin' ) . $suffix . '.js',
-                array( 'jquery' ),
-                WooCommerce_NFe::VERSION, true
-            );
-        } */
 
         wp_register_style( 'nfe-woo-admin-css', 
             plugins_url( 'woocommerce-nfe/assets/css/nfe-admin' ) . $suffix . '.css', 

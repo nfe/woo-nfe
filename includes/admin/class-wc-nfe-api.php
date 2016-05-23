@@ -4,7 +4,7 @@
  * WooCommerce NFe.io NFe_Woo Class
  *
  * @author   Renato Alves
- * @package  WooCommerce_NFe/NFe_Woo/Class
+ * @package  WooCommerce_NFe/Class/NFe_Woo
  * @version  1.0.0
  */
 
