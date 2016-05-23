@@ -15,23 +15,23 @@ defined( 'ABSPATH' ) || exit;
 * NFe_Woo Main Class
 */
 class NFe_Woo {
-    
-    /**
-     * Instance var
-     * 
-     * @var null
-     */
-    protected static $_instance = NULL;
-    
+        
     /**
      * Nfe_Woo Instance
      */
     public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
 
-		return self::$_instance;
+    	// Store the instance locally to avoid private static replication
+        static $instance = null;
+
+        // Only run these methods if they haven't been run previously
+        if ( null === $instance ) {
+            $instance = new NFe_Woo;
+            $instance->setup_hooks();
+        }
+
+        // Always return the instance
+        return $instance;
 	}
 
     /**
@@ -40,6 +40,15 @@ class NFe_Woo {
      * @see $this->instance Class Instance
      */
     private function __construct() {}
+
+    /**
+     * Set hooks.
+     *
+     * @since 1.0.0
+     */
+    private function setup_hooks() {
+    	add_action( 'admin_notices',    array( $this, 'display_messages' ) );
+    }
     
     /**
      * Issue a NFe Invoice
@@ -60,6 +69,51 @@ class NFe_Woo {
                 $company_id,
                 $data 
             );
+
+            if ( isset( $invoice->error ) ) {
+                
+                $mensagem = 'Erro ao emitir a NF-e do Pedido #'. $order_id . ':';
+                
+                $mensagem .= '<ul style="padding-left:20px;">';
+                $mensagem .= '<li>' . $invoice->error . '</li>';
+                
+                if ( isset( $invoice->log ) ) {
+                    
+                    if ( $invoice->log->xMotivo ) {
+                        
+                        $mensagem .= '<li>' . $invoice->log->xMotivo . '</li>';
+                        
+                    } else { 
+                    
+                        foreach ( $invoice->log as $erros ) {
+                            foreach ( $erros as $erro ) {
+                                $mensagem .= '<li>' . $erro . '</li>';
+                            }
+                        }   
+                    }
+                }
+                
+                $mensagem .= '</ul>';
+                
+                $this->add_error( $mensagem );
+
+			} else {
+
+				$nfe = get_post_meta( $order_id, 'nfe', true );
+				
+				if ( !$nfe ) {
+					$nfe = array();
+				}
+                
+                $nfe[] = array(
+					'status' => (string) $invoice->status,
+				);
+
+				update_post_meta( $order_id, 'nfe', $nfe );
+				update_post_meta( $order_id, 'nfe_issued', $nfe );
+                
+                $this->add_success( 'NF-e emitida com sucesso do Pedido #' . $order_id );
+			}
 		}
 
 		return $invoice;
@@ -170,7 +224,7 @@ class NFe_Woo {
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
 	public function check_customer_type( $field = '', $order ) {
-		if ( empty($order ) || empty($field) ) {
+		if ( empty($field) ) {
 			return;
 		}
 
@@ -209,6 +263,71 @@ class NFe_Woo {
 
         return $result;
 	}
+
+	public function display_messages() {
+        $error_msg = get_option('woocommerce_nfe_woo_error_messages');
+        $succes_msg = get_option('woocommerce_nfe_woo_success_messages');
+    
+        if ( $error_msg ) { ?>
+            <div class="error">
+                <? foreach ( $error_msg as $message ) { 
+                    echo '<p>' . $message . '</p>'; 
+                } ?>
+            </div>
+            <?php
+        
+            delete_option('woocommerce_nfe_woo_error_messages');
+        }
+    
+        if ( $succes_msg ) { ?>
+            <div class="updated notice notice-success">
+                <? foreach ( $succes_msg as $message ) {
+                    echo '<p>' . $message . '</p>';
+                } ?>
+            </div>
+            <?php
+        
+            delete_option('woocommerce_nfe_woo_success_messages');
+        }
+    }
+
+    public function add_error( $message ) {
+        $messages = get_option('woocommerce_nfe_woo_error_messages');
+
+        if ( ! $messages ) {
+            $messages = array();
+        }
+
+        if ( $messages && count($messages) > 0 ) { 
+            foreach ( $messages as $msg ) { 
+                if ( $msg == $message ) {
+                    return false;
+                }
+            }
+        }
+
+        $messages[] = $message;
+        update_option('woocommerce_nfe_woo_error_messages', $messages);
+    }
+
+    public function add_success( $message ) {
+        $messages = get_option('woocommerce_nfe_woo_success_messages');
+
+        if ( ! $messages ) {
+            $messages = array();
+        }
+
+        if ( $messages && count($messages) > 0 ) { 
+            foreach ( $messages as $msg ) { 
+                if ( $msg == $message ) {
+                    return false;
+                }
+            }
+        }
+
+        $messages[] = $message;
+        update_option('woocommerce_nfe_woo_success_messages', $messages);
+    }
 
 	public function cpf( $cpf ) {
 		if ( ! $cpf ) {

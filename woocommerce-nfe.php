@@ -117,7 +117,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          * @since 1.0.0
          */
         private function setup_hooks() {
-            add_action( 'init', array( $this, 'load_textdomain' ) );
+            add_action( 'init',             array( $this, 'load_textdomain' ) );
 
             // Check for SOAP.
             if ( ! class_exists( 'SoapClient' ) ) {

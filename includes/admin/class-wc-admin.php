@@ -59,7 +59,8 @@ class WC_NFe_Admin {
         <table id="nfe-woo-fieldset-one" width="100%">
             <thead>
                 <tr>
-                    <th width="50%"><?php esc_html_e( 'CityServiceCode', 'woocommerce-nfe' ); ?></th>
+                    <th width="25%"><?php esc_html_e( 'CityServiceCode', 'woocommerce-nfe' ); ?></th>
+                    <th width="25%"><?php esc_html_e( 'FederalServiceCode', 'woocommerce-nfe' ); ?></th>
                     <th width="50%"><?php esc_html_e( 'Description', 'woocommerce-nfe' ); ?></th>
                 </tr>
             </thead>
@@ -70,6 +71,10 @@ class WC_NFe_Admin {
                     <tr>
                         <td>
                             <input type="text" class="widefat" name="name[]" value="<?php if( $activity['name'] !== '' ) echo esc_attr( $activity['name'] ); ?>" />
+                        </td>
+
+                         <td>
+                            <input type="text" class="widefat" name="fed_code[]" value="<?php if( $activity['fed_code'] !== '' ) echo esc_attr( $activity['fed_code'] ); ?>" />
                         </td>
                     
                         <td>
@@ -83,6 +88,7 @@ class WC_NFe_Admin {
                     <tr>
                         <td><input type="text" class="widefat" name="name[]" /></td>
                         <td><input type="text" class="widefat" name="code[]" value="" /></td>
+                        <td><input type="text" class="widefat" name="fed_code[]" value="" /></td>
                     </tr>
 
                 <?php endif; ?>
@@ -124,8 +130,9 @@ class WC_NFe_Admin {
         $old = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
         $new = array();
 
-        $names = $_POST['name'];
-        $codes = $_POST['code'];
+        $names      = $_POST['name'];
+        $codes      = $_POST['code'];
+        $fed_code   = $_POST['fed_code'];
 
         $count = count( $names );
 
@@ -136,6 +143,10 @@ class WC_NFe_Admin {
 
             if ( $codes[$i] !== '' ) {
                 $new[$i]['code'] = sanitize_text_field( $codes[$i] );
+            }
+
+            if ( $fed_code[$i] !== '' ) {
+                $new[$i]['fed_code'] = sanitize_text_field( $fed_code[$i] );
             }
         }
 
