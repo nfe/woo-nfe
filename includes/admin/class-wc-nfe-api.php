@@ -131,11 +131,12 @@ class NFe_Woo {
         $data = array(
     		// Obrigatório - Serviço municipal atrelado ao serviço federal
 			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), // Código do serviço de acordo com o a cidade
-    		'federalServiceCode'=> '', // Optional - Código de nível federal
+    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), // Optional - Código de nível federal
     		'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
       			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ),
+      			'municipalTaxNumber' 		=> '',
       			'name' 						=> $this->check_customer_type( 'customer-name', $order ),
             	'email' 					=> get_post_meta( $order, '_billing_email', true ),
             	'address' 		=> array(
@@ -201,6 +202,9 @@ class NFe_Woo {
 
 			} elseif ( $field == 'desc' ) {
 				$output = $activity['name'];
+
+			} elseif ( $field == 'fed_code' ) {
+				$output = $activity['fed_code'];
 			}
 
 		} else {
@@ -210,6 +214,9 @@ class NFe_Woo {
 
 			} elseif ( $field == 'desc' ) {
 				$output = nfe_get_field('nfe_cityservicecode_desc');
+
+			} elseif ( $field == 'fed_code' ) {
+				$output = nfe_get_field('nfe_fedservicecode');
 			}
 		}
 
@@ -231,7 +238,7 @@ class NFe_Woo {
 		// Customer Person Type
 		(int) $person_type = get_post_meta( $order, '_billing_persontype', true );
 
-		if ( $field === 'tax-number' ) {
+		if ( $field == 'tax-number' ) {
 			// Customer ID Number
 			$cpf = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
 			$cnpj = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
@@ -242,7 +249,7 @@ class NFe_Woo {
 				$result = $cnpj;
 			}
 
-		} elseif ( $field === 'customer-name' ) {
+		} elseif ( $field == 'customer-name' ) {
 			// Customer Name
 			$cnpj_name 	= get_post_meta( $order, '_billing_company', true );
 			$cpf_name 	= get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
@@ -253,7 +260,7 @@ class NFe_Woo {
 				$result = $cnpj_name;
 			}
 
-		} elseif ( $field === 'type' ) {
+		} elseif ( $field == 'type' ) {
 			if ( $person_type == 1 ) {
 				$result = 'Customers';
 			} elseif ( $person_type == 2 ) {

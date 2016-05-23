@@ -115,7 +115,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'default'           => '',
 				'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
 			),
-			'nfe_federalservicecode' => array(
+			'nfe_fedservicecode' => array(
 				'title'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
