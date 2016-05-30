@@ -174,7 +174,6 @@ class WC_NFe_Admin {
                 $new_columns['sales_receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
             }
         }
-
         return $new_columns;
     }
 
@@ -184,28 +183,62 @@ class WC_NFe_Admin {
      * @return string
      */
     public function order_status_column_content( $column ) {
-        global $post;
+        global $post, $woocommerce, $the_order;
+
+        if ( empty( $the_order ) || $the_order->id != $post->ID ) {
+            $order = wc_get_order( $post->ID );
+        }
+
+        // $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
+        // $order = new WC_Order( $post->ID );
+
+        // $actions = array();
 
         if ( 'sales_receipt' === $column ) {
-            $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
-            $order = new WC_Order( $post->ID );
 
-            if ( $order->has_status('completed') ) {
-                if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
-                    echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
+            var_dump($order);
+
+            if ( $order->get_status == 'completed' ) {
+                if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post_date ) < strtotime('last year') ) {
+                    $actions['woo_nfe_expired'] = array(
+                        'url'       => '',
+                        'name'      => __( 'NFe Issue Time Expired', 'woocommerce-nfe' ),
+                        'action'    => "woo_nfe_expired"
+                    );
                 }
 
                 if ( nfe_get_field('nfe_enable') === 'yes' && $nfe == false ) {
-                    echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocommerce-nfe' ) . '</a>';
-                } 
+                    $actions['woo_nfe_issue'] = array(
+                        'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $post->ID ), 'woocommerce_nfe_issue' ),
+                        'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                        'action'    => "woo_nfe_issue"
+                    );
+                }
             }
 
             if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') === 'no' ) {
-                echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocommerce-nfe' ) . '</a>';
+                $actions['woo_nfe_tab'] = array(
+                    'url'       => admin_url( 'admin.php?page=wc-settings&tab=integration' ),
+                    'name'      => __( 'Enable NFe', 'woocommerce-nfe' ),
+                    'action'    => "woo_nfe_tab"
+                );
             } 
 
             if ( $nfe == true ) {
-                echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocommerce-nfe' ) . '</a>';
+                $actions['woo_nfe_download'] = array(
+                    'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $post->ID ), 'woo_nfe_download' ),
+                    'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                    'action'    => "woo_nfe_download"
+                );
+            }
+
+            foreach ( $actions as $action ) {
+                printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
+                    esc_attr( $action['action'] ), 
+                    esc_url( $action['url'] ), 
+                    esc_attr( $action['name'] ), 
+                    esc_attr( $action['name'] ) 
+                );
             }
         }
     }
@@ -247,7 +280,6 @@ class WC_NFe_Admin {
         global $post_type, $post_status;
 
         if ( 'shop_order' === get_post_type() ) {
-
             // Bail if NFe is disabled
             if ( nfe_get_field('nfe_enable') === 'no' ) {
                 return false;
@@ -303,7 +335,7 @@ class WC_NFe_Admin {
      * Adds the admin script
      */
     public function enqueue_scripts() {
-        $suffix         = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+        $suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
         wp_register_style( 'nfe-woo-admin-css', 
             plugins_url( 'woocommerce-nfe/assets/css/nfe-admin' ) . $suffix . '.css', 
