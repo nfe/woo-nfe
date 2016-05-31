@@ -118,6 +118,28 @@ class NFe_Woo {
 		return $invoice;
 	}
 
+	/**
+	 * Downloads the invoice
+	 * 
+	 * @param  array  $order_ids Array of order ids
+	 * @return string            Pdf
+	 */
+	public function down_invoice( $order_ids = array() ) {
+		$key 		= nfe_get_field('api_key');
+		$company 	= nfe_get_field('company_id');
+
+		foreach ( $order_ids as $order_id ) {
+			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
+
+            $pdf = Nfe_ServiceInvoice::pdf( 
+                $company_id,
+                $nfe['id'] // Issue ID, not the Order ID
+            );
+        }
+
+		return $pdf;
+	}
+
     /**
      * Ordering and preparing data to send to NFe API
      * 
@@ -268,28 +290,6 @@ class NFe_Woo {
 		}
 
         return $result;
-	}
-
-	/**
-	 * Downloads the invoice
-	 * 
-	 * @param  array  $order_ids Array of order ids
-	 * @return string            Pdf
-	 */
-	public function down_invoice( $order_ids = array() ) {
-		$key 		= nfe_get_field('api_key');
-		$company 	= nfe_get_field('company_id');
-
-		foreach ( $order_ids as $order_id ) {
-			$nfe = get_post_meta( $order_id, 'nfe_woo', true );
-
-            $pdf = Nfe_ServiceInvoice::pdf( 
-                $company_id,
-                $nfe['id']
-            );
-        }
-
-		return $pdf;
 	}
 
 	public function display_messages() {

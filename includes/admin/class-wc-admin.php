@@ -216,8 +216,8 @@ class WC_NFe_Admin {
      * @return array
      */
     public function nfe_order_actions( $actions ) {
-        $actions['wc_nfe_issue']    = __( 'Issue NFe', 'woocommerce-nfe' );
-        $actions['wc_nfe_down']     = __( 'Download NFe', 'woocommerce-nfe' );
+        $actions['wc_nfe_issue'] = __( 'Issue NFe', 'woocommerce-nfe' );
+        $actions['wc_nfe_down']  = __( 'Download NFe', 'woocommerce-nfe' );
 
         return $actions;
     }
@@ -229,11 +229,11 @@ class WC_NFe_Admin {
      * @return bool True|False
      */
     public function process_nfe_order_actions( $post ) {
-        if ( $post->post_status === ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
+        if ( $post->post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
             return false;
         }
         
-        $nfe = get_post_meta( $post->ID, 'nfe_woo', true );
+        $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
 
         if ( $nfe->status == 'issued' ) {
             NFe_Woo()->down_invoice( $post->ID );
@@ -254,15 +254,15 @@ class WC_NFe_Admin {
     public function order_bulk_actions() {
         global $post_type, $post_status;
 
-        if ( 'shop_order' === get_post_type() ) {
+        if ( 'shop_order' == get_post_type() ) {
 
             // Bail if NFe is disabled
-            if ( nfe_get_field('nfe_enable') === 'no' ) {
+            if ( nfe_get_field('nfe_enable') == 'no' ) {
                 return false;
             }
             
             // Bail if post status is true for the following post_status
-            if ( $post_status === ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
+            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
                 return false;
             } ?>
              <script type="text/javascript">
@@ -289,7 +289,7 @@ class WC_NFe_Admin {
     public function process_order_bulk_actions() {
         global $post, $typenow;
 
-        if ( 'shop_order' === $typenow ) {
+        if ( 'shop_order' == $typenow ) {
             $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
             $action        = $wp_list_table->current_action();
 
@@ -305,12 +305,12 @@ class WC_NFe_Admin {
                 return false;
             }
             
-            $nfe = get_post_meta( $order_ids, 'nfe_woo', true );
+            $nfe = get_post_meta( $order_ids, 'nfe_issued', true );
 
-            if ( $action === 'wc_nfe_issue' ) {
+            if ( $action == 'wc_nfe_issue' ) {
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
 
-            } elseif ( $action === 'wc_nfe_down' && $nfe->status != 'issued' ) {
+            } elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
                 NFe_Woo()->down_invoice( array( $order_ids ) );
             }
         }
