@@ -38,7 +38,7 @@ class WC_NFe_FrontEnd {
 	 * @return string
 	 */
 	public function nfe_billing_notice() {
-		if ( nfe_get_field('nfe_enable') === 'yes' ) {
+		if ( nfe_get_field('nfe_enable') == 'yes' ) {
 			echo '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
 		}
 	}
@@ -81,16 +81,16 @@ class WC_NFe_FrontEnd {
         $nfe = get_post_meta( $order->id, 'nfe_issued', true );
 
         if ( $order->has_status('completed') ) {
-            if ( nfe_get_field( 'issue_past_notes' ) === 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
+            if ( nfe_get_field( 'issue_past_notes' ) == 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
                 echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
             } 
 
-            if ( nfe_get_field('nfe_enable') === 'yes' && $nfe == false ) {
+            if ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) {
                 echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocommerce-nfe' ) . '</a>';
             } 
         }
 
-        if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') === 'no' ) {
+        if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') == 'no' ) {
             echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocommerce-nfe' ) . '</a>';
         } 
 
@@ -105,7 +105,7 @@ class WC_NFe_FrontEnd {
 	 * @return void
 	 */
 	public function removes_fields( $fields ) {
-		if ( nfe_get_field('nfe_enable') === 'yes' && nfe_get_field('where_note') === 'after' ) {
+		if ( nfe_get_field('nfe_enable') == 'yes' && nfe_get_field('where_note') == 'after' ) {
 	        unset($fields['billing']['billing_phone']);
 	        unset($fields['billing']['billing_number']);
 	        unset($fields['billing']['billing_country']);

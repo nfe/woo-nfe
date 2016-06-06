@@ -71,17 +71,16 @@ class NFe_Woo {
             );
 
             if ( isset( $invoice->error ) ) {
-                
-                $mensagem = 'Erro ao emitir a NF-e do Pedido #'. $order_id . ':';
+                $mensagem = sprintf( __( 'Error when issuing the receipt for order %1d:', 'woocommerce-nfe'), $order_id );
                 
                 $mensagem .= '<ul style="padding-left:20px;">';
                 $mensagem .= '<li>' . $invoice->error . '</li>';
                 
                 if ( isset( $invoice->log ) ) {
                     
-                    if ( $invoice->log->xMotivo ) {
+                    if ( $invoice->log ) {
                         
-                        $mensagem .= '<li>' . $invoice->log->xMotivo . '</li>';
+                        $mensagem .= '<li>' . $invoice->log . '</li>';
                         
                     } else { 
                     
@@ -99,7 +98,7 @@ class NFe_Woo {
 
 			} else {
 
-				$nfe = get_post_meta( $order_id, 'nfe', true );
+				$nfe = get_post_meta( $order_id, 'nfe_issued', true );
 				
 				if ( !$nfe ) {
 					$nfe = array();
@@ -109,13 +108,12 @@ class NFe_Woo {
 					'status' => (string) $invoice->status,
 				);
 
-				update_post_meta( $order_id, 'nfe', $nfe );
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
-                
-                $this->add_success( 'NF-e emitida com sucesso do Pedido #' . $order_id );
+				$success = sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id );
+                $this->add_success( $success );
 			}
 		}
-
+		
 		return $invoice;
 	}
 
@@ -265,14 +263,23 @@ class NFe_Woo {
 				$result = 'Customers';
 			} elseif ( $person_type == 2 ) {
 				$result = 'Company';
-			}	
+			}
+		}
+
+		if ( empty($result) ) {
+			$result = '...';
 		}
 
         return $result;
 	}
 
+	/**
+	 * Displaying Notice messages
+	 * 
+	 * @return string
+	 */
 	public function display_messages() {
-        $error_msg = get_option('woocommerce_nfe_woo_error_messages');
+        $error_msg 	= get_option('woocommerce_nfe_woo_error_messages');
         $succes_msg = get_option('woocommerce_nfe_woo_success_messages');
     
         if ( $error_msg ) { ?>
@@ -298,6 +305,11 @@ class NFe_Woo {
         }
     }
 
+    /**
+     * Adding error messages
+     * 
+     * @param string
+     */
     public function add_error( $message ) {
         $messages = get_option('woocommerce_nfe_woo_error_messages');
 
@@ -317,6 +329,11 @@ class NFe_Woo {
         update_option('woocommerce_nfe_woo_error_messages', $messages);
     }
 
+    /**
+     * Adding success messages
+     * 
+     * @param string
+     */
     public function add_success( $message ) {
         $messages = get_option('woocommerce_nfe_woo_success_messages');
 
