@@ -107,8 +107,7 @@ class NFe_Woo {
 				);
 
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
-				$success = sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id );
-                $this->add_success( $success );
+                $this->add_success( sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
 			}
 		}
 		
