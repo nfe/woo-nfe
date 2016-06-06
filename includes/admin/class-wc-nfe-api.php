@@ -103,7 +103,8 @@ class NFe_Woo {
 				}
                 
                 $nfe[] = array(
-					'status' => (string) $invoice->status,
+                	'id' 	 => (int) $invoce->id,
+					'status' => (string) $invoice->flowStatus,
 				);
 
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
@@ -114,11 +115,33 @@ class NFe_Woo {
 		return $invoice;
 	}
 
+	/**
+	 * Downloads the invoice
+	 * 
+	 * @param  array  $order_ids Array of order ids
+	 * @return string            Pdf
+	 */
+	public function down_invoice( $order_ids = array() ) {
+		$key 		= nfe_get_field('api_key');
+		$company 	= nfe_get_field('company_id');
+
+		foreach ( $order_ids as $order_id ) {
+			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
+
+            $pdf = Nfe_ServiceInvoice::pdf( 
+                $company_id,
+                $nfe['id'] // Issue ID, not the Order ID
+            );
+        }
+
+		return $pdf;
+	}
+
     /**
      * Ordering and preparing data to send to NFe API
      * 
      * @param  int $order Order ID
-     * @return array Array with the order information to issue the invoice
+     * @return array 	  Array with the order information to issue the invoice
      */
 	public function order_info( $order ) {
 		$total = wc_get_order( $order );

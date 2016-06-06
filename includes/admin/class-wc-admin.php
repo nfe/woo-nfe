@@ -236,7 +236,6 @@ class WC_NFe_Admin {
                     esc_attr( $action['name'] ) 
                 );
             }
-
             ?>
             </p><?php
         }
@@ -249,22 +248,30 @@ class WC_NFe_Admin {
      */
     public function nfe_order_actions( $actions ) {
         $actions['wc_nfe_issue'] = __( 'Issue NFe', 'woocommerce-nfe' );
+        $actions['wc_nfe_down']  = __( 'Download NFe', 'woocommerce-nfe' );
 
         return $actions;
     }
 
     /**
-     * Issue the NFe on Box Actions
+     * Issue/Download the NFe on Box Actions
      * 
      * @param  object $post Current post
      * @return bool True|False
      */
     public function process_nfe_order_actions( $post ) {
-        if ( $post->post_status == 'wc-trash' || $post->post_status == 'wc-cancelled' ) {
+        if ( $post->post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
             return false;
         }
         
-        NFe_Woo()->issue_invoice( array( $post->ID ) );
+        $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
+
+        if ( $nfe->status == 'issued' ) {
+            NFe_Woo()->down_invoice( $post->ID );
+
+        } else {
+            NFe_Woo()->issue_invoice( array( $post->ID ) );
+        }
     }
 
     /**
@@ -286,7 +293,7 @@ class WC_NFe_Admin {
             }
             
             // Bail if post status is true for the following post_status
-            if ( $post_status == 'wc-trash' || $post_status == 'wc-cancelled' || $post_status == 'wc-pending') {
+            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
                 return false;
             } ?>
              <script type="text/javascript">
@@ -294,7 +301,11 @@ class WC_NFe_Admin {
 
                 jq( function() {
                     var IssueNFe = jq('<option>').val('wc_nfe_issue').text('<?php esc_html_e( 'Issue NFe', 'woocommerce-nfe' ); ?>');
+
+                    var DownNFe = jq('<option>').val('wc_nfe_down').text('<?php esc_html_e( 'Download NFe', 'woocommerce-nfe' ); ?>');
+
                     jq('select[name^="action"]' ).append( IssueNFe );
+                    jq('select[name^="action"]' ).append( DownNFe );
                 });
             </script>
             <?php
@@ -313,7 +324,7 @@ class WC_NFe_Admin {
             $wp_list_table = _get_list_table( 'WP_Posts_List_Table' );
             $action        = $wp_list_table->current_action();
 
-            if ( ! in_array( $action, array( 'wc_nfe_issue') ) ) {
+            if ( ! in_array( $action, array( 'wc_nfe_issue', 'wc_nfe_down' ) ) ) {
                return false;
             }
 
@@ -325,8 +336,13 @@ class WC_NFe_Admin {
                 return false;
             }
             
-            if ( $action == 'wc_nfe_issue') {
+            $nfe = get_post_meta( $order_ids, 'nfe_issued', true );
+
+            if ( $action == 'wc_nfe_issue' ) {
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
+
+            } elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
+                NFe_Woo()->down_invoice( array( $order_ids ) );
             }
         }
     }
