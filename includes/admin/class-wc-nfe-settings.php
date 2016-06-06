@@ -193,15 +193,17 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function display_errors() {
-		if ( $this->fetch_company( 'name' ) == false ) {
-			echo '<div class="error"><p>' . __( 'Choose the Company: There are some problem in your Company ID or API key. Make sure you have the right information.', 'woocommerce-nfe' ) . '</p></div>';
-		}
+		if ( nfe_get_field('nfe_enable') == 'yes' ) {
+			if ( $this->fetch_company( 'name' ) == false ) {
+				echo '<div class="error"><p>' . __( 'Choose the Company: There are some problem in your Company ID or API key. Make sure you have the right information.', 'woocommerce-nfe' ) . '</p></div>';
+			}
 
-		if ( nfe_get_field('nfe_enable') == 'yes' && empty( nfe_get_field('api_key') ) ) {
-			echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
-		sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
-			'<a href="' . $this->admin_url() . '">' .
-			 __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) . '</p></div>';
+			if ( empty( nfe_get_field('api_key') ) ) {
+				echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
+			sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
+				'<a href="' . $this->admin_url() . '">' .
+				 __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) . '</p></div>';
+			}
 		}
 	}
 }
