@@ -24,7 +24,7 @@ class WC_NFe_FrontEnd {
 		// Filters
 		add_filter( 'woocommerce_checkout_fields', 								array( $this, 'removes_fields' ) );
 		add_filter( 'woocommerce_my_account_my_orders_columns', 				array( $this, 'nfe_column' ) );
-		add_filter( 'woocommerce_my_account_my_address_description', 			array( $this, 'my_account_nfe_description' ) );
+		add_filter( 'woocommerce_my_account_my_address_description', 			array( $this, 'nfe_my_account_description' ) );
 
 		// Actions
 		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', 	array( $this, 'nfe_column_content' ) );
@@ -48,9 +48,8 @@ class WC_NFe_FrontEnd {
 	 * 
 	 * @return string
 	 */
-	public function my_account_nfe_description() {
-		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales 
-			receipt.', 'woocommerce-nfe' );
+	public function nfe_my_account_description() {
+		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woocommerce-nfe' );
 	}
 
 	/**
@@ -78,24 +77,50 @@ class WC_NFe_FrontEnd {
      * @return string
      */
     public function nfe_column_content( $order ) {   	
-        $nfe = get_post_meta( $order->id, 'nfe_issued', true );
+        $nfe 		= get_post_meta( $order->id, 'nfe_issued', true );
+        $actions 	= array();
 
-        if ( $order->has_status('completed') ) {
+        if (  $order->has_status('completed') ) {
             if ( nfe_get_field( 'issue_past_notes' ) == 'no' && strtotime( $order->post->post_date ) < strtotime('last year') ) {
-                echo '<div class="nfe_woo">' . __( 'NFe Issue Time Expired', 'woocommerce-nfe' ) . '</div>';
-            } 
+                $actions['woo_nfe_expired'] = array(
+                    'url'       => '',
+                    'name'      => __( 'NFe Issue Time Expired', 'woocommerce-nfe' ),
+                    'action'    => "woo_nfe_expired"
+                );
+            }
 
             if ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) {
-                echo '<a href="#" class="button view">' . __( 'Issue NFe', 'woocommerce-nfe' ) . '</a>';
-            } 
+                $actions['woo_nfe_issue'] = array(
+                    'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
+                    'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                    'action'    => "woo_nfe_issue"
+                );
+            }
+        }
+
+        if ( $nfe == true ) {
+            $actions['woo_nfe_download'] = array(
+                'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
+                'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                'action'    => "woo_nfe_download"
+            );
         }
 
         if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') == 'no' ) {
-            echo '<a href="' . admin_url( 'admin.php?page=wc-settings&tab=integration' ) . '" class="button view">' . __( 'Enable NFe', 'woocommerce-nfe' ) . '</a>';
+            $actions['woo_nfe_tab'] = array(
+                'url'       => admin_url( 'admin.php?page=wc-settings&tab=integration' ),
+                'name'      => __( 'Enable NFe', 'woocommerce-nfe' ),
+                'action'    => "woo_nfe_tab"
+            );
         } 
 
-        if ( $nfe == true ) {
-            echo '<a href="#" class="button view">' . __( 'Download NFe', 'woocommerce-nfe' ) . '</a>';
+        foreach ( $actions as $action ) {
+            printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
+                esc_attr( $action['action'] ), 
+                esc_url( $action['url'] ), 
+                esc_attr( $action['name'] ), 
+                esc_attr( $action['name'] ) 
+            );
         }
     }
 

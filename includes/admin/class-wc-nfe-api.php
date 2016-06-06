@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 class NFe_Woo {
         
     /**
-     * Nfe_Woo Instance
+     * Nfe_Woo Instance.
      */
     public static function instance() {
 
@@ -35,7 +35,7 @@ class NFe_Woo {
 	}
 
     /**
-     * Construct
+     * Construct.
      *
      * @see $this->instance Class Instance
      */
@@ -43,18 +43,16 @@ class NFe_Woo {
 
     /**
      * Set hooks.
-     *
-     * @since 1.0.0
      */
     private function setup_hooks() {
-    	add_action( 'admin_notices',    array( $this, 'display_messages' ) );
+    	add_action( 'admin_notices', array( $this, 'display_messages' ) );
     }
     
     /**
-     * Issue a NFe Invoice
+     * Issue a NFe Invoice.
      * 
      * @param  array  $order_ids Orders to issue the NFe
-     * @return string Error|Result
+     * @return string Error
      */
 	public function issue_invoice( $order_ids = array() ) {
         $key        = nfe_get_field('api_key');
@@ -124,7 +122,7 @@ class NFe_Woo {
      * @return array Array with the order information to issue the invoice
      */
 	public function order_info( $order ) {
-		$total = new WC_Order( $order );
+		$total = wc_get_order( $order );
 
         $data = array(
     		// Obrigatório - Serviço municipal atrelado ao serviço federal
@@ -141,12 +139,12 @@ class NFe_Woo {
 			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
 			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
 			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
-			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ), // Complemento
-			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ), // Bairro
-			        'country' 				=> get_post_meta( $order, '_billing_country', true ), // País (BRA)
-					'city' => array(
-		    			'code' => $this->ibge_code( $order ),
-		    			'name' => get_post_meta( $order, '_billing_city', true ),
+			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
+			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
+			        'country' 				=> get_post_meta( $order, '_billing_country', true ),
+					'city' 					=> array(
+		    			'code' 		=> $this->ibge_code( $order ),
+		    			'name' 		=> get_post_meta( $order, '_billing_city', true ),
 					),
 					'state' 				=> get_post_meta( $order, '_billing_state', true ),
 				),
@@ -181,7 +179,7 @@ class NFe_Woo {
 	}
 
 	/**
-	 * City Service Information (Code and Description)
+	 * City Service Information (Code and Description).
 	 * 
 	 * @param  string $field The field info being fetched
 	 * @return string
@@ -274,7 +272,7 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Displaying Notice messages
+	 * Displaying NFe messages.
 	 * 
 	 * @return string
 	 */
