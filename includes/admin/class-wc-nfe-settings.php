@@ -12,222 +12,293 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-class WC_NFe_Integration extends WC_Integration {
-	
-	/**
-	 * Init and hook in the integration.
-	 */
-	public function __construct() {
-		$this->id 				  = 'nfe-woo-integration';
-		$this->method_title 	  = __( 'NFe Integration', 'woocommerce-nfe' );
-		$this->label 			  = _x( 'NFe Integration', 'Settings tab label', 'woocommerce-nfe' );
-		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woocommerce-nfe' );
+if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 
-		// Load the settings.
-		$this->init_form_fields();
-		$this->init_settings();
-
-		// Debug.
-		if ( nfe_get_field('debug') === 'yes' ) {
-			$this->log = new WC_Logger();
-		}
-
-		// Actions.
-		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
-		add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
-	}
-
-	/**
-	 * Gets the admin url.
-	 *
-	 * @return string
-	 */
-	protected function admin_url() {
-		return admin_url( 'admin.php?page=wc-settings&tab=integration' );
-	}
-
-	/**
-	 * Initialize integration settings form fields.
-	 */
-	public function init_form_fields() {
-		$this->form_fields = apply_filters( 'woocommerce_nfe_settings', 
-			array(
-				'nfe_enable' 		=> array(
-					'title'             => __( 'Enable/Disable', 'woocommerce-nfe' ),
-					'type'              => 'checkbox',
-					'label'             => __( 'Enable NFe.io', 'woocommerce-nfe' ),
-					'default'           => 'yes',
-				),
-				'api_key' 			=> array(
-					'title'             => __( 'API Key', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'API Key', 'woocommerce-nfe' ),
-					'default'           => '',
-					'description'       => sprintf( __( 'Enter your API Key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'woocommerce-nfe' ) . '</a>' ),
-				),
-				'company_id' 		=> array(
-					'title'             => __( 'Company ID', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'Company ID', 'woocommerce-nfe' ),
-					'default'           => '',
-					'desc_tip'       	=> __( 'Enter your Company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
-				),
-				'choose_company' 	=> array(
-					'title'             => __( 'Choose the Company', 'woocommerce-nfe' ),
-					'type'              => 'select',
-					'label'             => __( 'Choose the Company', 'woocommerce-nfe' ),
-					'default'           => '',
-					'options' 			=> array(
-						$this->fetch_company( 'id' ) => $this->fetch_company( 'name' ),
-					),
-					'class'    			=> 'wc-enhanced-select',
-					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Choose one of your companies.', 'woocommerce-nfe' ),
-				),
-				'where_note' 		=> array(
-					'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
-					'type'              => 'select',
-					'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
-					'default'           => 'before',
-					'options' 			=> array(
-						'before'     	=> __( 'Before Checkout', 'woocommerce-nfe' ),
-						'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
-						'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
-					),
-					'class'    			=> 'wc-enhanced-select',
-					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
-				),
-				'nfe_prefix' 		=> array(
-					'title'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
-					'default'           => 'NFe-',
-					'desc_tip'       	=> __( 'Used in the webhook', 'woocommerce-nfe' ),
-				),
-				'issue_past_notes' => array(
-					'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
-					'type'              => 'checkbox',
-					'label'             => __( 'Enable to issue NFe.io in past products', 'woocommerce-nfe' ),
-					'default'           => 'no',
-					'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
-				),
-				
-				'nfe_copy_title' 	=> array(
-					'title' 			=> __( 'Safe Copy Sending', 'woocommerce-nfe' ),
-					'type' 				=> 'title',
-				),
-				'nfe_send_copy'  	=> array(
-					'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
-					'type'              => 'checkbox',
-					'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
-					'default'           => 'no',
-					'description'       => __( 'When enabled, a copy of every note issued is sent.', 'woocommerce-nfe' ),
-				),
-				'nfe_copy_name' 	=> array(
-					'title'             => __( 'To: Receipt Name', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'default'  			=> esc_attr( get_bloginfo( 'name', 'display' ) ),
-					'desc_tip' 			=> __( 'Receipt name NFe.io sends copies to.', 'woocommerce-nfe' ),
-				),
-				'nfe_copy_email' 	=> array(
-					'title'             => __( 'To: Receipt Email', 'woocommerce-nfe' ),
-					'type'              => 'email',
-					'custom_attributes' => array(
-						'multiple' => 'multiple'
-					),
-					'default'           => get_option( 'admin_email' ),
-					'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
-				),
-
-				'nfe_fiscal_title' 	=> array(
-					'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ),
-					'type' 				=> 'title',
-				),
-				'nfe_cityservicecode' => array(
-					'title'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
-					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
-				),
-				'nfe_fedservicecode' => array(
-					'title'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
-					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woocommerce-nfe' ),
-				),
-				'nfe_cityservicecode_desc' => array(
-					'title'             => __( 'Description', 'woocommerce-nfe' ),
-					'type'              => 'text',
-					'label'             => __( 'Description', 'woocommerce-nfe' ),
-					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woocommerce-nfe' ),
-				),
-				'debug' 			=> array(
-					'title'             => __( 'Debug Log', 'woocommerce-nfe' ),
-					'type'              => 'checkbox',
-					'label'             => __( 'Enable logging', 'woocommerce-nfe' ),
-					'default'           => 'no',
-					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'woocommerce-nfe' ) . '</a>' ),
-				),
-			) 
-		);
-
-		return apply_filters( 'woocommerce_nfe_settings_' . $this->id, $this->form_fields );
-	}
-
-	/**
-	 * Fetches NFe Company
-	 * 
-	 * @param  int $order_id Order ID
-	 * @return string
-	 */
-	public function fetch_company( $field = '' ) {
-		$key = nfe_get_field('api_key');
-		$id  = nfe_get_field('company_id');
-
-		if ( empty($key) || empty($id) || empty($field) ) {
-			return false;
-		}
-
-		$url 		= 'http://api.nfe.io/v1/companies/' . $id . '?api_key='. $key . '';
-		$response 	= wp_remote_get( esc_url_raw( $url ) );
-		$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
+	class WC_NFe_Integration extends WC_Integration {
 		
-		foreach ( $companies as $company => $name ) {
-			if ( $field == 'name' ) {
-				$output = ucwords( strtolower( $name['name'] ) );
+		/**
+		 * Init and hook in the integration.
+		 */
+		public function __construct() {
+
+			$this->id 				  = 'nfe-woo-integration';
+			$this->method_title 	  = __( 'NFe Integration', 'woocommerce-nfe' );
+			$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woocommerce-nfe' );
+
+			// Load the settings.
+			$this->init_form_fields();
+			$this->init_settings();
+
+			// Debug.
+			if ( nfe_get_field('debug') == 'yes' ) {
+				$this->log = new WC_Logger();
 			}
 
-			if ( $field == 'id' ) {
-				$output = $name['id'];
+			// Actions.
+			add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
+			add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
+			add_action( 'woocommerce_update_options_integration',              	array( $this, 'process_admin_options') );
+		}
+
+		/**
+		 * Gets the admin url.
+		 *
+		 * @return string
+		 */
+		protected function admin_url() {
+			return admin_url( 'admin.php?page=wc-settings&tab=integration' );
+		}
+
+		/**
+		 * Initialize integration settings form fields.
+		 */
+		public function init_form_fields() {
+			if ( $this->has_company_id() ) {
+				$lists = $this->fetch_companies();
+				$company_list = array_merge( array( '' => __( 'Select a company...', 'woocommerce-nfe' ) ), $lists );
+
+			} else {
+				$company_list = array( '' => __( 'Enter your API key and save to see your companies.', 'woocommerce-nfe' ) );
+			}
+
+			$this->form_fields = apply_filters( 'woocommerce_nfe_settings', 
+				array(
+					'nfe_enable' 		=> array(
+						'title'             => __( 'Enable/Disable', 'woocommerce-nfe' ),
+						'type'              => 'checkbox',
+						'label'             => __( 'Enable NFe.io', 'woocommerce-nfe' ),
+						'default'           => 'yes',
+					),
+					'api_key' 			=> array(
+						'title'             => __( 'API Key', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'API Key', 'woocommerce-nfe' ),
+						'default'           => '',
+						'description'       => sprintf( __( 'Enter your API Key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'woocommerce-nfe' ) . '</a>' ),
+					),
+					'company_id' 		=> array(
+						'title'             => __( 'Company ID', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'Company ID', 'woocommerce-nfe' ),
+						'default'           => '',
+						'desc_tip'       	=> __( 'Enter your Company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
+					),
+					'choose_company' 	=> array(
+						'title'             => __( 'Choose the Company', 'woocommerce-nfe' ),
+						'type'              => 'select',
+						'label'             => __( 'Choose the Company', 'woocommerce-nfe' ),
+						'default'           => '',
+						'options' 			=> $company_list,
+						'class'    			=> 'wc-enhanced-select',
+						'css'      			=> 'min-width:300px;',
+						'desc_tip'       	=> __( 'Choose one of your companies.', 'woocommerce-nfe' ),
+					),
+					'where_note' 		=> array(
+						'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
+						'type'              => 'select',
+						'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
+						'default'           => 'before',
+						'options' 			=> array(
+							'before'     	=> __( 'Before Checkout', 'woocommerce-nfe' ),
+							'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
+							'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
+						),
+						'class'    			=> 'wc-enhanced-select',
+						'css'      			=> 'min-width:300px;',
+						'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
+					),
+					'nfe_prefix' 		=> array(
+						'title'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
+						'default'           => 'NFe-',
+						'desc_tip'       	=> __( 'Used in the webhook', 'woocommerce-nfe' ),
+					),
+					'issue_past_notes' => array(
+						'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
+						'type'              => 'checkbox',
+						'label'             => __( 'Enable to issue NFe.io in past products', 'woocommerce-nfe' ),
+						'default'           => 'no',
+						'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
+					),
+					
+					'nfe_copy_title' 	=> array(
+						'title' 			=> __( 'Safe Copy Sending', 'woocommerce-nfe' ),
+						'type' 				=> 'title',
+					),
+					'nfe_send_copy'  	=> array(
+						'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
+						'type'              => 'checkbox',
+						'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
+						'default'           => 'no',
+						'description'       => __( 'When enabled, a copy of every note issued is sent.', 'woocommerce-nfe' ),
+					),
+					'nfe_copy_name' 	=> array(
+						'title'             => __( 'To: Receipt Name', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'default'  			=> esc_attr( get_bloginfo( 'name', 'display' ) ),
+						'desc_tip' 			=> __( 'Receipt name NFe.io sends copies to.', 'woocommerce-nfe' ),
+					),
+					'nfe_copy_email' 	=> array(
+						'title'             => __( 'To: Receipt Email', 'woocommerce-nfe' ),
+						'type'              => 'email',
+						'custom_attributes' => array(
+							'multiple' => 'multiple'
+						),
+						'default'           => get_option( 'admin_email' ),
+						'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
+					),
+
+					'nfe_fiscal_title' 	=> array(
+						'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ),
+						'type' 				=> 'title',
+					),
+					'nfe_cityservicecode' => array(
+						'title'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
+						'default'           => '',
+						'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
+					),
+					'nfe_fedservicecode' => array(
+						'title'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
+						'default'           => '',
+						'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woocommerce-nfe' ),
+					),
+					'nfe_cityservicecode_desc' => array(
+						'title'             => __( 'Description', 'woocommerce-nfe' ),
+						'type'              => 'text',
+						'label'             => __( 'Description', 'woocommerce-nfe' ),
+						'default'           => '',
+						'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woocommerce-nfe' ),
+					),
+					'debug' 			=> array(
+						'title'             => __( 'Debug Log', 'woocommerce-nfe' ),
+						'type'              => 'checkbox',
+						'label'             => __( 'Enable logging', 'woocommerce-nfe' ),
+						'default'           => 'no',
+						'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'woocommerce-nfe' ) . '</a>' ),
+					),
+				) 
+			);
+
+			return apply_filters( 'woocommerce_nfe_settings_' . $this->id, $this->form_fields );
+		}
+
+		/**
+		 * Fetches NFe Company
+		 * 
+		 * @param  int $order_id Order ID
+		 * @return string
+		 */
+		public function fetch_companies() {
+			$key 			= nfe_get_field('api_key');
+			$id  			= nfe_get_field('company_id');
+			$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
+
+			if ( ! $company_list ) {
+
+				$url 		= 'http://api.nfe.io/v1/companies/' . $id . '?api_key='. $key . '';
+				$response 	= wp_remote_get( esc_url_raw( $url ) );
+				$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
+				
+				$company_list = array();
+				foreach ( $companies as $company => $c ) {
+					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
+				}
+
+				if ( sizeof( $company_list ) > 0 ) {
+					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 60 * 60 * 1 );
+				}
+			}
+
+			return $company_list;
+		}
+
+		/**
+		 * Displays notifications when the admin has something wrong with the NFe.io configuration.
+		 *
+		 * @return void
+		 */
+		public function display_errors() {
+			if ( $this->is_active() == false ) {
+				if ( empty( nfe_get_field('api_key') ) ) {
+					echo $this->get_message( '<strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+				}
 			}
 		}
 
-		return $output;
-	}
+		/**
+		 * Get message
+		 * 
+		 * @return string Error
+		 */
+		private function get_message( $message, $type = 'error' ) {
+			ob_start();
+			?>
+			<div class="<?php echo $type ?>">
+				<p><?php echo $message ?></p>
+			</div>
+			<?php
+			return ob_get_clean();
+		}
 
-	/**
-	 * Displays notifications when the admin has something wrong with the NFe configuration.
-	 *
-	 * @return void
-	 */
-	public function display_errors() {
-		if ( nfe_get_field('nfe_enable') == 'yes' ) {
-			if ( $this->fetch_company( 'name' ) == false ) {
-				echo '<div class="error"><p>' . __( 'Choose the Company: There are some problem in your Company ID or API key. Make sure you have the right information.', 'woocommerce-nfe' ) . '</p></div>';
+		/**
+		 * has_api_key function.
+		 *
+		 * @access public
+		 * @return void
+		 */
+		public function has_api_key() {
+			if ( ! empty( nfe_get_field('api_key') ) ) {
+				return true;
 			}
+		}
 
-			if ( empty( nfe_get_field('api_key') ) ) {
-				echo '<div class="error"><p><strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . 
-			sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), 
-				'<a href="' . $this->admin_url() . '">' .
-				 __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) . '</p></div>';
+		/**
+		 * has_company_id function.
+		 *
+		 * @access public
+		 * @return void
+		 */
+		public function has_company_id() {
+			if ( ! empty( nfe_get_field('company_id') ) ) {
+				return true;
+			}
+		}
+
+		/**
+		 * is_active function.
+		 *
+		 * @access public
+		 * @return void
+		 */
+		public function is_active() {
+			if ( nfe_get_field('nfe_enable') == 'yes'  ) {
+				return true;
+			}
+		}
+
+		/**
+		 * Helper log function for debugging.
+		 *
+		 * @return string
+		 */
+		static function log( $message ) {
+			if ( WP_DEBUG === true ) {
+				$logger = new WC_Logger();
+				if ( is_array( $message ) || is_object( $message ) ) {
+					$logger->add( 'nfe', print_r( $message, true ) );
+				}
+				else {
+					$logger->add( 'nfe', $message );
+				}
 			}
 		}
 	}
-}
+
+endif;
 
 // That's it! =)

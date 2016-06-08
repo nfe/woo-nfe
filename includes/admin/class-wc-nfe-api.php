@@ -144,7 +144,7 @@ class NFe_Woo {
      * @return array 	  Array with the order information to issue the invoice
      */
 	public function order_info( $order ) {
-		$total = wc_get_order( $order );
+		$total = $this->wc_get_order( $order );
 
         $data = array(
     		// Obrigatório - Serviço municipal atrelado ao serviço federal
@@ -291,6 +291,23 @@ class NFe_Woo {
 		}
 
         return $result;
+	}
+
+	/**
+	 * WooCommerce 2.2 support for wc_get_order
+	 *
+	 * @since 1.0.0
+	 *
+	 * @access private
+	 * @param int $order_id
+	 * @return void
+	 */
+	private function wc_get_order( $order_id ) {
+		if ( function_exists( 'wc_get_order' ) ) {
+			return wc_get_order( $order_id );
+		} else {
+			return new WC_Order( $order_id );
+		}
 	}
 
 	/**
