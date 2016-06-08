@@ -88,8 +88,9 @@ class WC_NFe_Integration extends WC_Integration {
 					'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
 					'type'              => 'select',
 					'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
-					'default'           => '',
+					'default'           => 'before',
 					'options' 			=> array(
+						'before'     	=> __( 'Before Checkout', 'woocommerce-nfe' ),
 						'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
 						'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
 					),

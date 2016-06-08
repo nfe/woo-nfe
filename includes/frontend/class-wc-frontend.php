@@ -125,7 +125,9 @@ class WC_NFe_FrontEnd {
     }
 
 	/**
-	 * Removes the WooCommerce fields on the checkout
+	 * Removes the WooCommerce fields on the checkout if the user chooses it to.
+     *
+     * @uses nfe_get_field() Fetch NFe custom settings fields
 	 * 
 	 * @return void
 	 */
