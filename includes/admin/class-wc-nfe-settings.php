@@ -231,7 +231,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		public function display_errors() {
 			if ( $this->is_active() == false ) {
 				if ( empty( nfe_get_field('api_key') ) ) {
-					echo $this->get_message( '<strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
 				}
 
 			} else {
