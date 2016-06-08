@@ -46,7 +46,15 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * @return string
 		 */
 		protected function admin_url() {
-			return admin_url( 'admin.php?page=wc-settings&tab=integration' );
+			global $woocommerce;
+            
+            $settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
+            
+            if ( $woocommerce->version >= '2.1' ) {
+                $settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
+            }
+
+			return $settings_url;
 		}
 
 		/**
@@ -248,7 +256,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		/**
 		 * has_api_key function.
 		 *
-		 * @access public
 		 * @return void
 		 */
 		public function has_api_key() {
@@ -260,7 +267,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		/**
 		 * has_company_id function.
 		 *
-		 * @access public
 		 * @return void
 		 */
 		public function has_company_id() {
@@ -272,7 +278,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		/**
 		 * is_active function.
 		 *
-		 * @access public
 		 * @return void
 		 */
 		public function is_active() {

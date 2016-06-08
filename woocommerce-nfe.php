@@ -180,8 +180,17 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          * @return array
          */
         public function plugin_action_links( $links ) {
-            $plugin_links   = array();
-            $plugin_links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=integration' ) ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>';
+            global $woocommerce;
+            
+            $settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
+            
+            if ( $woocommerce->version >= '2.1' ) {
+                $settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
+            }
+
+            $plugin_links   = array(
+                '<a href="' . esc_url( $settings_url ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>',
+            );
 
             return array_merge( $plugin_links, $links );
         }
