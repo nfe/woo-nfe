@@ -198,16 +198,14 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		/**
 		 * Fetches NFe Company
 		 * 
-		 * @param  int $order_id Order ID
-		 * @return string
+		 * @return array An array of companies
 		 */
 		public function fetch_companies() {
 			$key 			= nfe_get_field('api_key');
 			$id  			= nfe_get_field('company_id');
 			$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
 
-			if ( ! $company_list ) {
-
+			if ( false === $company_list ) {
 				$url 		= 'http://api.nfe.io/v1/companies/' . $id . '?api_key='. $key . '';
 				$response 	= wp_remote_get( esc_url_raw( $url ) );
 				$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
@@ -218,7 +216,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 				}
 
 				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 60 * 60 * 1 );
+					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 20 * HOUR_IN_SECONDS );
 				}
 			}
 
@@ -234,6 +232,11 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 			if ( $this->is_active() == false ) {
 				if ( empty( nfe_get_field('api_key') ) ) {
 					echo $this->get_message( '<strong>' . __( 'NFe.io WooCommerce', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+				}
+
+			} else {
+				if ( nfe_get_field('nfe_send_copy') == 'yes' && nfe_get_field('nfe_copy_email') == '' ) {
+					echo $this->get_message( sprintf( __( 'The Safe Copy email is missing. Update it.', 'woocommerce-nfe' ) ) );
 				}
 			}
 		}
