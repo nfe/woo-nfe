@@ -78,7 +78,7 @@ class WC_NFe_Integration extends WC_Integration {
 					'label'             => __( 'Choose the Company', 'woocommerce-nfe' ),
 					'default'           => '',
 					'options' 			=> array(
-						$this->fetch_company( 'id' ) => ucwords( strtolower( $this->fetch_company( 'name' ) ) ),
+						$this->fetch_company( 'id' ) => $this->fetch_company( 'name' ),
 					),
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
@@ -198,7 +198,7 @@ class WC_NFe_Integration extends WC_Integration {
 		
 		foreach ( $companies as $company => $name ) {
 			if ( $field == 'name' ) {
-				$output = $name['name'];
+				$output = ucwords( strtolower( $name['name'] ) );
 			}
 
 			if ( $field == 'id' ) {
