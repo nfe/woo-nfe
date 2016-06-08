@@ -112,14 +112,35 @@ class WC_NFe_Integration extends WC_Integration {
 					'default'           => 'no',
 					'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
 				),
-				'send_email_copy' 	=> array(
+				
+				'nfe_copy_title' 	=> array(
+					'title' 			=> __( 'Safe Copy Sending', 'woocommerce-nfe' ),
+					'type' 				=> 'title',
+				),
+				'nfe_send_copy'  	=> array(
 					'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
 					'type'              => 'checkbox',
 					'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
 					'default'           => 'no',
-					'description'       => __( 'When enabled, a copy of every note issued is sent to the blog admin email.', 'woocommerce-nfe' ),
+					'description'       => __( 'When enabled, a copy of every note issued is sent.', 'woocommerce-nfe' ),
 				),
-				'nfe_title' 		=> array(
+				'nfe_copy_name' 	=> array(
+					'title'             => __( 'To: Receipt Name', 'woocommerce-nfe' ),
+					'type'              => 'text',
+					'default'  			=> esc_attr( get_bloginfo( 'name', 'display' ) ),
+					'desc_tip' 			=> __( 'Receipt name NFe.io sends copies to.', 'woocommerce-nfe' ),
+				),
+				'nfe_copy_email' 	=> array(
+					'title'             => __( 'To: Receipt Email', 'woocommerce-nfe' ),
+					'type'              => 'email',
+					'custom_attributes' => array(
+						'multiple' => 'multiple'
+					),
+					'default'           => get_option( 'admin_email' ),
+					'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
+				),
+
+				'nfe_fiscal_title' 	=> array(
 					'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ),
 					'type' 				=> 'title',
 				),
