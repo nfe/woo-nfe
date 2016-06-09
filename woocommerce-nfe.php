@@ -131,6 +131,18 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
                return;
             }
 
+            global $woocommerce;
+            
+            $settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
+            
+            if ( $woocommerce->version >= '2.1' ) {
+                $settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
+            }
+
+            if ( ! defined( 'WOOCOMMERCE_NFE_SETTINGS_URL' ) ) {
+                define( 'WOOCOMMERCE_NFE_SETTINGS_URL', $settings_url );
+            }
+
             // Filters
             add_filter( 'woocommerce_integrations',                array( $this, 'add_nfe_integration' ) );
             add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
@@ -180,16 +192,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
          * @return array
          */
         public function plugin_action_links( $links ) {
-            global $woocommerce;
-            
-            $settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
-            
-            if ( $woocommerce->version >= '2.1' ) {
-                $settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
-            }
-
             $plugin_links   = array(
-                '<a href="' . esc_url( $settings_url ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>',
+                '<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>',
             );
 
             return array_merge( $plugin_links, $links );
