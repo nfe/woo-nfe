@@ -193,15 +193,15 @@ class WC_NFe_Admin {
             <?php 
             $actions = array();
 
-            if ( $order->post_status == 'wc-completed' ) {
-                if ( $this->issue_past_orders( $order ) ) {
+            if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
+                if ( ! $this->issue_past_orders( $order ) ) {
                     $actions['woo_nfe_expired'] = array(
-                        'name'      => __( 'Time Expired', 'woocommerce-nfe' ),
+                        'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_expired'
                     );
                 }
 
-                if ( ! $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
+                if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
                     $actions['woo_nfe_issue'] = array(
                         'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
                         'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
@@ -256,10 +256,10 @@ class WC_NFe_Admin {
      * @return bool true|false
      */
     public function issue_past_orders( $order ) {
-        $time   = $order->post->post_date;
-        $days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
+        $post_date   = $order->post->post_date;
+        $days        = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
 
-        if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $time ) > strtotime( $days ) ) {
+        if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $post_date ) > strtotime( $days ) ) {
             return true;
         }
 
@@ -286,6 +286,11 @@ class WC_NFe_Admin {
      */
     public function process_nfe_order_actions( $post ) {
         if ( $post->post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
+            return false;
+        }
+
+        $order = wc_get_order( $post->ID );
+        if ( $this->issue_past_orders( $order ) ) {
             return false;
         }
         
@@ -363,7 +368,13 @@ class WC_NFe_Admin {
             
             $nfe = get_post_meta( $order_ids, 'nfe_issued', true );
 
+            $order = wc_get_order( $order_ids );
+            if ( $this->issue_past_orders( $order ) ) {
+                return false;
+            }
+
             if ( $action == 'wc_nfe_issue' ) {
+
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
 
             } elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {

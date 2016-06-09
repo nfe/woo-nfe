@@ -80,18 +80,18 @@ class WC_NFe_FrontEnd {
         $nfe 		= get_post_meta( $order->id, 'nfe_issued', true );
         $actions 	= array();
 
-        if ( $order->post_status == 'wc-completed' ) {
-            if ( $this->issue_past_orders( $order ) ) {
+        if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
+            if ( ! $this->issue_past_orders( $order ) ) {
                 $actions['woo_nfe_expired'] = array(
-                    'name'      => __( 'Time Expired', 'woocommerce-nfe' ),
+                    'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_expired'
                 );
             }
 
-            if ( ! $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
+            if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
                 $actions['woo_nfe_issue'] = array(
                     'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
-                    'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                    'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_issue'
                 );
             }
@@ -136,6 +136,7 @@ class WC_NFe_FrontEnd {
      * 
      * @param  string $post_date Post date
      * @param  string $past_days Days
+     * 
      * @return bool true|false
      */
     public function issue_past_orders( $order ) {
