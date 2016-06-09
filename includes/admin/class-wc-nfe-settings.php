@@ -41,23 +41,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		}
 
 		/**
-		 * Gets the admin url.
-		 *
-		 * @return string
-		 */
-		protected function admin_url() {
-			global $woocommerce;
-            
-            $settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
-            
-            if ( $woocommerce->version >= '2.1' ) {
-                $settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
-            }
-
-			return $settings_url;
-		}
-
-		/**
 		 * Initialize integration settings form fields.
 		 */
 		public function init_form_fields() {
@@ -82,7 +65,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'type'              => 'text',
 						'label'             => __( 'API Key', 'woocommerce-nfe' ),
 						'default'           => '',
-						'description'       => sprintf( __( 'Enter your API Key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account -> Access Keys', 'woocommerce-nfe' ) . '</a>' ),
+						'description'       => sprintf( __( 'Log in to NFe.io to look up your API key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account', 'woocommerce-nfe' ) . '</a>' ),
 					),
 					'company_id' 		=> array(
 						'title'             => __( 'Company ID', 'woocommerce-nfe' ),
@@ -122,6 +105,11 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'default'           => 'NFe-',
 						'desc_tip'       	=> __( 'Used in the webhook', 'woocommerce-nfe' ),
 					),
+
+					'issue_past_title' 	=> array(
+						'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woocommerce-nfe' ),
+						'type' 				=> 'title',
+					),
 					'issue_past_notes' => array(
 						'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
 						'type'              => 'checkbox',
@@ -129,7 +117,13 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'default'           => 'no',
 						'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
 					),
-					
+					'issue_past_days' 	=> array(
+						'title'             => __( 'Days in the past', 'woocommerce-nfe' ),
+						'type'              => 'number',
+						'default'  			=> '60',
+						'css'      			=> 'width:50px;',
+						'desc_tip'       	=> __( 'Days in the past to allow NFe manual issue.', 'woocommerce-nfe' ),
+					),
 					'nfe_copy_title' 	=> array(
 						'title' 			=> __( 'Safe Copy Sending', 'woocommerce-nfe' ),
 						'type' 				=> 'title',
@@ -151,12 +145,11 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'title'             => __( 'To: Receipt Email', 'woocommerce-nfe' ),
 						'type'              => 'email',
 						'custom_attributes' => array(
-							'multiple' => 'multiple'
+							'multiple' 		=> 'multiple'
 						),
 						'default'           => get_option( 'admin_email' ),
 						'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
 					),
-
 					'nfe_fiscal_title' 	=> array(
 						'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ),
 						'type' 				=> 'title',
@@ -196,7 +189,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		}
 
 		/**
-		 * Fetches NFe Company
+		 * Fetches NFe Companies
 		 * 
 		 * @return array An array of companies
 		 */
@@ -216,7 +209,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 				}
 
 				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 20 * HOUR_IN_SECONDS );
+					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 24 * HOUR_IN_SECONDS );
 				}
 			}
 
@@ -231,12 +224,16 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		public function display_errors() {
 			if ( $this->is_active() == false ) {
 				if ( empty( nfe_get_field('api_key') ) ) {
-					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . $this->admin_url() . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
 				}
 
 			} else {
-				if ( nfe_get_field('nfe_send_copy') == 'yes' && nfe_get_field('nfe_copy_email') == '' ) {
+				if ( nfe_get_field('nfe_send_copy') == 'yes' && empty( nfe_get_field('nfe_copy_email') ) ) {
 					echo $this->get_message( sprintf( __( 'The Safe Copy email is missing. Update it.', 'woocommerce-nfe' ) ) );
+				}
+
+				if ( nfe_get_field('issue_past_notes') == 'yes' && empty( nfe_get_field('issue_past_days') ) ) {
+					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. Add a date to calculate or disable it.', 'woocommerce-nfe' ) ) );
 				}
 			}
 		}
