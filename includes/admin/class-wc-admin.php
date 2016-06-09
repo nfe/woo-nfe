@@ -187,8 +187,6 @@ class WC_NFe_Admin {
 
         $order      = wc_get_order( $post->ID );
         $nfe        = get_post_meta( $post->ID, 'nfe_issued', true );
-        $past_days  = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
-        $post_date  = $order->post->post_date;
        
         if ( 'sales_receipt' == $column ) {
             ?><p>
@@ -196,14 +194,14 @@ class WC_NFe_Admin {
             $actions = array();
 
             if ( $order->post_status == 'wc-completed' ) {
-                if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $post_date ) > strtotime( $past_days ) ) {
+                if ( $this->issue_past_orders( $order ) ) {
                     $actions['woo_nfe_expired'] = array(
                         'name'      => __( 'Time Expired', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_expired'
                     );
                 }
 
-                if ( strtotime( $post_date ) < strtotime( $past_days ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
+                if ( ! $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
                     $actions['woo_nfe_issue'] = array(
                         'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
                         'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
@@ -247,6 +245,25 @@ class WC_NFe_Admin {
             ?>
             </p><?php
         }
+    }
+
+    /**
+     * Past Issue Check
+     * 
+     * @param  string $post_date Post date
+     * @param  string $past_days 
+     * 
+     * @return bool true|false
+     */
+    public function issue_past_orders( $order ) {
+        $time   = $order->post->post_date;
+        $days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
+
+        if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $time ) > strtotime( $days ) ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

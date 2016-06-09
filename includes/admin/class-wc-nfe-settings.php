@@ -262,6 +262,8 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 			if ( ! empty( nfe_get_field('api_key') ) ) {
 				return true;
 			}
+
+			return false;
 		}
 
 		/**
@@ -273,6 +275,8 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 			if ( ! empty( nfe_get_field('company_id') ) ) {
 				return true;
 			}
+
+			return false;
 		}
 
 		/**
@@ -284,6 +288,8 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 			if ( nfe_get_field('nfe_enable') == 'yes'  ) {
 				return true;
 			}
+
+			return false;
 		}
 
 		/**
