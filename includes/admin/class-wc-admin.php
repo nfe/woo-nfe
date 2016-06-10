@@ -185,8 +185,8 @@ class WC_NFe_Admin {
     public function order_status_column_content( $column ) {
         global $post;
 
-        $order      = wc_get_order( $post->ID );
-        $nfe        = get_post_meta( $post->ID, 'nfe_issued', true );
+        $order = wc_get_order( $post->ID );
+        $nfe   = get_post_meta( $post->ID, 'nfe_issued', true );
        
         if ( 'sales_receipt' == $column ) {
             ?><p>
@@ -194,7 +194,7 @@ class WC_NFe_Admin {
             $actions = array();
 
             if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-                if ( ! $this->issue_past_orders( $order ) ) {
+                if ( ! $this->issue_past_orders( $order ) && current_user_can('manage_woocommerce') ) {
                     $actions['woo_nfe_expired'] = array(
                         'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_expired'

@@ -81,7 +81,7 @@ class WC_NFe_FrontEnd {
         $actions 	= array();
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-            if ( ! $this->issue_past_orders( $order ) ) {
+            if ( ! $this->issue_past_orders( $order ) && current_user_can('manage_woocommerce') ) {
                 $actions['woo_nfe_expired'] = array(
                     'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_expired'
