@@ -201,9 +201,10 @@ class NFe_Woo {
 	}
 
 	/**
-	 * City Service Information (Code and Description).
+	 * City Service Information (City and Federal Code, and Description).
 	 * 
 	 * @param  string $field The field info being fetched
+	 * 
 	 * @return string
 	 */
 	public function city_service_info( $field = '', $post_id ) {
@@ -211,6 +212,7 @@ class NFe_Woo {
 			return;
 		}
 
+		// @todo Fetch fiscal activity by product variations when present, fallback to post
 		$activity = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
 
 		if ( ! empty( $post_id ) && ! empty( $activity ) ) {
