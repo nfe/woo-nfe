@@ -20,7 +20,6 @@ class NFe_Woo {
      * Nfe_Woo Instance.
      */
     public static function instance() {
-
     	// Store the instance locally to avoid private static replication
         static $instance = null;
 
@@ -103,12 +102,12 @@ class NFe_Woo {
 				}
                 
                 $nfe[] = array(
-                	'id' 	 => (int) $invoce->id,
+                	'id' 	 => (int) $invoice->id,
 					'status' => (string) $invoice->flowStatus,
 				);
 
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
-                $this->add_success( sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
+                $this->add_success( sprintf( __( 'NFe issued successfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
 			}
 		}
 		
@@ -148,14 +147,16 @@ class NFe_Woo {
 
         $data = array(
     		// Obrigatório - Serviço municipal atrelado ao serviço federal
-			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), // Código do serviço de acordo com o a cidade
-    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), // Optional - Código de nível federal
+			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
+			// Código do serviço de acordo com o a cidade
+    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), 
+    		// Optional - Código de nível federal
     		'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
-      			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ),
-      			'municipalTaxNumber' 		=> '',
-      			'name' 						=> $this->check_customer_type( 'customer-name', $order ),
+      			'federalTaxNumber' 			=> $this->check_customer_type( 'number', $order ),
+      			// 'municipalTaxNumber' 		=> '',
+      			'name' 						=> $this->check_customer_type( 'name', $order ),
             	'email' 					=> get_post_meta( $order, '_billing_email', true ),
             	'address' 		=> array(
 			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
@@ -165,12 +166,12 @@ class NFe_Woo {
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
 			        'country' 				=> get_post_meta( $order, '_billing_country', true ),
 					'city' 					=> array(
-		    			'code' 		=> $this->ibge_code( $order ),
-		    			'name' 		=> get_post_meta( $order, '_billing_city', true ),
+		    			'code' 				=> $this->ibge_code( $order ),
+		    			'name' 				=> get_post_meta( $order, '_billing_city', true ),
 					),
 					'state' 				=> get_post_meta( $order, '_billing_state', true ),
 				),
-				'type' 			=> $this->check_customer_type( 'type', $order ),
+				'type' 						=> $this->check_customer_type( 'type', $order ),
             )
         );
         
@@ -180,7 +181,7 @@ class NFe_Woo {
 	/**
 	 * Fetches the IBG Code
 	 *
-	 * @todo Add a check for non Brazilian countrie to remove it.
+	 * @todo Add a check for non Brazilian countries to remove it.
 	 * 
 	 * @param  int $order_id Order ID
 	 * @return string
@@ -204,7 +205,6 @@ class NFe_Woo {
 	 * City Service Information (City and Federal Code, and Description).
 	 * 
 	 * @param  string $field The field info being fetched
-	 * 
 	 * @return string
 	 */
 	public function city_service_info( $field = '', $post_id ) {
@@ -212,31 +212,60 @@ class NFe_Woo {
 			return;
 		}
 
-		// @todo Fetch fiscal activity by product variations when present, fallback to post
+		// @todo Fetch fiscal activity by product variations when present, fallback to global value
 		$activity = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
 
-		if ( ! empty( $post_id ) && ! empty( $activity ) ) {
+		global $woocommerce, $product;
 
-			if ( $field == 'code' ) {
-				$output = $activity['code'];
+		var_dump($product);
 
-			} elseif ( $field == 'desc' ) {
-				$output = $activity['name'];
+    	$available_variations 	= $product->get_available_variations();
+    	$attributes 			= $product->get_attributes();
 
-			} elseif ( $field == 'fed_code' ) {
-				$output = $activity['fed_code'];
+    	foreach ( $available_variations as $prod_variation ) {
+            // get some vars to work with
+           	$post_id = $prod_variation['variation_id'];
+            $post_object = get_post($post_id);
+            // get_post_meta( $post_object->ID, '_price', true);
+        }
+
+		if ( ! empty( $post_id ) ) {
+			switch ($field) {
+				case 'code':
+					$output = $activity['code'];
+					break;
+
+				case 'desc':
+					$output = $activity['name'];
+					break;
+
+				case 'fed_code':
+					$output = $activity['fed_code'];
+					break;
+				
+				default:
+					$output = "...";
+					break;
 			}
 
 		} else {
 
-			if ( $field == 'code' ) {
-				$output = nfe_get_field('nfe_cityservicecode');
+			switch ($field) {
+				case 'code':
+					$output = nfe_get_field('nfe_cityservicecode');
+					break;
 
-			} elseif ( $field == 'desc' ) {
-				$output = nfe_get_field('nfe_cityservicecode_desc');
+				case 'desc':
+					$output = nfe_get_field('nfe_cityservicecode_desc');
+					break;
 
-			} elseif ( $field == 'fed_code' ) {
-				$output = nfe_get_field('nfe_fedservicecode');
+				case 'fed_code':
+					$output = nfe_get_field('nfe_fedservicecode');
+					break;
+				
+				default:
+					$output = "...";
+					break;
 			}
 		}
 
@@ -251,56 +280,49 @@ class NFe_Woo {
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
 	public function check_customer_type( $field = '', $order ) {
-		if ( empty($field) ) {
+		if ( empty($field) || empty($order) ) {
 			return;
 		}
 
 		// Customer Person Type
-		(int) $person_type = get_post_meta( $order, '_billing_persontype', true );
+		(int) $type = get_post_meta( $order, '_billing_persontype', true );
 
-		if ( $field == 'tax-number' ) {
-			// Customer ID Number
-			$cpf = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-			$cnpj = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+		switch ($field) {
+			case 'number': // Customer ID Number
+				if ( $type == 1 ) {
+					$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+				} elseif ( $type == 2 ) {
+					$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+				}
+				break;
 
-			if ( $person_type == 1 ) {
-				$result = $cpf;
-			} elseif ( $person_type == 2 ) {
-				$result = $cnpj;
-			}
+			case 'name': // Customer Name/Razão Social
+				if ( $type == 1 ) {
+					$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+				} elseif ( $type == 2 ) {
+					$output = get_post_meta( $order, '_billing_company', true );
+				}
+				break;
 
-		} elseif ( $field == 'customer-name' ) {
-			// Customer Name
-			$cnpj_name 	= get_post_meta( $order, '_billing_company', true );
-			$cpf_name 	= get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+			case 'type': // Customer Type
+				if ( $type == 1 ) {
+					$output = 'Customers';
+				} elseif ( $type == 2 ) {
+					$output = 'Company';
+				}
+				break;
 
-			if ( $person_type == 1 ) {
-				$result = $cpf_name;
-			} elseif ( $person_type == 2 ) {
-				$result = $cnpj_name;
-			}
-
-		} elseif ( $field == 'type' ) {
-			if ( $person_type == 1 ) {
-				$result = 'Customers';
-			} elseif ( $person_type == 2 ) {
-				$result = 'Company';
-			}
+			default:
+				$output = "...";
+				break;
 		}
 
-		if ( empty($result) ) {
-			$result = '...';
-		}
-
-        return $result;
+        return $output;
 	}
 
 	/**
-	 * WooCommerce 2.2 support for wc_get_order
+	 * WooCommerce 2.2 support for wc_get_order.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @access private
 	 * @param int $order_id
 	 * @return void
 	 */

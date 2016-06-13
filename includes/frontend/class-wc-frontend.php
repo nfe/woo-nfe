@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WooCommerce NFe.io FrontEnd Class
+ * WooCommerce NFe.io FrontEnd Class.
  *
  * @author   Renato Alves
  * @category Admin

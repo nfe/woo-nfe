@@ -45,7 +45,8 @@ class WC_NFe_Admin {
     /**
      * Adds NFe custom tab
      * 
-     * @param array $product_data_tabs Array of tabs
+     * @param array $product_data_tabs Array of product tabs
+     * @return array Array with product data tabs
      */
     public function product_data_tab( $product_data_tabs ) {
         $product_data_tabs['nfe-product-info-tab'] = array(
@@ -64,9 +65,7 @@ class WC_NFe_Admin {
      * @return string
      */
     public function product_data_fields() {
-        global $post; 
-        
-        ?>
+        global $post; ?>
         <div id="nfe_product_info_data" class="panel woocommerce_options_panel">
             <?php
             woocommerce_wp_text_input( 
