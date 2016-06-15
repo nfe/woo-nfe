@@ -151,7 +151,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
 					),
 					'nfe_fiscal_title' 	=> array(
-						'title' 			=> __( 'Fiscal Activity', 'woocommerce-nfe' ),
+						'title' 			=> __( 'Fiscal Activity (Global)', 'woocommerce-nfe' ),
 						'type' 				=> 'title',
 					),
 					'nfe_cityservicecode' => array(
