@@ -1,9 +1,9 @@
 <?php
 
 /**
- * NFe safe copy email
+ * NFe checkout fields filling email
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/emails/nfe-safe-copy.php.
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/nfe-checkout-fields.php.
  *
  * @see 	    https://docs.woothemes.com/document/template-structure/
  * @author 		NFe.io
@@ -14,12 +14,16 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+$link = 
+
 /**
  * @hooked WC_Emails::email_header() Output the email header
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php _e('This is a safe copy email.', 'woocommerce-nfe'); ?></p>
+<p><?php sprintf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), $link ); ?></p>
+
+<p>Atenciosamente</p>
 
 <?php
 /**

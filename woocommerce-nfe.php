@@ -5,7 +5,7 @@
  *
  * @link              https://github.com/nfe/woocommerce-nfe
  * @since             1.0.0
- * @package           WooCommerce NFe
+ * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe

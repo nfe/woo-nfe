@@ -107,6 +107,7 @@ class NFe_Woo {
 					'status' => (string) $invoice->flowStatus,
 				);
 
+                // do_action( 'nfe_safe_copy_notification' );
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
                 $this->add_success( sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
 			}

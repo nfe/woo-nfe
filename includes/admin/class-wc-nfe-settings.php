@@ -3,7 +3,7 @@
 /**
  * WooCommerce NFe.io Integration
  *
- * @author   Renato Alves
+ * @author   NFe
  * @category Admin
  * @package  WooCommerce_NFe/Class/WC_NFe_Integration
  * @version  1.0.0
@@ -90,7 +90,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
 						'default'           => 'before',
 						'options' 			=> array(
-							'before'     	=> __( 'Before Checkout', 'woocommerce-nfe' ),
+							'before'     	=> __( 'Before Checkout (Default)', 'woocommerce-nfe' ),
 							'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
 							'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
 						),

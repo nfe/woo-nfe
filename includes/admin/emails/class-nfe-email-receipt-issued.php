@@ -1,11 +1,9 @@
 <?php
 
 /**
- * NFe Safe Copy Email
+ * NFe Receipt Issued Email
  *
- * An email sent to the admin with the receipt for saving
- *
- * @class 	WC_NFe_Email_Safe_Copy
+ * @class 	WC_NFe_Email_Receipt_Issued
  * @version	1.0.0
  * @package	WooCommerce_NFe/Classes/Emails
  * @author 	NFe.io
@@ -15,7 +13,7 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-class WC_NFe_Email_Safe_Copy extends WC_Email {
+class WC_NFe_Email_Receipt_Issued extends WC_Email {
 
 	/**
 	 * Create an instance of the class.
@@ -25,20 +23,20 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	 */
 	public function __construct() {
 
-		$this->id          = 'safe_copy';
-		$this->title       = __( 'NFe Safe Copy', 'woocommerce-nfe' );
+		$this->id          = 'receipt_issued';
+		$this->title       = __( 'NFe Receipt Issued', 'woocommerce-nfe' );
 		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woocommerce-nfe' );
 
-		$this->heading     = __( 'NFe Safe Copy', 'woocommerce-nfe' );
+		$this->heading     = __( 'NFe Receipt Issued', 'woocommerce-nfe' );
 		
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
-		$this->subject     = sprintf( _x( '[%s] NFe Safe Copy', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woocommerce-nfe' ), '{blogname}' );
+		$this->subject     = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woocommerce-nfe' ), '{blogname}' );
 
-		$this->template_html  = 'emails/nfe-safe-copy.php';
-		$this->template_plain = 'emails/plain/nfe-safe-copy.php';
+		$this->template_html  = 'emails/nfe-receipt-issued.php';
+		$this->template_plain = 'emails/plain/nfe-receipt-issued.php';
 		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 
-		add_action( 'nfe_safe_copy_notification', array( $this, 'trigger' ) );
+		add_action( 'nfe_receipt_issued_notification', array( $this, 'trigger' ) );
 
 		parent::__construct();
 
@@ -56,7 +54,7 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	 * @return void
 	 */
 	public function trigger( $args ) {
-		if ( ! $this->is_enabled() || ! $this->get_recipient() || nfe_get_field('nfe_send_copy') == 'yes' ) {
+		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
 			return;
 		}
 
@@ -113,15 +111,15 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 				'title'         => _x( 'Enable/Disable', 'an email notification', 'woocommerce-nfe' ),
 				'type'          => 'checkbox',
 				'label'         => __( 'Enable this email notification', 'woocommerce-nfe' ),
-				'default'       => nfe_get_field('nfe_send_copy'),
+				'default'       => 'yes',
 			),
 			'recipient' => array(
 				'title'         => _x( 'Recipient(s)', 'of an email', 'woocommerce-nfe' ),
 				'type'          => 'text',
 				// translators: placeholder is admin email
-				'description'   => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', 'woocommerce-nfe' ), esc_attr(  nfe_get_field('nfe_copy_email') ) ),
+				'description'   => sprintf( __( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', 'woocommerce-nfe' ), esc_attr( get_option( 'admin_email' ) ) ),
 				'placeholder'   => '',
-				'default'       => nfe_get_field('nfe_copy_email'),
+				'default'       => get_option( 'admin_email' ),
 			),
 			'subject' => array(
 				'title'         => _x( 'Subject', 'of an email', 'woocommerce-nfe' ),
