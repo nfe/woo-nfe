@@ -145,7 +145,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
             }
 
             if ( ! defined( 'WOOCOMMERCE_NFE_PATH' ) ) {
-                define( 'WOOCOMMERCE_NFE_PATH', plugin_dir_path( __FILE__ ) );
+                define( 'WOOCOMMERCE_NFE_PATH', plugin_dir_path( $this->file ) );
             }
 
             // Filters

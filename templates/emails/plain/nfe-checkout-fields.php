@@ -20,6 +20,8 @@ echo sprintf( __( 'You have received an order from %s. The order is as follows:'
 
 echo sprintf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), $link );
 
+echo __('Atenciosamente.', 'woocommerce-nfe');
+
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 
 echo apply_filters( 'woocommerce_email_footer_text', get_option( 'woocommerce_email_footer_text' ) );
