@@ -1,5 +1,10 @@
 <?php
 
+// Exit if accessed directly
+defined( 'ABSPATH' ) || exit;
+
+if ( ! class_exists('WC_NFe_Checkout_Fields') ) :
+
 /**
  * Email to remind the customer to update NFe information
  *
@@ -8,11 +13,7 @@
  * @package	WooCommerce_NFe/Classes/Emails
  * @author 	NFe.io
  * @extends WC_Email
- */
-
-// Exit if accessed directly
-defined( 'ABSPATH' ) || exit;
-
+ */	
 class WC_NFe_Checkout_Fields extends WC_Email {
 
 	/**
@@ -22,7 +23,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	 * @return void
 	 */
 	public function __construct() {
-
 		$this->id          = 'checkout_fields';
 		$this->title       = __( 'NFe Update Checkout Fields', 'woocommerce-nfe' );
 		$this->description = __( 'Email to remind the customer to add/update NFe fields. These fields are used from WooCommerce NFe.', 'woocommerce-nfe' );
@@ -36,15 +36,14 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 		$this->template_plain = 'emails/plain/nfe-checkout-fields.php';
 		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 
-		add_action( 'nfe_checkout_fields_notification', array( $this, 'trigger' ) );
+		// Triggers
+    	add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'trigger' ) );
+    	add_action( 'nfe_checkout_fields_notification', array( $this, 'trigger' ) );
 
 		parent::__construct();
 
-		$this->recipient = $this->get_option( 'recipient' );
-
-		if ( ! $this->recipient ) {
-			$this->recipient = get_option( 'admin_email' );
-		}
+		$this->recipient = $this->get_option( 'recipient', get_option( 'admin_email' ) );
 	}
 
 	/**
@@ -53,8 +52,19 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	 * @access public
 	 * @return void
 	 */
-	public function trigger( $args ) {
-		if ( ! $this->is_enabled() || ! $this->get_recipient() || $this->where_note() ) {
+	public function trigger( $order_id ) {
+		if ( $this->where_note() ) {
+			return;
+		}
+
+		if ( $order_id ) {
+			$this->object 	= wc_get_order( $order_id );
+			$customer_email = get_post_meta( $order_id, '_billing_email', true );
+		}
+
+		$recipients_list = array_merge( array( $this->get_recipient() ), $customer_email );
+
+		if ( ! $this->is_enabled() || ! $recipients_list ) {
 			return;
 		}
 
@@ -62,41 +72,35 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	}
 
 	/**
-	 * get_content_html public function.
+	 * Get content html.
 	 *
 	 * @access public
 	 * @return string
 	 */
 	public function get_content_html() {
-		ob_start();
-		wc_get_template(
-			$this->template_html,
-			array(
-				'email_heading' => $this->get_heading(),
-			),
-			'',
-			$this->template_base
-		);
-		return ob_get_clean();
+		return wc_get_template_html( $this->template_html, array(
+			'order'         => $this->object,
+			'email_heading' => $this->get_heading(),
+			'sent_to_admin' => false,
+			'plain_text'    => false,
+			'email'			=> $this
+		) );
 	}
 
 	/**
-	 * get_content_plain public function.
+	 * Get content plain.
 	 *
 	 * @access public
 	 * @return string
 	 */
 	public function get_content_plain() {
-		ob_start();
-		wc_get_template(
-			$this->template_plain,
-			array(
-				'email_heading'  => $this->get_heading(),
-			),
-			'',
-			$this->template_base
-		);
-		return ob_get_clean();
+		return wc_get_template_html( $this->template_plain, array(
+			'order'         => $this->object,
+			'email_heading' => $this->get_heading(),
+			'sent_to_admin' => false,
+			'plain_text'    => true,
+			'email'			=> $this
+		) );
 	}
 
 	/**
@@ -156,7 +160,7 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	 * @return bool true|false
 	 */
 	public function where_note() {
-		if ( nfe_get_field('where_note') == 'after' ) {
+		if ( nfe_get_field('where_note') == 'before' || nfe_get_field('where_note') == 'manual' ) {
 			return true;
 		}
 	}
@@ -168,6 +172,10 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	 * @return string
 	 */
 	public function where_note_enabled() {
-		return $enabled = nfe_get_field('where_note') == 'after' ? 'yes' : 'no';
+		return nfe_get_field('where_note') == 'after' ? 'yes' : 'no';
 	}
 }
+
+endif;
+
+// That's it! =)
