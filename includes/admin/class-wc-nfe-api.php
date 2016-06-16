@@ -1,19 +1,17 @@
 <?php
 
-/**
- * WooCommerce NFe.io NFe_Woo Class
- *
- * @author   Renato Alves
- * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.0
- */
-
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+if ( ! class_exists('NFe_Woo') ) :
+
 /**
-* NFe_Woo Main Class
-*/
+ * WooCommerce NFe.io NFe_Woo Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/NFe_Woo
+ * @version  1.0.0
+ */
 class NFe_Woo {
         
     /**
@@ -213,12 +211,7 @@ class NFe_Woo {
 			return;
 		}
 
-		// @todo Fetch fiscal activity by product variations when present, fallback to global value
-		$activity = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
-
 		global $woocommerce, $product;
-
-		var_dump($product);
 
     	$available_variations 	= $product->get_available_variations();
     	$attributes 			= $product->get_attributes();
@@ -229,6 +222,8 @@ class NFe_Woo {
             $post_object = get_post($post_id);
             // get_post_meta( $post_object->ID, '_price', true);
         }
+
+        // get_post_meta( $post->ID, '_simple_cityservicecode', true )
 
 		if ( ! empty( $post_id ) ) {
 			switch ($field) {
@@ -472,6 +467,8 @@ class NFe_Woo {
 	   	return $maskared;
 	}
 }
+
+endif;
 
 /**
  * The main function responsible for returning the one true NFe_Woo Instance.

@@ -1,19 +1,16 @@
 <?php
 
-/**
- * WooCommerce NFe.io WC_NFe_Admin Class
- *
- * @author   Renato Alves
- * @category Admin
- * @package  WooCommerce_NFe/Class/WC_NFe_Admin
- * @version  1.0.0
- */
-
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+if ( ! class_exists('WC_NFe_Admin') ) :
+
 /**
- * WC_NFe_Admin
+ * WooCommerce NFe.io WC_NFe_Admin Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Admin
+ * @version  1.0.0
  */
 class WC_NFe_Admin {
 
@@ -436,4 +433,8 @@ class WC_NFe_Admin {
     }
 }
 
+endif;
+
 $run = new WC_NFe_Admin;
+
+// That's it! =)
