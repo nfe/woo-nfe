@@ -5,7 +5,7 @@
  *
  * @link              https://github.com/nfe/woocommerce-nfe
  * @since             1.0.0
- * @package           WooCommerce NFe
+ * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
@@ -105,6 +105,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
             require( $this->includes_dir . 'admin/class-wc-nfe-settings.php'  );
             require( $this->includes_dir . 'admin/class-wc-admin.php'         );
             require( $this->includes_dir . 'admin/class-wc-nfe-api.php'       );
+            require( $this->includes_dir . 'admin/class-emails.php'           );
             require( $this->includes_dir . 'nfe-functions.php'                );
 
             // Front-end
@@ -141,6 +142,10 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 
             if ( ! defined( 'WOOCOMMERCE_NFE_SETTINGS_URL' ) ) {
                 define( 'WOOCOMMERCE_NFE_SETTINGS_URL', $settings_url );
+            }
+
+            if ( ! defined( 'WOOCOMMERCE_NFE_PATH' ) ) {
+                define( 'WOOCOMMERCE_NFE_PATH', plugin_dir_path( $this->file ) );
             }
 
             // Filters
