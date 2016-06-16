@@ -32,7 +32,7 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
 		$this->subject     = sprintf( _x( '[%s] NFe Update Checkout Fields', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woocommerce-nfe' ), '{blogname}' );
 
-		$this->template_base  = WOOCOMMERCE_NFE_PATH . '/templates/';
+		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 		$this->template_html  = 'emails/nfe-checkout-fields.php';
 		$this->template_plain = 'emails/plain/nfe-checkout-fields.php';
 

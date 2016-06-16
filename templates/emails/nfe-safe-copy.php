@@ -7,7 +7,7 @@
  *
  * @see 	    https://docs.woothemes.com/document/template-structure/
  * @author 		NFe.io
- * @package 	WooCommerce/Templates/Emails
+ * @package 	WooCommerce_NFe/Templates/Emails
  * @version     1.0.0
  */
 
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php _e('This is a safe copy email.', 'woocommerce-nfe'); ?></p>
+<p><?php __('This is a safe copy email.', 'woocommerce-nfe'); ?></p>
 
 <?php
 /**

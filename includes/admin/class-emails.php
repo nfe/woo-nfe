@@ -7,12 +7,10 @@ if ( ! class_exists('WC_NFe_Emails') ) :
 
 /**
  * WooCommerce NFe Email Class
- *
- * Modifies the base WooCommerce email class and extends it to send nfe emails.
  * 
- * @version	1.0.0
- * @package		WooCommerce_NFe/WC_NFe_Emails
- * @author		NFe.io
+ * @version 	1.0.0
+ * @package 	WooCommerce_NFe/WC_NFe_Emails
+ * @author  	NFe.io
  */
 class WC_NFe_Emails {
 

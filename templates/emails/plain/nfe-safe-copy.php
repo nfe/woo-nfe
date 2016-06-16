@@ -7,7 +7,7 @@
  *
  * @see 	    https://docs.woothemes.com/document/template-structure/
  * @author		NFe.io
- * @package 	WooCommerce/Templates/Emails/Plain
+ * @package 	WooCommerce_NFe/Templates/Emails/Plain
  * @version		1.0.0
  */
 
