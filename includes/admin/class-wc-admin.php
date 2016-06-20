@@ -25,7 +25,7 @@ class WC_NFe_Admin {
         add_action( 'manage_shop_order_posts_custom_column',        array( $this, 'order_status_column_content' ) );
         add_action( 'woocommerce_order_actions',                    array( $this, 'nfe_order_actions' ), 10, 1 );
         add_action( 'woocommerce_order_action_wc_nfe_issue',        array( $this, 'process_nfe_order_actions' ), 10, 1 );
-        add_action( 'admin_footer-edit.php',                        array( $this, 'order_bulk_actions' ) );
+        add_action( 'admin_footer',                                 array( $this, 'nfe_bulk_actions' ), 10 );
         add_action( 'load-edit.php',                                array( $this, 'process_order_bulk_actions' ) );
         add_action( 'admin_enqueue_scripts',                        array( $this, 'enqueue_scripts' ) );
 
@@ -330,25 +330,22 @@ class WC_NFe_Admin {
         $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
 
         if ( $nfe->status == 'issued' ) {
-            NFe_Woo()->down_invoice( $post->ID );
-
-        } else {
+            NFe_Woo()->down_invoice( array( $post->ID ) );
+        } 
+        else {
             NFe_Woo()->issue_invoice( array( $post->ID ) );
         }
     }
 
     /**
      * Order Bulk Actions - JavaScript
-     *
-     * @todo Maybe use get_post_type(), check var_dump( $post_type ) if has proper output
-     * @todo The same for $post_status
      * 
      * @return string
      */
-    public function order_bulk_actions() {
+    public function nfe_bulk_actions() {
         global $post_type, $post_status;
 
-        if ( 'shop_order' == get_post_type() ) {
+        if ( 'shop_order' == $post_type ) {
 
             // Bail if NFe is disabled
             if ( nfe_get_field('nfe_enable') == 'no' ) {
@@ -356,7 +353,7 @@ class WC_NFe_Admin {
             }
             
             // Bail if post status is true for the following post_status
-            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
+            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' ) ) {
                 return false;
             } ?>
              <script type="text/javascript">
@@ -407,10 +404,10 @@ class WC_NFe_Admin {
             }
 
             if ( $action == 'wc_nfe_issue' ) {
-
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
 
-            } elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
+            } 
+            elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
                 NFe_Woo()->down_invoice( array( $order_ids ) );
             }
         }

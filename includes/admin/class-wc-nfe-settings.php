@@ -44,12 +44,12 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * Initialize integration settings form fields.
 		 */
 		public function init_form_fields() {
-			if ( $this->has_company_id() ) {
+			if ( $this->has_api_key() ) {
 				$lists = $this->fetch_companies();
 				$company_list = array_merge( array( '' => __( 'Select a company...', 'woocommerce-nfe' ) ), $lists );
 
 			} else {
-				$company_list = array( '' => __( 'Enter your API key and save to see your companies.', 'woocommerce-nfe' ) );
+				$company_list = array( 'no-company' => __( 'Enter your API key and save to see your companies.', 'woocommerce-nfe' ) );
 			}
 
 			$this->form_fields = apply_filters( 'woocommerce_nfe_settings', 
@@ -66,13 +66,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'label'             => __( 'API Key', 'woocommerce-nfe' ),
 						'default'           => '',
 						'description'       => sprintf( __( 'Log in to NFe.io to look up your API key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account', 'woocommerce-nfe' ) . '</a>' ),
-					),
-					'company_id' 		=> array(
-						'title'             => __( 'Company ID', 'woocommerce-nfe' ),
-						'type'              => 'text',
-						'label'             => __( 'Company ID', 'woocommerce-nfe' ),
-						'default'           => '',
-						'desc_tip'       	=> __( 'Enter your Company ID. You can find this in your NFe.io account.', 'woocommerce-nfe' ),
 					),
 					'choose_company' 	=> array(
 						'title'             => __( 'Choose the Company', 'woocommerce-nfe' ),
@@ -182,7 +175,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'default'           => 'no',
 						'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'woocommerce-nfe' ) . '</a>' ),
 					),
-				) 
+				)
 			);
 
 			return apply_filters( 'woocommerce_nfe_settings_' . $this->id, $this->form_fields );
@@ -193,23 +186,31 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * 
 		 * @return array An array of companies
 		 */
-		public function fetch_companies() {
+		private function fetch_companies() {
 			$key 			= nfe_get_field('api_key');
-			$id  			= nfe_get_field('company_id');
 			$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
 
 			if ( false === $company_list ) {
-				$url 		= 'http://api.nfe.io/v1/companies/' . $id . '?api_key='. $key . '';
+				$url 		= 'http://api.nfe.io/v1/companies?api_key='. $key . '';
 				$response 	= wp_remote_get( esc_url_raw( $url ) );
 				$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
-				
-				$company_list = array();
-				foreach ( $companies as $company => $c ) {
-					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-				}
 
-				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 24 * HOUR_IN_SECONDS );
+				if ( is_wp_error( $companies ) ) {
+
+					add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+					add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+
+					return false;
+				}
+				else {
+					$company_list = array();
+					foreach ( $companies['companies'] as $c ) {
+						$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
+					}
+
+					if ( sizeof( $company_list ) > 0 ) {
+						set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 1 * HOUR_IN_SECONDS );
+					}
 				}
 			}
 
@@ -224,7 +225,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		public function display_errors() {
 			if ( $this->is_active() == false ) {
 				if ( empty( nfe_get_field('api_key') ) ) {
-					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'You should inform your API Key and Company ID. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no api key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
 				}
 
 			} else {
@@ -239,6 +240,16 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		}
 
 		/**
+		 * Display message to user if there is an issue with the NFe API call
+		 *
+		 * @param void
+		 * @return html the message for the user
+		 */
+		public function nfe_api_error_msg() {
+			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the company lists from NFe.io.', 'woocommerce-nfe' ) ) );
+		}
+
+		/**
 		 * Get message
 		 * 
 		 * @return string Error
@@ -246,7 +257,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		private function get_message( $message, $type = 'error' ) {
 			ob_start();
 			?>
-			<div class="<?php echo $type ?>">
+			<div class="<?php echo esc_attr( $type ) ?>">
 				<p><?php echo $message ?></p>
 			</div>
 			<?php
@@ -259,20 +270,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * @return void
 		 */
 		public function has_api_key() {
-			if ( ! empty( nfe_get_field('api_key') ) ) {
-				return true;
-			}
-
-			return false;
-		}
-
-		/**
-		 * has_company_id function.
-		 *
-		 * @return void
-		 */
-		public function has_company_id() {
-			if ( ! empty( nfe_get_field('company_id') ) ) {
+			if ( nfe_get_field('api_key') ) {
 				return true;
 			}
 
@@ -285,7 +283,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * @return void
 		 */
 		public function is_active() {
-			if ( nfe_get_field('nfe_enable') == 'yes'  ) {
+			if ( nfe_get_field('nfe_enable') === 'yes'  ) {
 				return true;
 			}
 

@@ -53,43 +53,21 @@ class NFe_Woo {
      */
 	public function issue_invoice( $order_ids = array() ) {
         $key        = nfe_get_field('api_key');
-        $company_id = nfe_get_field('company_id');
+        $company_id = nfe_get_field('choose_company');
 
         Nfe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
 			$data = $this->order_info( $order_id );
 
-            $invoice = Nfe_ServiceInvoice::create( 
-                $company_id,
-                $data 
-            );
+            $invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-            if ( isset( $invoice->error ) ) {
-                $mensagem = sprintf( __( 'Error when issuing the receipt for order %1d:', 'woocommerce-nfe'), $order_id );
-                
-                $mensagem .= '<ul style="padding-left:20px;">';
-                $mensagem .= '<li>' . $invoice->error . '</li>';
-                
-                if ( isset( $invoice->log ) ) {
-                    
-                    if ( $invoice->log ) {
-                        
-                        $mensagem .= '<li>' . $invoice->log . '</li>';
-                        
-                    } else { 
-                    
-                        foreach ( $invoice->log as $erros ) {
-                            foreach ( $erros as $erro ) {
-                                $mensagem .= '<li>' . $erro . '</li>';
-                            }
-                        }   
-                    }
-                }
-                
-                $mensagem .= '</ul>';
-                
-                $this->add_error( $mensagem );
+            if ( isset( $invoice->errors ) || is_wp_error( $invoice->errors ) ) {
+
+            	add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+
+				return false;
 
 			} else {
 
@@ -100,13 +78,12 @@ class NFe_Woo {
 				}
                 
                 $nfe[] = array(
-                	'id' 	 => (int) $invoice->id,
-					'status' => (string) $invoice->flowStatus,
+					'id' 	  => (int) $invoice->id,
+					'status'  => (string) $invoice->flowStatus,
+					'data' 	  => date_i18n('d/m/Y'),
 				);
 
-                // do_action( 'nfe_safe_copy_notification' );
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
-                $this->add_success( sprintf( __( 'NFe issued successfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
 			}
 		}
 		
@@ -145,33 +122,30 @@ class NFe_Woo {
 		$total = $this->wc_get_order( $order );
 
         $data = array(
-    		// Obrigatório - Serviço municipal atrelado ao serviço federal
+        	'id' 				=> $order->id, // Número do pedido
 			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
-			// Código do serviço de acordo com o a cidade
     		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), 
-    		// Optional - Código de nível federal
     		'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
-      			'federalTaxNumber' 			=> $this->check_customer_type( 'number', $order ),
-      			// 'municipalTaxNumber' 		=> '',
-      			'name' 						=> $this->check_customer_type( 'name', $order ),
+      			'name' 						=> $this->check_customer_info( 'name', $order ),
             	'email' 					=> get_post_meta( $order, '_billing_email', true ),
-            	'address' 		=> array(
+            	'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
+            	'type' 						=> $this->check_customer_info( 'type', $order ),
+            	'address' 					=> array(
 			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
 			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
 			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
 			        'country' 				=> get_post_meta( $order, '_billing_country', true ),
+			        'state' 				=> get_post_meta( $order, '_billing_state', true ),
 					'city' 					=> array(
 		    			'code' 				=> $this->ibge_code( $order ),
 		    			'name' 				=> get_post_meta( $order, '_billing_city', true ),
 					),
-					'state' 				=> get_post_meta( $order, '_billing_state', true ),
 				),
-				'type' 						=> $this->check_customer_type( 'type', $order ),
-            )
+            ),
         );
         
 		return $data;	
@@ -211,32 +185,32 @@ class NFe_Woo {
 			return;
 		}
 
-		global $woocommerce, $product;
+		$order = $this->wc_get_order($post_id);
 
-    	$available_variations 	= $product->get_available_variations();
-    	$attributes 			= $product->get_attributes();
-
-    	foreach ( $available_variations as $prod_variation ) {
-            // get some vars to work with
-           	$post_id = $prod_variation['variation_id'];
-            $post_object = get_post($post_id);
-            // get_post_meta( $post_object->ID, '_price', true);
+		// Products
+		foreach ( $order->get_items() as $key => $item ) {
+			
+            $product_id   = $item['product_id'];
+            $variation_id = $item['variation_id'];
+                
+            // Vars
+            $_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
+            $_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
+            $_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
         }
-
-        // get_post_meta( $post->ID, '_simple_cityservicecode', true )
 
 		if ( ! empty( $post_id ) ) {
 			switch ($field) {
 				case 'code':
-					$output = $activity['code'];
+					$output = $_simple_cityservicecode;
 					break;
 
 				case 'desc':
-					$output = $activity['name'];
+					$output = $_simple_nfe_product_desc;
 					break;
 
 				case 'fed_code':
-					$output = $activity['fed_code'];
+					$output = $_simple_federalservicecode;
 					break;
 				
 				default:
@@ -275,7 +249,7 @@ class NFe_Woo {
 	 * @param  int  $order     		The order ID
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
-	public function check_customer_type( $field = '', $order ) {
+	public function check_customer_info( $field = '', $order ) {
 		if ( empty($field) || empty($order) ) {
 			return;
 		}
@@ -331,84 +305,20 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Displaying NFe messages.
-	 * 
-	 * @return string
+	 * Display message to user if there is an issue with the NFe API call
+	 *
+	 * @param void
+	 * @return html the message for the user
 	 */
-	public function display_messages() {
-        $error_msg 	= get_option('woocommerce_nfe_woo_error_messages');
-        $succes_msg = get_option('woocommerce_nfe_woo_success_messages');
-    
-        if ( $error_msg ) { ?>
-            <div class="error">
-                <? foreach ( $error_msg as $message ) { 
-                    echo '<p>' . $message . '</p>'; 
-                } ?>
-            </div>
-            <?php
-        
-            delete_option('woocommerce_nfe_woo_error_messages');
-        }
-    
-        if ( $succes_msg ) { ?>
-            <div class="updated notice notice-success">
-                <? foreach ( $succes_msg as $message ) {
-                    echo '<p>' . $message . '</p>';
-                } ?>
-            </div>
-            <?php
-        
-            delete_option('woocommerce_nfe_woo_success_messages');
-        }
-    }
-
-    /**
-     * Adding error messages
-     * 
-     * @param string
-     */
-    public function add_error( $message ) {
-        $messages = get_option('woocommerce_nfe_woo_error_messages');
-
-        if ( ! $messages ) {
-            $messages = array();
-        }
-
-        if ( $messages && count($messages) > 0 ) { 
-            foreach ( $messages as $msg ) { 
-                if ( $msg == $message ) {
-                    return false;
-                }
-            }
-        }
-
-        $messages[] = $message;
-        update_option('woocommerce_nfe_woo_error_messages', $messages);
-    }
-
-    /**
-     * Adding success messages
-     * 
-     * @param string
-     */
-    public function add_success( $message ) {
-        $messages = get_option('woocommerce_nfe_woo_success_messages');
-
-        if ( ! $messages ) {
-            $messages = array();
-        }
-
-        if ( $messages && count($messages) > 0 ) { 
-            foreach ( $messages as $msg ) { 
-                if ( $msg == $message ) {
-                    return false;
-                }
-            }
-        }
-
-        $messages[] = $message;
-        update_option('woocommerce_nfe_woo_success_messages', $messages);
-    }
+	public function nfe_api_error_msg() {
+		ob_start();
+		?>
+		<div class="error">
+			<p><?php echo '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'There was a problem issuing a receipt in NFe.io.', 'woocommerce-nfe' ) ); ?></p>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 	public function cpf( $cpf ) {
 		if ( ! $cpf ) {
