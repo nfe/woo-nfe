@@ -62,7 +62,7 @@ class NFe_Woo {
 
             $invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-            if ( isset( $invoice->errors ) || is_wp_error( $invoice->errors ) ) {
+            if ( isset( $invoice->errors ) || isset( $invoice->message ) || is_wp_error( $invoice->errors ) ) {
 
             	add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
@@ -73,15 +73,13 @@ class NFe_Woo {
 
 				$nfe = get_post_meta( $order_id, 'nfe_issued', true );
 				
-				if ( !$nfe ) {
-					$nfe = array();
+				if ( ! $nfe ) {
+	                $nfe = array(
+						'id' 	  => (int) $invoice['id'],
+						'status'  => (string) $invoice['flowStatus'],
+						'data' 	  => date_i18n('d/m/Y'),
+					);
 				}
-                
-                $nfe[] = array(
-					'id' 	  => (int) $invoice->id,
-					'status'  => (string) $invoice->flowStatus,
-					'data' 	  => date_i18n('d/m/Y'),
-				);
 
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
 			}
@@ -91,14 +89,14 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Downloads the invoice
+	 * Downloads the invoice(s)
 	 * 
 	 * @param  array  $order_ids Array of order ids
 	 * @return string            Pdf
 	 */
 	public function down_invoice( $order_ids = array() ) {
 		$key 		= nfe_get_field('api_key');
-		$company 	= nfe_get_field('company_id');
+		$company_id = nfe_get_field('choose_company');
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
@@ -122,23 +120,21 @@ class NFe_Woo {
 		$total = $this->wc_get_order( $order );
 
         $data = array(
-        	'id' 				=> $order->id, // Número do pedido
 			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
-    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), 
+    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ),
     		'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
-      			'name' 						=> $this->check_customer_info( 'name', $order ),
+      			'name' 						=> $this->check_customer_info( 'name', $order ), 
             	'email' 					=> get_post_meta( $order, '_billing_email', true ),
             	'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
-            	'type' 						=> $this->check_customer_info( 'type', $order ),
             	'address' 					=> array(
 			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
 			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
 			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
-			        'country' 				=> get_post_meta( $order, '_billing_country', true ),
+			        'country' 				=> get_post_meta( $order, '_billing_country', true ), // Important
 			        'state' 				=> get_post_meta( $order, '_billing_state', true ),
 					'city' 					=> array(
 		    			'code' 				=> $this->ibge_code( $order ),
@@ -147,12 +143,12 @@ class NFe_Woo {
 				),
             ),
         );
-        
-		return $data;	
+
+        return array_filter($data);
 	}
 
 	/**
-	 * Fetches the IBG Code
+	 * Fetches the IBGE Code
 	 *
 	 * @todo Add a check for non Brazilian countries to remove it.
 	 * 
@@ -167,7 +163,7 @@ class NFe_Woo {
 		$key = nfe_get_field('api_key');
 		$cep = get_post_meta( $order_id, '_billing_postcode', true );
 
-		$url 		= 'http://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
+		$url 		= 'https://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
 		$response 	= wp_remote_get( esc_url_raw( $url ) );
 		$address 	= json_decode( wp_remote_retrieve_body( $response ), true );
 
@@ -192,51 +188,28 @@ class NFe_Woo {
 			
             $product_id   = $item['product_id'];
             $variation_id = $item['variation_id'];
-                
-            // Vars
+
             $_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
             $_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
             $_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
         }
 
-		if ( ! empty( $post_id ) ) {
-			switch ($field) {
-				case 'code':
-					$output = $_simple_cityservicecode;
-					break;
+		switch ($field) {
+			case 'code':
+				$output = $_simple_cityservicecode ? $_simple_cityservicecode : nfe_get_field('nfe_cityservicecode');
+				break;
 
-				case 'desc':
-					$output = $_simple_nfe_product_desc;
-					break;
+			case 'desc':
+				$output = $_simple_nfe_product_desc ? $_simple_nfe_product_desc : nfe_get_field('nfe_cityservicecode_desc');
+				break;
 
-				case 'fed_code':
-					$output = $_simple_federalservicecode;
-					break;
-				
-				default:
-					$output = "...";
-					break;
-			}
-
-		} else {
-
-			switch ($field) {
-				case 'code':
-					$output = nfe_get_field('nfe_cityservicecode');
-					break;
-
-				case 'desc':
-					$output = nfe_get_field('nfe_cityservicecode_desc');
-					break;
-
-				case 'fed_code':
-					$output = nfe_get_field('nfe_fedservicecode');
-					break;
-				
-				default:
-					$output = "...";
-					break;
-			}
+			case 'fed_code':
+				$output = $_simple_federalservicecode ? _simple_federalservicecode : nfe_get_field('nfe_fedservicecode');
+				break;
+			
+			default:
+				$output = null;
+				break;
 		}
 
 		return $output;
@@ -283,7 +256,7 @@ class NFe_Woo {
 				break;
 
 			default:
-				$output = "...";
+				$output = null;
 				break;
 		}
 

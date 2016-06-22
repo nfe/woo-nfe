@@ -191,7 +191,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 			$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
 
 			if ( false === $company_list ) {
-				$url 		= 'http://api.nfe.io/v1/companies?api_key='. $key . '';
+				$url 		= 'https://api.nfe.io/v1/companies?api_key='. $key . '';
 				$response 	= wp_remote_get( esc_url_raw( $url ) );
 				$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
 

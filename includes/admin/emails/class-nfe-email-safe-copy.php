@@ -61,7 +61,7 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	 * @return void
 	 */
 	public function trigger( $order_id ) {
-		if ( $this->safe_copy_enabled == 'no' ) {
+		if ( $this->safe_copy_enabled() == 'no' ) {
 			return;
 		}
 

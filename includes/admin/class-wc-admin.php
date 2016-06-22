@@ -329,7 +329,7 @@ class WC_NFe_Admin {
         
         $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
 
-        if ( $nfe->status == 'issued' ) {
+        if ( $nfe['status'] == 'Issued' ) {
             NFe_Woo()->down_invoice( array( $post->ID ) );
         } 
         else {
