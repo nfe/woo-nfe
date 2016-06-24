@@ -103,6 +103,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 
             // Admin
             require( $this->includes_dir . 'admin/class-wc-nfe-settings.php'  );
+            require( $this->includes_dir . 'admin/class-nfe-ajax.php'         );
             require( $this->includes_dir . 'admin/class-wc-admin.php'         );
             require( $this->includes_dir . 'admin/class-wc-nfe-api.php'       );
             require( $this->includes_dir . 'admin/class-emails.php'           );

@@ -1,19 +1,16 @@
 <?php
 
-/**
- * WooCommerce NFe.io FrontEnd Class
- *
- * @author   Renato Alves
- * @category Admin
- * @package  WooCommerce_NFe/Classes/WC_NFe_FrontEnd
- * @version  1.0.0
- */
-
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+if ( ! class_exists('WC_NFe_FrontEnd') ) :
+
 /**
- * WC_NFe_FrontEnd
+ * WooCommerce NFe.io FrontEnd Class.
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Classes/WC_NFe_FrontEnd
+ * @version  1.0.0
  */
 class WC_NFe_FrontEnd {
 
@@ -22,22 +19,36 @@ class WC_NFe_FrontEnd {
 	 */
 	public function __construct() {
 		// Filters
-		add_filter( 'woocommerce_checkout_fields', 								array( $this, 'removes_fields' ) );
-		add_filter( 'woocommerce_my_account_my_orders_columns', 				array( $this, 'nfe_column' ) );
-		add_filter( 'woocommerce_my_account_my_address_description', 			array( $this, 'nfe_my_account_description' ) );
+		add_filter( 'woocommerce_checkout_fields', 							 array( $this, 'removes_fields' ) );
+		add_filter( 'woocommerce_my_account_my_orders_columns', 			 array( $this, 'nfe_column' ) );
+		add_filter( 'woocommerce_my_account_my_address_description', 		 array( $this, 'my_account_description' ) );
+        add_filter( 'woocommerce_thankyou_order_received_text',              array( $this, 'thankyou_text' ) );
 
 		// Actions
-		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', 	array( $this, 'nfe_column_content' ) );
-		add_action( 'woocommerce_order_details_after_order_table', 				array( $this, 'nfe_column_content' ) );
-		add_action( 'woocommerce_before_edit_address_form_billing', 			array( $this, 'nfe_billing_notice' ) );
+		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', array( $this, 'column_content' ) );
+		add_action( 'woocommerce_order_details_after_order_table', 			 array( $this, 'column_content' ) );
+		add_action( 'woocommerce_before_edit_address_form_billing', 		 array( $this, 'billing_notice' ) );
 	}
+
+    /**
+     * NFe custom note for Order Received page
+     * 
+     * @return string
+     */
+    public function thankyou_text( $message ) {
+        if ( $this->where_note() == true ) {
+            $message = sprintf( __( 'Thank you. Your order has been received. Now you need %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '">' . __( 'update your NFe information', 'woocommerce-nfe' ) . '</a>' );
+        }
+
+        return $message;
+    }
 
 	/**
 	 * Notice added on the WooCommerce edit-address page
 	 * 
 	 * @return string
 	 */
-	public function nfe_billing_notice() {
+	public function billing_notice() {
 		if ( nfe_get_field('nfe_enable') == 'yes' ) {
 			echo '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
 		}
@@ -48,7 +59,7 @@ class WC_NFe_FrontEnd {
 	 * 
 	 * @return string
 	 */
-	public function nfe_my_account_description() {
+	public function my_account_description() {
 		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woocommerce-nfe' );
 	}
 
@@ -76,7 +87,7 @@ class WC_NFe_FrontEnd {
      * 
      * @return string
      */
-    public function nfe_column_content( $order ) {   	
+    public function column_content( $order ) {   	
         $nfe 		= get_post_meta( $order->id, 'nfe_issued', true );
         $actions 	= array();
 
@@ -88,18 +99,27 @@ class WC_NFe_FrontEnd {
                 );
             }
 
-            if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
+            if ( $this->issue_past_orders( $order ) && $nfe == false ) {
                 $actions['woo_nfe_issue'] = array(
-                    'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
+                    'url'       => wp_nonce_url( add_query_arg( 'nfe_issue', $order->id ) , 'woocommerce_nfe_issue' ),
                     'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_issue'
                 );
             }
+
+            // @todo Make sure there is form information before issuing a receipt
+            /* if ( nfe_get_field('where_note') == 'after' && $this->can_issue ) {
+                $actions['woo_nfe_issue'] = array(
+                    'url'       => wc_get_endpoint_url( 'edit-address' ),
+                    'name'      => __( 'Update NFe info', 'woocommerce-nfe' ),
+                    'action'    => 'woo_nfe_update'
+                );
+            } */
         }
 
         if ( $nfe == true ) {
             $actions['woo_nfe_download'] = array(
-                'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
+                'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
                 'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
                 'action'    => 'woo_nfe_download'
             );
@@ -152,13 +172,11 @@ class WC_NFe_FrontEnd {
 
 	/**
 	 * Removes the WooCommerce fields on the checkout if the user chooses it to.
-     *
-     * @uses nfe_get_field() Fetch NFe custom settings fields
 	 * 
 	 * @return void
 	 */
 	public function removes_fields( $fields ) {
-		if ( nfe_get_field('nfe_enable') == 'yes' && nfe_get_field('where_note') == 'after' ) {
+		if ( $this->where_note() == true ) {
 	        unset($fields['billing']['billing_phone']);
 	        unset($fields['billing']['billing_number']);
 	        unset($fields['billing']['billing_country']);
@@ -172,7 +190,22 @@ class WC_NFe_FrontEnd {
         
         return $fields;
 	}
+
+    /**
+     * Custom check for Where Note uses
+     * 
+     * @return bool true|false
+     */
+    private function where_note() {
+        if ( nfe_get_field('nfe_enable') == 'yes' && nfe_get_field('where_note') == 'after' ) {
+            return true;
+        }
+
+        return false;
+    }
 }
+
+endif;
 
 $run = new WC_NFe_FrontEnd();
 

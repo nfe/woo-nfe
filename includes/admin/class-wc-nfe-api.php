@@ -1,26 +1,23 @@
 <?php
 
-/**
- * WooCommerce NFe.io NFe_Woo Class
- *
- * @author   Renato Alves
- * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.0
- */
-
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+if ( ! class_exists('NFe_Woo') ) :
+
 /**
-* NFe_Woo Main Class
-*/
+ * WooCommerce NFe.io NFe_Woo Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/NFe_Woo
+ * @version  1.0.0
+ */
 class NFe_Woo {
         
     /**
      * Nfe_Woo Instance.
      */
     public static function instance() {
-
     	// Store the instance locally to avoid private static replication
         static $instance = null;
 
@@ -56,90 +53,59 @@ class NFe_Woo {
      */
 	public function issue_invoice( $order_ids = array() ) {
         $key        = nfe_get_field('api_key');
-        $company_id = nfe_get_field('company_id');
+        $company_id = nfe_get_field('choose_company');
 
         Nfe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
 			$data = $this->order_info( $order_id );
 
-            $invoice = Nfe_ServiceInvoice::create( 
-                $company_id,
-                $data 
-            );
+            $invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-            if ( isset( $invoice->error ) ) {
-                $mensagem = sprintf( __( 'Error when issuing the receipt for order %1d:', 'woocommerce-nfe'), $order_id );
-                
-                $mensagem .= '<ul style="padding-left:20px;">';
-                $mensagem .= '<li>' . $invoice->error . '</li>';
-                
-                if ( isset( $invoice->log ) ) {
-                    
-                    if ( $invoice->log ) {
-                        
-                        $mensagem .= '<li>' . $invoice->log . '</li>';
-                        
-                    } else { 
-                    
-                        foreach ( $invoice->log as $erros ) {
-                            foreach ( $erros as $erro ) {
-                                $mensagem .= '<li>' . $erro . '</li>';
-                            }
-                        }   
-                    }
-                }
-                
-                $mensagem .= '</ul>';
-                
-                $this->add_error( $mensagem );
+            if ( isset( $invoice->errors ) ) {
+
+            	add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+
+				return false;
 
 			} else {
-
-				$nfe = get_post_meta( $order_id, 'nfe_issued', true );
 				
-				if ( !$nfe ) {
-					$nfe = array();
-				}
-                
-                $nfe[] = array(
-                	'id' 	 => (int) $invoce->id,
-					'status' => (string) $invoice->flowStatus,
+                $nfe = array(
+					'id' 	  	=> $invoice->id,
+					'status'  	=> $invoice->flowStatus,
+					'data' 		=> date_i18n('d/m/Y'),
 				);
 
-                // do_action( 'nfe_safe_copy_notification' );
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
-                $this->add_success( sprintf( __( 'NFe issued sucessfully: Order # %1d:', 'woocommerce-nfe'), $order_id ) );
 			}
 		}
-		
+
 		return $invoice;
 	}
 
 	/**
-	 * Downloads the invoice
+	 * Downloads the invoice(s)
 	 * 
 	 * @param  array  $order_ids Array of order ids
 	 * @return string            Pdf
 	 */
 	public function down_invoice( $order_ids = array() ) {
 		$key 		= nfe_get_field('api_key');
-		$company 	= nfe_get_field('company_id');
+		$company_id = nfe_get_field('choose_company');
+
+		Nfe::setApiKey($key);
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-
-            $pdf = Nfe_ServiceInvoice::pdf( 
-                $company_id,
-                $nfe['id'] // Issue ID, not the Order ID
-            );
+            $pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe->id );
         }
 
 		return $pdf;
 	}
 
     /**
-     * Ordering and preparing data to send to NFe API
+     * Preparing data to send to NFe API
      * 
      * @param  int $order Order ID
      * @return array 	  Array with the order information to issue the invoice
@@ -148,40 +114,57 @@ class NFe_Woo {
 		$total = $this->wc_get_order( $order );
 
         $data = array(
-    		// Obrigatório - Serviço municipal atrelado ao serviço federal
-			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), // Código do serviço de acordo com o a cidade
-    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ), // Optional - Código de nível federal
+			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
+    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ),
     		'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
             'borrower' => array(
-      			'federalTaxNumber' 			=> $this->check_customer_type( 'tax-number', $order ),
-      			'municipalTaxNumber' 		=> '',
-      			'name' 						=> $this->check_customer_type( 'customer-name', $order ),
+      			'name' 						=> $this->check_customer_info( 'name', $order ), 
             	'email' 					=> get_post_meta( $order, '_billing_email', true ),
-            	'address' 		=> array(
+            	'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
+            	'address' 					=> array(
 			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
 			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
 			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
-			        'country' 				=> get_post_meta( $order, '_billing_country', true ),
+			        'country' 				=> $this->billing_country( $order ),
+			        'state' 				=> get_post_meta( $order, '_billing_state', true ),
 					'city' 					=> array(
-		    			'code' 		=> $this->ibge_code( $order ),
-		    			'name' 		=> get_post_meta( $order, '_billing_city', true ),
+		    			'code' 				=> $this->ibge_code( $order ),
+		    			'name' 				=> get_post_meta( $order, '_billing_city', true ),
 					),
-					'state' 				=> get_post_meta( $order, '_billing_state', true ),
 				),
-				'type' 			=> $this->check_customer_type( 'type', $order ),
-            )
+            ),
         );
-        
-		return $data;	
+
+        // Removes empty, false and null fields from the array
+        return array_filter($data);
 	}
 
 	/**
-	 * Fetches the IBG Code
+	 * Hack to bring support to Brazilian ISO code
+	 * 
+	 * @param  int $order_id Product ID
+	 * @return string
+	 */
+	public function billing_country( $order_id ) {
+		$country   = get_post_meta( $order_id, '_billing_country', true );
+		$countries = $this->country_iso_codes();
+
+		foreach ( $countries as $iso3 => $iso2 ) {
+			if ( $country == $iso2 ) {
+				$c = $iso3;
+			}
+		}
+
+		return $c;
+	}
+
+	/**
+	 * Fetches the IBGE Code
 	 *
-	 * @todo Add a check for non Brazilian countrie to remove it.
+	 * @todo Add a check for non Brazilian countries to remove it.
 	 * 
 	 * @param  int $order_id Order ID
 	 * @return string
@@ -194,7 +177,7 @@ class NFe_Woo {
 		$key = nfe_get_field('api_key');
 		$cep = get_post_meta( $order_id, '_billing_postcode', true );
 
-		$url 		= 'http://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
+		$url 		= 'https://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
 		$response 	= wp_remote_get( esc_url_raw( $url ) );
 		$address 	= json_decode( wp_remote_retrieve_body( $response ), true );
 
@@ -202,7 +185,7 @@ class NFe_Woo {
 	}
 
 	/**
-	 * City Service Information (Code and Description).
+	 * City Service Information (City and Federal Code, and Description).
 	 * 
 	 * @param  string $field The field info being fetched
 	 * @return string
@@ -212,31 +195,34 @@ class NFe_Woo {
 			return;
 		}
 
-		$activity = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
+		$order = $this->wc_get_order($post_id);
 
-		if ( ! empty( $post_id ) && ! empty( $activity ) ) {
+		// Products Variations
+		foreach ( $order->get_items() as $key => $item ) {
+            $product_id   = $item['product_id'];
+            $variation_id = $item['variation_id'];
 
-			if ( $field == 'code' ) {
-				$output = $activity['code'];
+            $_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
+            $_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
+            $_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+        }
 
-			} elseif ( $field == 'desc' ) {
-				$output = $activity['name'];
+		switch ($field) {
+			case 'code':
+				$output = $_simple_cityservicecode ? $_simple_cityservicecode : nfe_get_field('nfe_cityservicecode');
+				break;
 
-			} elseif ( $field == 'fed_code' ) {
-				$output = $activity['fed_code'];
-			}
+			case 'desc':
+				$output = $_simple_nfe_product_desc ? $_simple_nfe_product_desc : nfe_get_field('nfe_cityservicecode_desc');
+				break;
 
-		} else {
-
-			if ( $field == 'code' ) {
-				$output = nfe_get_field('nfe_cityservicecode');
-
-			} elseif ( $field == 'desc' ) {
-				$output = nfe_get_field('nfe_cityservicecode_desc');
-
-			} elseif ( $field == 'fed_code' ) {
-				$output = nfe_get_field('nfe_fedservicecode');
-			}
+			case 'fed_code':
+				$output = $_simple_federalservicecode ? _simple_federalservicecode : nfe_get_field('nfe_fedservicecode');
+				break;
+			
+			default:
+				$output = null;
+				break;
 		}
 
 		return $output;
@@ -249,57 +235,50 @@ class NFe_Woo {
 	 * @param  int  $order     		The order ID
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
-	public function check_customer_type( $field = '', $order ) {
-		if ( empty($field) ) {
+	public function check_customer_info( $field = '', $order ) {
+		if ( empty($field) || empty($order) ) {
 			return;
 		}
 
 		// Customer Person Type
-		(int) $person_type = get_post_meta( $order, '_billing_persontype', true );
+		(int) $type = get_post_meta( $order, '_billing_persontype', true );
 
-		if ( $field == 'tax-number' ) {
-			// Customer ID Number
-			$cpf = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-			$cnpj = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+		switch ($field) {
+			case 'number': // Customer ID Number
+				if ( $type == 1 ) {
+					$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+				} elseif ( $type == 2 ) {
+					$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+				}
+				break;
 
-			if ( $person_type == 1 ) {
-				$result = $cpf;
-			} elseif ( $person_type == 2 ) {
-				$result = $cnpj;
-			}
+			case 'name': // Customer Name/Razão Social
+				if ( $type == 1 ) {
+					$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+				} elseif ( $type == 2 ) {
+					$output = get_post_meta( $order, '_billing_company', true );
+				}
+				break;
 
-		} elseif ( $field == 'customer-name' ) {
-			// Customer Name
-			$cnpj_name 	= get_post_meta( $order, '_billing_company', true );
-			$cpf_name 	= get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+			case 'type': // Customer Type
+				if ( $type == 1 ) {
+					$output = 'Customers';
+				} elseif ( $type == 2 ) {
+					$output = 'Company';
+				}
+				break;
 
-			if ( $person_type == 1 ) {
-				$result = $cpf_name;
-			} elseif ( $person_type == 2 ) {
-				$result = $cnpj_name;
-			}
-
-		} elseif ( $field == 'type' ) {
-			if ( $person_type == 1 ) {
-				$result = 'Customers';
-			} elseif ( $person_type == 2 ) {
-				$result = 'Company';
-			}
+			default:
+				$output = null;
+				break;
 		}
 
-		if ( empty($result) ) {
-			$result = '...';
-		}
-
-        return $result;
+        return $output;
 	}
 
 	/**
-	 * WooCommerce 2.2 support for wc_get_order
+	 * WooCommerce 2.2 support for wc_get_order.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @access private
 	 * @param int $order_id
 	 * @return void
 	 */
@@ -312,84 +291,19 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Displaying NFe messages.
-	 * 
-	 * @return string
+	 * Display message to user if there is an issue with the NFe API call
+	 *
+	 * @return html the message for the user
 	 */
-	public function display_messages() {
-        $error_msg 	= get_option('woocommerce_nfe_woo_error_messages');
-        $succes_msg = get_option('woocommerce_nfe_woo_success_messages');
-    
-        if ( $error_msg ) { ?>
-            <div class="error">
-                <? foreach ( $error_msg as $message ) { 
-                    echo '<p>' . $message . '</p>'; 
-                } ?>
-            </div>
-            <?php
-        
-            delete_option('woocommerce_nfe_woo_error_messages');
-        }
-    
-        if ( $succes_msg ) { ?>
-            <div class="updated notice notice-success">
-                <? foreach ( $succes_msg as $message ) {
-                    echo '<p>' . $message . '</p>';
-                } ?>
-            </div>
-            <?php
-        
-            delete_option('woocommerce_nfe_woo_success_messages');
-        }
-    }
-
-    /**
-     * Adding error messages
-     * 
-     * @param string
-     */
-    public function add_error( $message ) {
-        $messages = get_option('woocommerce_nfe_woo_error_messages');
-
-        if ( ! $messages ) {
-            $messages = array();
-        }
-
-        if ( $messages && count($messages) > 0 ) { 
-            foreach ( $messages as $msg ) { 
-                if ( $msg == $message ) {
-                    return false;
-                }
-            }
-        }
-
-        $messages[] = $message;
-        update_option('woocommerce_nfe_woo_error_messages', $messages);
-    }
-
-    /**
-     * Adding success messages
-     * 
-     * @param string
-     */
-    public function add_success( $message ) {
-        $messages = get_option('woocommerce_nfe_woo_success_messages');
-
-        if ( ! $messages ) {
-            $messages = array();
-        }
-
-        if ( $messages && count($messages) > 0 ) { 
-            foreach ( $messages as $msg ) { 
-                if ( $msg == $message ) {
-                    return false;
-                }
-            }
-        }
-
-        $messages[] = $message;
-        update_option('woocommerce_nfe_woo_success_messages', $messages);
-    }
+	public function nfe_api_error_msg() {
+		ob_start();
+		?>
+		<div class="error">
+			<p><?php echo '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'There was a problem issuing a receipt in NFe.io.', 'woocommerce-nfe' ) ); ?></p>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
 
 	public function cpf( $cpf ) {
 		if ( ! $cpf ) {
@@ -447,7 +361,147 @@ class NFe_Woo {
 
 	   	return $maskared;
 	}
+
+	/**
+	 * Country Iso Code
+	 * 
+	 * @return array
+	 */
+	private function country_iso_codes() {
+		$iso_codes = array(
+		   'AFG' => 'AF',     // Afghanistan
+		   'ALB' => 'AL',     // Albania
+		   'ARE' => 'AE',     // U.A.E.
+		   'ARG' => 'AR',     // Argentina
+		   'ARM' => 'AM',     // Armenia
+		   'AUS' => 'AU',     // Australia
+		   'AUT' => 'AT',     // Austria
+		   'AZE' => 'AZ',     // Azerbaijan
+		   'BEL' => 'BE',     // Belgium
+		   'BGD' => 'BD',     // Bangladesh
+		   'BGR' => 'BG',     // Bulgaria
+		   'BHR' => 'BH',     // Bahrain
+		   'BIH' => 'BA',     // Bosnia and Herzegovina
+		   'BLR' => 'BY',     // Belarus
+		   'BLZ' => 'BZ',     // Belize
+		   'BOL' => 'BO',     // Bolivia
+		   'BRA' => 'BR',     // Brazil
+		   'BRN' => 'BN',     // Brunei Darussalam
+		   'CAN' => 'CA',     // Canada
+		   'CHE' => 'CH',     // Switzerland
+		   'CHL' => 'CL',     // Chile
+		   'CHN' => 'CN',     // People's Republic of China
+		   'COL' => 'CO',     // Colombia
+		   'CRI' => 'CR',     // Costa Rica
+		   'CZE' => 'CZ',     // Czech Republic
+		   'DEU' => 'DE',     // Germany
+		   'DNK' => 'DK',     // Denmark
+		   'DOM' => 'DO',     // Dominican Republic
+		   'DZA' => 'DZ',     // Algeria
+		   'ECU' => 'EC',     // Ecuador
+		   'EGY' => 'EG',     // Egypt
+		   'ESP' => 'ES',     // Spain
+		   'EST' => 'EE',     // Estonia
+		   'ETH' => 'ET',     // Ethiopia
+		   'FIN' => 'FI',     // Finland
+		   'FRA' => 'FR',     // France
+		   'FRO' => 'FO',     // Faroe Islands
+		   'GBR' => 'GB',     // United Kingdom
+		   'GEO' => 'GE',     // Georgia
+		   'GRC' => 'GR',     // Greece
+		   'GRL' => 'GL',     // Greenland
+		   'GTM' => 'GT',     // Guatemala
+		   'HKG' => 'HK',     // Hong Kong S.A.R.
+		   'HND' => 'HN',     // Honduras
+		   'HRV' => 'HR',     // Croatia
+		   'HUN' => 'HU',     // Hungary
+		   'IDN' => 'ID',     // Indonesia
+		   'IND' => 'IN',     // India
+		   'IRL' => 'IE',     // Ireland
+		   'IRN' => 'IR',     // Iran
+		   'IRQ' => 'IQ',     // Iraq
+		   'ISL' => 'IS',     // Iceland
+		   'ISR' => 'IL',     // Israel
+		   'ITA' => 'IT',     // Italy
+		   'JAM' => 'JM',     // Jamaica
+		   'JOR' => 'JO',     // Jordan
+		   'JPN' => 'JP',     // Japan
+		   'KAZ' => 'KZ',     // Kazakhstan
+		   'KEN' => 'KE',     // Kenya
+		   'KGZ' => 'KG',     // Kyrgyzstan
+		   'KHM' => 'KH',     // Cambodia
+		   'KOR' => 'KR',     // Korea
+		   'KWT' => 'KW',     // Kuwait
+		   'LAO' => 'LA',     // Lao P.D.R.
+		   'LBN' => 'LB',     // Lebanon
+		   'LBY' => 'LY',     // Libya
+		   'LIE' => 'LI',     // Liechtenstein
+		   'LKA' => 'LK',     // Sri Lanka
+		   'LTU' => 'LT',     // Lithuania
+		   'LUX' => 'LU',     // Luxembourg
+		   'LVA' => 'LV',     // Latvia
+		   'MAC' => 'MO',     // Macao S.A.R.
+		   'MAR' => 'MA',     // Morocco
+		   'MCO' => 'MC',     // Principality of Monaco
+		   'MDV' => 'MV',     // Maldives
+		   'MEX' => 'MX',     // Mexico
+		   'MKD' => 'MK',     // Macedonia (FYROM)
+		   'MLT' => 'MT',     // Malta
+		   'MNE' => 'ME',     // Montenegro
+		   'MNG' => 'MN',     // Mongolia
+		   'MYS' => 'MY',     // Malaysia
+		   'NGA' => 'NG',     // Nigeria
+		   'NIC' => 'NI',     // Nicaragua
+		   'NLD' => 'NL',     // Netherlands
+		   'NOR' => 'NO',     // Norway
+		   'NPL' => 'NP',     // Nepal
+		   'NZL' => 'NZ',     // New Zealand
+		   'OMN' => 'OM',     // Oman
+		   'PAK' => 'PK',     // Islamic Republic of Pakistan
+		   'PAN' => 'PA',     // Panama
+		   'PER' => 'PE',     // Peru
+		   'PHL' => 'PH',     // Republic of the Philippines
+		   'POL' => 'PL',     // Poland
+		   'PRI' => 'PR',     // Puerto Rico
+		   'PRT' => 'PT',     // Portugal
+		   'PRY' => 'PY',     // Paraguay
+		   'QAT' => 'QA',     // Qatar
+		   'ROU' => 'RO',     // Romania
+		   'RUS' => 'RU',     // Russia
+		   'RWA' => 'RW',     // Rwanda
+		   'SAU' => 'SA',     // Saudi Arabia
+		   'SCG' => 'CS',     // Serbia and Montenegro (Former)
+		   'SEN' => 'SN',     // Senegal
+		   'SGP' => 'SG',     // Singapore
+		   'SLV' => 'SV',     // El Salvador
+		   'SRB' => 'RS',     // Serbia
+		   'SVK' => 'SK',     // Slovakia
+		   'SVN' => 'SI',     // Slovenia
+		   'SWE' => 'SE',     // Sweden
+		   'SYR' => 'SY',     // Syria
+		   'TAJ' => 'TJ',     // Tajikistan
+		   'THA' => 'TH',     // Thailand
+		   'TKM' => 'TM',     // Turkmenistan
+		   'TTO' => 'TT',     // Trinidad and Tobago
+		   'TUN' => 'TN',     // Tunisia
+		   'TUR' => 'TR',     // Turkey
+		   'TWN' => 'TW',     // Taiwan
+		   'UKR' => 'UA',     // Ukraine
+		   'URY' => 'UY',     // Uruguay
+		   'USA' => 'US',     // United States
+		   'UZB' => 'UZ',     // Uzbekistan
+		   'VEN' => 'VE',     // Bolivarian Republic of Venezuela
+		   'VNM' => 'VN',     // Vietnam
+		   'YEM' => 'YE',     // Yemen
+		   'ZAF' => 'ZA',     // South Africa
+		   'ZWE' => 'ZW',     // Zimbabwe
+		);
+
+		return $iso_codes;
+	}
 }
+
+endif;
 
 /**
  * The main function responsible for returning the one true NFe_Woo Instance.

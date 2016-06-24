@@ -1,19 +1,16 @@
 <?php
 
-/**
- * WooCommerce NFe.io WC_NFe_Admin Class
- *
- * @author   Renato Alves
- * @category Admin
- * @package  WooCommerce_NFe/Class/WC_NFe_Admin
- * @version  1.0.0
- */
-
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
+if ( ! class_exists('WC_NFe_Admin') ) :
+
 /**
- * WC_NFe_Admin
+ * WooCommerce NFe.io WC_NFe_Admin Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Admin
+ * @version  1.0.0
  */
 class WC_NFe_Admin {
 
@@ -22,139 +19,176 @@ class WC_NFe_Admin {
 	 */
 	public function __construct() {
         // Filters
-        add_filter( 'manage_edit-shop_order_columns',        array( $this, 'order_status_column_header' ), 20 );
+        add_filter( 'manage_edit-shop_order_columns',               array( $this, 'order_status_column_header' ), 20 );
 
         // Actions
-        add_action( 'add_meta_boxes',                        array( $this, 'add_meta_boxes' ), 25 );
-        add_action( 'save_post',                             array( $this, 'save' ) );
-        add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ) );
-        add_action( 'woocommerce_order_actions',             array( $this, 'nfe_order_actions' ), 10, 1 );
-        add_action( 'woocommerce_order_action_wc_nfe_issue', array( $this, 'process_nfe_order_actions' ), 10, 1 );
-        add_action( 'admin_footer-edit.php',                 array( $this, 'order_bulk_actions' ) );
-        add_action( 'load-edit.php',                         array( $this, 'process_order_bulk_actions' ) );
-        add_action( 'admin_enqueue_scripts',                 array( $this, 'enqueue_scripts' ) );
-	}
+        add_action( 'manage_shop_order_posts_custom_column',        array( $this, 'order_status_column_content' ) );
+        add_action( 'woocommerce_order_actions',                    array( $this, 'nfe_order_actions' ), 10, 1 );
+        add_action( 'woocommerce_order_action_wc_nfe_issue',        array( $this, 'process_nfe_order_actions' ), 10, 1 );
+        add_action( 'admin_footer',                                 array( $this, 'nfe_bulk_actions' ), 10 );
+        add_action( 'load-edit.php',                                array( $this, 'process_order_bulk_actions' ) );
+        add_action( 'admin_enqueue_scripts',                        array( $this, 'enqueue_scripts' ) );
 
-	/**
-	 * Add WC Meta box
-	 */
-	public function add_meta_boxes() {
-		add_meta_box( 'woocommerce-nfe-data', 
-			_x( 'NFe.io - Product Fiscal Activity', 'meta box title', 'woocommerce-nfe' ), 
-			array( $this, 'output' ), 
-			'product', 'normal', 'default' );
-	}
+        // Product Variations
+        add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'variation_fields' ), 10, 3 );
+        add_action( 'woocommerce_save_product_variation',            array( $this, 'save_variations_fields' ), 10, 2 );
 
-	/**
-	 * Meta box display callback.
-	 *
-	 * @param WP_Post $post Current post object.
-	 */
-	public function output( $post ) {
-        $fiscal_activities = get_post_meta( $post->ID, 'nfe_woo_fiscal_activity', true );
-
-	    // Add an nonce field so we can check for it later.
-        wp_nonce_field( 'nfe_woocommerce_box_nonce', 'nfe_woocommerce_box_nonce' ); ?>
-  
-        <table id="nfe-woo-fieldset-one" width="100%">
-            <thead>
-                <tr>
-                    <th width="25%"><?php esc_html_e( 'CityServiceCode', 'woocommerce-nfe' ); ?></th>
-                    <th width="25%"><?php esc_html_e( 'FederalServiceCode', 'woocommerce-nfe' ); ?></th>
-                    <th width="50%"><?php esc_html_e( 'Description', 'woocommerce-nfe' ); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ( $fiscal_activities ) :
-                
-                    foreach ( (array) $fiscal_activities as $activity ) { ?>
-                    <tr>
-                        <td>
-                            <input type="text" class="widefat" name="name[]" value="<?php if( $activity['name'] !== '' ) echo esc_attr( $activity['name'] ); ?>" />
-                        </td>
-
-                         <td>
-                            <input type="text" class="widefat" name="fed_code[]" value="<?php if( $activity['fed_code'] !== '' ) echo esc_attr( $activity['fed_code'] ); ?>" />
-                        </td>
-                    
-                        <td>
-                            <input type="text" class="widefat" name="code[]" value="<?php if ( $activity['code'] !== '') echo esc_attr( $activity['code'] ); ?>" />
-                        </td>
-                    </tr>
-                    <?php }
-                
-                else : // show a blank one ?>
-
-                    <tr>
-                        <td><input type="text" class="widefat" name="name[]" /></td>
-                        <td><input type="text" class="widefat" name="code[]" value="" /></td>
-                        <td><input type="text" class="widefat" name="fed_code[]" value="" /></td>
-                    </tr>
-
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <?php
+        // Not Product Variations
+        add_filter( 'woocommerce_product_data_tabs',                 array( $this, 'product_data_tab' ) );
+        add_action( 'woocommerce_product_data_panels',               array( $this, 'product_data_fields' ) );
+        add_action( 'woocommerce_process_product_meta',              array( $this, 'product_data_fields_save' ) );
 	}
 
     /**
-     * Save the meta when the post is saved.
-     *
-     * @param int $post_id The ID of the post being saved.
+     * Adds NFe custom tab
+     * 
+     * @param array $product_data_tabs Array of product tabs
+     * @return array Array with product data tabs
      */
-    public function save( $post_id ) {
-        if ( 'product' !== get_post_type() ) {
-            return;
+    public function product_data_tab( $product_data_tabs ) {
+        $product_data_tabs['nfe-product-info-tab'] = array(
+            'label'     => __( 'WooCommerce NFe', 'woocommerce-nfe' ),
+            'target'    => 'nfe_product_info_data',
+            'class'     => array( 'hide_if_variable' ),
+        );
+        return $product_data_tabs;
+    }
+
+    /**
+     * Adds NFe product fields (tab content)
+     *
+     * @global int $post Uses to fetch the current product ID
+     * 
+     * @return string
+     */
+    public function product_data_fields() {
+        global $post; ?>
+        <div id="nfe_product_info_data" class="panel woocommerce_options_panel">
+            <?php
+            woocommerce_wp_text_input( 
+                array( 
+                    'id'            => '_simple_cityservicecode',
+                    'label'         => __( 'CityServiceCode', 'woocommerce-nfe' ), 
+                    'wrapper_class' => 'hide_if_variable', 
+                    'desc_tip'      => 'true',
+                    'description'   => __( 'Enter the CityServiceCode.', 'woocommerce-nfe' ),
+                    'value'         => get_post_meta( $post->ID, '_simple_cityservicecode', true )
+                )
+            );
+
+            woocommerce_wp_text_input( 
+                array( 
+                    'id'            => '_simple_federalservicecode',
+                    'label'         => __( 'FederalServiceCode', 'woocommerce-nfe' ), 
+                    'wrapper_class' => 'hide_if_variable',
+                    'desc_tip'      => 'true',
+                    'description'   => __( 'Enter the FederalServiceCode.', 'woocommerce-nfe' ),
+                    'value'         => get_post_meta( $post->ID, '_simple_federalservicecode', true )
+                )
+            );
+
+            woocommerce_wp_textarea_input( 
+                array( 
+                    'id'            => '_simple_nfe_product_desc',
+                    'label'         => __( 'Product Description', 'woocommerce-nfe' ),
+                    'wrapper_class' => 'hide_if_variable', 
+                    'desc_tip'      => 'true', 
+                    'description'   => __( 'Description for this product output in NFe receipt.', 'woocommerce-nfe' ),
+                    'value'         => get_post_meta( $post->ID, '_simple_nfe_product_desc', true )
+                )
+            );
+            ?>
+        </div>
+        <?php
+    }
+
+    /**
+     * Saving product data information.
+     * 
+     * @param  int $post_id Product ID
+     * @return bool true|false
+     */
+    public function product_data_fields_save( $post_id ) {
+        // Text Field - City Service Code
+        $simple_cityservicecode = $_POST['_simple_cityservicecode'];
+        if ( !empty( $simple_cityservicecode ) ) {
+            update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $simple_cityservicecode ) );
         }
-    
-        $nonce = $_POST['nfe_woocommerce_box_nonce'];
 
-        // Check if our nonce is set and verify that the nonce is valid.
-        if ( ! isset( $nonce ) || ! wp_verify_nonce( $nonce, 'nfe_woocommerce_box_nonce' ) ) {
-            return $post_id;
-        }
- 
-        /*
-         * If this is an autosave, our form has not been submitted,
-         * so we don't want to do anything.
-         */
-        if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-            return $post_id;
-        }
- 
-        // Check the user's permissions.
-        if ( ! current_user_can( 'edit_post', $post_id ) ) {
-            return $post_id;
+        // Text Field - Federal Service Code
+        $simple_federalservicecode = $_POST['_simple_federalservicecode'];
+        if ( ! empty( $simple_federalservicecode ) ) {
+            update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $simple_federalservicecode ) );
         }
 
-        $old = get_post_meta( $post_id, 'nfe_woo_fiscal_activity', true );
-        $new = array();
+        // TextArea Field - Product Description
+        $simple_product_desc = $_POST['_simple_nfe_product_desc'];
+        if ( ! empty( $simple_product_desc ) ) {
+            update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
+        }
+    }
 
-        $names      = $_POST['name'];
-        $codes      = $_POST['code'];
-        $fed_code   = $_POST['fed_code'];
+   /**
+    * Adds the NFe fields for product variations
+    * 
+    * @param  array $loop
+    * @param  string $variation_data
+    * @param  string $variation
+    * @return array
+    */
+    public function variation_fields( $loop, $variation_data, $variation ) {
+        woocommerce_wp_text_input( 
+            array( 
+                'id'            => '_cityservicecode[' . $variation->ID . ']',
+                'label'         => __( 'NFe CityServiceCode', 'woocommerce-nfe' ), 
+                'desc_tip'      => 'true',
+                'description'   => __( 'Enter the CityServiceCode.', 'woocommerce-nfe' ),
+                'value'         => get_post_meta( $variation->ID, '_cityservicecode', true )
+            )
+        );
 
-        $count = count( $names );
+        woocommerce_wp_text_input( 
+            array( 
+                'id'            => '_federalservicecode[' . $variation->ID . ']',
+                'label'         => __( 'NFe FederalServiceCode', 'woocommerce-nfe' ), 
+                'desc_tip'      => 'true',
+                'description'   => __( 'Enter the FederalServiceCode.', 'woocommerce-nfe' ),
+                'value'         => get_post_meta( $variation->ID, '_federalservicecode', true )
+            )
+        );
 
-        for ( $i = 0; $i < $count; $i++ ) {
-            if ( $names[$i] !== '' ) {
-                $new[$i]['name'] = sanitize_text_field( $names[$i] );
-            }
-
-            if ( $codes[$i] !== '' ) {
-                $new[$i]['code'] = sanitize_text_field( $codes[$i] );
-            }
-
-            if ( $fed_code[$i] !== '' ) {
-                $new[$i]['fed_code'] = sanitize_text_field( $fed_code[$i] );
-            }
+        woocommerce_wp_textarea_input( 
+            array( 
+                'id'            => '_nfe_product_variation_desc[' . $variation->ID . ']',
+                'label'         => __( 'NFe Product Description', 'woocommerce-nfe' ),
+                'value'         => get_post_meta( $variation->ID, '_nfe_product_variation_desc', true )
+            )
+        );
+    }
+   
+   /**
+    * Save the NFe fields for product variations
+    * 
+    * @param  int $post_id Product ID
+    * @return bool true|false
+    */
+    public function save_variations_fields( $post_id ) {
+        // Text Field - City Service Code
+        $cityservicecode = $_POST['_cityservicecode'][ $post_id ];
+        if( ! empty( $cityservicecode ) ) {
+            update_post_meta( $post_id, '_cityservicecode', esc_attr( $cityservicecode ) );
         }
 
-        // Update meta fields
-        if ( !empty( $new ) && $new !== $old ) {
-            update_post_meta( $post_id, 'nfe_woo_fiscal_activity', $new );
-        } elseif ( empty($new) && $old ) {
-            delete_post_meta( $post_id, 'nfe_woo_fiscal_activity', $old );
+        // Text Field - Federal Service Code
+        $_federalservicecode = $_POST['_federalservicecode'][ $post_id ];
+        if( ! empty( $_federalservicecode ) ) {
+            update_post_meta( $post_id, '_federalservicecode', esc_attr( $_federalservicecode ) );
+        }
+
+        // TextArea Field - Product Variation Description
+        $product_desc = $_POST['_nfe_product_variation_desc'][ $post_id ];
+        if( ! empty( $product_desc ) ) {
+            update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $product_desc ) );
         }
     }
 
@@ -203,7 +237,7 @@ class WC_NFe_Admin {
 
                 if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
                     $actions['woo_nfe_issue'] = array(
-                        'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
+                        'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
                         'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_issue'
                     );
@@ -252,7 +286,6 @@ class WC_NFe_Admin {
      * 
      * @param  string $post_date Post date
      * @param  string $past_days 
-     * 
      * @return bool true|false
      */
     public function issue_past_orders( $order ) {
@@ -296,26 +329,23 @@ class WC_NFe_Admin {
         
         $nfe = get_post_meta( $post->ID, 'nfe_issued', true );
 
-        if ( $nfe->status == 'issued' ) {
-            NFe_Woo()->down_invoice( $post->ID );
-
-        } else {
+        if ( $nfe['status'] == 'Issued' ) {
+            NFe_Woo()->down_invoice( array( $post->ID ) );
+        } 
+        else {
             NFe_Woo()->issue_invoice( array( $post->ID ) );
         }
     }
 
     /**
      * Order Bulk Actions - JavaScript
-     *
-     * @todo Maybe use get_post_type(), check var_dump( $post_type ) if has proper output
-     * @todo The same for $post_status
      * 
      * @return string
      */
-    public function order_bulk_actions() {
+    public function nfe_bulk_actions() {
         global $post_type, $post_status;
 
-        if ( 'shop_order' == get_post_type() ) {
+        if ( 'shop_order' == $post_type ) {
 
             // Bail if NFe is disabled
             if ( nfe_get_field('nfe_enable') == 'no' ) {
@@ -323,7 +353,7 @@ class WC_NFe_Admin {
             }
             
             // Bail if post status is true for the following post_status
-            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' || 'wc-pending' ) ) {
+            if ( $post_status == ( 'wc-trash' || 'wc-cancelled' ) ) {
                 return false;
             } ?>
              <script type="text/javascript">
@@ -374,10 +404,9 @@ class WC_NFe_Admin {
             }
 
             if ( $action == 'wc_nfe_issue' ) {
-
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
-
-            } elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
+            } 
+            elseif ( $action == 'wc_nfe_down' && $nfe['status'] !== 'Issued' ) {
                 NFe_Woo()->down_invoice( array( $order_ids ) );
             }
         }
@@ -400,4 +429,8 @@ class WC_NFe_Admin {
     }
 }
 
+endif;
+
 $run = new WC_NFe_Admin;
+
+// That's it! =)
