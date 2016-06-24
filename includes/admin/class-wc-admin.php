@@ -93,7 +93,7 @@ class WC_NFe_Admin {
                     'label'         => __( 'Product Description', 'woocommerce-nfe' ),
                     'wrapper_class' => 'hide_if_variable', 
                     'desc_tip'      => 'true', 
-                    'description'   => __( 'Description for this product.', 'woocommerce-nfe' ),
+                    'description'   => __( 'Description for this product output in NFe receipt.', 'woocommerce-nfe' ),
                     'value'         => get_post_meta( $post->ID, '_simple_nfe_product_desc', true )
                 )
             );
@@ -111,19 +111,19 @@ class WC_NFe_Admin {
     public function product_data_fields_save( $post_id ) {
         // Text Field - City Service Code
         $simple_cityservicecode = $_POST['_simple_cityservicecode'];
-        if( !empty( $simple_cityservicecode ) ) {
+        if ( !empty( $simple_cityservicecode ) ) {
             update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $simple_cityservicecode ) );
         }
 
         // Text Field - Federal Service Code
-        $simple_federalservicecode = $_POST['_simple_federalservicecode'][ $post_id ];
-        if( ! empty( $simple_federalservicecode ) ) {
+        $simple_federalservicecode = $_POST['_simple_federalservicecode'];
+        if ( ! empty( $simple_federalservicecode ) ) {
             update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $simple_federalservicecode ) );
         }
 
-        // TextArea Field - Product Variation Description
-        $simple_product_desc = $_POST['_simple_nfe_product_desc'][ $post_id ];
-        if( ! empty( $simple_product_desc ) ) {
+        // TextArea Field - Product Description
+        $simple_product_desc = $_POST['_simple_nfe_product_desc'];
+        if ( ! empty( $simple_product_desc ) ) {
             update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
         }
     }
@@ -237,7 +237,7 @@ class WC_NFe_Admin {
 
                 if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
                     $actions['woo_nfe_issue'] = array(
-                        'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woocommerce_nfe_issue' ),
+                        'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
                         'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_issue'
                     );
@@ -405,9 +405,8 @@ class WC_NFe_Admin {
 
             if ( $action == 'wc_nfe_issue' ) {
                 NFe_Woo()->issue_invoice( array( $order_ids ) );
-
             } 
-            elseif ( $action == 'wc_nfe_down' && $nfe->status != 'issued' ) {
+            elseif ( $action == 'wc_nfe_down' && $nfe['status'] !== 'Issued' ) {
                 NFe_Woo()->down_invoice( array( $order_ids ) );
             }
         }

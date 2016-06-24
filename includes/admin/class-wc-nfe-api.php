@@ -62,7 +62,7 @@ class NFe_Woo {
 
             $invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-            if ( isset( $invoice->errors ) || isset( $invoice->message ) || is_wp_error( $invoice->errors ) ) {
+            if ( isset( $invoice->errors ) ) {
 
             	add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
@@ -70,21 +70,17 @@ class NFe_Woo {
 				return false;
 
 			} else {
-
-				$nfe = get_post_meta( $order_id, 'nfe_issued', true );
 				
-				if ( ! $nfe ) {
-	                $nfe = array(
-						'id' 	  => (int) $invoice['id'],
-						'status'  => (string) $invoice['flowStatus'],
-						'data' 	  => date_i18n('d/m/Y'),
-					);
-				}
+                $nfe = array(
+					'id' 	  	=> $invoice->id,
+					'status'  	=> $invoice->flowStatus,
+					'data' 		=> date_i18n('d/m/Y'),
+				);
 
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
 			}
 		}
-		
+
 		return $invoice;
 	}
 
@@ -98,20 +94,18 @@ class NFe_Woo {
 		$key 		= nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
 
+		Nfe::setApiKey($key);
+
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-
-            $pdf = Nfe_ServiceInvoice::pdf( 
-                $company_id,
-                $nfe['id'] // Issue ID, not the Order ID
-            );
+            $pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe->id );
         }
 
 		return $pdf;
 	}
 
     /**
-     * Ordering and preparing data to send to NFe API
+     * Preparing data to send to NFe API
      * 
      * @param  int $order Order ID
      * @return array 	  Array with the order information to issue the invoice
@@ -134,7 +128,7 @@ class NFe_Woo {
 			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
 			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
 			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
-			        'country' 				=> get_post_meta( $order, '_billing_country', true ), // Important
+			        'country' 				=> $this->billing_country( $order ),
 			        'state' 				=> get_post_meta( $order, '_billing_state', true ),
 					'city' 					=> array(
 		    			'code' 				=> $this->ibge_code( $order ),
@@ -144,7 +138,27 @@ class NFe_Woo {
             ),
         );
 
+        // Removes empty, false and null fields from the array
         return array_filter($data);
+	}
+
+	/**
+	 * Hack to bring support to Brazilian ISO code
+	 * 
+	 * @param  int $order_id Product ID
+	 * @return string
+	 */
+	public function billing_country( $order_id ) {
+		$country   = get_post_meta( $order_id, '_billing_country', true );
+		$countries = $this->country_iso_codes();
+
+		foreach ( $countries as $iso3 => $iso2 ) {
+			if ( $country == $iso2 ) {
+				$c = $iso3;
+			}
+		}
+
+		return $c;
 	}
 
 	/**
@@ -183,9 +197,8 @@ class NFe_Woo {
 
 		$order = $this->wc_get_order($post_id);
 
-		// Products
+		// Products Variations
 		foreach ( $order->get_items() as $key => $item ) {
-			
             $product_id   = $item['product_id'];
             $variation_id = $item['variation_id'];
 
@@ -280,7 +293,6 @@ class NFe_Woo {
 	/**
 	 * Display message to user if there is an issue with the NFe API call
 	 *
-	 * @param void
 	 * @return html the message for the user
 	 */
 	public function nfe_api_error_msg() {
@@ -348,6 +360,144 @@ class NFe_Woo {
 	   	}
 
 	   	return $maskared;
+	}
+
+	/**
+	 * Country Iso Code
+	 * 
+	 * @return array
+	 */
+	private function country_iso_codes() {
+		$iso_codes = array(
+		   'AFG' => 'AF',     // Afghanistan
+		   'ALB' => 'AL',     // Albania
+		   'ARE' => 'AE',     // U.A.E.
+		   'ARG' => 'AR',     // Argentina
+		   'ARM' => 'AM',     // Armenia
+		   'AUS' => 'AU',     // Australia
+		   'AUT' => 'AT',     // Austria
+		   'AZE' => 'AZ',     // Azerbaijan
+		   'BEL' => 'BE',     // Belgium
+		   'BGD' => 'BD',     // Bangladesh
+		   'BGR' => 'BG',     // Bulgaria
+		   'BHR' => 'BH',     // Bahrain
+		   'BIH' => 'BA',     // Bosnia and Herzegovina
+		   'BLR' => 'BY',     // Belarus
+		   'BLZ' => 'BZ',     // Belize
+		   'BOL' => 'BO',     // Bolivia
+		   'BRA' => 'BR',     // Brazil
+		   'BRN' => 'BN',     // Brunei Darussalam
+		   'CAN' => 'CA',     // Canada
+		   'CHE' => 'CH',     // Switzerland
+		   'CHL' => 'CL',     // Chile
+		   'CHN' => 'CN',     // People's Republic of China
+		   'COL' => 'CO',     // Colombia
+		   'CRI' => 'CR',     // Costa Rica
+		   'CZE' => 'CZ',     // Czech Republic
+		   'DEU' => 'DE',     // Germany
+		   'DNK' => 'DK',     // Denmark
+		   'DOM' => 'DO',     // Dominican Republic
+		   'DZA' => 'DZ',     // Algeria
+		   'ECU' => 'EC',     // Ecuador
+		   'EGY' => 'EG',     // Egypt
+		   'ESP' => 'ES',     // Spain
+		   'EST' => 'EE',     // Estonia
+		   'ETH' => 'ET',     // Ethiopia
+		   'FIN' => 'FI',     // Finland
+		   'FRA' => 'FR',     // France
+		   'FRO' => 'FO',     // Faroe Islands
+		   'GBR' => 'GB',     // United Kingdom
+		   'GEO' => 'GE',     // Georgia
+		   'GRC' => 'GR',     // Greece
+		   'GRL' => 'GL',     // Greenland
+		   'GTM' => 'GT',     // Guatemala
+		   'HKG' => 'HK',     // Hong Kong S.A.R.
+		   'HND' => 'HN',     // Honduras
+		   'HRV' => 'HR',     // Croatia
+		   'HUN' => 'HU',     // Hungary
+		   'IDN' => 'ID',     // Indonesia
+		   'IND' => 'IN',     // India
+		   'IRL' => 'IE',     // Ireland
+		   'IRN' => 'IR',     // Iran
+		   'IRQ' => 'IQ',     // Iraq
+		   'ISL' => 'IS',     // Iceland
+		   'ISR' => 'IL',     // Israel
+		   'ITA' => 'IT',     // Italy
+		   'JAM' => 'JM',     // Jamaica
+		   'JOR' => 'JO',     // Jordan
+		   'JPN' => 'JP',     // Japan
+		   'KAZ' => 'KZ',     // Kazakhstan
+		   'KEN' => 'KE',     // Kenya
+		   'KGZ' => 'KG',     // Kyrgyzstan
+		   'KHM' => 'KH',     // Cambodia
+		   'KOR' => 'KR',     // Korea
+		   'KWT' => 'KW',     // Kuwait
+		   'LAO' => 'LA',     // Lao P.D.R.
+		   'LBN' => 'LB',     // Lebanon
+		   'LBY' => 'LY',     // Libya
+		   'LIE' => 'LI',     // Liechtenstein
+		   'LKA' => 'LK',     // Sri Lanka
+		   'LTU' => 'LT',     // Lithuania
+		   'LUX' => 'LU',     // Luxembourg
+		   'LVA' => 'LV',     // Latvia
+		   'MAC' => 'MO',     // Macao S.A.R.
+		   'MAR' => 'MA',     // Morocco
+		   'MCO' => 'MC',     // Principality of Monaco
+		   'MDV' => 'MV',     // Maldives
+		   'MEX' => 'MX',     // Mexico
+		   'MKD' => 'MK',     // Macedonia (FYROM)
+		   'MLT' => 'MT',     // Malta
+		   'MNE' => 'ME',     // Montenegro
+		   'MNG' => 'MN',     // Mongolia
+		   'MYS' => 'MY',     // Malaysia
+		   'NGA' => 'NG',     // Nigeria
+		   'NIC' => 'NI',     // Nicaragua
+		   'NLD' => 'NL',     // Netherlands
+		   'NOR' => 'NO',     // Norway
+		   'NPL' => 'NP',     // Nepal
+		   'NZL' => 'NZ',     // New Zealand
+		   'OMN' => 'OM',     // Oman
+		   'PAK' => 'PK',     // Islamic Republic of Pakistan
+		   'PAN' => 'PA',     // Panama
+		   'PER' => 'PE',     // Peru
+		   'PHL' => 'PH',     // Republic of the Philippines
+		   'POL' => 'PL',     // Poland
+		   'PRI' => 'PR',     // Puerto Rico
+		   'PRT' => 'PT',     // Portugal
+		   'PRY' => 'PY',     // Paraguay
+		   'QAT' => 'QA',     // Qatar
+		   'ROU' => 'RO',     // Romania
+		   'RUS' => 'RU',     // Russia
+		   'RWA' => 'RW',     // Rwanda
+		   'SAU' => 'SA',     // Saudi Arabia
+		   'SCG' => 'CS',     // Serbia and Montenegro (Former)
+		   'SEN' => 'SN',     // Senegal
+		   'SGP' => 'SG',     // Singapore
+		   'SLV' => 'SV',     // El Salvador
+		   'SRB' => 'RS',     // Serbia
+		   'SVK' => 'SK',     // Slovakia
+		   'SVN' => 'SI',     // Slovenia
+		   'SWE' => 'SE',     // Sweden
+		   'SYR' => 'SY',     // Syria
+		   'TAJ' => 'TJ',     // Tajikistan
+		   'THA' => 'TH',     // Thailand
+		   'TKM' => 'TM',     // Turkmenistan
+		   'TTO' => 'TT',     // Trinidad and Tobago
+		   'TUN' => 'TN',     // Tunisia
+		   'TUR' => 'TR',     // Turkey
+		   'TWN' => 'TW',     // Taiwan
+		   'UKR' => 'UA',     // Ukraine
+		   'URY' => 'UY',     // Uruguay
+		   'USA' => 'US',     // United States
+		   'UZB' => 'UZ',     // Uzbekistan
+		   'VEN' => 'VE',     // Bolivarian Republic of Venezuela
+		   'VNM' => 'VN',     // Vietnam
+		   'YEM' => 'YE',     // Yemen
+		   'ZAF' => 'ZA',     // South Africa
+		   'ZWE' => 'ZW',     // Zimbabwe
+		);
+
+		return $iso_codes;
 	}
 }
 

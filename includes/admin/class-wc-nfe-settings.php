@@ -85,20 +85,11 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'options' 			=> array(
 							'before'     	=> __( 'Before Checkout (Default)', 'woocommerce-nfe' ),
 							'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
-							'manual'    	=> __( 'Manual (Requires admin to issue)', 'woocommerce-nfe' )
 						),
 						'class'    			=> 'wc-enhanced-select',
 						'css'      			=> 'min-width:300px;',
 						'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
 					),
-					'nfe_prefix' 		=> array(
-						'title'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
-						'type'              => 'text',
-						'label'             => __( 'NFe Prefix', 'woocommerce-nfe' ),
-						'default'           => 'NFe-',
-						'desc_tip'       	=> __( 'Used in the webhook', 'woocommerce-nfe' ),
-					),
-
 					'issue_past_title' 	=> array(
 						'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woocommerce-nfe' ),
 						'type' 				=> 'title',
