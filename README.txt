@@ -1,6 +1,6 @@
-=== WooCommerce Nfe.io ===
+=== WooCommerce NFe.io ===
 Contributors: renatonascalves
-Tags: woocommerce, shop
+Tags: woocommerce, shop, receipt, nfe
 Requires at least: 3.0.1
 Tested up to: 4.5.2
 Stable tag: 4.5.2
@@ -21,7 +21,7 @@ This section describes how to install the plugin and get it working.
 
 e.g.
 
-1. Upload `nfe-wordpress-woocommerce.php` to the `/wp-content/plugins/` directory
+1. Upload `woocommerce-nfe.zip` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Frequently Asked Questions ==
@@ -32,16 +32,9 @@ An answer to that question.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-
 == Changelog ==
 
 = 1.0.0 =
 * Initial commit
 
 == Upgrade Notice ==
-
-
