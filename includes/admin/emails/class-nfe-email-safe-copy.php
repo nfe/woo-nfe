@@ -21,7 +21,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * Create an instance of the class.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function __construct() {
@@ -56,7 +55,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * trigger public function.
 	 *
-	 * @access public
 	 * @param int $order_id
 	 * @return void
 	 */
@@ -79,7 +77,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * get_content_html public function.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function get_content_html() {
@@ -102,7 +99,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * get_content_plain public function.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function get_content_plain() {
@@ -125,7 +121,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * Initialise Settings Form Fields
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function init_form_fields() {
@@ -175,7 +170,6 @@ class WC_NFe_Email_Safe_Copy extends WC_Email {
 	/**
 	 * Check if Safe Copy is enabled
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function safe_copy_enabled() {

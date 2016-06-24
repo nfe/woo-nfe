@@ -19,7 +19,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * Create an instance of the class.
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function __construct() {
@@ -47,7 +46,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * trigger public function.
 	 *
-	 * @access public
 	 * @param int $order_id
 	 * @return void
 	 */
@@ -71,7 +69,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * Get content html.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function get_content_html() {
@@ -94,7 +91,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * Get content plain.
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function get_content_plain() {
@@ -117,7 +113,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * Initialise Settings Form Fields
 	 *
-	 * @access public
 	 * @return void
 	 */
 	public function init_form_fields() {
@@ -159,7 +154,6 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 	/**
 	 * Check if Where Note is enabled
 	 *
-	 * @access public
 	 * @return string
 	 */
 	public function where_note_enabled() {

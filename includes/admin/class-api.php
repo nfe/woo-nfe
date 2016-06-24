@@ -13,65 +13,65 @@ if ( ! class_exists('NFe_Woo') ) :
  * @version  1.0.0
  */
 class NFe_Woo {
-        
-    /**
-     * Nfe_Woo Instance.
-     */
-    public static function instance() {
-    	// Store the instance locally to avoid private static replication
-        static $instance = null;
+		
+	/**
+	 * Nfe_Woo Instance.
+	 */
+	public static function instance() {
+		// Store the instance locally to avoid private static replication
+		static $instance = null;
 
-        // Only run these methods if they haven't been run previously
-        if ( null === $instance ) {
-            $instance = new NFe_Woo;
-            $instance->setup_hooks();
-        }
+		// Only run these methods if they haven't been run previously
+		if ( null === $instance ) {
+			$instance = new NFe_Woo;
+			$instance->setup_hooks();
+		}
 
-        // Always return the instance
-        return $instance;
+		// Always return the instance
+		return $instance;
 	}
 
-    /**
-     * Construct.
-     *
-     * @see $this->instance Class Instance
-     */
-    private function __construct() {}
+	/**
+	 * Construct.
+	 *
+	 * @see $this->instance Class Instance
+	 */
+	private function __construct() {}
 
-    /**
-     * Set hooks.
-     */
-    private function setup_hooks() {
-    	add_action( 'admin_notices', array( $this, 'display_messages' ) );
-    }
-    
-    /**
-     * Issue a NFe Invoice.
-     * 
-     * @param  array  $order_ids Orders to issue the NFe
-     * @return string Error
-     */
+	/**
+	 * Set hooks.
+	 */
+	private function setup_hooks() {
+		add_action( 'admin_notices', array( $this, 'display_messages' ) );
+	}
+	
+	/**
+	 * Issue a NFe Invoice.
+	 * 
+	 * @param  array  $order_ids Orders to issue the NFe
+	 * @return string Error
+	 */
 	public function issue_invoice( $order_ids = array() ) {
-        $key        = nfe_get_field('api_key');
-        $company_id = nfe_get_field('choose_company');
+		$key        = nfe_get_field('api_key');
+		$company_id = nfe_get_field('choose_company');
 
-        Nfe::setApiKey($key);
+		Nfe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
 			$data = $this->order_info( $order_id );
 
-            $invoice = Nfe_ServiceInvoice::create( $company_id, $data );
+			$invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-            if ( isset( $invoice->errors ) ) {
+			if ( isset( $invoice->errors ) ) {
 
-            	add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
 				return false;
 
 			} else {
 				
-                $nfe = array(
+				$nfe = array(
 					'id' 	  	=> $invoice->id,
 					'status'  	=> $invoice->flowStatus,
 					'data' 		=> date_i18n('d/m/Y'),
@@ -98,48 +98,48 @@ class NFe_Woo {
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-            $pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe->id );
-        }
+			$pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe->id );
+		}
 
 		return $pdf;
 	}
 
-    /**
-     * Preparing data to send to NFe API
-     * 
-     * @param  int $order Order ID
-     * @return array 	  Array with the order information to issue the invoice
-     */
+	/**
+	 * Preparing data to send to NFe API
+	 * 
+	 * @param  int $order Order ID
+	 * @return array 	  Array with the order information to issue the invoice
+	 */
 	public function order_info( $order ) {
 		$total = $this->wc_get_order( $order );
 
-        $data = array(
+		$data = array(
 			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
-    		'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ),
-    		'description' 		=> $this->city_service_info( 'desc', $order ),
+			'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ),
+			'description' 		=> $this->city_service_info( 'desc', $order ),
 			'servicesAmount' 	=> $total->order_total,
-            'borrower' => array(
-      			'name' 						=> $this->check_customer_info( 'name', $order ), 
-            	'email' 					=> get_post_meta( $order, '_billing_email', true ),
-            	'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
-            	'address' 					=> array(
-			        'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
-			        'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
-			        'number' 				=> get_post_meta( $order, '_billing_number', true ),
-			        'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
-			        'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
-			        'country' 				=> $this->billing_country( $order ),
-			        'state' 				=> get_post_meta( $order, '_billing_state', true ),
+			'borrower' => array(
+				'name' 						=> $this->check_customer_info( 'name', $order ), 
+				'email' 					=> get_post_meta( $order, '_billing_email', true ),
+				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
+				'address' 					=> array(
+					'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
+					'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
+					'number' 				=> get_post_meta( $order, '_billing_number', true ),
+					'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
+					'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
+					'country' 				=> $this->billing_country( $order ),
+					'state' 				=> get_post_meta( $order, '_billing_state', true ),
 					'city' 					=> array(
-		    			'code' 				=> $this->ibge_code( $order ),
-		    			'name' 				=> get_post_meta( $order, '_billing_city', true ),
+						'code' 				=> $this->ibge_code( $order ),
+						'name' 				=> get_post_meta( $order, '_billing_city', true ),
 					),
 				),
-            ),
-        );
+			),
+		);
 
-        // Removes empty, false and null fields from the array
-        return array_filter($data);
+		// Removes empty, false and null fields from the array
+		return array_filter($data);
 	}
 
 	/**
@@ -199,13 +199,13 @@ class NFe_Woo {
 
 		// Products Variations
 		foreach ( $order->get_items() as $key => $item ) {
-            $product_id   = $item['product_id'];
-            $variation_id = $item['variation_id'];
+			$product_id   = $item['product_id'];
+			$variation_id = $item['variation_id'];
 
-            $_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
-            $_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
-            $_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
-        }
+			$_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
+			$_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
+			$_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+		}
 
 		switch ($field) {
 			case 'code':
@@ -273,7 +273,7 @@ class NFe_Woo {
 				break;
 		}
 
-        return $output;
+		return $output;
 	}
 
 	/**
@@ -339,27 +339,27 @@ class NFe_Woo {
 	}
 
 	public function clear( $string ) {
-        $string = str_replace( array(',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'), '', $string );
+		$string = str_replace( array(',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'), '', $string );
 
-        return $string;
+		return $string;
 	}
-    
+	
 	public function mask( $val, $mask ) {
 	   $maskared = '';
 	   $k 		 = 0;
 
-	   	for( $i = 0; $i <= strlen($mask) - 1; $i++ ) {
-           	if ( $mask[$i] == '#' ) {
-               	if ( isset($val[$k]) ) {
-                   $maskared .= $val[$k++];
-               	}
+		for( $i = 0; $i <= strlen($mask) - 1; $i++ ) {
+			if ( $mask[$i] == '#' ) {
+				if ( isset($val[$k]) ) {
+				   $maskared .= $val[$k++];
+				}
 
-           } elseif ( isset($mask[$i]) ) {
-            	$maskared .= $mask[$i];
-           }
-	   	}
+		   } elseif ( isset($mask[$i]) ) {
+				$maskared .= $mask[$i];
+		   }
+		}
 
-	   	return $maskared;
+		return $maskared;
 	}
 
 	/**
@@ -511,7 +511,7 @@ endif;
  * @return NFe_Woo The one true NFe_Woo Instance.
  */
 function NFe_Woo() {
-    return NFe_Woo::instance();    
+	return NFe_Woo::instance();    
 }
 
 // That's it! =)
