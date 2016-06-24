@@ -6,10 +6,10 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists('WC_NFe_FrontEnd') ) :
 
 /**
- * WooCommerce NFe.io FrontEnd Class.
+ * FrontEnd Class.
  *
  * @author   NFe.io
- * @package  WooCommerce_NFe/Classes/WC_NFe_FrontEnd
+ * @package  WooCommerce_NFe/Class/WC_NFe_FrontEnd
  * @version  1.0.0
  */
 class WC_NFe_FrontEnd {
@@ -106,15 +106,6 @@ class WC_NFe_FrontEnd {
                     'action'    => 'woo_nfe_issue'
                 );
             }
-
-            // @todo Make sure there is form information before issuing a receipt
-            /* if ( nfe_get_field('where_note') == 'after' && $this->can_issue ) {
-                $actions['woo_nfe_issue'] = array(
-                    'url'       => wc_get_endpoint_url( 'edit-address' ),
-                    'name'      => __( 'Update NFe info', 'woocommerce-nfe' ),
-                    'action'    => 'woo_nfe_update'
-                );
-            } */
         }
 
         if ( $nfe == true ) {
