@@ -108,32 +108,6 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 						'css'      			=> 'width:50px;',
 						'desc_tip'       	=> __( 'Days in the past to allow NFe manual issue.', 'woocommerce-nfe' ),
 					),
-					'nfe_copy_title' 	=> array(
-						'title' 			=> __( 'Safe Copy Sending', 'woocommerce-nfe' ),
-						'type' 				=> 'title',
-					),
-					'nfe_send_copy'  	=> array(
-						'title'             => __( 'Enable Safe Copy', 'woocommerce-nfe' ),
-						'type'              => 'checkbox',
-						'label'             => __( 'Enable safe copy', 'woocommerce-nfe' ),
-						'default'           => 'no',
-						'description'       => __( 'When enabled, a copy of every note issued is sent.', 'woocommerce-nfe' ),
-					),
-					'nfe_copy_name' 	=> array(
-						'title'             => __( 'To: Receipt Name', 'woocommerce-nfe' ),
-						'type'              => 'text',
-						'default'  			=> esc_attr( get_bloginfo( 'name', 'display' ) ),
-						'desc_tip' 			=> __( 'Receipt name NFe.io sends copies to.', 'woocommerce-nfe' ),
-					),
-					'nfe_copy_email' 	=> array(
-						'title'             => __( 'To: Receipt Email', 'woocommerce-nfe' ),
-						'type'              => 'email',
-						'custom_attributes' => array(
-							'multiple' 		=> 'multiple'
-						),
-						'default'           => get_option( 'admin_email' ),
-						'desc_tip' 			=> __( 'Receipt email NFe.io sends copies to.', 'woocommerce-nfe' ),
-					),
 					'nfe_fiscal_title' 	=> array(
 						'title' 			=> __( 'Fiscal Activity (Global)', 'woocommerce-nfe' ),
 						'type' 				=> 'title',
@@ -218,12 +192,8 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 				if ( empty( nfe_get_field('api_key') ) ) {
 					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no api key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
 				}
-
-			} else {
-				if ( nfe_get_field('nfe_send_copy') == 'yes' && empty( nfe_get_field('nfe_copy_email') ) ) {
-					echo $this->get_message( sprintf( __( 'The Safe Copy email is missing. Update it.', 'woocommerce-nfe' ) ) );
-				}
-
+			} 
+			else {
 				if ( nfe_get_field('issue_past_notes') == 'yes' && empty( nfe_get_field('issue_past_days') ) ) {
 					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. Add a date to calculate or disable it.', 'woocommerce-nfe' ) ) );
 				}

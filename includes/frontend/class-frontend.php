@@ -171,7 +171,7 @@ class WC_NFe_FrontEnd {
     }
 
 	/**
-	 * Removes the WooCommerce fields on the checkout if the user chooses it to.
+	 * Removes the WooCommerce fields on the checkout if the admin chooses it to.
 	 * 
 	 * @return void
 	 */
