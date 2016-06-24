@@ -207,7 +207,7 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * @return html the message for the user
 		 */
 		public function nfe_api_error_msg() {
-			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the company lists from NFe.io.', 'woocommerce-nfe' ) ) );
+			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies lis from NFe.io.', 'woocommerce-nfe' ) ) );
 		}
 
 		/**

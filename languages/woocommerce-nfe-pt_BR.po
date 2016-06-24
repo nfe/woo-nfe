@@ -4,235 +4,234 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe\n"
-"POT-Creation-Date: 2016-06-24 21:05:22+00:00\n"
+"POT-Creation-Date: 2016-06-24 18:08-0300\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Renato Alves <contato@ralv.es\n"
-"Language-Team: Renato Alves <contato@ralv.es\n"
-"X-Generator: grunt-wp-i18n 0.5.4\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"PO-Revision-Date: 2016-06-24 18:30-0300\n"
+"Language-Team: Renato Alves <contato@ralv.es>\n"
+"X-Generator: Poedit 1.8.8\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-Basepath: .\n"
-"X-Poedit-Language: English\n"
-"X-Poedit-Country: \n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: "
-"__;_e;_x;esc_html_e;esc_html__;esc_attr_e;esc_attr__;_ex:1,2c;_nx:4c,1,2;_"
-"nx_noop:4c,1,2;_x:1,2c;_n:1,2;_n_noop:1,2;__ngettext_noop:1,2;_c,_nc:4c,1,2;"
-"\n"
+"X-Poedit-KeywordsList: __;_e;_x;esc_html_e;esc_html__;esc_attr_e;esc_attr__;"
+"_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;_x:1,2c;_n:1,2;_n_noop:1,2;"
+"__ngettext_noop:1,2;_c,_nc:4c,1,2\n"
 "X-Textdomain-Support: yes\n"
+"Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
+"Language: pt_BR\n"
 
 #. Plugin Name of the plugin/theme
 msgid "WooCommerce NFe"
-msgstr ""
+msgstr "WooCommerce NFe"
 
 #: includes/admin/class-admin.php:68 includes/admin/class-settings.php:116
 #: includes/admin/class-settings.php:118
 msgid "CityServiceCode"
-msgstr ""
+msgstr "CityServiceCode"
 
 #: includes/admin/class-admin.php:71 includes/admin/class-admin.php:142
 msgid "Enter the CityServiceCode."
-msgstr ""
+msgstr "Preencha o CityServiceCode."
 
 #: includes/admin/class-admin.php:79 includes/admin/class-settings.php:123
 #: includes/admin/class-settings.php:125
 msgid "FederalServiceCode"
-msgstr ""
+msgstr "FederalServiceCode"
 
 #: includes/admin/class-admin.php:82 includes/admin/class-admin.php:152
 msgid "Enter the FederalServiceCode."
-msgstr ""
+msgstr "Preencha o FederalServiceCode."
 
 #: includes/admin/class-admin.php:90
 msgid "Product Description"
-msgstr ""
+msgstr "Descrição do Produto"
 
 #: includes/admin/class-admin.php:93
 msgid "Description for this product output in NFe receipt."
-msgstr ""
+msgstr "A descrição para teste produto irá aparecer na nota da NFe."
 
 #: includes/admin/class-admin.php:140
 msgid "NFe CityServiceCode"
-msgstr ""
+msgstr "CityServiceCode para a NFe"
 
 #: includes/admin/class-admin.php:150
 msgid "NFe FederalServiceCode"
-msgstr ""
+msgstr "FederalServiceCode para a NFe"
 
 #: includes/admin/class-admin.php:160
 msgid "NFe Product Description"
-msgstr ""
+msgstr "Descrição do Produto para a NFe"
 
 #: includes/admin/class-admin.php:205 includes/frontend/class-frontend.php:78
 msgid "Sales Receipt"
-msgstr ""
+msgstr "Nota de Vendas"
 
 #: includes/admin/class-admin.php:230 includes/frontend/class-frontend.php:97
 msgid "Issue Expired"
-msgstr ""
+msgstr "Emissão Expirada"
 
 #: includes/admin/class-admin.php:238
 msgid "Issue Nfe"
-msgstr ""
+msgstr "Emitir NFe"
 
 #: includes/admin/class-admin.php:247 includes/frontend/class-frontend.php:114
 msgid "Download NFe"
-msgstr ""
+msgstr "Baixar NFe"
 
 #: includes/admin/class-admin.php:255 includes/frontend/class-frontend.php:122
 msgid "Enable NFe"
-msgstr ""
+msgstr "Habilitar o NFe"
 
 #: includes/admin/class-ajax.php:91
 msgid "NFe issued successfully."
-msgstr ""
+msgstr "Nota NFe emitada com sucesso."
 
 #: includes/admin/class-ajax.php:120
 msgid "NFe receipt downloaded successfully."
-msgstr ""
+msgstr "Download de nota NFe realizado com sucesso."
 
 #: includes/admin/class-api.php:302 includes/admin/class-settings.php:193
 #: includes/admin/class-settings.php:198 includes/admin/class-settings.php:210
 msgid "WooCommerce NFe.io"
-msgstr ""
+msgstr "WooCommerce NFe.io"
 
 #: includes/admin/class-api.php:302
 msgid "There was a problem issuing a receipt in NFe.io."
-msgstr ""
+msgstr "Houve um problema ao emitir a nota no NFe.io."
 
 #: includes/admin/class-settings.php:25
 msgid "NFe Integration"
-msgstr ""
+msgstr "Integração NFe"
 
 #: includes/admin/class-settings.php:26
 msgid "This is the NFe.io integration/settings page."
-msgstr ""
+msgstr "Esta é a página de integração/configuração do NFe.io."
 
 #: includes/admin/class-settings.php:49
 msgid "Select a company..."
-msgstr ""
+msgstr "Selecione uma empresa..."
 
 #: includes/admin/class-settings.php:52
 msgid "Enter your API key and save to see your companies."
-msgstr ""
+msgstr "Preencha sua chave de API e salve para ver suas empresas."
 
 #: includes/admin/class-settings.php:58
 msgid "Enable/Disable"
-msgstr ""
+msgstr "Habilitar/Desabilitar"
 
 #: includes/admin/class-settings.php:60
 msgid "Enable NFe.io"
-msgstr ""
+msgstr "Habilitar NFe.io"
 
 #: includes/admin/class-settings.php:64 includes/admin/class-settings.php:66
 msgid "API Key"
-msgstr ""
+msgstr "Chave da API"
 
 #: includes/admin/class-settings.php:68
 msgid "Log in to NFe.io to look up your API key. - %s"
-msgstr ""
+msgstr "Entre no NFe.io para procurar sua chave de API. - %s"
 
 #: includes/admin/class-settings.php:68
 msgid "NFe.io - Account"
-msgstr ""
+msgstr "Conta - NFe.io"
 
 #: includes/admin/class-settings.php:71 includes/admin/class-settings.php:73
 msgid "Choose the Company"
-msgstr ""
+msgstr "Escolha a Empresa"
 
 #: includes/admin/class-settings.php:78
 msgid "Choose one of your companies."
-msgstr ""
+msgstr "Escolha uma de suas empresas."
 
 #: includes/admin/class-settings.php:81 includes/admin/class-settings.php:83
 msgid "NFe.io Filling"
-msgstr ""
+msgstr "Preenchimento para o NFe.io"
 
 #: includes/admin/class-settings.php:86
 msgid "Before Checkout (Default)"
-msgstr ""
+msgstr "Antes do Checkout (Padrão)"
 
 #: includes/admin/class-settings.php:87
 msgid "After Checkout"
-msgstr ""
+msgstr "Depois do Checkout"
 
 #: includes/admin/class-settings.php:91
 msgid "Option for user to fill the NFe.io information."
-msgstr ""
+msgstr "Opção para o usuário preencher as informações do NFe.io."
 
 #: includes/admin/class-settings.php:94
 msgid "Manual Retroactive Issue of NFe"
-msgstr ""
+msgstr "Emissão Manual Retroativa da NFe"
 
 #: includes/admin/class-settings.php:98
 msgid "Enable Retroactive Issue"
-msgstr ""
+msgstr "Habilitar Emissão de Nota Retroativa"
 
 #: includes/admin/class-settings.php:100
 msgid "Enable to issue NFe.io in past products"
-msgstr ""
+msgstr "Habilite a emissão de notas NFe em produtos antigos"
 
 #: includes/admin/class-settings.php:102
 msgid ""
 "Enabling this allows users to issue nfe.io notes on bought products in the "
 "past."
 msgstr ""
+"Se habilitado, essa funcionalidade permite a emissão de notas em produtos "
+"comprados no passado."
 
 #: includes/admin/class-settings.php:105
 msgid "Days in the past"
-msgstr ""
+msgstr "Quantos dias atrás"
 
 #: includes/admin/class-settings.php:109
 msgid "Days in the past to allow NFe manual issue."
-msgstr ""
+msgstr "Dias no passado permitido para emissão manual da NFe."
 
 #: includes/admin/class-settings.php:112
 msgid "Fiscal Activity (Global)"
-msgstr ""
+msgstr "Atividade Fiscal (Global)"
 
 #: includes/admin/class-settings.php:120
 msgid "Global value: Used when issuing a receipt"
-msgstr ""
+msgstr "Valor global: Usado na emissão de nota"
 
 #: includes/admin/class-settings.php:127
 msgid "Global value: federalServiceCode, used when issuing a receipt"
-msgstr ""
+msgstr "Valor global: federalServiceCode, usando na emissão de nota"
 
 #: includes/admin/class-settings.php:130 includes/admin/class-settings.php:132
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: includes/admin/class-settings.php:134
 msgid "Global value: Description used when issuing a receipt"
-msgstr ""
+msgstr "Valor global: Descrição usada na emissão de nota"
 
 #: includes/admin/class-settings.php:137
 msgid "Debug Log"
-msgstr ""
+msgstr "Log de depuração"
 
 #: includes/admin/class-settings.php:139
 msgid "Enable logging"
-msgstr ""
+msgstr "Ativar logs"
 
 #: includes/admin/class-settings.php:141
 msgid "Log events such as API requests, you can check this log in %s."
-msgstr ""
+msgstr "Registrar eventos da API do NFe. Você pode verificar o log em %s."
 
 #: includes/admin/class-settings.php:141
 msgid "System Status &gt; Logs"
-msgstr ""
+msgstr "&gt; Logs do Status do Sistema "
 
 #: includes/admin/class-settings.php:193
 msgid ""
-"Plugin is enabled but no api key provided. You should inform your API Key. "
-"%s"
+"Plugin is enabled but no api key provided. You should inform your API Key. %s"
 msgstr ""
 
 #: includes/admin/class-settings.php:193
 msgid "Click here to configure!"
-msgstr ""
+msgstr "Clique aqui para configurar!"
 
 #: includes/admin/class-settings.php:198
 msgid ""
@@ -242,7 +241,7 @@ msgstr ""
 
 #: includes/admin/class-settings.php:210
 msgid "Unable to load the company lists from NFe.io."
-msgstr ""
+msgstr "Não foi possível carregar a lista de empresas do NFe.io."
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:26
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:29
@@ -251,14 +250,14 @@ msgstr ""
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:27
 msgid ""
-"Email to remind the customer to add/update NFe fields. These fields are "
-"used from WooCommerce NFe."
+"Email to remind the customer to add/update NFe fields. These fields are used "
+"from WooCommerce NFe."
 msgstr ""
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:123
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:124
 msgid "Enable this email notification"
-msgstr ""
+msgstr "Habilite esta notificação de email"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:129
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:130
@@ -277,12 +276,12 @@ msgstr ""
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:143
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:144
 msgid "Choose which format of email to send."
-msgstr ""
+msgstr "Escolha um dos formatos de e-mails para enviar."
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:27
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:30
 msgid "NFe Receipt Issued"
-msgstr ""
+msgstr "Nota da NFe emitida"
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:28
 msgid ""
@@ -293,7 +292,7 @@ msgstr ""
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:23
 #: includes/admin/views/html-notice-missing-woocommerce.php:23
 msgid "WooCommerce Nfe.io"
-msgstr ""
+msgstr "WooCommerce Nfe.io"
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:23
 msgid ""
@@ -303,11 +302,11 @@ msgstr ""
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:26
 msgid "Active WooCommerce Extra Checkout Fields for Brazil"
-msgstr ""
+msgstr "Ative o plugin WooCommerce Extra Checkout Fields for Brazil"
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:35
 msgid "Install WooCommerce Extra Checkout Fields for Brazil"
-msgstr ""
+msgstr "Instale o plugin WooCommerce Extra Checkout Fields for Brazil"
 
 #: includes/admin/views/html-notice-missing-woocommerce.php:23
 msgid "depends on the last version of WooCommerce to work!"
@@ -315,19 +314,19 @@ msgstr ""
 
 #: includes/admin/views/html-notice-missing-woocommerce.php:26
 msgid "Active WooCommerce"
-msgstr ""
+msgstr "Ativar WooCommerce"
 
 #: includes/admin/views/html-notice-missing-woocommerce.php:35
 msgid "Install WooCommerce"
-msgstr ""
+msgstr "Instalar WooCommerce"
 
 #: includes/frontend/class-frontend.php:40
 msgid "Thank you. Your order has been received. Now you need %s."
-msgstr ""
+msgstr "Obrigado. Seu pedido foi recebido com sucesso. Agora você precisa %s."
 
 #: includes/frontend/class-frontend.php:40
 msgid "update your NFe information"
-msgstr ""
+msgstr "atualize suas informações do NFe"
 
 #: includes/frontend/class-frontend.php:53
 msgid ""
@@ -343,7 +342,7 @@ msgstr ""
 
 #: includes/frontend/class-frontend.php:105
 msgid "Issue NFe"
-msgstr ""
+msgstr "Emitir NFe"
 
 #: templates/emails/nfe-checkout-fields.php:24
 #: templates/emails/plain/nfe-checkout-fields.php:21
@@ -355,66 +354,66 @@ msgstr ""
 #: templates/emails/nfe-checkout-fields.php:26
 #: templates/emails/plain/nfe-checkout-fields.php:23
 msgid "Atenciosamente."
-msgstr ""
+msgstr "Atenciosamente."
 
 #: templates/emails/nfe-receipt-issued.php:22
 #: templates/emails/plain/nfe-receipt-issued.php:19
 msgid "NFe issued successfully. Here follows a email for your backing."
-msgstr ""
+msgstr "Sua nota foi emitida com sucesso. Segue e-mail para seu registro."
 
 #: templates/emails/plain/nfe-checkout-fields.php:19
 msgid "You have received an order from %s. The order is as follows:"
-msgstr ""
+msgstr "Você recebeu um pedido de %s. O pedido é:"
 
 #: woocommerce-nfe.php:202
 msgid "Settings"
-msgstr ""
+msgstr "Configurações"
 
 #. Plugin URI of the plugin/theme
 msgid "https://github.com/nfe/woocommerce-nfe"
-msgstr ""
+msgstr "https://github.com/nfe/woocommerce-nfe"
 
 #. Description of the plugin/theme
 msgid "WooCommerce extension for the NFe API"
-msgstr ""
+msgstr "Extensão do WooCommerce para a API do NFE"
 
 #. Author of the plugin/theme
 msgid "NFe.io"
-msgstr ""
+msgstr "NFe.io"
 
 #. Author URI of the plugin/theme
 msgid "https://nfe.io"
-msgstr ""
+msgstr "https://nfe.io"
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:32
 #. translators: placeholder is {blogname}, a variable that will be substituted
 #. when email is sent out
+#: includes/admin/emails/class-nfe-email-checkout-fields.php:32
 msgctxt ""
 "default email subject for safe copy emails sent to the admin or a custom "
 "email chosen in the NFe settings page"
 msgid "[%s] NFe Update Checkout Fields"
-msgstr ""
+msgstr "[%s] Atualizar Campos do Checkout"
 
-#: includes/admin/emails/class-nfe-email-receipt-issued.php:33
 #. translators: placeholder is {blogname}, a variable that will be substituted
 #. when email is sent out
+#: includes/admin/emails/class-nfe-email-receipt-issued.php:33
 msgctxt ""
 "default email subject for safe copy emails sent to the admin or a custom "
 "email chosen in the NFe settings page"
 msgid "[%s] NFe Receipt Issued"
-msgstr ""
+msgstr "[%s] Nota NFe Emitida"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:121
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:122
 msgctxt "an email notification"
 msgid "Enable/Disable"
-msgstr ""
+msgstr "Habilitar/Desabilitar"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:127
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:128
 msgctxt "of an email"
 msgid "Subject"
-msgstr ""
+msgstr "Assunto"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:134
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:135
@@ -422,22 +421,22 @@ msgctxt ""
 "Name the setting that controls the main heading contained within the email "
 "notification"
 msgid "Email Heading"
-msgstr ""
+msgstr "Cabeçalho do E-mail"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:141
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:142
 msgctxt "text, html or multipart"
 msgid "Email type"
-msgstr ""
+msgstr "Tipo de e-mail"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:147
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:148
 msgctxt "email type"
 msgid "Plain text"
-msgstr ""
+msgstr "Plain text"
 
 #: includes/admin/emails/class-nfe-email-checkout-fields.php:148
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:149
 msgctxt "email type"
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
