@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php __( 'NFe issued successfully. Here follows a email for your backing.', 'woocommerce-nfe' ); ?></p>
+<p><?php __( 'NFe issued successfully. Here follows an email for your backing.', 'woocommerce-nfe' ); ?></p>
 
 <?php
 /**

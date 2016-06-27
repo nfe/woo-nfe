@@ -92,7 +92,7 @@ class WC_NFe_FrontEnd {
         $actions 	= array();
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-            if ( ! $this->issue_past_orders( $order ) && current_user_can('manage_woocommerce') ) {
+            if ( ! $this->issue_past_orders( $order ) ) {
                 $actions['woo_nfe_expired'] = array(
                     'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_expired'
@@ -106,14 +106,14 @@ class WC_NFe_FrontEnd {
                     'action'    => 'woo_nfe_issue'
                 );
             }
-        }
 
-        if ( $nfe == true ) {
-            $actions['woo_nfe_download'] = array(
-                'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
-                'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
-                'action'    => 'woo_nfe_download'
-            );
+            if ( $nfe == true ) {
+                $actions['woo_nfe_download'] = array(
+                    'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
+                    'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                    'action'    => 'woo_nfe_download'
+                );
+            }
         }
 
         if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') == 'no' ) {
@@ -154,7 +154,7 @@ class WC_NFe_FrontEnd {
         $time   = $order->post->post_date;
         $days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
 
-        if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $time ) > strtotime( $days ) ) {
+        if ( strtotime( $days ) < strtotime( $time ) ) {
             return true;
         }
 

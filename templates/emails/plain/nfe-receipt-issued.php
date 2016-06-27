@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 
 echo "= " . $email_heading . " =\n\n";
 
-echo sprintf( __('NFe issued successfully. Here follows a email for your backing.', 'woocommerce-nfe') );
+echo sprintf( __('NFe issued successfully. Here follows an email for your backing.', 'woocommerce-nfe') );
 
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 

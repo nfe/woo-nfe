@@ -114,15 +114,15 @@ class NFe_Woo {
 		$total = $this->wc_get_order( $order );
 
 		$data = array(
-			'cityServiceCode' 	=> $this->city_service_info( 'code', $order ), 
-			'federalServiceCode'=> $this->city_service_info( 'fed_code', $order ),
-			'description' 		=> $this->city_service_info( 'desc', $order ),
-			'servicesAmount' 	=> $total->order_total,
-			'borrower' => array(
+			'cityServiceCode' 				=> $this->city_service_info( 'code', $order ), 
+			'federalServiceCode'			=> $this->city_service_info( 'fed_code', $order ),
+			'description' 					=> $this->city_service_info( 'desc', $order ),
+			'servicesAmount' 				=> $total->order_total,
+			'borrower' 			=> array(
 				'name' 						=> $this->check_customer_info( 'name', $order ), 
 				'email' 					=> get_post_meta( $order, '_billing_email', true ),
 				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
-				'address' 					=> array(
+				'address' 		=> array(
 					'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
 					'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
 					'number' 				=> get_post_meta( $order, '_billing_number', true ),
@@ -130,7 +130,7 @@ class NFe_Woo {
 					'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
 					'country' 				=> $this->billing_country( $order ),
 					'state' 				=> get_post_meta( $order, '_billing_state', true ),
-					'city' 					=> array(
+					'city' 		=> array(
 						'code' 				=> $this->ibge_code( $order ),
 						'name' 				=> get_post_meta( $order, '_billing_city', true ),
 					),
@@ -143,7 +143,7 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Hack to bring support to Brazilian ISO code
+	 * Hack to bring support to Brazilian ISO code (Ex.: BRA instead of BR)
 	 * 
 	 * @param  int $order_id Product ID
 	 * @return string
@@ -195,29 +195,36 @@ class NFe_Woo {
 			return;
 		}
 
-		$order = $this->wc_get_order($post_id);
+		$order = $this->wc_get_order( $post_id );
 
-		// Products Variations
+		// Variations or Simple Product Info
 		foreach ( $order->get_items() as $key => $item ) {
 			$product_id   = $item['product_id'];
 			$variation_id = $item['variation_id'];
 
-			$_simple_cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
-			$_simple_federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
-			$_simple_nfe_product_desc   = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+			if ( $variation_id ) {
+				$cityservicecode    = get_post_meta( $variation_id, '_cityservicecode', true );
+				$federalservicecode = get_post_meta( $variation_id, '_federalservicecode', true );
+				$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );	
+			} 
+			else {
+				$cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
+				$federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
+				$product_desc       = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+			}
 		}
 
 		switch ($field) {
 			case 'code':
-				$output = $_simple_cityservicecode ? $_simple_cityservicecode : nfe_get_field('nfe_cityservicecode');
-				break;
-
-			case 'desc':
-				$output = $_simple_nfe_product_desc ? $_simple_nfe_product_desc : nfe_get_field('nfe_cityservicecode_desc');
+				$output = $cityservicecode ? $cityservicecode : nfe_get_field('nfe_cityservicecode');
 				break;
 
 			case 'fed_code':
-				$output = $_simple_federalservicecode ? _simple_federalservicecode : nfe_get_field('nfe_fedservicecode');
+				$output = $federalservicecode ? federalservicecode : nfe_get_field('nfe_fedservicecode');
+				break;
+
+			case 'desc':
+				$output = $product_desc ? $product_desc : nfe_get_field('nfe_cityservicecode_desc');
 				break;
 			
 			default:
@@ -236,7 +243,7 @@ class NFe_Woo {
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
 	 */
 	public function check_customer_info( $field = '', $order ) {
-		if ( empty($field) || empty($order) ) {
+		if ( empty($field) ) {
 			return;
 		}
 
@@ -247,7 +254,8 @@ class NFe_Woo {
 			case 'number': // Customer ID Number
 				if ( $type == 1 ) {
 					$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-				} elseif ( $type == 2 ) {
+				} 
+				elseif ( $type == 2 ) {
 					$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 				}
 				break;
@@ -255,16 +263,18 @@ class NFe_Woo {
 			case 'name': // Customer Name/Razão Social
 				if ( $type == 1 ) {
 					$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-				} elseif ( $type == 2 ) {
+				} 
+				elseif ( $type == 2 ) {
 					$output = get_post_meta( $order, '_billing_company', true );
 				}
 				break;
 
 			case 'type': // Customer Type
 				if ( $type == 1 ) {
-					$output = 'Customers';
-				} elseif ( $type == 2 ) {
-					$output = 'Company';
+					$output = __('Customers', 'woocommerce-nfe');
+				} 
+				elseif ( $type == 2 ) {
+					$output = __('Company', 'woocommerce-nfe');
 				}
 				break;
 
@@ -363,7 +373,7 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Country Iso Code
+	 * Country 2 and 3 ISO Codes
 	 * 
 	 * @return array
 	 */

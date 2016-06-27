@@ -16,9 +16,7 @@ defined( 'ABSPATH' ) || exit;
 
 echo "= " . $email_heading . " =\n\n";
 
-echo sprintf( __( 'You have received an order from %s. The order is as follows:', 'woocommerce-nfe' ), $order->get_formatted_billing_full_name() );
-
-echo sprintf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), $link );
+echo sprintf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), esc_url( wc_get_page_permalink( 'myaccount' ) ) );
 
 echo __('Atenciosamente.', 'woocommerce-nfe');
 

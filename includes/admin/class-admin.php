@@ -20,16 +20,12 @@ class WC_NFe_Admin {
 	public function __construct() {
 		// Filters
 		add_filter( 'manage_edit-shop_order_columns',               array( $this, 'order_status_column_header' ), 20 );
+		add_filter( 'woocommerce_product_data_tabs',                array( $this, 'product_data_tab' ) );
 
 		// Actions
-		add_action( 'manage_shop_order_posts_custom_column',        array( $this, 'order_status_column_content' ) );
-
-		// Product Variations
+		add_action( 'manage_shop_order_posts_custom_column',         array( $this, 'order_status_column_content' ) );
 		add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'variation_fields' ), 10, 3 );
 		add_action( 'woocommerce_save_product_variation',            array( $this, 'save_variations_fields' ), 10, 2 );
-
-		// Not Product Variations
-		add_filter( 'woocommerce_product_data_tabs',                 array( $this, 'product_data_tab' ) );
 		add_action( 'woocommerce_product_data_panels',               array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              array( $this, 'product_data_fields_save' ) );
 	}
@@ -57,8 +53,7 @@ class WC_NFe_Admin {
 	 * @return string
 	 */
 	public function product_data_fields() {
-		global $post; 
-
+		global $post;
 		?>
 		<div id="nfe_product_info_data" class="panel woocommerce_options_panel">
 			<?php
@@ -222,40 +217,45 @@ class WC_NFe_Admin {
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
+
+			$b = $order->get_items();
+
+			var_dump($b);
+
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-				if ( ! $this->issue_past_orders( $order ) && current_user_can('manage_woocommerce') ) {
+				if ( ! $this->issue_past_orders( $order ) ) {
 					$actions['woo_nfe_expired'] = array(
 						'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
 						'action'    => 'woo_nfe_expired'
 					);
 				}
 
-				if ( $this->issue_past_orders( $order ) && ( nfe_get_field('nfe_enable') == 'yes' && $nfe == false ) ) {
+				if ( $this->issue_past_orders( $order ) && $nfe == false ) {
 					$actions['woo_nfe_issue'] = array(
 						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
 						'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
 						'action'    => 'woo_nfe_issue'
 					);
 				}
+
+				if ( $nfe == true ) {
+					$actions['woo_nfe_download'] = array(
+						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
+						'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+						'action'    => 'woo_nfe_download'
+					);
+				}
 			}
 
-			if ( $nfe == true ) {
-				$actions['woo_nfe_download'] = array(
-					'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
-					'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
-					'action'    => 'woo_nfe_download'
-				);
-			}
-
-			if ( current_user_can('manage_woocommerce') && nfe_get_field('nfe_enable') == 'no' ) {
+			if ( nfe_get_field('nfe_enable') == 'no' && current_user_can('manage_woocommerce') ) {
 				$actions['woo_nfe_tab'] = array(
 					'url'       => WOOCOMMERCE_NFE_SETTINGS_URL,
 					'name'      => __( 'Enable NFe', 'woocommerce-nfe' ),
 					'action'    => 'woo_nfe_tab'
 				);
-			} 
+			}
 
 			foreach ( $actions as $action ) {
 				if ( $action['action'] == 'woo_nfe_expired' ) {
@@ -279,17 +279,17 @@ class WC_NFe_Admin {
 	}
 
 	/**
-	 * Past Issue Check
+	 * Past Issue Check (Can we issue a past order?)
 	 * 
 	 * @param  string $post_date Post date
 	 * @param  string $past_days 
 	 * @return bool true|false
 	 */
 	public function issue_past_orders( $order ) {
-		$post_date   = $order->post->post_date;
-		$days        = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
+		$time   = $order->post->post_date;
+		$days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
 
-		if ( nfe_get_field( 'issue_past_notes' ) == 'yes' && strtotime( $post_date ) > strtotime( $days ) ) {
+		if ( strtotime( $days ) < strtotime( $time ) ) {
 			return true;
 		}
 

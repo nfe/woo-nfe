@@ -3,7 +3,7 @@
 /**
  * WooCommerce NFe.io Custom Functions
  *
- * @author   Renato Alves
+ * @author   NFe.io
  * @package  WooCommerce_NFe/Functions
  * @version  1.0.0
  */
