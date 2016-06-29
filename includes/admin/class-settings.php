@@ -188,10 +188,8 @@ if ( ! class_exists( 'WC_NFe_Integration' ) ) :
 		 * @return void
 		 */
 		public function display_errors() {
-			if ( $this->is_active() == false ) {
-				if ( empty( nfe_get_field('api_key') ) ) {
-					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no api key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
-				}
+			if ( ! $this->is_active() && empty( nfe_get_field('api_key') ) ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no api key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
 			} 
 			else {
 				if ( nfe_get_field('issue_past_notes') == 'yes' && empty( nfe_get_field('issue_past_days') ) ) {

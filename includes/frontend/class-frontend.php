@@ -91,28 +91,37 @@ class WC_NFe_FrontEnd {
         $nfe 		= get_post_meta( $order->id, 'nfe_issued', true );
         $actions 	= array();
 
-        if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-            if ( ! $this->issue_past_orders( $order ) ) {
+        if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
+            if ( ! nfe_issue_past_orders( $order ) ) {
                 $actions['woo_nfe_expired'] = array(
                     'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_expired'
                 );
             }
 
-            if ( $this->issue_past_orders( $order ) && $nfe == false ) {
-                $actions['woo_nfe_issue'] = array(
-                    'url'       => wp_nonce_url( add_query_arg( 'nfe_issue', $order->id ) , 'woocommerce_nfe_issue' ),
-                    'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
-                    'action'    => 'woo_nfe_issue'
+            if ( nfe_user_address_filled( $order->id ) ) {
+                $actions['woo_nfe_pending_address'] = array(
+                    'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
+                    'action'    => 'woo_nfe_pending_address'
                 );
             }
+            else {
 
-            if ( $nfe == true ) {
-                $actions['woo_nfe_download'] = array(
-                    'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
-                    'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
-                    'action'    => 'woo_nfe_download'
-                );
+                if ( nfe_issue_past_orders( $order ) && $nfe == false ) {
+                    $actions['woo_nfe_issue'] = array(
+                        'url'       => wp_nonce_url( add_query_arg( 'nfe_issue', $order->id ) , 'woocommerce_nfe_issue' ),
+                        'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
+                        'action'    => 'woo_nfe_issue'
+                    );
+                }
+
+                if ( $nfe == true ) {
+                    $actions['woo_nfe_download'] = array(
+                        'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
+                        'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                        'action'    => 'woo_nfe_download'
+                    );
+                }
             }
         }
 
@@ -125,7 +134,7 @@ class WC_NFe_FrontEnd {
         } 
 
         foreach ( $actions as $action ) {
-            if ( $action['action'] == 'woo_nfe_expired' ) {
+            if ( $action['action'] == 'woo_nfe_expired' || $action['action'] == 'woo_nfe_pending_address' ) {
                 printf( '<span class="button view %s" data-tip="%s">%s</span>', 
                     esc_attr( $action['action'] ), 
                     esc_attr( $action['name'] ), 
@@ -142,25 +151,6 @@ class WC_NFe_FrontEnd {
         }
     }
 
-    /**
-     * Past Issue Check
-     * 
-     * @param  string $post_date Post date
-     * @param  string $past_days Days
-     * 
-     * @return bool true|false
-     */
-    public function issue_past_orders( $order ) {
-        $time   = $order->post->post_date;
-        $days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
-
-        if ( strtotime( $days ) < strtotime( $time ) ) {
-            return true;
-        }
-
-        return false;
-    }
-
 	/**
 	 * Removes the WooCommerce fields on the checkout if the admin chooses it to.
 	 * 
@@ -168,7 +158,6 @@ class WC_NFe_FrontEnd {
 	 */
 	public function removes_fields( $fields ) {
 		if ( $this->where_note() == true ) {
-	        unset($fields['billing']['billing_phone']);
 	        unset($fields['billing']['billing_number']);
 	        unset($fields['billing']['billing_country']);
 	        unset($fields['billing']['billing_address_1']);
@@ -183,7 +172,7 @@ class WC_NFe_FrontEnd {
 	}
 
     /**
-     * Custom check for Where Note uses
+     * Custom check for Where Note usage
      * 
      * @return bool true|false
      */

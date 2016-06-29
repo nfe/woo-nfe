@@ -211,36 +211,45 @@ class WC_NFe_Admin {
 	public function order_status_column_content( $column ) {
 		global $post;
 
-		$order = wc_get_order( $post->ID );
-		$nfe   = get_post_meta( $post->ID, 'nfe_issued', true );
+		$order    = wc_get_order( $post->ID );
+		$order_id = $order->id;
+		$nfe      = get_post_meta( $post->ID, 'nfe_issued', true );
 	   
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
 			$actions = array();
 
-			if ( nfe_get_field('nfe_enable') == 'yes' && $order->post_status == 'wc-completed' ) {
-				if ( ! $this->issue_past_orders( $order ) ) {
+			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
+				if ( ! nfe_issue_past_orders( $order ) ) {
 					$actions['woo_nfe_expired'] = array(
 						'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
 						'action'    => 'woo_nfe_expired'
 					);
 				}
 
-				if ( $this->issue_past_orders( $order ) && $nfe == false ) {
-					$actions['woo_nfe_issue'] = array(
-						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-						'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
-						'action'    => 'woo_nfe_issue'
+				if ( nfe_user_address_filled( $order_id ) ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
+						'action'    => 'woo_nfe_pending_address'
 					);
 				}
+				else {
+					if ( nfe_issue_past_orders( $order ) && $nfe == false ) {
+						$actions['woo_nfe_issue'] = array(
+							'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
+							'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+							'action'    => 'woo_nfe_issue'
+						);
+					}
 
-				if ( $nfe == true ) {
-					$actions['woo_nfe_download'] = array(
-						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
-						'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
-						'action'    => 'woo_nfe_download'
-					);
+					if ( $nfe == true ) {
+						$actions['woo_nfe_download'] = array(
+							'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
+							'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+							'action'    => 'woo_nfe_download'
+						);
+					}
 				}
 			}
 
@@ -253,13 +262,14 @@ class WC_NFe_Admin {
 			}
 
 			foreach ( $actions as $action ) {
-				if ( $action['action'] == 'woo_nfe_expired' ) {
+				if ( $action['action'] == 'woo_nfe_expired' || $action['action'] == 'woo_nfe_pending_address' ) {
 					printf( '<span class="button view %s" data-tip="%s">%s</span>', 
 						esc_attr( $action['action'] ), 
 						esc_attr( $action['name'] ), 
 						esc_attr( $action['name'] ) 
 					);
-				} else {
+				} 
+				else {
 					printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
 						esc_attr( $action['action'] ), 
 						esc_url( $action['url'] ), 
@@ -271,24 +281,6 @@ class WC_NFe_Admin {
 			?>
 			</p><?php
 		}
-	}
-
-	/**
-	 * Past Issue Check (Can we issue a past order?)
-	 * 
-	 * @param  string $post_date Post date
-	 * @param  string $past_days 
-	 * @return bool true|false
-	 */
-	public function issue_past_orders( $order ) {
-		$time   = $order->post->post_date;
-		$days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
-
-		if ( strtotime( $days ) < strtotime( $time ) ) {
-			return true;
-		}
-
-		return false;
 	}
 }
 
