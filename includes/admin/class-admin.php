@@ -218,9 +218,6 @@ class WC_NFe_Admin {
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
-
-			// var_dump($nfe);
-
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
