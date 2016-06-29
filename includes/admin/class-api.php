@@ -62,7 +62,7 @@ class NFe_Woo {
 
 			$invoice = Nfe_ServiceInvoice::create( $company_id, $data );
 
-			if ( isset( $invoice->errors ) ) {
+			if ( $invoice->errors ) {
 
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
@@ -98,7 +98,7 @@ class NFe_Woo {
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-			$pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe->id );
+			$pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
 		}
 
 		return $pdf;
@@ -108,31 +108,31 @@ class NFe_Woo {
 	 * Preparing data to send to NFe API
 	 * 
 	 * @param  int $order Order ID
-	 * @return array 	  Array with the order information to issue the invoice
+	 * @return array 	  Array with the order_id information to issue the invoice
 	 */
-	public function order_info( $order ) {
-		$total = $this->wc_get_order( $order );
+	public function order_info( $order_id ) {
+		$total = $this->wc_get_order( $order_id );
 
 		$data = array(
-			'cityServiceCode' 				=> $this->city_service_info( 'code', $order ), 
-			'federalServiceCode'			=> $this->city_service_info( 'fed_code', $order ),
-			'description' 					=> $this->city_service_info( 'desc', $order ),
+			'cityServiceCode' 				=> $this->city_service_info( 'code', $order_id ), 
+			'federalServiceCode'			=> $this->city_service_info( 'fed_code', $order_id ),
+			'description' 					=> $this->city_service_info( 'desc', $order_id ),
 			'servicesAmount' 				=> $total->order_total,
 			'borrower' 			=> array(
-				'name' 						=> $this->check_customer_info( 'name', $order ), 
-				'email' 					=> get_post_meta( $order, '_billing_email', true ),
-				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order ),
+				'name' 						=> $this->check_customer_info( 'name', $order_id ), 
+				'email' 					=> get_post_meta( $order_id, '_billing_email', true ),
+				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order_id ),
 				'address' 		=> array(
-					'postalCode' 			=> $this->cep( get_post_meta( $order, '_billing_postcode', true ) ),
-					'street' 				=> get_post_meta( $order, '_billing_address_1', true ),
-					'number' 				=> get_post_meta( $order, '_billing_number', true ),
-					'additionalInformation' => get_post_meta( $order, '_billing_address_2', true ),
-					'district' 				=> get_post_meta( $order, '_billing_neighborhood', true ),
-					'country' 				=> $this->billing_country( $order ),
-					'state' 				=> get_post_meta( $order, '_billing_state', true ),
+					'postalCode' 			=> $this->cep( get_post_meta( $order_id, '_billing_postcode', true ) ),
+					'street' 				=> get_post_meta( $order_id, '_billing_address_1', true ),
+					'number' 				=> get_post_meta( $order_id, '_billing_number', true ),
+					'additionalInformation' => get_post_meta( $order_id, '_billing_address_2', true ),
+					'district' 				=> get_post_meta( $order_id, '_billing_neighborhood', true ),
+					'country' 				=> $this->billing_country( $order_id ),
+					'state' 				=> get_post_meta( $order_id, '_billing_state', true ),
 					'city' 		=> array(
-						'code' 				=> $this->ibge_code( $order ),
-						'name' 				=> get_post_meta( $order, '_billing_city', true ),
+						'code' 				=> $this->ibge_code( $order_id ),
+						'name' 				=> get_post_meta( $order_id, '_billing_city', true ),
 					),
 				),
 			),

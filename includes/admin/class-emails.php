@@ -8,16 +8,14 @@ if ( ! class_exists('WC_NFe_Emails') ) :
 /**
  * WooCommerce NFe Email Class
  * 
- * @version 	1.0.0
- * @package 	WooCommerce_NFe/Class/WC_NFe_Emails
  * @author  	NFe.io
+ * @package 	WooCommerce_NFe/Class/WC_NFe_Emails
+ * @version 	1.0.0
  */
 class WC_NFe_Emails {
 
 	/**
 	 * Bootstraps the class and hooks required actions & filters.
-	 * 
-	 * @access public
 	 */
 	public static function init() {
 		add_action( 'woocommerce_email_classes', __CLASS__ . '::add_emails', 10, 1 );
@@ -25,8 +23,6 @@ class WC_NFe_Emails {
 
 	/**
 	 * Add NFe's email classes.
-	 *
-	 * @access public
 	 */
 	public static function add_emails( $email_classes ) {
 		require_once( 'emails/class-nfe-email-checkout-fields.php' 	);

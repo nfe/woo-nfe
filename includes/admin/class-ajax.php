@@ -68,27 +68,6 @@ class WC_NFe_Ajax {
 	}
 
 	/**
-	 * Download a NFe via AJAX
-	 */
-	public static function nfe_download() {
-		if ( ! current_user_can( 'edit_shop_orders' ) && ! check_admin_referer( 'woo_nfe_download' ) ) {
-			return;
-		}
-
-		$order = wc_get_order( absint( $_GET['order_id'] ) );
-
-		// Bail if there is no order id
-		if ( empty( $order->id ) ) {
-			return;
-		}
-
-		$pdf = NFe_Woo()->down_invoice( array( $order->id ) );
-
-		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'edit.php?post_type=shop_order' ) );
-		die();
-	}
-
-	/**
 	 * NFe issue from the front-end
 	 */
 	public static function front_nfe_issue() {
@@ -122,9 +101,20 @@ class WC_NFe_Ajax {
 	}
 
 	/**
+	 * Download NFe from the back-end
+	 */
+	public static function nfe_download() {
+		if ( ! current_user_can( 'edit_shop_orders' ) && ! check_admin_referer( 'woo_nfe_download' ) ) {
+			return;
+		}
+
+		$order = wc_get_order( absint( $_GET['order_id'] ) );
+
+		self::nfe_download_base( $order );
+	}
+
+	/**
 	 * Download NFe from the Front-end
-	 *
-	 * @todo Add notice if there is error
 	 */
 	public static function front_nfe_download() {
 		// Nothing to do
@@ -134,6 +124,13 @@ class WC_NFe_Ajax {
 
 		$order = wc_get_order( absint( $_GET['nfe_download'] ) );
 
+		self::nfe_download_base( $order );
+	}
+
+	/**
+	 * Download a NFe via AJAX
+	 */
+	public static function nfe_download_base( $order ) {
 		// Bail if there is no order id
 		if ( empty( $order->id ) ) {
 			return;
@@ -141,9 +138,18 @@ class WC_NFe_Ajax {
 
 		$pdf = NFe_Woo()->down_invoice( array( $order->id ) );
 
-		wc_add_notice( __( 'NFe receipt downloaded successfully.', 'woocommerce-nfe' ) );
+		$upload_dir = wp_upload_dir();
 
-		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
+		// Put the content on this pdf
+		file_put_contents( $upload_dir['basedir'] . '/nfe/pdf.pdf', file_get_contents($pdf));
+
+		// PDf Location
+		$dw = $upload_dir['basedir'] . '/nfe/pdf.pdf';
+
+		// Download it
+		header("Content-type: application/pdf");
+		header("Content-Length: " . filesize( $dw ));
+		readfile( $dw );
 		exit;
 	}
 }
