@@ -111,7 +111,7 @@ class NFe_Woo {
 	 * @return array 	  Array with the order_id information to issue the invoice
 	 */
 	public function order_info( $order_id ) {
-		$total = $this->wc_get_order( $order_id );
+		$total = nfe_wc_get_order( $order_id );
 
 		$data = array(
 			'cityServiceCode' 				=> $this->city_service_info( 'code', $order_id ), 
@@ -195,7 +195,7 @@ class NFe_Woo {
 			return;
 		}
 
-		$order = $this->wc_get_order( $post_id );
+		$order = nfe_wc_get_order( $post_id );
 
 		// Variations or Simple Product Info
 		foreach ( $order->get_items() as $key => $item ) {
@@ -284,20 +284,6 @@ class NFe_Woo {
 		}
 
 		return $output;
-	}
-
-	/**
-	 * WooCommerce 2.2 support for wc_get_order.
-	 *
-	 * @param int $order_id
-	 * @return void
-	 */
-	private function wc_get_order( $order_id ) {
-		if ( function_exists( 'wc_get_order' ) ) {
-			return wc_get_order( $order_id );
-		} else {
-			return new WC_Order( $order_id );
-		}
 	}
 
 	/**

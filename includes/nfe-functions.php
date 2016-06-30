@@ -33,7 +33,7 @@ function nfe_get_field( $value = '' ) {
  * Check to make sure the user has all the fields for a NFe issue
  * 
  * @param  int $order Product Order
- * @return boole true|false
+ * @return bool true|false
  */
 function nfe_user_address_filled( $order ) {
 	$order_email = get_post_meta( $order, '_billing_email', true );
@@ -80,4 +80,18 @@ function nfe_issue_past_orders( $order ) {
 	}
 
 	return false;
+}
+
+/**
+ * WooCommerce 2.2 support for wc_get_order.
+ *
+ * @param int $order_id
+ * @return void
+ */
+function nfe_wc_get_order( $order_id ) {
+	if ( function_exists( 'wc_get_order' ) ) {
+		return wc_get_order( $order_id );
+	} else {
+		return new WC_Order( $order_id );
+	}
 }

@@ -21,8 +21,6 @@ class WC_NFe_Ajax {
 		$ajax_events = array(
 			'nfe_issue'          => false,
 			'nfe_download'       => false,
-			'front_nfe_issue'    => false,
-			'front_nfe_download' => false,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
@@ -31,6 +29,7 @@ class WC_NFe_Ajax {
 			}
 		}
 
+		// Front-end Ajax
 		add_action( 'wp_loaded', array( __CLASS__, 'front_nfe_download' ), 20 );
 		add_action( 'wp_loaded', array( __CLASS__, 'front_nfe_issue' ), 20 );
 	}
@@ -55,12 +54,9 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		if ( nfe_user_address_filled( $order->id ) ) {
-			wc_add_notice( __( 'User Address Missing. User needs to update NFe information before issuing.', 'woocommerce-nfe' ), 'error' );
-		}
-		else {
+		// Bail if user needs to update address
+		if ( ! nfe_user_address_filled( $order->id ) ) {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
-			wc_add_notice( __( 'NFe issued successfully.', 'woocommerce-nfe' ) );
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'edit.php?post_type=shop_order' ) );
@@ -108,9 +104,9 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		$order = wc_get_order( absint( $_GET['order_id'] ) );
+		$order_id = absint( $_GET['order_id'] );
 
-		self::nfe_download_base( $order );
+		self::nfe_download_base( $order_id );
 	}
 
 	/**
@@ -122,35 +118,107 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		$order = wc_get_order( absint( $_GET['nfe_download'] ) );
+		$order_id = absint( $_GET['nfe_download'] );
 
-		self::nfe_download_base( $order );
+		self::nfe_download_base( $order_id );
 	}
 
 	/**
 	 * Download a NFe via AJAX
 	 */
-	public static function nfe_download_base( $order ) {
+	public static function nfe_download_base( $order_id ) {
 		// Bail if there is no order id
-		if ( empty( $order->id ) ) {
+		if ( empty( $order_id ) ) {
 			return;
 		}
 
-		$pdf = NFe_Woo()->down_invoice( array( $order->id ) );
+		$pdf = NFe_Woo()->down_invoice( array( $order_id ) );
 
 		$upload_dir = wp_upload_dir();
 
 		// Put the content on this pdf
-		file_put_contents( $upload_dir['basedir'] . '/nfe/pdf.pdf', file_get_contents($pdf));
+		file_put_contents( $upload_dir['basedir'] . '/nfe/nfe-'. $order_id .'.pdf', file_get_contents($pdf));
 
-		// PDf Location
-		$dw = $upload_dir['basedir'] . '/nfe/pdf.pdf';
+		// Pdf Location/directory, file name, filesize, name cleaning
+		$dir  = $upload_dir['basedir'] . '/nfe/';
+		$name = 'nfe-'. $order_id . '.pdf';
+		$file = $dir . $name;
+		$size = filesize($file);
+		$name = rawurldecode( substr( $file, stripos( $file, '/') + 1 ) );
+
+		self::output_pdf( $name, $size, $file );
+	}
+
+	/**
+	 * PDF Outputting
+	 * 
+	 * @param  string 	$name Name of the PDF
+	 * @param  int 		$size Size of the PDF
+	 * @param  string 	$file PDF information with path location
+	 * @return void
+	 */
+	public static function output_pdf( $name, $size, $file ) {
+		// turn off output buffering to decrease cpu usage
+		@ob_end_clean();
+		
+		// required for IE, otherwise Content-Disposition may be ignored
+		if ( ini_get('zlib.output_compression') ) {
+			ini_set('zlib.output_compression', 'Off');
+		}
 
 		// Download it
-		header("Content-type: application/pdf");
-		header("Content-Length: " . filesize( $dw ));
-		readfile( $dw );
-		exit;
+		header('Content-type: application/pdf');
+		header('Content-Disposition: attachment; filename="'. $name .'"');
+		header('Content-Transfer-Encoding: binary');
+		header('Accept-Ranges: bytes');
+		header('Content-Length: '. $size );
+
+		// The three lines below basically make the	download non-cacheable
+		header("Cache-control: private");
+		header('Pragma: private');
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+
+		// multipart-download and download resuming support
+		if ( isset($_SERVER['HTTP_RANGE'] ) ) {
+			list($a, $range) = explode("=", $_SERVER['HTTP_RANGE'], 2);
+			list($range) = explode(",", $range, 2);
+			list($range, $range_end) = explode("-", $range);
+			$range = intval($range);
+			if ( ! $range_end ) {
+				$range_end = $size - 1;
+			} 
+			else {
+				$range_end = intval($range_end);
+			}
+			$new_length = $range_end - $range + 1;
+			header('HTTP/1.1 206 Partial Content');
+			header('Content-Length: $new_length');
+			header('Content-Range: bytes ' . $range - $range_end / $size );
+		} 
+		else {
+			$new_length = $size;
+			header('Content-Length: '. $size );
+		}
+
+		// output the file itself
+		$chunksize = 1 * ( 1024 * 1024 );
+		$bytes_send = 0;
+		if ( $file = fopen($file, 'r') ) {
+			if ( isset($_SERVER['HTTP_RANGE']) ) {
+				fseek($file, $range);
+			}
+
+			while ( ! feof($file) && ! connection_aborted() && ( $bytes_send < $new_length ) ) {
+				$buffer = fread($file, $chunksize);
+				echo($buffer);
+				flush();
+				$bytes_send += strlen($buffer);
+			}
+			fclose($file);
+		} 
+		else { 
+			wp_die('Error - can not open file.');
+		}
 	}
 }
 
