@@ -136,15 +136,22 @@ class WC_NFe_Ajax {
 
 		$upload_dir = wp_upload_dir();
 
-		// Put the content on this pdf
-		file_put_contents( $upload_dir['basedir'] . '/nfe/nfe-'. $order_id .'.pdf', file_get_contents($pdf));
-
-		// Pdf Location/directory, file name, filesize, name cleaning
+		// Pdf Location/directory, file name
 		$dir  = $upload_dir['basedir'] . '/nfe/';
 		$name = 'nfe-'. $order_id . '.pdf';
 		$file = $dir . $name;
+
+		if ( ! is_dir($dir) ) {
+			mkdir($dir, 0777, true);
+		}
+
+		// Check if file already exists
+		if ( ! file_exists($file) ) {
+			// Put the content on this pdf
+			file_put_contents( $file, file_get_contents($pdf) );
+		}
+
 		$size = filesize($file);
-		$name = rawurldecode( substr( $file, stripos( $file, '/') + 1 ) );
 
 		self::output_pdf( $name, $size, $file );
 	}
@@ -179,7 +186,7 @@ class WC_NFe_Ajax {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 
 		// multipart-download and download resuming support
-		if ( isset($_SERVER['HTTP_RANGE'] ) ) {
+		if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
 			list($a, $range) = explode("=", $_SERVER['HTTP_RANGE'], 2);
 			list($range) = explode(",", $range, 2);
 			list($range, $range_end) = explode("-", $range);
@@ -201,10 +208,10 @@ class WC_NFe_Ajax {
 		}
 
 		// output the file itself
-		$chunksize = 1 * ( 1024 * 1024 );
+		$chunksize  = 1 * ( 1024 * 1024 );
 		$bytes_send = 0;
 		if ( $file = fopen($file, 'r') ) {
-			if ( isset($_SERVER['HTTP_RANGE']) ) {
+			if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
 				fseek($file, $range);
 			}
 
@@ -225,3 +232,5 @@ class WC_NFe_Ajax {
 endif;
 
 WC_NFe_Ajax::init();
+
+// That's it! =)
