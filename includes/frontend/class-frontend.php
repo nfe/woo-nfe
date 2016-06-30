@@ -99,28 +99,35 @@ class WC_NFe_FrontEnd {
                 );
             }
 
-            if ( nfe_user_address_filled( $order->id ) ) {
-                $actions['woo_nfe_pending_address'] = array(
-                    'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
-                    'action'    => 'woo_nfe_pending_address'
+            if ( $nfe['status'] == 'Cancelled' ) {
+                $actions['woo_nfe_cancelled'] = array(
+                    'name'      => __( 'Issue Cancelled', 'woocommerce-nfe' ),
+                    'action'    => 'woo_nfe_cancelled'
                 );
             }
             else {
-
-                if ( nfe_issue_past_orders( $order ) && $nfe == false ) {
-                    $actions['woo_nfe_issue'] = array(
-                        'url'       => wp_nonce_url( add_query_arg( 'nfe_issue', $order->id ) , 'woocommerce_nfe_issue' ),
-                        'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
-                        'action'    => 'woo_nfe_issue'
+                if ( nfe_user_address_filled( $order->id ) ) {
+                    $actions['woo_nfe_pending_address'] = array(
+                        'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
+                        'action'    => 'woo_nfe_pending_address'
                     );
                 }
+                else {
+                    if ( nfe_issue_past_orders( $order ) && $nfe == false ) {
+                        $actions['woo_nfe_issue'] = array(
+                            'url'       => wp_nonce_url( add_query_arg( 'nfe_issue', $order->id ) , 'woocommerce_nfe_issue' ),
+                            'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
+                            'action'    => 'woo_nfe_issue'
+                        );
+                    }
 
-                if ( $nfe == true ) {
-                    $actions['woo_nfe_download'] = array(
-                        'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
-                        'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
-                        'action'    => 'woo_nfe_download'
-                    );
+                    if ( $nfe == true ) {
+                        $actions['woo_nfe_download'] = array(
+                            'url'       => wp_nonce_url( add_query_arg( 'nfe_download', $order->id ) , 'woocommerce_nfe_download' ),
+                            'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                            'action'    => 'woo_nfe_download'
+                        );
+                    }
                 }
             }
         }
@@ -134,7 +141,8 @@ class WC_NFe_FrontEnd {
         } 
 
         foreach ( $actions as $action ) {
-            if ( $action['action'] == 'woo_nfe_expired' || $action['action'] == 'woo_nfe_pending_address' ) {
+            if ( $action['action'] == 'woo_nfe_expired' || $action['action'] == 'woo_nfe_pending_address' ||
+            $action['action'] == 'woo_nfe_pending_address' ) {
                 printf( '<span class="button view %s" data-tip="%s">%s</span>', 
                     esc_attr( $action['action'] ), 
                     esc_attr( $action['name'] ), 

@@ -73,7 +73,7 @@ class NFe_Woo {
 				
 				$nfe = array(
 					'id' 	  	=> $invoice->id,
-					'status'  	=> 'Issued',
+					'status'  	=> $invoice->flowStatus,
 					'data' 		=> date_i18n('d/m/Y'),
 				);
 
@@ -102,6 +102,22 @@ class NFe_Woo {
 		}
 
 		return $pdf;
+	}
+
+	/**
+	 * Cancell Web Hook
+	 * 
+	 * @param  int $order_id Order ID
+	 * @return bool true|false
+	 */
+	public function cancel_nfe( $order_id ) {
+		$nfe = array(
+			'id' 	  	=> $invoice->id,
+			'status'  	=> $invoice->flowStatus,
+			'data' 		=> date_i18n('d/m/Y'),
+		);
+
+		update_post_meta( $order_id, 'nfe_issued', $nfe );
 	}
 
 	/**
@@ -197,20 +213,22 @@ class NFe_Woo {
 
 		$order = nfe_wc_get_order( $post_id );
 
-		// Variations or Simple Product Info
-		foreach ( $order->get_items() as $key => $item ) {
-			$product_id   = $item['product_id'];
-			$variation_id = $item['variation_id'];
+		if ( 0 < count( $order->get_items() ) ) {
+			// Variations or Simple Product Info
+			foreach ( $order->get_items() as $key => $item ) {
+				$product_id   = $item['product_id'];
+				$variation_id = $item['variation_id'];
 
-			if ( $variation_id ) {
-				$cityservicecode    = get_post_meta( $variation_id, '_cityservicecode', true );
-				$federalservicecode = get_post_meta( $variation_id, '_federalservicecode', true );
-				$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );	
-			} 
-			else {
-				$cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
-				$federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
-				$product_desc       = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+				if ( $variation_id ) {
+					$cityservicecode    = get_post_meta( $variation_id, '_cityservicecode', true );
+					$federalservicecode = get_post_meta( $variation_id, '_federalservicecode', true );
+					$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );	
+				} 
+				else {
+					$cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
+					$federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
+					$product_desc       = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
+				}
 			}
 		}
 
