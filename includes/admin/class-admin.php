@@ -28,6 +28,28 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_save_product_variation',            array( $this, 'save_variations_fields' ), 10, 2 );
 		add_action( 'woocommerce_product_data_panels',               array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              array( $this, 'product_data_fields_save' ) );
+
+		add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'issue_trigger' ) );
+	}
+
+	/**
+	 * Issue the NFe when WooCommerce does it
+	 * 
+	 * @param  int $order_id Order ID
+	 * @return bool true|false
+	 */
+	public function issue_trigger( $order_id ) {
+		// Bail if there is no order id
+		if ( empty( $order_id ) ) {
+			return;
+		}
+
+		// Bail if no user address
+		if ( ! nfe_user_address_filled( $order_id ) ) {
+			NFe_Woo()->issue_invoice( array( $order_id ) );
+		}
 	}
 
 	/**

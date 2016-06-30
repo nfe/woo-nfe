@@ -9,9 +9,9 @@ if ( ! class_exists('WC_NFe_Checkout_Fields') ) :
  * Email to remind the customer to update NFe information
  *
  * @class 	WC_NFe_Checkout_Fields
- * @version	1.0.0
- * @package	WooCommerce_NFe/Classes/Emails
  * @author 	NFe.io
+ * @package	WooCommerce_NFe/Class/Emails
+ * @version	1.0.0
  * @extends WC_Email
  */	
 class WC_NFe_Checkout_Fields extends WC_Email {
@@ -55,7 +55,7 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 		}
 
 		if ( $order_id ) {
-			$this->object    = wc_get_order( $order_id );
+			$this->object    = nfe_wc_get_order( $order_id );
 			$this->recipient = $this->object->billing_email;
 		}
 

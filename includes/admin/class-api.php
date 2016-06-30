@@ -73,7 +73,7 @@ class NFe_Woo {
 				
 				$nfe = array(
 					'id' 	  	=> $invoice->id,
-					'status'  	=> $invoice->flowStatus,
+					'status'  	=> 'Issued',
 					'data' 		=> date_i18n('d/m/Y'),
 				);
 
