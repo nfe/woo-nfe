@@ -58,9 +58,14 @@ class NFe_Woo {
 		Nfe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
-			$data = $this->order_info( $order_id );
+			$total = nfe_wc_get_order( $order_id );
 
-			$invoice = Nfe_ServiceInvoice::create( $company_id, $data );
+			// If value is 0 or below, don't issue
+			if ( $total->order_total <= 0 ) {
+				return false;
+			}
+
+			$invoice = Nfe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
 			if ( $invoice->errors ) {
 
