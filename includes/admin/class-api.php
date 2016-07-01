@@ -74,8 +74,8 @@ class NFe_Woo {
 
 				return false;
 
-			} else {
-				
+			} 
+			else {	
 				$nfe = array(
 					'id' 	  	=> $invoice->id,
 					'status'  	=> $invoice->flowStatus,
@@ -184,8 +184,6 @@ class NFe_Woo {
 
 	/**
 	 * Fetches the IBGE Code
-	 *
-	 * @todo Add a check for non Brazilian countries to remove it.
 	 * 
 	 * @param  int $order_id Order ID
 	 * @return string
@@ -198,7 +196,7 @@ class NFe_Woo {
 		$key = nfe_get_field('api_key');
 		$cep = get_post_meta( $order_id, '_billing_postcode', true );
 
-		$url 		= 'https://open.nfe.io/v1/addresses/' . $cep . '?api_key='. $key . '';
+		$url 		= 'https://open.nfe.io/v1/addresses/'. $cep .'?api_key='. $key .'';
 		$response 	= wp_remote_get( esc_url_raw( $url ) );
 		$address 	= json_decode( wp_remote_retrieve_body( $response ), true );
 
@@ -243,7 +241,7 @@ class NFe_Woo {
 				break;
 
 			case 'fed_code':
-				$output = $federalservicecode ? federalservicecode : nfe_get_field('nfe_fedservicecode');
+				$output = $federalservicecode ? $federalservicecode : nfe_get_field('nfe_fedservicecode');
 				break;
 
 			case 'desc':

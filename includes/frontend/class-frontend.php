@@ -36,7 +36,7 @@ class WC_NFe_FrontEnd {
      * @return string
      */
     public function thankyou_text( $message ) {
-        if ( $this->where_note() == true ) {
+        if ( $this->where_note() ) {
             $message = sprintf( __( 'Thank you. Your order has been received. Now you need %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '">' . __( 'update your NFe information', 'woocommerce-nfe' ) . '</a>' );
         }
 

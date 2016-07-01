@@ -29,9 +29,12 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_product_data_panels',               array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              array( $this, 'product_data_fields_save' ) );
 
-		// add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'issue_trigger' ) );
-		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'issue_trigger' ) );
-		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
+		
+		add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
+		add_action( 'woocommerce_renewal_order_payment_complete', 					array( $this, 'issue_trigger') );
 	}
 
 	/**
@@ -125,21 +128,15 @@ class WC_NFe_Admin {
 	public function product_data_fields_save( $post_id ) {
 		// Text Field - City Service Code
 		$simple_cityservicecode = $_POST['_simple_cityservicecode'];
-		if ( !empty( $simple_cityservicecode ) ) {
-			update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $simple_cityservicecode ) );
-		}
+		update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $simple_cityservicecode ) );
 
 		// Text Field - Federal Service Code
 		$simple_federalservicecode = $_POST['_simple_federalservicecode'];
-		if ( ! empty( $simple_federalservicecode ) ) {
-			update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $simple_federalservicecode ) );
-		}
+		update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $simple_federalservicecode ) );
 
 		// TextArea Field - Product Description
 		$simple_product_desc = $_POST['_simple_nfe_product_desc'];
-		if ( ! empty( $simple_product_desc ) ) {
-			update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
-		}
+		update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
 	}
 
    /**
@@ -189,21 +186,15 @@ class WC_NFe_Admin {
 	public function save_variations_fields( $post_id ) {
 		// Text Field - City Service Code
 		$cityservicecode = $_POST['_cityservicecode'][ $post_id ];
-		if( ! empty( $cityservicecode ) ) {
-			update_post_meta( $post_id, '_cityservicecode', esc_attr( $cityservicecode ) );
-		}
+		update_post_meta( $post_id, '_cityservicecode', esc_attr( $cityservicecode ) );
 
 		// Text Field - Federal Service Code
 		$_federalservicecode = $_POST['_federalservicecode'][ $post_id ];
-		if( ! empty( $_federalservicecode ) ) {
-			update_post_meta( $post_id, '_federalservicecode', esc_attr( $_federalservicecode ) );
-		}
+		update_post_meta( $post_id, '_federalservicecode', esc_attr( $_federalservicecode ) );
 
 		// TextArea Field - Product Variation Description
 		$product_desc = $_POST['_nfe_product_variation_desc'][ $post_id ];
-		if( ! empty( $product_desc ) ) {
-			update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $product_desc ) );
-		}
+		update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $product_desc ) );
 	}
 
 	/**
@@ -235,11 +226,13 @@ class WC_NFe_Admin {
 
 		$order    = wc_get_order( $post->ID );
 		$order_id = $order->id;
-		$nfe      = get_post_meta( $post->ID, 'nfe_issued', true );
+		$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
 	   
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
+
+			// var_dump($nfe);
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
@@ -250,7 +243,7 @@ class WC_NFe_Admin {
 					);
 				}
 
-				if ( $nfe['status'] == 'Cancelled' ) {
+				if ( ! empty($nfe) && $nfe['status'] == 'Cancelled' ) {
 					$actions['woo_nfe_cancelled'] = array(
 						'name'      => __( 'Issue Cancelled', 'woocommerce-nfe' ),
 						'action'    => 'woo_nfe_cancelled'
