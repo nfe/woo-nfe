@@ -1,6 +1,6 @@
 === WooCommerce NFe.io ===
 Contributors: espellcaste
-Tags: woocommerce, shop, receipt, nfe
+Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz
 Requires at least: 3.0.1
 Tested up to: 4.5.3
 Stable tag: 1.0.0
@@ -23,4 +23,5 @@ WooCommerce extension for the NFe API
 == Changelog ==
 
 = 1.0.0 =
+
 * Initial commit

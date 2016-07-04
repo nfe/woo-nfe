@@ -19,9 +19,9 @@ defined( 'ABSPATH' ) || exit;
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php printf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
+<p><?php printf( __('To issue a NFe receipt, you need to fill the NFe information through this link: <a href="%s">fill information</a>.', 'woocommerce-nfe'), esc_url( wc_get_page_permalink( 'myaccount' ) ) ); ?></p>
 
-<p><?php _e('Atenciosamente.', 'woocommerce-nfe'); ?></p>
+<p><?php _e('Att.', 'woocommerce-nfe'); ?></p>
 
 <?php
 /**

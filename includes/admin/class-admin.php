@@ -19,20 +19,19 @@ class WC_NFe_Admin {
 	 */
 	public function __construct() {
 		// Filters
-		add_filter( 'manage_edit-shop_order_columns',               array( $this, 'order_status_column_header' ), 20 );
-		add_filter( 'woocommerce_product_data_tabs',                array( $this, 'product_data_tab' ) );
+		add_filter( 'manage_edit-shop_order_columns',               				array( $this, 'order_status_column_header' ), 20 );
+		add_filter( 'woocommerce_product_data_tabs',                				array( $this, 'product_data_tab' ) );
 
 		// Actions
-		add_action( 'manage_shop_order_posts_custom_column',         array( $this, 'order_status_column_content' ) );
-		add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'variation_fields' ), 10, 3 );
-		add_action( 'woocommerce_save_product_variation',            array( $this, 'save_variations_fields' ), 10, 2 );
-		add_action( 'woocommerce_product_data_panels',               array( $this, 'product_data_fields' ) );
-		add_action( 'woocommerce_process_product_meta',              array( $this, 'product_data_fields_save' ) );
+		add_action( 'manage_shop_order_posts_custom_column',         				array( $this, 'order_status_column_content' ) );
+		add_action( 'woocommerce_product_after_variable_attributes', 				array( $this, 'variation_fields' ), 10, 3 );
+		add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
+		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
+		add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
 
 		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
-		
 		add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
 		add_action( 'woocommerce_renewal_order_payment_complete', 					array( $this, 'issue_trigger') );
 	}
@@ -243,7 +242,7 @@ class WC_NFe_Admin {
 					);
 				}
 
-				if ( ! empty($nfe) && $nfe['status'] == 'Cancelled' ) {
+				if ( $nfe && $nfe['status'] == 'Cancelled' ) {
 					$actions['woo_nfe_cancelled'] = array(
 						'name'      => __( 'Issue Cancelled', 'woocommerce-nfe' ),
 						'action'    => 'woo_nfe_cancelled'

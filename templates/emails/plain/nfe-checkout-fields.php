@@ -16,9 +16,9 @@ defined( 'ABSPATH' ) || exit;
 
 echo "= " . $email_heading . " =\n\n";
 
-echo sprintf( __('Para a emissão da sua NFe, é preciso preencher os dados do contribuinte, através deste link: <a href="%s">preencher informações</a>', 'woocommerce-nfe'), esc_url( wc_get_page_permalink( 'myaccount' ) ) );
+echo sprintf( __('To issue a NFe receipt, you need to fill the NFe information through this link:: <a href="%s">fill information</a>.', 'woocommerce-nfe'), esc_url( wc_get_page_permalink( 'myaccount' ) ) );
 
-echo __('Atenciosamente.', 'woocommerce-nfe');
+echo __('Att.', 'woocommerce-nfe');
 
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";
 

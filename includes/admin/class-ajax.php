@@ -30,19 +30,19 @@ class WC_NFe_Ajax {
 		}
 
 		// Front-end Ajax
-		add_action( 'wp_loaded', array( __CLASS__, 'front_nfe_download' ), 20 );
-		add_action( 'wp_loaded', array( __CLASS__, 'front_nfe_issue' ), 20 );
+		add_action( 'wp_loaded', array( __CLASS__, 'front_issue' ), 20 );
+		add_action( 'wp_loaded', array( __CLASS__, 'front_download' ), 20 );
 	}
 
 	/**
-	 * Issue a NFe via AJAX
+	 * NFe issue from the back-end
 	 */
 	public static function nfe_issue() {
 		if ( ! current_user_can( 'edit_shop_orders' ) && ! check_admin_referer( 'woo_nfe_issue' ) ) {
 			return;
 		}
 
-		$order = wc_get_order( absint( $_GET['order_id'] ) );
+		$order = nfe_wc_get_order( absint( $_GET['order_id'] ) );
 
 		// Bail if there is no order id
 		if ( empty( $order->id ) ) {
@@ -66,13 +66,13 @@ class WC_NFe_Ajax {
 	/**
 	 * NFe issue from the front-end
 	 */
-	public static function front_nfe_issue() {
+	public static function front_issue() {
 		// Nothing to do
 		if ( ! isset( $_GET['nfe_issuue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
 			return;
 		}
 
-		$order = wc_get_order( absint( $_GET['nfe_issue'] ) );
+		$order = nfe_wc_get_order( absint( $_GET['nfe_issue'] ) );
 
 		// Bail if there is no order id
 		if ( empty( $order->id ) ) {
@@ -90,7 +90,7 @@ class WC_NFe_Ajax {
 		else {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
 
-			wc_add_notice( __( 'NFe issued successfully.', 'woocommerce-nfe' ) );
+			wc_add_notice( __( 'NFe was issued successfully.', 'woocommerce-nfe' ) );
 		}
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
 		exit;
@@ -106,13 +106,13 @@ class WC_NFe_Ajax {
 
 		$order_id = absint( $_GET['order_id'] );
 
-		self::nfe_download_base( $order_id );
+		self::download_base( $order_id );
 	}
 
 	/**
 	 * Download NFe from the Front-end
 	 */
-	public static function front_nfe_download() {
+	public static function front_download() {
 		// Nothing to do
 		if ( ! isset( $_GET['nfe_download'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_download' ) ) {
 			return;
@@ -120,13 +120,13 @@ class WC_NFe_Ajax {
 
 		$order_id = absint( $_GET['nfe_download'] );
 
-		self::nfe_download_base( $order_id );
+		self::download_base( $order_id );
 	}
 
 	/**
-	 * Download a NFe via AJAX
+	 * Download Base
 	 */
-	public static function nfe_download_base( $order_id ) {
+	public static function download_base( $order_id ) {
 		// Bail if there is no order id
 		if ( empty( $order_id ) ) {
 			return;
@@ -141,18 +141,20 @@ class WC_NFe_Ajax {
 		$name = 'nfe-'. $order_id . '.pdf';
 		$file = $dir . $name;
 
+		// Create directory if it doesn't already exist
 		if ( ! is_dir($dir) ) {
 			mkdir($dir, 0777, true);
 		}
 
 		// Check if file already exists
 		if ( ! file_exists($file) ) {
-			// Put the content on this pdf
+			// If it doesn't, put the content on this pdf
 			file_put_contents( $file, file_get_contents($pdf) );
 		}
 
 		$size = filesize($file);
 
+		// Download the PDF
 		self::output_pdf( $name, $size, $file );
 	}
 
@@ -187,10 +189,11 @@ class WC_NFe_Ajax {
 
 		// multipart-download and download resuming support
 		if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
-			list($a, $range) = explode("=", $_SERVER['HTTP_RANGE'], 2);
-			list($range) = explode(",", $range, 2);
-			list($range, $range_end) = explode("-", $range);
-			$range = intval($range);
+			list( $a, $range )         = explode( "=", $_SERVER['HTTP_RANGE'], 2 );
+			list( $range )             = explode( ",", $range, 2 );
+			list( $range, $range_end ) = explode( "-", $range );
+			$range                     = intval($range);
+
 			if ( ! $range_end ) {
 				$range_end = $size - 1;
 			} 
