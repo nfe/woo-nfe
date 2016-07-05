@@ -3,11 +3,21 @@
 	"description": "WooCommerce extension for the NFe.io API.",
 	"homepage"   : "https://github.com/nfe/woocommerce-nfe",
 	"type"       : "wordpress-plugin",
+	"keywords": [
+		"nfe",
+		"woocommerce",
+		"shop",
+		"nota fiscal"
+	],
 	"license"    : "GPL-2.0+",
 	"authors"    : [
 		{
 			"name"    : "NFe.io",
 			"homepage": "https://nfe.io/"
+		},
+		{
+			"name"    : "Renato Alves",
+			"homepage": "http://ralv.es/"
 		}
 	],
 	"support": {
@@ -16,9 +26,10 @@
 		"source": "https://github.com/nfe/woocommerce-nfe/"
 	},
 	"require": {
-		"composer/installers": "~1.0"
+		"composer/installers": "~1.0",
+		"php": ">=5.2.4"
 	},
 	"require-dev" : {
 		"phpunit/phpunit": ">=3.7@stable"
-    },
+    }
 }
