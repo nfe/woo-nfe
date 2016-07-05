@@ -32,7 +32,8 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
-		add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
+		
+		// add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
 		add_action( 'woocommerce_renewal_order_payment_complete', 					array( $this, 'issue_trigger') );
 	}
 
@@ -43,9 +44,9 @@ class WC_NFe_Admin {
 	 * @return bool true|false
 	 */
 	public function issue_trigger( $order_id ) {
-		// Bail if there is no order id
-		if ( empty( $order_id ) ) {
-			return;
+		if ( $order_id ) {
+			$order    = nfe_wc_get_order( $order_id );
+			$order_id = $order->id;
 		}
 
 		// Don't issue if there is no user address information
@@ -223,25 +224,16 @@ class WC_NFe_Admin {
 	public function order_status_column_content( $column ) {
 		global $post;
 
-		$order    = wc_get_order( $post->ID );
+		$order    = nfe_wc_get_order( $post->ID );
 		$order_id = $order->id;
 		$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
 	   
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
-
-			// var_dump($nfe);
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
-				if ( ! nfe_issue_past_orders( $order ) ) {
-					$actions['woo_nfe_expired'] = array(
-						'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
-						'action'    => 'woo_nfe_expired'
-					);
-				}
-
 				if ( $nfe && $nfe['status'] == 'Cancelled' ) {
 					$actions['woo_nfe_cancelled'] = array(
 						'name'      => __( 'Issue Cancelled', 'woocommerce-nfe' ),
@@ -256,20 +248,29 @@ class WC_NFe_Admin {
 						);
 					}
 					else {
-						if ( nfe_issue_past_orders( $order ) && $nfe == false ) {
-							$actions['woo_nfe_issue'] = array(
-								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-								'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
-								'action'    => 'woo_nfe_issue'
-							);
-						}
-
-						if ( $nfe == true ) {
+						if ( $nfe['id'] ) {
 							$actions['woo_nfe_download'] = array(
 								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
 								'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
 								'action'    => 'woo_nfe_download'
 							);
+						}
+						else {
+							if ( nfe_get_field('issue_past_notes') == 'yes' ) {
+								if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+									$actions['woo_nfe_issue'] = array(
+										'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
+										'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+										'action'    => 'woo_nfe_issue'
+									);
+								}
+								else {
+									$actions['woo_nfe_expired'] = array(
+										'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
+										'action'    => 'woo_nfe_expired'
+									);
+								}
+							}
 						}
 					}
 				}
