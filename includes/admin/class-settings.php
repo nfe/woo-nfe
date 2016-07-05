@@ -188,12 +188,13 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function display_errors() {
-		if ( ! $this->is_active() && empty( nfe_get_field('api_key') ) ) {
-			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no api key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
-		} 
-		else {
-			if ( nfe_get_field('issue_past_notes') == 'yes' && empty( nfe_get_field('issue_past_days') ) ) {
-				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. Add a date to calculate or disable it.', 'woocommerce-nfe' ) ) );
+		if ( $this->is_active() ) {
+			if ( empty( nfe_get_field('api_key') ) ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+			}
+		
+			if ( nfe_get_field('issue_past_notes') == 'yes' && $this->issue_past_days() ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woocommerce-nfe' ) . '</a>' ) );
 			}
 		}
 	}
@@ -221,6 +222,19 @@ class WC_NFe_Integration extends WC_Integration {
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Issue past date check
+	 * 
+	 * @return bool true|false
+	 */
+	public function issue_past_days() {
+		$days = nfe_get_field('issue_past_days');
+
+		if ( empty( $days ) || $days == 0 ) {
+			return true;
+		}
 	}
 
 	/**
