@@ -14,7 +14,14 @@ WooCommerce extension for the NFe API
 
 == Description ==
 
-WooCommerce NFe is a WooCommerce extension to be used toguether with the NFe API.
+WooCommerce NFe is a WooCommerce extension to be used together with the NFe API.
+
+**Included Translations:**
+
+- English (default)
+- Brazilian Portuguese
+
+Thanks in advance for your help on any translation efforts!
 
 == Frequently Asked Questions ==
 
@@ -26,6 +33,10 @@ WooCommerce NFe is a WooCommerce extension to be used toguether with the NFe API
 == Screenshots ==
 
 1. WooCommerce NFe Setting Page
+2. WooCommerce NFe Actions on the Orders Page (Admin Panel)
+3. WoCommerce NFe Actions on the User Account (Front-end)
+4. WooCommerce NFe Product Information (Simple Product)
+5. WooCommerce NFe Product Information (Variable Product)
 
 == Changelog ==
 
