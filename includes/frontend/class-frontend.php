@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists('WC_NFe_FrontEnd') ) :
 
 /**
- * FrontEnd Class.
+ * WooCommerce NFe.io WC_NFe_FrontEnd Class.
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_FrontEnd
@@ -195,6 +195,6 @@ class WC_NFe_FrontEnd {
 
 endif;
 
-$run = new WC_NFe_FrontEnd();
+$run = new WC_NFe_FrontEnd;
 
 // That's it! =)

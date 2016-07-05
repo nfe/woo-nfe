@@ -17,7 +17,8 @@
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
  * Text Domain:       woocommerce-nfe
- * Domain Path:       /languages
+ * Domain Path:       languages
+ * Network:     	  false
  *
  * Copyright: © 2016 NFe.io
  * License: GNU General Public License v3.0
@@ -89,7 +90,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->plugin_dir    = plugin_dir_path( $this->file                     );
 			$this->plugin_url    = plugin_dir_url( $this->file                      );
 			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
-			$this->lang_dir      = trailingslashit( $this->plugin_dir . 'languages' );
 		}
 
 		/**
@@ -119,7 +119,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function setup_hooks() {
-			add_action( 'init',             array( $this, 'load_textdomain' ) );
+			load_plugin_textdomain( 'woocommerce-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 			// Checks if WooCommerce is installed.
 			if ( ! class_exists( 'WooCommerce' ) ) {
@@ -203,27 +203,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			);
 
 			return array_merge( $plugin_links, $links );
-		}
-
-		/**
-		 * Loads the translation files.
-		 *
-		 * @since 1.0.0
-		 */
-		public function load_textdomain() {
-			// Traditional WordPress plugin locale filter
-			$locale        = apply_filters( 'plugin_locale', get_locale(), $this->domain );
-			$mofile        = sprintf( '%1$s-%2$s.mo', $this->domain, $locale );
-
-			// Setup paths to current locale file
-			$mofile_local  = $this->lang_dir . $mofile;
-			$mofile_global = WP_LANG_DIR . '/woocommerce-nfe/' . $mofile;
-
-			// Look in global /wp-content/languages/woocommerce-nfe folder
-			load_textdomain( $this->domain, $mofile_global );
-
-			// Look in local /wp-content/plugins/woocommerce-nfe/languages/ folder
-			load_textdomain( $this->domain, $mofile_local );
 		}
 	}
 

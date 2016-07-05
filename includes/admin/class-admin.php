@@ -32,7 +32,7 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
-		add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
+		// add_action( 'processed_subscription_payments_for_order', 					array( $this, 'issue_trigger') );
 		add_action( 'woocommerce_renewal_order_payment_complete', 					array( $this, 'issue_trigger') );
 	}
 
@@ -223,7 +223,7 @@ class WC_NFe_Admin {
 	public function order_status_column_content( $column ) {
 		global $post;
 
-		$order    = wc_get_order( $post->ID );
+		$order    = nfe_wc_get_order( $post->ID );
 		$order_id = $order->id;
 		$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
 	   

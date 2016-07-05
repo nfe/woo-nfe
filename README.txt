@@ -1,4 +1,5 @@
 === WooCommerce NFe ===
+
 Contributors: espellcaste, nfe
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz
 Requires at least: 3.8
@@ -13,7 +14,7 @@ WooCommerce extension for the NFe API
 
 == Description ==
 
-WooCommerce extension for the NFe API
+WooCommerce NFe is a WooCommerce extension to be used toguether with the NFe API.
 
 == Frequently Asked Questions ==
 
