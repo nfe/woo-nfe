@@ -65,7 +65,7 @@ function nfe_user_address_filled( $order ) {
 }
 
 /**
- * Past Issue Check (Can we issue a past order?)
+ * Past Issue Check (It answers the question: Can we issue a past order?)
  * 
  * @param  string $post_date Post date
  * @param  string $past_days Days in the past for time check

@@ -37,6 +37,7 @@ Thanks in advance for your help on any translation efforts!
 3. WoCommerce NFe Actions on the User Account (Front-end)
 4. WooCommerce NFe Product Information (Simple Product)
 5. WooCommerce NFe Product Information (Variable Product)
+6. WooCommerce NFe
 
 == Changelog ==
 

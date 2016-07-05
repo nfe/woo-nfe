@@ -67,13 +67,12 @@ class NFe_Woo {
 
 			$invoice = Nfe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
-			if ( $invoice->errors ) {
+			if ( is_wp_error( $invoice ) ) {
 
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
 				return false;
-
 			} 
 			else {	
 				$nfe = array(
@@ -116,11 +115,13 @@ class NFe_Woo {
 	 * @return bool true|false
 	 */
 	public function cancel_nfe( $order_id ) {
-		$nfe = array(
-			'id' 	  	=> $invoice->id,
-			'status'  	=> $invoice->flowStatus,
-			'data' 		=> date_i18n('d/m/Y'),
-		);
+		$nfe = get_post_meta( $order_id, 'nfe_issued', true );
+
+		if ( empty( $nfe['id'] ) ) {
+			return;
+		}
+
+		$nfe['status'] = 'Cancelled';
 
 		update_post_meta( $order_id, 'nfe_issued', $nfe );
 	}

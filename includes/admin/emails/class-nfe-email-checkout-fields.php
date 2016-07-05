@@ -36,9 +36,9 @@ class WC_NFe_Checkout_Fields extends WC_Email {
 		$this->template_plain = 'emails/plain/nfe-checkout-fields.php';
 
 		// Triggers
-		add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
