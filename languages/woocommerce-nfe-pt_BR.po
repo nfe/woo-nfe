@@ -3,9 +3,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe\n"
-"POT-Creation-Date: 2016-07-05 09:55-0300\n"
-"PO-Revision-Date: 2016-07-05 09:56-0300\n"
+"Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
+"POT-Creation-Date: 2016-07-05 10:57-0300\n"
+"PO-Revision-Date: 2016-07-05 10:58-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -108,8 +108,7 @@ msgstr "Clientes"
 msgid "Company"
 msgstr "Empresa"
 
-#: includes/admin/class-api.php:319 includes/admin/class-settings.php:192
-#: includes/admin/class-settings.php:196 includes/admin/class-settings.php:208
+#: includes/admin/class-api.php:319 includes/admin/class-settings.php:209
 msgid "WooCommerce NFe.io"
 msgstr "WooCommerce NFe.io"
 
@@ -241,26 +240,26 @@ msgstr "Registrar eventos da API do NFe. Você pode verificar o log em %s."
 msgid "System Status &gt; Logs"
 msgstr "&gt; Logs do Status do Sistema "
 
-#: includes/admin/class-settings.php:192
+#: includes/admin/class-settings.php:193
 msgid ""
-"Plugin is enabled but no api key provided. You should inform your API Key. %s"
+"Plugin is enabled but no API key provided. You should inform your API Key. %s"
 msgstr ""
-"O plugin está ativo mas nenhuma chave de api foi adicionada. Você deve "
-"informar sua chave de API. %s"
+"O plugin está habilitado porém nenhuma chave de API foi adicionada. Você "
+"deve informar uma chave de API. %s"
 
-#: includes/admin/class-settings.php:192
+#: includes/admin/class-settings.php:193
 msgid "Click here to configure!"
 msgstr "Clique aqui para configurar!"
 
-#: includes/admin/class-settings.php:196
-msgid ""
-"Enable Retroactive Issue is enabled, but no days was added. Add a date to "
-"calculate or disable it."
-msgstr ""
-"Emissão de notas antigas está habilitado, porém nenhuma data foi adicionada. "
-"Adicione uma data para calcular ou desabilite essa funcionalidade."
+#: includes/admin/class-settings.php:197
+msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
+msgstr "Emissão Antigas de NFe está ativa, porém nenhum dia foi adicionado. %s"
 
-#: includes/admin/class-settings.php:208
+#: includes/admin/class-settings.php:197
+msgid "Add a date to calculate or disable it."
+msgstr "Adicione uma data para calcular ou desabilite essa funcionalidade."
+
+#: includes/admin/class-settings.php:209
 msgid "Unable to load the companies list from NFe.io."
 msgstr "Não é possível carregar a lista de empresas do NFe.io."
 
@@ -478,6 +477,21 @@ msgstr "Plain text"
 msgctxt "email type"
 msgid "HTML"
 msgstr "HTML"
+
+#~ msgid ""
+#~ "Plugin is enabled but no api key provided. You should inform your API "
+#~ "Key. %s"
+#~ msgstr ""
+#~ "O plugin está ativo mas nenhuma chave de api foi adicionada. Você deve "
+#~ "informar sua chave de API. %s"
+
+#~ msgid ""
+#~ "Enable Retroactive Issue is enabled, but no days was added. Add a date to "
+#~ "calculate or disable it."
+#~ msgstr ""
+#~ "Emissão de notas antigas está habilitado, porém nenhuma data foi "
+#~ "adicionada. Adicione uma data para calcular ou desabilite essa "
+#~ "funcionalidade."
 
 #~ msgid "NFe issued successfully."
 #~ msgstr "Nota NFe emitada com sucesso."
