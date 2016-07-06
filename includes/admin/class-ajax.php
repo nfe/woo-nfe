@@ -132,14 +132,11 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		$pdf = NFe_Woo()->down_invoice( array( $order_id ) );
-
+		// PDF Location/directory, file name
 		$upload_dir = wp_upload_dir();
-
-		// Pdf Location/directory, file name
-		$dir  = $upload_dir['basedir'] . '/nfe/';
-		$name = 'nfe-'. $order_id . '.pdf';
-		$file = $dir . $name;
+		$dir        = $upload_dir['basedir'] . '/nfe/';
+		$name       = 'nfe-'. $order_id . '.pdf';
+		$file       = $dir . $name;
 
 		// Create directory if it doesn't already exist
 		if ( ! is_dir($dir) ) {
@@ -148,6 +145,9 @@ class WC_NFe_Ajax {
 
 		// Check if file already exists
 		if ( ! file_exists($file) ) {
+			// Save PDF info fetched from NFe API
+			$pdf = NFe_Woo()->down_invoice( array( $order_id ) );
+
 			// If it doesn't, put the content on this pdf
 			file_put_contents( $file, file_get_contents($pdf) );
 		}
