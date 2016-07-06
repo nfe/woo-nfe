@@ -22,7 +22,8 @@ function nfe_get_field( $value = '' ) {
 
 	if ( empty( $value ) ) {
 		$output = $nfe_fields;
-	} else {
+	} 
+	else {
 		$output = $nfe_fields[$value];
 	}
 
@@ -91,7 +92,8 @@ function nfe_issue_past_orders( $order ) {
 function nfe_wc_get_order( $order_id ) {
 	if ( function_exists( 'wc_get_order' ) ) {
 		return wc_get_order( $order_id );
-	} else {
+	} 
+	else {
 		return new WC_Order( $order_id );
 	}
 }
