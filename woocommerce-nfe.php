@@ -121,6 +121,12 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		private function setup_hooks() {
 			load_plugin_textdomain( 'woocommerce-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
+			// Check for SOAP.
+			if ( ! class_exists( 'SoapClient' ) ) {
+				add_action( 'admin_notices', array( $this, 'soap_missing_notice' ) );
+				return;
+			}
+
 			// Checks if WooCommerce is installed.
 			if ( ! class_exists( 'WooCommerce' ) ) {
 				add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
@@ -165,6 +171,17 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$integrations[] = 'WC_NFe_Integration';
 
 			return $integrations;
+		}
+
+		/**
+		 * SOAPClient missing notice.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @return string
+		 */
+		public function soap_missing_notice() {
+			include $this->includes_dir . 'admin/views/html-notice-missing-soap-client.php';
 		}
 
 		/**
@@ -213,7 +230,7 @@ endif;
  *
  * @since 1.0.0
  *
- * @return WooCommerce_NFe The one true WooCommerce_NFe Instance.
+ * @return WooCommerce_NFe
  */
 function WooCommerce_NFe() {
 	return WooCommerce_NFe::instance();

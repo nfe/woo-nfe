@@ -4,7 +4,7 @@
  * Missing dependencies notice.
  *
  * @author   NFe.io
- * @package  Nfe_WooCommerce/Classes/Notices
+ * @package  WooCommerce_NFe/Admin/Notices
  * @version  1.0.0
  */
 
