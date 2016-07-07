@@ -3,8 +3,7 @@
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
-
-if ( ! class_exists( 'WC_NFe_Integration' ) ) :
+if ( class_exists( 'WC_Integration' ) ) :
 
 /**
  * WooCommerce NFe.io Integration
