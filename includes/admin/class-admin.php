@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists('WC_NFe_Admin') ) :
 
 /**
- * WooCommerce NFe.io WC_NFe_Admin Class
+ * WooCommerce NFe WC_NFe_Admin Class
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_Admin
@@ -272,6 +272,13 @@ class WC_NFe_Admin {
 										'action'    => 'woo_nfe_expired'
 									);
 								}
+							}
+							else {
+								$actions['woo_nfe_issue'] = array(
+									'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
+									'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+									'action'    => 'woo_nfe_issue'
+								);
 							}
 						}
 					}

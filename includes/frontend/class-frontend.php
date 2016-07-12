@@ -130,6 +130,13 @@ class WC_NFe_FrontEnd {
                                 );
                             }
                         }
+                        else {
+                            $actions['woo_nfe_issue'] = array(
+                                'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
+                                'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                                'action'    => 'woo_nfe_issue'
+                            );
+                        }
                     }
                 }
             }

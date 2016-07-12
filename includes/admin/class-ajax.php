@@ -19,8 +19,8 @@ class WC_NFe_Ajax {
 	 */
 	public static function init() {
 		$ajax_events = array(
-			'nfe_issue'          => false,
-			'nfe_download'       => false,
+			'nfe_issue'     => false,
+			'nfe_download'  => false,
 		);
 		foreach ( $ajax_events as $ajax_event => $nopriv ) {
 			add_action( 'wp_ajax_woocommerce_' . $ajax_event, array( __CLASS__, $ajax_event ) );
