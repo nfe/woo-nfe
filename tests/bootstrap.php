@@ -3,7 +3,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @author   NFe.io
+ * @author NFe.io
  * @package Woocommerce_NFe\Tests
  * @since 1.0.0
  */

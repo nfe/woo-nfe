@@ -2,7 +2,8 @@
 
 /**
  * WooCommerce NFe plugin
- *
+ * 
+ * @author 			  NFe.io
  * @link              https://github.com/nfe/woocommerce-nfe
  * @since             1.0.0
  * @package           WooCommerce_NFe
@@ -138,6 +139,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 				add_action( 'admin_notices', array( $this, 'extra_checkout_fields_missing_notice' ) );
 			   return;
 			}
+
+			/***********************************************/
 
 			global $woocommerce;
 			
