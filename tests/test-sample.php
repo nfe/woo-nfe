@@ -1,12 +1,11 @@
 <?php
-/**
- * Class NFe_Test
- *
- * @package Woocommerce_NFe
- */
 
 /**
  * NFe Test Class
+ *
+ * @author   NFe.io
+ * @package Woocommerce_NFe\Tests\NFe_Test
+ * @since 1.0.0
  */
 class NFe_Test extends WP_UnitTestCase {
 
@@ -14,8 +13,7 @@ class NFe_Test extends WP_UnitTestCase {
 	 * NFe Issue Test
 	 */
 	public function test_issue() {
-		$order = WC_Helper_Order::create_order();
-
+		$order   = WC_Helper_Order::create_order();
 		$invoice = NFe_Woo()->issue_invoice( array( $order->id ) );
 
 		$this->assertNotNull($invoice->id);
@@ -28,9 +26,9 @@ class NFe_Test extends WP_UnitTestCase {
 	 */
 	public function test_download() {
 		$order = WC_Helper_Order::create_order();
+		$pdf   = NFe_Woo()->down_invoice( array( $order->id ) );
 
-		$pdf = NFe_Woo()->down_invoice( array( $order->id ) );
-
-		$this->assertNotNull($invoice->id);
+		$this->assertNotNull($pdf);
+		$this->assertFileExists($pdf);
 	}
 }

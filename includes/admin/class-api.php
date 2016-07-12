@@ -60,18 +60,14 @@ class NFe_Woo {
 		foreach ( $order_ids as $order_id ) {
 			$total = nfe_wc_get_order( $order_id );
 
-			// If value is 0 or below, don't issue
-			if ( $total->order_total <= 0 ) {
+			// If value is 0, don't issue it
+			if ( $total->order_total == 0 ) {
 				return false;
 			}
 
 			$invoice = Nfe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
 			if ( is_wp_error( $invoice ) ) {
-
-				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
-
 				return false;
 			} 
 			else {	
@@ -92,7 +88,7 @@ class NFe_Woo {
 	 * Downloads the invoice(s)
 	 * 
 	 * @param  array  $order_ids Array of order ids
-	 * @return string            Pdf
+	 * @return string            Pdf url from NFe.io
 	 */
 	public function down_invoice( $order_ids = array() ) {
 		$key 		= nfe_get_field('api_key');
@@ -309,20 +305,11 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Display message to user if there is an issue with the NFe API call
-	 *
-	 * @return html the message for the user
+	 * CPF Converter
+	 * 
+	 * @param  string $cpf 
+	 * @return void
 	 */
-	public function nfe_api_error_msg() {
-		ob_start();
-		?>
-		<div class="error">
-			<p><?php echo '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'There was a problem issuing a receipt in NFe.io.', 'woocommerce-nfe' ) ); ?></p>
-		</div>
-		<?php
-		return ob_get_clean();
-	}
-
 	public function cpf( $cpf ) {
 		if ( ! $cpf ) {
 			return;
@@ -334,6 +321,12 @@ class NFe_Woo {
 		return $cpf;	
 	}
 
+	/**
+	 * CNPJ Converter
+	 * 
+	 * @param  $cnpj 
+	 * @return string
+	 */
 	public function cnpj( $cnpj ) {
 		if ( ! $cnpj ) {
 			return;
@@ -345,6 +338,12 @@ class NFe_Woo {
 		return $cnpj;	
 	}
 
+	/**
+	 * CEP Converter
+	 * 
+	 * @param  $cep
+	 * @return string
+	 */
 	public function cep( $cep ) {
 		if ( ! $cep ) {
 			return;
@@ -362,6 +361,13 @@ class NFe_Woo {
 		return $string;
 	}
 	
+	/**
+	 * Masking
+	 * 
+	 * @param  $val  Value that's gonna be masked
+	 * @param  $mask Mask pattern
+	 * @return string
+	 */
 	public function mask( $val, $mask ) {
 	   $maskared = '';
 	   $k 		 = 0;
