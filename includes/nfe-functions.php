@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WooCommerce NFe.io Custom Functions
+ * WooCommerce NFe Custom Functions
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Functions

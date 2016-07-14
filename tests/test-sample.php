@@ -10,25 +10,22 @@
 class NFe_Test extends WP_UnitTestCase {
 
 	/**
-	 * NFe Issue Test
-	 */
-	public function test_issue() {
-		$order   = WC_Helper_Order::create_order();
-		$invoice = NFe_Woo()->issue_invoice( array( $order->id ) );
-
-		$this->assertNotNull($invoice->id);
-		$this->assertEquals($invoice->servicesAmount, 0.01);
-		$this->assertEquals($invoice->cityServiceCode, '2690');
-	}
-
-	/**
 	 * NFe Download Test
 	 */
 	public function test_download() {
-		$order = WC_Helper_Order::create_order();
-		$pdf   = NFe_Woo()->down_invoice( array( $order->id ) );
+		// Fetch an ID in the Orders page - /wp-admin/edit.php?post_type=shop_order
+		$order = nfe_wc_get_order( 102 );
+		$pdf   = NFe_Woo()->down_invoice( array( $order ) );
 
 		$this->assertNotNull($pdf);
-		$this->assertFileExists($pdf);
+	}
+
+	/**
+	 * NFe Fields
+	 */
+	public function test_nfe_options_fields() {
+		$nfe_fields = nfe_get_field();
+
+		$this->assertNotNull($nfe_fields);
 	}
 }

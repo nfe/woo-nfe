@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 if ( ! class_exists('NFe_Woo') ) :
 
 /**
- * WooCommerce NFe.io NFe_Woo Class
+ * WooCommerce NFe NFe_Woo Class
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/NFe_Woo
