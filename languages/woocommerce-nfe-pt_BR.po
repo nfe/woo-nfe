@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
-"POT-Creation-Date: 2016-07-06 10:17-0300\n"
-"PO-Revision-Date: 2016-07-06 10:18-0300\n"
+"POT-Creation-Date: 2016-07-14 09:29-0300\n"
+"PO-Revision-Date: 2016-07-14 09:29-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -25,69 +25,71 @@ msgstr ""
 msgid "WooCommerce NFe"
 msgstr "WooCommerce NFe"
 
-#: includes/admin/class-admin.php:88 includes/admin/class-settings.php:116
-#: includes/admin/class-settings.php:118
+#: includes/admin/class-admin.php:90 includes/admin/class-settings.php:115
+#: includes/admin/class-settings.php:117
 msgid "CityServiceCode"
 msgstr "CityServiceCode"
 
-#: includes/admin/class-admin.php:91 includes/admin/class-admin.php:156
+#: includes/admin/class-admin.php:93 includes/admin/class-admin.php:158
 msgid "Enter the CityServiceCode."
 msgstr "Preencha o CityServiceCode."
 
-#: includes/admin/class-admin.php:99 includes/admin/class-settings.php:123
-#: includes/admin/class-settings.php:125
+#: includes/admin/class-admin.php:101 includes/admin/class-settings.php:122
+#: includes/admin/class-settings.php:124
 msgid "FederalServiceCode"
 msgstr "FederalServiceCode"
 
-#: includes/admin/class-admin.php:102 includes/admin/class-admin.php:166
+#: includes/admin/class-admin.php:104 includes/admin/class-admin.php:168
 msgid "Enter the FederalServiceCode."
 msgstr "Preencha o FederalServiceCode."
 
-#: includes/admin/class-admin.php:110
+#: includes/admin/class-admin.php:112
 msgid "Product Description"
 msgstr "Descrição do Produto"
 
-#: includes/admin/class-admin.php:113
+#: includes/admin/class-admin.php:115
 msgid "Description for this product output in NFe receipt."
 msgstr "A descrição para teste produto irá aparecer na nota da NFe."
 
-#: includes/admin/class-admin.php:154
+#: includes/admin/class-admin.php:156
 msgid "NFe CityServiceCode"
 msgstr "CityServiceCode para a NFe"
 
-#: includes/admin/class-admin.php:164
+#: includes/admin/class-admin.php:166
 msgid "NFe FederalServiceCode"
 msgstr "FederalServiceCode para a NFe"
 
-#: includes/admin/class-admin.php:174
+#: includes/admin/class-admin.php:176
 msgid "NFe Product Description"
 msgstr "Descrição do Produto para a NFe"
 
-#: includes/admin/class-admin.php:213 includes/frontend/class-frontend.php:78
+#: includes/admin/class-admin.php:215 includes/frontend/class-frontend.php:78
 msgid "Sales Receipt"
 msgstr "Nota de Vendas"
 
-#: includes/admin/class-admin.php:239 includes/frontend/class-frontend.php:98
+#: includes/admin/class-admin.php:241 includes/frontend/class-frontend.php:98
 msgid "Issue Cancelled"
 msgstr "Nota Cancelada"
 
-#: includes/admin/class-admin.php:246 includes/frontend/class-frontend.php:105
+#: includes/admin/class-admin.php:248 includes/frontend/class-frontend.php:105
 msgid "Pending Address"
 msgstr "End. Pendente"
 
-#: includes/admin/class-admin.php:254 includes/frontend/class-frontend.php:113
+#: includes/admin/class-admin.php:256 includes/frontend/class-frontend.php:113
 msgid "Download NFe"
 msgstr "Baixar NFe"
 
-#: includes/admin/class-admin.php:263 includes/frontend/class-frontend.php:122
+#: includes/admin/class-admin.php:265 includes/admin/class-admin.php:279
+#: includes/frontend/class-frontend.php:122
+#: includes/frontend/class-frontend.php:136
 msgid "Issue Nfe"
 msgstr "Emitir NFe"
 
-#: includes/admin/class-admin.php:269 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:271 includes/frontend/class-frontend.php:128
 msgid "Issue Expired"
 msgstr "Emissão Expirada"
 
-#: includes/admin/class-admin.php:282 includes/frontend/class-frontend.php:141
+#: includes/admin/class-admin.php:291 includes/frontend/class-frontend.php:148
 msgid "Enable NFe"
 msgstr "Habilitar o NFe"
 
@@ -100,95 +102,87 @@ msgstr ""
 msgid "NFe was issued successfully."
 msgstr "Nota emitida com sucesso."
 
-#: includes/admin/class-api.php:296
+#: includes/admin/class-api.php:292
 msgid "Customers"
 msgstr "Clientes"
 
-#: includes/admin/class-api.php:299
+#: includes/admin/class-api.php:295
 msgid "Company"
 msgstr "Empresa"
 
-#: includes/admin/class-api.php:320 includes/admin/class-settings.php:209
-msgid "WooCommerce NFe.io"
-msgstr "WooCommerce NFe.io"
-
-#: includes/admin/class-api.php:320
-msgid "There was a problem issuing a receipt in NFe.io."
-msgstr "Houve um problema ao emitir a nota no NFe.io."
-
-#: includes/admin/class-settings.php:25
+#: includes/admin/class-settings.php:24
 msgid "NFe Integration"
 msgstr "Integração NFe"
 
-#: includes/admin/class-settings.php:26
+#: includes/admin/class-settings.php:25
 msgid "This is the NFe.io integration/settings page."
 msgstr "Esta é a página de integração/configuração do NFe.io."
 
-#: includes/admin/class-settings.php:49
+#: includes/admin/class-settings.php:48
 msgid "Select a company..."
 msgstr "Selecione uma empresa..."
 
-#: includes/admin/class-settings.php:52
+#: includes/admin/class-settings.php:51
 msgid "Enter your API key and save to see your companies."
 msgstr "Preencha sua chave de API e salve para ver suas empresas."
 
-#: includes/admin/class-settings.php:58
+#: includes/admin/class-settings.php:57
 msgid "Enable/Disable"
 msgstr "Habilitar/Desabilitar"
 
-#: includes/admin/class-settings.php:60
+#: includes/admin/class-settings.php:59
 msgid "Enable NFe.io"
 msgstr "Habilitar NFe.io"
 
-#: includes/admin/class-settings.php:64 includes/admin/class-settings.php:66
+#: includes/admin/class-settings.php:63 includes/admin/class-settings.php:65
 msgid "API Key"
 msgstr "Chave da API"
 
-#: includes/admin/class-settings.php:68
+#: includes/admin/class-settings.php:67
 msgid "Log in to NFe.io to look up your API key. - %s"
 msgstr "Entre no NFe.io para procurar sua chave de API. - %s"
 
-#: includes/admin/class-settings.php:68
+#: includes/admin/class-settings.php:67
 msgid "NFe.io - Account"
 msgstr "Conta - NFe.io"
 
-#: includes/admin/class-settings.php:71 includes/admin/class-settings.php:73
+#: includes/admin/class-settings.php:70 includes/admin/class-settings.php:72
 msgid "Choose the Company"
 msgstr "Escolha a Empresa"
 
-#: includes/admin/class-settings.php:78
+#: includes/admin/class-settings.php:77
 msgid "Choose one of your companies."
 msgstr "Escolha uma de suas empresas."
 
-#: includes/admin/class-settings.php:81 includes/admin/class-settings.php:83
+#: includes/admin/class-settings.php:80 includes/admin/class-settings.php:82
 msgid "NFe.io Filling"
 msgstr "Preenchimento para o NFe.io"
 
-#: includes/admin/class-settings.php:86
+#: includes/admin/class-settings.php:85
 msgid "Before Checkout (Default)"
 msgstr "Antes do Checkout (Padrão)"
 
-#: includes/admin/class-settings.php:87
+#: includes/admin/class-settings.php:86
 msgid "After Checkout"
 msgstr "Depois do Checkout"
 
-#: includes/admin/class-settings.php:91
+#: includes/admin/class-settings.php:90
 msgid "Option for user to fill the NFe.io information."
 msgstr "Opção para o usuário preencher as informações do NFe.io."
 
-#: includes/admin/class-settings.php:94
+#: includes/admin/class-settings.php:93
 msgid "Manual Retroactive Issue of NFe"
 msgstr "Emissão Manual Retroativa da NFe"
 
-#: includes/admin/class-settings.php:98
+#: includes/admin/class-settings.php:97
 msgid "Enable Retroactive Issue"
 msgstr "Habilitar Emissão de Nota Retroativa"
 
-#: includes/admin/class-settings.php:100
+#: includes/admin/class-settings.php:99
 msgid "Enable to issue NFe.io in past products"
 msgstr "Habilite a emissão de notas NFe em produtos antigos"
 
-#: includes/admin/class-settings.php:102
+#: includes/admin/class-settings.php:101
 msgid ""
 "Enabling this allows users to issue nfe.io notes on bought products in the "
 "past."
@@ -196,70 +190,74 @@ msgstr ""
 "Se habilitado, essa funcionalidade permite a emissão de notas em produtos "
 "comprados no passado."
 
-#: includes/admin/class-settings.php:105
+#: includes/admin/class-settings.php:104
 msgid "Days in the past"
 msgstr "Quantos dias atrás"
 
-#: includes/admin/class-settings.php:109
+#: includes/admin/class-settings.php:108
 msgid "Days in the past to allow NFe manual issue."
 msgstr "Dias no passado permitido para emissão manual da NFe."
 
-#: includes/admin/class-settings.php:112
+#: includes/admin/class-settings.php:111
 msgid "Fiscal Activity (Global)"
 msgstr "Atividade Fiscal (Global)"
 
-#: includes/admin/class-settings.php:120
+#: includes/admin/class-settings.php:119
 msgid "Global value: Used when issuing a receipt"
 msgstr "Valor global: Usado na emissão de nota"
 
-#: includes/admin/class-settings.php:127
+#: includes/admin/class-settings.php:126
 msgid "Global value: federalServiceCode, used when issuing a receipt"
 msgstr "Valor global: federalServiceCode, usando na emissão de nota"
 
-#: includes/admin/class-settings.php:130 includes/admin/class-settings.php:132
+#: includes/admin/class-settings.php:129 includes/admin/class-settings.php:131
 msgid "Description"
 msgstr "Descrição"
 
-#: includes/admin/class-settings.php:134
+#: includes/admin/class-settings.php:133
 msgid "Global value: Description used when issuing a receipt"
 msgstr "Valor global: Descrição usada na emissão de nota"
 
-#: includes/admin/class-settings.php:137
+#: includes/admin/class-settings.php:136
 msgid "Debug Log"
 msgstr "Log de depuração"
 
-#: includes/admin/class-settings.php:139
+#: includes/admin/class-settings.php:138
 msgid "Enable logging"
 msgstr "Ativar logs"
 
-#: includes/admin/class-settings.php:141
+#: includes/admin/class-settings.php:140
 msgid "Log events such as API requests, you can check this log in %s."
 msgstr "Registrar eventos da API do NFe. Você pode verificar o log em %s."
 
-#: includes/admin/class-settings.php:141
+#: includes/admin/class-settings.php:140
 msgid "System Status &gt; Logs"
 msgstr "&gt; Logs do Status do Sistema "
 
-#: includes/admin/class-settings.php:193
+#: includes/admin/class-settings.php:192
 msgid ""
 "Plugin is enabled but no API key provided. You should inform your API Key. %s"
 msgstr ""
 "O plugin está habilitado porém nenhuma chave de API foi adicionada. Você "
 "deve informar uma chave de API. %s"
 
-#: includes/admin/class-settings.php:193
+#: includes/admin/class-settings.php:192
 msgid "Click here to configure!"
 msgstr "Clique aqui para configurar!"
 
-#: includes/admin/class-settings.php:197
+#: includes/admin/class-settings.php:196
 msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
 msgstr "Emissão Antigas de NFe está ativa, porém nenhum dia foi adicionado. %s"
 
-#: includes/admin/class-settings.php:197
+#: includes/admin/class-settings.php:196
 msgid "Add a date to calculate or disable it."
 msgstr "Adicione uma data para calcular ou desabilite essa funcionalidade."
 
-#: includes/admin/class-settings.php:209
+#: includes/admin/class-settings.php:208
+msgid "WooCommerce NFe.io"
+msgstr "WooCommerce NFe.io"
+
+#: includes/admin/class-settings.php:208
 msgid "Unable to load the companies list from NFe.io."
 msgstr "Não é possível carregar a lista de empresas do NFe.io."
 
@@ -330,7 +328,7 @@ msgstr "módulo SOAP"
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:23
 #: includes/admin/views/html-notice-missing-woocommerce.php:23
 msgid "WooCommerce Nfe.io"
-msgstr "WooCommerce Nfe.io"
+msgstr "WooCommerce NFe.io"
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:23
 msgid ""
@@ -410,7 +408,7 @@ msgstr ""
 "Para emitir nota, você precisa preencher suas informações de emissão do NFe "
 "através deste link:  <a href=\"%s\">preencher informações</a>."
 
-#: woocommerce-nfe.php:219
+#: woocommerce-nfe.php:222
 msgid "Settings"
 msgstr "Configurações"
 
@@ -485,6 +483,9 @@ msgstr "Plain text"
 msgctxt "email type"
 msgid "HTML"
 msgstr "HTML"
+
+#~ msgid "There was a problem issuing a receipt in NFe.io."
+#~ msgstr "Houve um problema ao emitir a nota no NFe.io."
 
 #~ msgid "Issue NFe"
 #~ msgstr "Emitir NFe"
