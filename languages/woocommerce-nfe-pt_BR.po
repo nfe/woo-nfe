@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
 "POT-Creation-Date: 2016-07-14 09:29-0300\n"
-"PO-Revision-Date: 2016-07-14 09:29-0300\n"
+"PO-Revision-Date: 2016-07-15 11:14-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -232,7 +232,7 @@ msgstr "Registrar eventos da API do NFe. Você pode verificar o log em %s."
 
 #: includes/admin/class-settings.php:140
 msgid "System Status &gt; Logs"
-msgstr "&gt; Logs do Status do Sistema "
+msgstr "Logs do Status do Sistema "
 
 #: includes/admin/class-settings.php:192
 msgid ""
