@@ -1,0 +1,36 @@
+{
+  "name": "nfe/nfe",
+  "description": "NFe.io PHP Library",
+  "homepage": "https://nfe.io",
+  "keywords": [
+    "nfe",
+    "nfse",
+    "nfe.io",
+    "api",
+    "nota",
+    "nota fiscal"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "NFe.io team and contributors",
+      "homepage": "https://github.com/nfe/client-php/contributors"
+    },
+    {
+      "name": "Renato Alves",
+      "homepage": "http://ralv.es/"
+    }
+  ],
+  "require": {
+    "php": ">=5.4",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "simpletest/simpletest": "^1.1"
+  },
+  "autoload": {
+    "classmap": ["lib/NFe/"]
+  }
+}

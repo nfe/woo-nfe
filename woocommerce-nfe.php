@@ -100,7 +100,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		private function includes() {
 			// NFe.io API
-			require( $this->includes_dir . 'client-php/lib/init.php'          );
+			require( $this->plugin_dir . 'lib/client-php/lib/init.php'        );
 
 			// Admin
 			require( $this->includes_dir . 'admin/class-settings.php'         );
