@@ -8,7 +8,7 @@ if ( class_exists( 'WC_Integration' ) ) :
 /**
  * WooCommerce NFe.io Integration
  *
- * @author   NFe
+ * @author   NFe.io
  * @category Admin
  * @package  WooCommerce_NFe/Class/WC_NFe_Integration
  * @version  1.0.0
@@ -260,23 +260,6 @@ class WC_NFe_Integration extends WC_Integration {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Helper log function for debugging.
-	 *
-	 * @return string
-	 */
-	static function log( $message ) {
-		if ( WP_DEBUG === true ) {
-			$logger = new WC_Logger();
-			if ( is_array( $message ) || is_object( $message ) ) {
-				$logger->add( 'nfe', print_r( $message, true ) );
-			}
-			else {
-				$logger->add( 'nfe', $message );
-			}
-		}
 	}
 }
 
