@@ -37,6 +37,17 @@ class WC_NFe_Admin {
 			add_action( 'processed_subscription_payments_for_order', 				array( $this, 'issue_trigger') );
 			add_action( 'woocommerce_renewal_order_payment_complete', 				array( $this, 'issue_trigger') );
 		}
+
+		add_action( 'admin_post_nopriv_nfe_action', array( $this, 'nfe_action' ) );
+		add_action( 'admin_post_nfe_action', array( $this, 'nfe_action' ) );
+	}
+
+	public function nfe_action() {
+    	status_header(200);
+
+    	var_dump($_POST);
+    	//  die;
+		die("Server received '{$_REQUEST['data']}' from your browser.");
 	}
 
 	/**
