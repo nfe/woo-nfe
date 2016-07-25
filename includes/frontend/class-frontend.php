@@ -19,29 +19,14 @@ class WC_NFe_FrontEnd {
 	 */
 	public function __construct() {
 		// Filters
-		add_filter( 'woocommerce_checkout_fields', 							 array( $this, 'removes_fields' ) );
 		add_filter( 'woocommerce_my_account_my_orders_columns', 			 array( $this, 'nfe_column' ) );
 		add_filter( 'woocommerce_my_account_my_address_description', 		 array( $this, 'my_account_description' ) );
-        add_filter( 'woocommerce_thankyou_order_received_text',              array( $this, 'thankyou_text' ) );
 
 		// Actions
 		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', array( $this, 'column_content' ) );
 		add_action( 'woocommerce_order_details_after_order_table', 			 array( $this, 'column_content' ) );
 		add_action( 'woocommerce_before_edit_address_form_billing', 		 array( $this, 'billing_notice' ) );
 	}
-
-    /**
-     * NFe custom note for Order Received page
-     * 
-     * @return string
-     */
-    public function thankyou_text( $message ) {
-        if ( $this->where_note() ) {
-            $message = sprintf( __( 'Thank you. Your order has been received. Now you need %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '">' . __( 'update your NFe information', 'woocommerce-nfe' ) . '</a>' );
-        }
-
-        return $message;
-    }
 
 	/**
 	 * Notice added on the WooCommerce edit-address page
@@ -88,8 +73,8 @@ class WC_NFe_FrontEnd {
      * @return string
      */
     public function column_content( $order ) {   	
-        $nfe 		= get_post_meta( $order->id, 'nfe_issued', true );
         $order_id   = $order->id;
+        $nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
         $actions 	= array();
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
@@ -100,14 +85,14 @@ class WC_NFe_FrontEnd {
                 );
             } 
             else {
-                if ( nfe_user_address_filled( $order_id ) ) {
+                if ( nfe_order_address_filled( $order_id ) ) {
                     $actions['woo_nfe_pending_address'] = array(
                         'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_pending_address'
                     );
                 }
                 else {
-                    if ( $nfe['id'] ) {
+                    if ( $nfe && $nfe['id'] ) {
                         $actions['woo_nfe_download'] = array(
                             'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
                             'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
@@ -167,39 +152,6 @@ class WC_NFe_FrontEnd {
                 );
             }
         }
-    }
-
-	/**
-	 * Removes the WooCommerce fields on the checkout if the admin chooses it to.
-	 * 
-	 * @return void
-	 */
-	public function removes_fields( $fields ) {
-		if ( $this->where_note() == true ) {
-	        unset($fields['billing']['billing_number']);
-	        unset($fields['billing']['billing_country']);
-	        unset($fields['billing']['billing_address_1']);
-	        unset($fields['billing']['billing_address_2']);
-	        unset($fields['billing']['billing_city']);
-	        unset($fields['billing']['billing_state']);
-	        unset($fields['billing']['billing_neighborhood']);
-	        unset($fields['billing']['billing_postcode']);
-	    }
-        
-        return $fields;
-	}
-
-    /**
-     * Custom check for Where Note usage
-     * 
-     * @return bool true|false
-     */
-    private function where_note() {
-        if ( nfe_get_field('nfe_enable') == 'yes' && nfe_get_field('where_note') == 'after' ) {
-            return true;
-        }
-
-        return false;
     }
 }
 

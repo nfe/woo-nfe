@@ -46,13 +46,17 @@ class WC_NFe_Admin {
 	 * @return bool true|false
 	 */
 	public function issue_trigger( $order_id ) {
+		if ( nfe_get_field('emissao') == 'manual' ) {
+			return;
+		}
+
 		if ( $order_id ) {
 			$order    = nfe_wc_get_order( $order_id );
 			$order_id = $order->id;
 		}
 
-		// Don't issue if there is no user address information
-		if ( ! nfe_user_address_filled( $order_id ) ) {
+		// Don't issue if there is no order address information
+		if ( ! nfe_order_address_filled( $order_id ) ) {
 			NFe_Woo()->issue_invoice( array( $order_id ) );
 		}
 	}
@@ -243,14 +247,14 @@ class WC_NFe_Admin {
 					);
 				} 
 				else {
-					if ( nfe_user_address_filled( $order_id ) ) {
+					if ( nfe_order_address_filled( $order_id ) ) {
 						$actions['woo_nfe_pending_address'] = array(
 							'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
 							'action'    => 'woo_nfe_pending_address'
 						);
 					}
 					else {
-						if ( $nfe['id'] ) {
+						if ( $nfe && $nfe['id'] ) {
 							$actions['woo_nfe_download'] = array(
 								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
 								'name'      => __( 'Download NFe', 'woocommerce-nfe' ),

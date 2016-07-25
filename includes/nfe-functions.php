@@ -31,24 +31,20 @@ function nfe_get_field( $value = '' ) {
 }
 
 /**
- * Check to make sure the user has all the fields for a NFe issue
+ * Check to make sure the order has all the fields for a NFe issue
  * 
  * @param  int $order Product Order
  * @return bool true|false
  */
-function nfe_user_address_filled( $order ) {
-	$order_email = get_post_meta( $order, '_billing_email', true );
-	$user        = get_user_by( 'email', $order_email );
-	$user_id     = $user->ID;
-
+function nfe_order_address_filled( $order_id ) {
 	$fields = array(
-		'neighborhood' => get_user_meta( $user_id, 'billing_neighborhood', true ),
-		'address_1'    => get_user_meta( $user_id, 'billing_address_1', true ),
-		'number'       => get_user_meta( $user_id, 'billing_number', true ),
-		'postcode'     => get_user_meta( $user_id, 'billing_postcode', true ),
-		'state'        => get_user_meta( $user_id, 'billing_state', true ),
-		'city'         => get_user_meta( $user_id, 'billing_city', true ),
-		'country'      => get_user_meta( $user_id, 'billing_country', true ),
+		'neighborhood' => get_post_meta( $order_id, '_billing_neighborhood', true ),
+		'address_1'    => get_post_meta( $order_id, '_billing_address_1', true ),
+		'number'       => get_post_meta( $order_id, '_billing_number', true ),
+		'postcode'     => get_post_meta( $order_id, '_billing_postcode', true ),
+		'state'        => get_post_meta( $order_id, '_billing_state', true ),
+		'city'         => get_post_meta( $order_id, '_billing_city', true ),
+		'country'      => get_post_meta( $order_id, '_billing_country', true ),
 	);
 
 	$count = 0;
@@ -73,8 +69,8 @@ function nfe_user_address_filled( $order ) {
  * @return bool true|false
  */
 function nfe_issue_past_orders( $order ) {
-	$time   = $order->post->post_date;
-	$days   = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
+	$time = $order->post->post_date;
+	$days = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
 
 	if ( strtotime( $days ) < strtotime( $time ) ) {
 		return true;

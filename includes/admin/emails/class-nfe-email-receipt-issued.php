@@ -52,7 +52,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 * @return void
 	 */
 	public function trigger( $order_id ) {
-		if ( nfe_user_address_filled( $order_id ) ) {
+		if ( nfe_order_address_filled( $order_id ) ) {
 			return;
 		}
 

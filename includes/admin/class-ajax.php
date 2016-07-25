@@ -18,6 +18,7 @@ class WC_NFe_Ajax {
 	 * Bootstraps the class and hooks required actions
 	 */
 	public static function init() {
+		// Back-end Ajax
 		$ajax_events = array(
 			'nfe_issue'     => false,
 			'nfe_download'  => false,
@@ -55,7 +56,7 @@ class WC_NFe_Ajax {
 		}
 
 		// Bail if user needs to update address
-		if ( ! nfe_user_address_filled( $order->id ) ) {
+		if ( ! nfe_order_address_filled( $order->id ) ) {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
 		}
 
@@ -84,8 +85,8 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		if ( nfe_user_address_filled( $order->id ) ) {
-			wc_add_notice( __( 'You need to update your NFe information before issuing a receipt.', 'woocommerce-nfe' ), 'error' );
+		if ( nfe_order_address_filled( $order->id ) ) {
+			wc_add_notice( __( 'The order is missing important NFe information, update it brefore trying to issue it.', 'woocommerce-nfe' ), 'error' );
 		}
 		else {
 			NFe_Woo()->issue_invoice( array( $order->id ) );

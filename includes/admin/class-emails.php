@@ -25,10 +25,8 @@ class WC_NFe_Emails {
 	 * Add NFe's email classes.
 	 */
 	public static function add_emails( $email_classes ) {
-		require_once( 'emails/class-nfe-email-checkout-fields.php' 	);
 		require_once( 'emails/class-nfe-email-receipt-issued.php' 	);
 
-		$email_classes['WC_NFe_Checkout_Fields']      = new WC_NFe_Checkout_Fields();
 		$email_classes['WC_NFe_Email_Receipt_Issued'] = new WC_NFe_Email_Receipt_Issued();
 
 		return $email_classes;

@@ -83,11 +83,23 @@ class WC_NFe_Integration extends WC_Integration {
 					'default'           => 'before',
 					'options' 			=> array(
 						'before'     	=> __( 'Before Checkout (Default)', 'woocommerce-nfe' ),
-						'after'     	=> __( 'After Checkout', 'woocommerce-nfe' ),
 					),
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
 					'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
+				),
+				'emissao' 			=> array(
+					'title'             => __( 'NFe Issuing', 'woocommerce-nfe' ),
+					'type'              => 'select',
+					'label'             => __( 'NFe Issuing', 'woocommerce-nfe' ),
+					'default'           => 'before',
+					'options' 			=> array(
+						'auto'     	=> __( 'Automattic (Default)', 'woocommerce-nfe' ),
+						'manual'    => __( 'Manual', 'woocommerce-nfe' ),
+					),
+					'class'    			=> 'wc-enhanced-select',
+					'css'      			=> 'min-width:300px;',
+					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woocommerce-nfe' ),
 				),
 				'issue_past_title' 	=> array(
 					'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woocommerce-nfe' ),

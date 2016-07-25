@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
 "POT-Creation-Date: 2016-07-14 09:29-0300\n"
-"PO-Revision-Date: 2016-07-15 11:14-0300\n"
+"PO-Revision-Date: 2016-07-25 10:08-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -156,7 +156,7 @@ msgstr "Escolha uma de suas empresas."
 
 #: includes/admin/class-settings.php:80 includes/admin/class-settings.php:82
 msgid "NFe.io Filling"
-msgstr "Preenchimento para o NFe.io"
+msgstr "Preenchimento para o NFe"
 
 #: includes/admin/class-settings.php:85
 msgid "Before Checkout (Default)"

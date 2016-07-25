@@ -55,7 +55,7 @@ class NFe_Woo {
 		$key        = nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
 
-		Nfe::setApiKey($key);
+		NFe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
 			$total = nfe_wc_get_order( $order_id );
@@ -65,7 +65,7 @@ class NFe_Woo {
 				return false;
 			}
 
-			$invoice = Nfe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
+			$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
 			if ( is_wp_error( $invoice ) ) {
 				return false;
@@ -94,11 +94,11 @@ class NFe_Woo {
 		$key 		= nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
 
-		Nfe::setApiKey($key);
+		NFe::setApiKey($key);
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-			$pdf = Nfe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
+			$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
 		}
 
 		return $pdf;
@@ -175,7 +175,6 @@ class NFe_Woo {
 				$c = $iso3;
 			}
 		}
-
 		return $c;
 	}
 
@@ -249,7 +248,6 @@ class NFe_Woo {
 				$output = null;
 				break;
 		}
-
 		return $output;
 	}
 
@@ -300,7 +298,6 @@ class NFe_Woo {
 				$output = null;
 				break;
 		}
-
 		return $output;
 	}
 
