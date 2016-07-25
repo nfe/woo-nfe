@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
-"POT-Creation-Date: 2016-07-14 12:17:41+00:00\n"
+"POT-Creation-Date: 2016-07-25 14:13:04+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -30,87 +30,89 @@ msgstr ""
 msgid "WooCommerce NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:90 includes/admin/class-settings.php:115
-#: includes/admin/class-settings.php:117
+#: includes/admin/class-admin.php:94 includes/admin/class-settings.php:127
+#: includes/admin/class-settings.php:129
 msgid "CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:93 includes/admin/class-admin.php:158
+#: includes/admin/class-admin.php:97 includes/admin/class-admin.php:162
 msgid "Enter the CityServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:101 includes/admin/class-settings.php:122
-#: includes/admin/class-settings.php:124
+#: includes/admin/class-admin.php:105 includes/admin/class-settings.php:134
+#: includes/admin/class-settings.php:136
 msgid "FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:104 includes/admin/class-admin.php:168
+#: includes/admin/class-admin.php:108 includes/admin/class-admin.php:172
 msgid "Enter the FederalServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:112
+#: includes/admin/class-admin.php:116
 msgid "Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:115
+#: includes/admin/class-admin.php:119
 msgid "Description for this product output in NFe receipt."
 msgstr ""
 
-#: includes/admin/class-admin.php:156
+#: includes/admin/class-admin.php:160
 msgid "NFe CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:166
+#: includes/admin/class-admin.php:170
 msgid "NFe FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:176
+#: includes/admin/class-admin.php:180
 msgid "NFe Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:215 includes/frontend/class-frontend.php:78
+#: includes/admin/class-admin.php:219 includes/frontend/class-frontend.php:63
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:241 includes/frontend/class-frontend.php:98
+#: includes/admin/class-admin.php:245 includes/frontend/class-frontend.php:83
 msgid "Issue Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:248 includes/frontend/class-frontend.php:105
+#: includes/admin/class-admin.php:252 includes/frontend/class-frontend.php:90
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:256 includes/frontend/class-frontend.php:113
+#: includes/admin/class-admin.php:260 includes/frontend/class-frontend.php:98
 msgid "Download NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:265 includes/admin/class-admin.php:279
-#: includes/frontend/class-frontend.php:122
-#: includes/frontend/class-frontend.php:136
+#: includes/admin/class-admin.php:269 includes/admin/class-admin.php:283
+#: includes/frontend/class-frontend.php:107
+#: includes/frontend/class-frontend.php:121
 msgid "Issue Nfe"
 msgstr ""
 
-#: includes/admin/class-admin.php:271 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:275 includes/frontend/class-frontend.php:113
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:291 includes/frontend/class-frontend.php:148
+#: includes/admin/class-admin.php:295 includes/frontend/class-frontend.php:133
 msgid "Enable NFe"
 msgstr ""
 
-#: includes/admin/class-ajax.php:88
-msgid "You need to update your NFe information before issuing a receipt."
+#: includes/admin/class-ajax.php:89
+msgid ""
+"The order is missing important NFe information, update it before trying to "
+"issue it."
 msgstr ""
 
-#: includes/admin/class-ajax.php:93
+#: includes/admin/class-ajax.php:94
 msgid "NFe was issued successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:292
+#: includes/admin/class-api.php:290
 msgid "Customers"
 msgstr ""
 
-#: includes/admin/class-api.php:295
+#: includes/admin/class-api.php:293
 msgid "Company"
 msgstr ""
 
@@ -166,135 +168,112 @@ msgstr ""
 msgid "Before Checkout (Default)"
 msgstr ""
 
-#: includes/admin/class-settings.php:86
-msgid "After Checkout"
-msgstr ""
-
-#: includes/admin/class-settings.php:90
+#: includes/admin/class-settings.php:89
 msgid "Option for user to fill the NFe.io information."
 msgstr ""
 
-#: includes/admin/class-settings.php:93
-msgid "Manual Retroactive Issue of NFe"
+#: includes/admin/class-settings.php:92 includes/admin/class-settings.php:94
+msgid "NFe Issuing"
 msgstr ""
 
 #: includes/admin/class-settings.php:97
+msgid "Automattic (Default)"
+msgstr ""
+
+#: includes/admin/class-settings.php:98
+msgid "Manual"
+msgstr ""
+
+#: includes/admin/class-settings.php:102
+msgid "Option to issue a NFe."
+msgstr ""
+
+#: includes/admin/class-settings.php:105
+msgid "Manual Retroactive Issue of NFe"
+msgstr ""
+
+#: includes/admin/class-settings.php:109
 msgid "Enable Retroactive Issue"
 msgstr ""
 
-#: includes/admin/class-settings.php:99
+#: includes/admin/class-settings.php:111
 msgid "Enable to issue NFe.io in past products"
 msgstr ""
 
-#: includes/admin/class-settings.php:101
+#: includes/admin/class-settings.php:113
 msgid ""
 "Enabling this allows users to issue nfe.io notes on bought products in the "
 "past."
 msgstr ""
 
-#: includes/admin/class-settings.php:104
+#: includes/admin/class-settings.php:116
 msgid "Days in the past"
 msgstr ""
 
-#: includes/admin/class-settings.php:108
+#: includes/admin/class-settings.php:120
 msgid "Days in the past to allow NFe manual issue."
 msgstr ""
 
-#: includes/admin/class-settings.php:111
+#: includes/admin/class-settings.php:123
 msgid "Fiscal Activity (Global)"
 msgstr ""
 
-#: includes/admin/class-settings.php:119
+#: includes/admin/class-settings.php:131
 msgid "Global value: Used when issuing a receipt"
 msgstr ""
 
-#: includes/admin/class-settings.php:126
+#: includes/admin/class-settings.php:138
 msgid "Global value: federalServiceCode, used when issuing a receipt"
 msgstr ""
 
-#: includes/admin/class-settings.php:129 includes/admin/class-settings.php:131
+#: includes/admin/class-settings.php:141 includes/admin/class-settings.php:143
 msgid "Description"
 msgstr ""
 
-#: includes/admin/class-settings.php:133
+#: includes/admin/class-settings.php:145
 msgid "Global value: Description used when issuing a receipt"
 msgstr ""
 
-#: includes/admin/class-settings.php:136
+#: includes/admin/class-settings.php:148
 msgid "Debug Log"
 msgstr ""
 
-#: includes/admin/class-settings.php:138
+#: includes/admin/class-settings.php:150
 msgid "Enable logging"
 msgstr ""
 
-#: includes/admin/class-settings.php:140
+#: includes/admin/class-settings.php:152
 msgid "Log events such as API requests, you can check this log in %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:140
+#: includes/admin/class-settings.php:152
 msgid "System Status &gt; Logs"
 msgstr ""
 
-#: includes/admin/class-settings.php:192
+#: includes/admin/class-settings.php:204
 msgid ""
 "Plugin is enabled but no API key provided. You should inform your API Key. "
 "%s"
 msgstr ""
 
-#: includes/admin/class-settings.php:192
+#: includes/admin/class-settings.php:204
 msgid "Click here to configure!"
 msgstr ""
 
-#: includes/admin/class-settings.php:196
+#: includes/admin/class-settings.php:208
 msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:196
+#: includes/admin/class-settings.php:208
 msgid "Add a date to calculate or disable it."
 msgstr ""
 
-#: includes/admin/class-settings.php:208
+#: includes/admin/class-settings.php:220
 msgid "WooCommerce NFe.io"
 msgstr ""
 
-#: includes/admin/class-settings.php:208
+#: includes/admin/class-settings.php:220
 msgid "Unable to load the companies list from NFe.io."
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:26
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:29
-msgid "NFe Update Checkout Fields"
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:27
-msgid ""
-"Email to remind the customer to add/update NFe fields. These fields are "
-"used from WooCommerce NFe."
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:123
-#: includes/admin/emails/class-nfe-email-receipt-issued.php:125
-msgid "Enable this email notification"
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:129
-#: includes/admin/emails/class-nfe-email-receipt-issued.php:131
-msgid ""
-"This controls the email subject line. Leave blank to use the default "
-"subject: <code>%s</code>."
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:136
-#: includes/admin/emails/class-nfe-email-receipt-issued.php:138
-msgid ""
-"This controls the main heading contained within the email notification. "
-"Leave blank to use the default heading: <code>%s</code>."
-msgstr ""
-
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:143
-#: includes/admin/emails/class-nfe-email-receipt-issued.php:145
-msgid "Choose which format of email to send."
 msgstr ""
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:27
@@ -306,6 +285,26 @@ msgstr ""
 msgid ""
 "Safe copy emails are sent when a customer issues an receipt. The e-mail is "
 "sent to the admin as a saving measure."
+msgstr ""
+
+#: includes/admin/emails/class-nfe-email-receipt-issued.php:125
+msgid "Enable this email notification"
+msgstr ""
+
+#: includes/admin/emails/class-nfe-email-receipt-issued.php:131
+msgid ""
+"This controls the email subject line. Leave blank to use the default "
+"subject: <code>%s</code>."
+msgstr ""
+
+#: includes/admin/emails/class-nfe-email-receipt-issued.php:138
+msgid ""
+"This controls the main heading contained within the email notification. "
+"Leave blank to use the default heading: <code>%s</code>."
+msgstr ""
+
+#: includes/admin/emails/class-nfe-email-receipt-issued.php:145
+msgid "Choose which format of email to send."
 msgstr ""
 
 #: includes/admin/views/html-notice-missing-soap-client.php:15
@@ -351,46 +350,21 @@ msgstr ""
 msgid "Install WooCommerce"
 msgstr ""
 
-#: includes/frontend/class-frontend.php:40
-msgid "Thank you. Your order has been received. Now you need %s."
-msgstr ""
-
-#: includes/frontend/class-frontend.php:40
-msgid "update your NFe information"
-msgstr ""
-
-#: includes/frontend/class-frontend.php:53
+#: includes/frontend/class-frontend.php:38
 msgid ""
 "The following address will <strong>also</strong> be used when issuing a NFe "
 "Sales Receipt."
 msgstr ""
 
-#: includes/frontend/class-frontend.php:63
+#: includes/frontend/class-frontend.php:48
 msgid ""
 "The following address(es) will be used on the checkout page by default and "
 "also when issuing a NFe sales receipt."
 msgstr ""
 
-#: templates/emails/nfe-checkout-fields.php:22
-msgid ""
-"To issue a NFe receipt, you need to fill the NFe information through this "
-"link: <a href=\"%s\">fill information</a>."
-msgstr ""
-
-#: templates/emails/nfe-checkout-fields.php:24
-#: templates/emails/plain/nfe-checkout-fields.php:21
-msgid "Att."
-msgstr ""
-
 #: templates/emails/nfe-receipt-issued.php:22
 #: templates/emails/plain/nfe-receipt-issued.php:19
 msgid "NFe issued successfully. Here follows an email for your backing."
-msgstr ""
-
-#: templates/emails/plain/nfe-checkout-fields.php:19
-msgid ""
-"To issue a NFe receipt, you need to fill the NFe information through this "
-"link:: <a href=\"%s\">fill information</a>."
 msgstr ""
 
 #: woocommerce-nfe.php:222
@@ -413,15 +387,6 @@ msgstr ""
 msgid "https://nfe.io"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:32
-#. translators: placeholder is {blogname}, a variable that will be substituted
-#. when email is sent out
-msgctxt ""
-"default email subject for safe copy emails sent to the admin or a custom "
-"email chosen in the NFe settings page"
-msgid "[%s] NFe Update Checkout Fields"
-msgstr ""
-
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:33
 #. translators: placeholder is {blogname}, a variable that will be substituted
 #. when email is sent out
@@ -431,19 +396,16 @@ msgctxt ""
 msgid "[%s] NFe Receipt Issued"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:121
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:123
 msgctxt "an email notification"
 msgid "Enable/Disable"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:127
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:129
 msgctxt "of an email"
 msgid "Subject"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:134
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:136
 msgctxt ""
 "Name the setting that controls the main heading contained within the email "
@@ -451,19 +413,16 @@ msgctxt ""
 msgid "Email Heading"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:141
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:143
 msgctxt "text, html or multipart"
 msgid "Email type"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:147
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:149
 msgctxt "email type"
 msgid "Plain text"
 msgstr ""
 
-#: includes/admin/emails/class-nfe-email-checkout-fields.php:148
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:150
 msgctxt "email type"
 msgid "HTML"
