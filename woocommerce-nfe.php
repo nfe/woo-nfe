@@ -91,6 +91,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->plugin_dir    = plugin_dir_path( $this->file                     );
 			$this->plugin_url    = plugin_dir_url( $this->file                      );
 			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
+			$this->composer  	 = trailingslashit( $this->plugin_dir . 'vendor'  	);
 		}
 
 		/**
@@ -99,8 +100,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function includes() {
-			// NFe.io API
-			require( $this->plugin_dir . 'lib/client-php/lib/init.php'        );
+			
+			// NFe.io API with Composer Support
+			if ( ! file_exists( $this->composer . 'nfe/nfe/lib/init.php') ) {
+				require( $this->plugin_dir . 'lib/client-php/lib/init.php'    );
+			}
 
 			// Admin
 			require( $this->includes_dir . 'admin/class-settings.php'         );
