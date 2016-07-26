@@ -18,7 +18,7 @@
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
  * Text Domain:       woocommerce-nfe
- * Domain Path:       languages
+ * Domain Path:       /languages
  * Network:     	  false
  *
  * Copyright: © 2016 NFe.io
@@ -36,7 +36,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 	*
 	* @since 1.0.0
 	*/
-	class WooCommerce_NFe {
+	final class WooCommerce_NFe {
 
 		/**
 		 * Plugin version.
@@ -91,6 +91,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->plugin_dir    = plugin_dir_path( $this->file                     );
 			$this->plugin_url    = plugin_dir_url( $this->file                      );
 			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
+			$this->composer  	 = trailingslashit( $this->plugin_dir . 'vendor'  	);
 		}
 
 		/**
@@ -99,8 +100,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function includes() {
-			// NFe.io API
-			require( $this->plugin_dir . 'lib/client-php/lib/init.php'        );
+			
+			// NFe Client-PHP API with Composer Support
+			if ( ! file_exists( $this->composer . 'nfe/nfe/lib/init.php') ) {
+				require( $this->plugin_dir . 'lib/client-php/lib/init.php'    );
+			}
 
 			// Admin
 			require( $this->includes_dir . 'admin/class-settings.php'         );
@@ -140,7 +144,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			   return;
 			}
 
-			/***********************************************/
+			/******************************************************************************/
 
 			global $woocommerce;
 			
@@ -159,7 +163,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			}
 
 			// Filters
-			add_filter( 'woocommerce_integrations',                array( $this, 'add_nfe_integration' ) );
+			add_filter( 'woocommerce_integrations',                array( $this, 'nfe_integration' ) );
 			add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
 		}
 
@@ -170,7 +174,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 *
 		 * @return array
 		 */
-		public function add_nfe_integration( $integrations ) {
+		public function nfe_integration( $integrations ) {
 			$integrations[] = 'WC_NFe_Integration';
 
 			return $integrations;
@@ -221,7 +225,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$plugin_links   = array(
 				'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>',
 			);
-
 			return array_merge( $plugin_links, $links );
 		}
 	}

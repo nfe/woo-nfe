@@ -46,9 +46,9 @@ class WC_NFe_Integration extends WC_Integration {
 		if ( $this->has_api_key() ) {
 			$lists = $this->fetch_companies();
 			$company_list = array_merge( array( '' => __( 'Select a company...', 'woocommerce-nfe' ) ), $lists );
-
-		} else {
-			$company_list = array( 'no-company' => __( 'Enter your API key and save to see your companies.', 'woocommerce-nfe' ) );
+		} 
+		else {
+			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woocommerce-nfe' ) );
 		}
 
 		$this->form_fields = apply_filters( 'woocommerce_nfe_settings', 
@@ -163,15 +163,16 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return array An array of companies
 	 */
 	private function fetch_companies() {
-		$key 			= nfe_get_field('api_key');
-		$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
+		$key 		  = nfe_get_field('api_key');
+		$company_list = get_transient( 'nfecompanylist_' . md5( $key ) );
 
 		if ( false === $company_list ) {
-			$url 		= 'https://api.nfe.io/v1/companies?api_key='. $key . '';
-			$response 	= wp_remote_get( esc_url_raw( $url ) );
-			$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
+			NFe::setApiKey($key);
+
+			$companies = NFe_Company::fetch( $key );
 
 			if ( is_wp_error( $companies ) ) {
+				$this->log->add('Unable to load the companies list from NFe.io.');
 
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
@@ -267,7 +268,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function is_active() {
-		if ( nfe_get_field('nfe_enable') === 'yes'  ) {
+		if ( nfe_get_field('nfe_enable') == 'yes'  ) {
 			return true;
 		}
 

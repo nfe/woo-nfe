@@ -12,7 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Function to fetch field from the NFe WooCommerce Integration
+ * Function to fetch fields from the NFe WooCommerce Integration
  * 
  * @param  string $value Value to fetch
  * @return string

@@ -20,7 +20,7 @@ class WC_NFe_FrontEnd {
 	public function __construct() {
 		// Filters
 		add_filter( 'woocommerce_my_account_my_orders_columns', 			 array( $this, 'nfe_column' ) );
-		add_filter( 'woocommerce_my_account_my_address_description', 		 array( $this, 'my_account_description' ) );
+		add_filter( 'woocommerce_my_account_my_address_description', 		 array( $this, 'account_desc' ) );
 
 		// Actions
 		add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', array( $this, 'column_content' ) );
@@ -44,7 +44,7 @@ class WC_NFe_FrontEnd {
 	 * 
 	 * @return string
 	 */
-	public function my_account_description() {
+	public function account_desc() {
 		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woocommerce-nfe' );
 	}
 
