@@ -55,7 +55,7 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		// Bail if user needs to update address
+		// Bail if order address needs to be updated
 		if ( ! nfe_order_address_filled( $order->id ) ) {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
 		}
