@@ -95,6 +95,22 @@ class WC_NFe_Integration extends WC_Integration {
 					'css'      			=> 'min-width:300px;',
 					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woocommerce-nfe' ),
 				),
+
+				'nfe_events_title' 	=> array(
+					'title' 			=> __( 'NFe.io Webkook Settup', 'woocommerce-nfe' ),
+					'type' 				=> 'title',
+				),
+				'nfe_events_url' => array(
+					'title'             => __( 'Webhook URL', 'woocommerce-nfe' ),
+					'type'              => 'text',
+					'label'             => __( 'Webhook URL', 'woocommerce-nfe' ),
+					'default'           => $this->get_events_url(),
+					'custom_attributes' => array(
+						'readonly' => 'readonly'
+					),
+					'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/webhooks') . '">' . __( 'NFe.io Webhooks', 'woocommerce-nfe' ) . '</a>' ),
+				),
+
 				'issue_past_title' 	=> array(
 					'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woocommerce-nfe' ),
 					'type' 				=> 'title',
@@ -181,6 +197,19 @@ class WC_NFe_Integration extends WC_Integration {
 			}
 		}
 		return $company_list;
+	}
+
+	/**
+	 * URL that will receive the webhooks.
+	 * 
+	 * @return string
+	 */
+	private function get_events_url() {
+		return sprintf('%s/index.php/wc-api/%s?token=%s', 
+			get_site_url(), 
+			WC_API_CALLBACK,
+			sanitize_file_name( wp_hash('nfe') )
+		);
 	}
 
 	/**

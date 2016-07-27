@@ -39,13 +39,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 	final class WooCommerce_NFe {
 
 		/**
-		 * Plugin version.
-		 *
-		 * @var string
-		 */
-		const VERSION = '1.0.0';
-
-		/**
 		 * Main instance
 		 *
 		 * @since 1.0.0
@@ -91,6 +84,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->plugin_dir    = plugin_dir_path( $this->file                     );
 			$this->plugin_url    = plugin_dir_url( $this->file                      );
 			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
+
+			// WooCommerce Webhook Callback
+			if ( ! defined( 'WC_API_CALLBACK' ) ) {
+				define( 'WC_API_CALLBACK', 'nfe_webhook' );
+			}
 		}
 
 		/**
@@ -111,12 +109,13 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			}
 
 			// Admin
+			require( $this->includes_dir . 'nfe-functions.php'           );
 			require( $this->includes_dir . 'admin/class-settings.php'    );
 			require( $this->includes_dir . 'admin/class-ajax.php'        );
 			require( $this->includes_dir . 'admin/class-admin.php'       );
 			require( $this->includes_dir . 'admin/class-api.php'         );
 			require( $this->includes_dir . 'admin/class-emails.php'      );
-			require( $this->includes_dir . 'nfe-functions.php'           );
+			require( $this->includes_dir . 'admin/class-webhook.php' 	 );
 
 			// Front-end
 			require( $this->includes_dir . 'frontend/class-frontend.php' );

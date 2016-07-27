@@ -15,11 +15,6 @@ if ( ! class_exists( 'WC_NFe_Webhook_Handler' ) ) :
 class WC_NFe_Webhook_Handler {
 
     /**
-    * @var string
-    */
-    const WC_API_CALLBACK = 'nfe_webhook';
-
-    /**
     * @var WC_NFe_Webhook_Handler
     */
     private $webhook_handler = null;
@@ -28,7 +23,7 @@ class WC_NFe_Webhook_Handler {
      * Base Construct
      */
 	public function __construct() {
-        add_action('woocommerce_api_' . self::WC_API_CALLBACK, array( $this->webhook_handler, 'handle' ) );
+        add_action('woocommerce_api_' . WC_API_CALLBACK, array( $this->webhook_handler, 'handle' ) );
 
         // Debug.
         if ( nfe_get_field('debug') == 'yes' ) {
@@ -40,13 +35,9 @@ class WC_NFe_Webhook_Handler {
 	 * Handle incoming webhook.
 	 */
 	public function handle() {
-        // $token    = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
+        $token    = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
         $raw_body = file_get_contents('php://input');
         $body     = json_decode($raw_body);
-
-        // if ( ! $this->validate_access_token($token) ) {
-           //  die('invalid access token');
-        // }
 
         $this->logger->log( 'Novo Webhook chamado: ' . $raw_body );
 
@@ -68,14 +59,16 @@ class WC_NFe_Webhook_Handler {
      * @param string $body
      **/
     private function process_event($body) {
-        if(null == $body || empty($body->event))
+        if ( null == $body || empty($body->event) ) {
             throw new Exception('Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!');
+        }
 
 		$type = $body->event->type;
 		$data = $body->event->data;
 
-        if( method_exists($this, $type) ) {
+        if( method_exists( $this, $type ) ) {
             $this->logger->log('Novo Evento processado: ' . $type);
+            
             return $this->{$type}($data);
         }
 
@@ -84,26 +77,19 @@ class WC_NFe_Webhook_Handler {
 
     /**
      * Process test event from webhook
+     * 
      * @param $data array
      */
     private function test($data) {
         $this->logger->log('Evento de teste do webhook.');
     }
-}
-
-endif;
-
-$run = new WC_NFe_Webhook_Handler;
-
-// That's it! =)
 
     /**
      * Cancell Web Hook
      * 
-     * @param  int $order_id Order ID
-     * @return bool true|false
+     * @param  $data array
      */
-    public function cancel_nfe( $order_id ) {
+    private function cancel_nfe( $data ) {        
         $nfe = get_post_meta( $order_id, 'nfe_issued', true );
 
         if ( empty( $nfe['id'] ) ) {
@@ -114,3 +100,10 @@ $run = new WC_NFe_Webhook_Handler;
 
         update_post_meta( $order_id, 'nfe_issued', $nfe );
     }
+}
+
+endif;
+
+$run = new WC_NFe_Webhook_Handler;
+
+// That's it! =)
