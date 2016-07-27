@@ -44,7 +44,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
-			$lists = $this->fetch_companies();
+			$lists = $this->companies();
 			$company_list = array_merge( array( '' => __( 'Select a company...', 'woocommerce-nfe' ) ), $lists );
 		} 
 		else {
@@ -162,14 +162,14 @@ class WC_NFe_Integration extends WC_Integration {
 	 * 
 	 * @return array An array of companies
 	 */
-	private function fetch_companies() {
+	private function companies() {
 		$key 		  = nfe_get_field('api_key');
 		$company_list = get_transient( 'nfecompanylist_' . md5( $key ) );
 
 		if ( false === $company_list ) {
 			NFe::setApiKey($key);
 
-			$companies = NFe_Company::fetch( $key );
+			// $companies = NFe_Company::fetch( $key );
 
 			if ( is_wp_error( $companies ) ) {
 				$this->log->add('Unable to load the companies list from NFe.io.');

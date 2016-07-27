@@ -101,7 +101,14 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		private function includes() {
 			
 			// NFe Client-PHP API
-			require( $this->plugin_dir . 'lib/client-php/lib/init.php'   );
+			$composer_path = $this->plugin_dir . 'vendor/nfe/nfe/lib/init.php';
+
+			if ( ! file_exists( $composer_path ) ) {
+				require( $this->plugin_dir . 'lib/client-php/lib/init.php' );
+			}
+			else {
+				require( $composer_path );
+			}
 
 			// Admin
 			require( $this->includes_dir . 'admin/class-settings.php'    );
