@@ -1,0 +1,23 @@
+
+### 2.0.0 2016-07-18
+
+* Updated readme.me with banners
+* Bumped PHP version into 5.4
+* Added more unit testing
+* Updated unit testing setup to easier testing
+* Added more examples, for documentation
+
+### 2.0.0 2016-07-15
+
+* Added .travis.yml to bring Travis-cli support
+* Updated tests
+
+### 2.0.0 2016-07-14
+
+* Several improvements in the library organization
+* Readme.me updated to reflect new folder names and also new class names
+* composer.json updated to reflect new folder names
+
+### 1.0.2 2016-07-13
+
+* Class name changes to fix #5

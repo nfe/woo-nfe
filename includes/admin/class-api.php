@@ -41,9 +41,7 @@ class NFe_Woo {
 	/**
 	 * Set hooks.
 	 */
-	private function setup_hooks() {
-		add_action( 'admin_notices', array( $this, 'display_messages' ) );
-	}
+	private function setup_hooks() {}
 	
 	/**
 	 * Issue a NFe Invoice.
@@ -102,24 +100,6 @@ class NFe_Woo {
 		}
 
 		return $pdf;
-	}
-
-	/**
-	 * Cancell Web Hook
-	 * 
-	 * @param  int $order_id Order ID
-	 * @return bool true|false
-	 */
-	public function cancel_nfe( $order_id ) {
-		$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-
-		if ( empty( $nfe['id'] ) ) {
-			return;
-		}
-
-		$nfe['status'] = 'Cancelled';
-
-		update_post_meta( $order_id, 'nfe_issued', $nfe );
 	}
 
 	/**
