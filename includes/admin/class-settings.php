@@ -19,7 +19,6 @@ class WC_NFe_Integration extends WC_Integration {
 	 * Init and hook in the integration.
 	 */
 	public function __construct() {
-
 		$this->id 				  = 'nfe-woo-integration';
 		$this->method_title 	  = __( 'NFe Integration', 'woocommerce-nfe' );
 		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woocommerce-nfe' );
@@ -27,11 +26,6 @@ class WC_NFe_Integration extends WC_Integration {
 		// Load the settings.
 		$this->init_form_fields();
 		$this->init_settings();
-
-		// Debug.
-		if ( nfe_get_field('debug') == 'yes' ) {
-			$this->log = new WC_Logger();
-		}
 
 		// Actions.
 		add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
@@ -163,20 +157,17 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return array An array of companies
 	 */
 	private function companies() {
-		$key 		  = nfe_get_field('api_key');
-		$company_list = get_transient( 'nfecompanylist_' . md5( $key ) );
+		$key 			= nfe_get_field('api_key');
+		$company_list 	= get_transient( 'nfecompanylist_' . md5( $key ) );
 
 		if ( false === $company_list ) {
-			NFe::setApiKey($key);
-
-			// $companies = NFe_Company::fetch( $key );
-
+			$url 		= 'https://api.nfe.io/v1/companies?api_key='. $key . '';
+			$response 	= wp_remote_get( esc_url_raw( $url ) );
+			$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
+			
 			if ( is_wp_error( $companies ) ) {
-				$this->log->add('Unable to load the companies list from NFe.io.');
-
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
-
 				return false;
 			}
 			else {
@@ -184,13 +175,11 @@ class WC_NFe_Integration extends WC_Integration {
 				foreach ( $companies['companies'] as $c ) {
 					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
 				}
-
 				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 1 * HOUR_IN_SECONDS );
+					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
 				}
 			}
 		}
-
 		return $company_list;
 	}
 

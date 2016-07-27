@@ -103,6 +103,21 @@ class NFe_Woo {
 	}
 
 	/**
+	 * Fetching all the companies a user has
+	 * 
+	 * @return array An array with all the companies a user NFe client might have
+	 */
+	public function fetch_companies() {
+		$key = nfe_get_field('api_key');
+
+		NFe::setApiKey($key);
+
+		$companies = NFe_Company::fetch($key);
+
+		return $companies;
+	}
+
+	/**
 	 * Preparing data to send to NFe API
 	 * 
 	 * @param  int $order Order ID
