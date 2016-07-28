@@ -28,35 +28,20 @@ class WC_NFe_Webhook_Handler {
         add_action('woocommerce_api_' . WC_API_CALLBACK, array( $this, 'handle' ) );
     }
 
-    /**
-     * Logging method.
-     *
-     * @param string $message
-     */
-    public static function logger( $message ) {
-        if ( nfe_get_field('debug') == 'yes' ) {
-            if ( ! class_exists( 'WC_Logger' ) ) {
-                include_once( 'class-wc-logger.php' );
-            }
-
-            if ( empty( self::$logger ) ) {
-                self::$logger = new WC_Logger();
-            }
-            self::$logger->add( 'nfe_webhook', $message );
-        }
-    }
-
 	/**
-	 * Handle incoming webhook.
-	 */
-	public function handle() {
-        $raw_body = file_get_contents('php://input');
-        $body     = json_decode($raw_body);
+     * Handling incoming webhooks
+     * 
+     * @return void
+     */
+    public function handle() {
+        $raw_body  = file_get_contents('php://input');
+        $body      = json_decode($raw_body);
+        $nfe_event = wp_remote_retrieve_header( $body, 'X-Nfeio-Event' );
 
-        $this->logger( 'Novo Webhook chamado: ' . $raw_body );
+        $this->logger( 'Novo Webhook ('. $nfe_event .') chamado: ' . $raw_body );
 
         try {
-            $this->process_event($body);
+            $this->process_event( $body, $nfe_event );
         } 
         catch (Exception $e) {
             $this->logger( $e->getMessage() );
@@ -73,43 +58,95 @@ class WC_NFe_Webhook_Handler {
      * 
      * @param string $body
      **/
-    private function process_event($body) {
-        if ( null == $body || empty($body) ) {
+    private function process_event( $body, $event ) {
+        if ( null == $body || empty($event) ) {
             throw new Exception( 'Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!' );
         }
 
-		$type = $body->type;
-		$data = $body;
-
-        if ( method_exists( $this, $type ) ) {
-            $this->logger('Novo Evento processado: ' . $type);
+        if ( method_exists( $this, $event ) ) {
+            $this->logger('Novo Evento processado: ' . $event);
             
-            return $this->{$type}($data);
+            return $this->{$event}($body);
         }
 
-        $this->logger('Evento do webhook ignorado pelo plugin: ' . $type);
+        $this->logger('Evento do webhook ignorado pelo plugin: ' . $event);
     }
 
     /**
-     * Cancell Web Hook
+     * Cancel Webhook
      * 
      * @param  $data array
      */
     private function cancel( $data ) {
-        $nfe = get_post_meta( $order_id, 'nfe_issued', true );
+        $status = $data->flowStatus;
+        $nfe_id = $data->id;
 
-        if ( empty( $nfe['id'] ) ) {
-            return;
+        if ( $status == 'Cancelled' ) {
+            $order = $this->find_order_by_nota_id( $nfe_id );
+
+            $nfe = get_post_meta( $order->id, 'nfe_issued', true );
+
+            $nfe['status'] = 'Cancelled';
+
+            update_post_meta( $order->id, 'nfe_issued', $nfe );
         }
+    }
 
-        $nfe['status'] = 'Cancelled';
+    // private function issue( $data ) {}
 
-        update_post_meta( $order_id, 'nfe_issued', $nfe );
+    /**
+     * Finds order by id
+     * 
+     * @param  int $order_id 
+     * @return WC_Order
+     */
+    private function find_order_by_id( $order_id ) {
+        $order = nfe_wc_get_order( $order_id );
+
+        if ( empty($order) ) {
+            throw new Exception( 'Pedido #' . $order_id . ' não encontrado!', 2 );
+        }
+        return $order;
+    }
+    
+    /**
+     * Find orders with NFe ID meta
+     * 
+     * @param  Nota ID $id 
+     * @return WC_Order
+     */
+    private function find_order_by_nota_id( $id ) {
+        $args = array(
+            'post_type'   => 'shop_order',
+            'meta_key'    => 'nfe_issued',
+            'meta_value'  => $id,
+            'post_status' => 'any',
+        );
+        $query = new WP_Query($args);
+        
+        if ( false === $query->have_posts() ) {
+            throw new Exception( 'Pedido com id de nota fiscal #' . $id . ' não encontrado!', 2 );
+        }
+        return nfe_wc_get_order( $query->post->ID );
+    }
+
+    /**
+     * Logging method.
+     *
+     * @param string $message
+     */
+    public static function logger( $message ) {
+        if ( nfe_get_field('debug') == 'yes' ) {
+            if ( empty( self::$logger ) ) {
+                self::$logger = new WC_Logger();
+            }
+            self::$logger->add( 'nfe_webhook', $message );
+        }
     }
 }
 
-endif;
-
 return new WC_NFe_Webhook_Handler();
+
+endif;
 
 // That's it! =)
