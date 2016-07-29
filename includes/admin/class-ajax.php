@@ -233,8 +233,8 @@ class WC_NFe_Ajax {
 	}
 }
 
-endif;
-
 WC_NFe_Ajax::init();
+
+endif;
 
 // That's it! =)

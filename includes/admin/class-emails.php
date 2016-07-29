@@ -33,6 +33,7 @@ class WC_NFe_Emails {
 	}
 }
 
+WC_NFe_Emails::init();
+
 endif;
 
-WC_NFe_Emails::init();

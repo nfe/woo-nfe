@@ -14,7 +14,7 @@ if ( ! class_exists('NFe_Woo') ) :
  */
 class NFe_Woo {
 
-	 /**
+	/**
      * WC_Logger Logger instance
      * 
      * @var boolean
