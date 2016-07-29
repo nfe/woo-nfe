@@ -76,17 +76,27 @@ class WC_NFe_FrontEnd {
         $order_id   = $order->id;
         $nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
         $actions 	= array();
+        $status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
             if ( $nfe && $nfe['status'] == 'Cancelled' ) {
                 $actions['woo_nfe_cancelled'] = array(
-                    'name'      => __( 'Issue Cancelled', 'woocommerce-nfe' ),
+                    'url'       => '#',
+                    'name'      => __( 'NFe Cancelled', 'woocommerce-nfe' ),
                     'action'    => 'woo_nfe_cancelled'
                 );
-            } 
+            }
+            else if ( $nfe && in_array( $nfe['status'], $status ) ) {
+                $actions['woo_nfe_issuing'] = array(
+                    'url'       => '#',
+                    'name'      => __( 'Issuing NFe', 'woocommerce-nfe' ),
+                    'action'    => 'woo_nfe_issuing'
+                );
+            }
             else {
                 if ( nfe_order_address_filled( $order_id ) ) {
                     $actions['woo_nfe_pending_address'] = array(
+                        'url'       => esc_url( wc_get_endpoint_url( 'edit-address' ) ),
                         'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
                         'action'    => 'woo_nfe_pending_address'
                     );
@@ -104,12 +114,13 @@ class WC_NFe_FrontEnd {
                             if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
                                 $actions['woo_nfe_issue'] = array(
                                     'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-                                    'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                                    'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
                                     'action'    => 'woo_nfe_issue'
                                 );
                             }
                             else {
                                 $actions['woo_nfe_expired'] = array(
+                                    'url'       => '#',
                                     'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
                                     'action'    => 'woo_nfe_expired'
                                 );
@@ -118,7 +129,7 @@ class WC_NFe_FrontEnd {
                         else {
                             $actions['woo_nfe_issue'] = array(
                                 'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-                                'name'      => __( 'Issue Nfe', 'woocommerce-nfe' ),
+                                'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
                                 'action'    => 'woo_nfe_issue'
                             );
                         }
@@ -136,27 +147,18 @@ class WC_NFe_FrontEnd {
         } 
 
         foreach ( $actions as $action ) {
-            if ( $action['action'] == 'woo_nfe_expired' || $action['action'] == 'woo_nfe_pending_address' ||
-            $action['action'] == 'woo_nfe_pending_address' ) {
-                printf( '<span class="button view %s" data-tip="%s">%s</span>', 
-                    esc_attr( $action['action'] ), 
-                    esc_attr( $action['name'] ), 
-                    esc_attr( $action['name'] ) 
-                );
-            } else {
-                printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
-                    esc_attr( $action['action'] ), 
-                    esc_url( $action['url'] ), 
-                    esc_attr( $action['name'] ), 
-                    esc_attr( $action['name'] ) 
-                );
-            }
+            printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
+                esc_attr( $action['action'] ), 
+                esc_url( $action['url'] ), 
+                esc_attr( $action['name'] ), 
+                esc_attr( $action['name'] ) 
+            );
         }
     }
 }
 
-endif;
+return new WC_NFe_FrontEnd();
 
-$run = new WC_NFe_FrontEnd;
+endif;
 
 // That's it! =)

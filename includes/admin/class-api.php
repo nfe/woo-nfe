@@ -13,6 +13,13 @@ if ( ! class_exists('NFe_Woo') ) :
  * @version  1.0.0
  */
 class NFe_Woo {
+
+	 /**
+     * WC_Logger Logger instance
+     * 
+     * @var boolean
+     */
+    public static $logger = false;
 		
 	/**
 	 * Nfe_Woo Instance.
@@ -24,7 +31,6 @@ class NFe_Woo {
 		// Only run these methods if they haven't been run previously
 		if ( null === $instance ) {
 			$instance = new NFe_Woo;
-			$instance->setup_hooks();
 		}
 
 		// Always return the instance
@@ -37,11 +43,6 @@ class NFe_Woo {
 	 * @see $this->instance Class Instance
 	 */
 	private function __construct() {}
-
-	/**
-	 * Set hooks.
-	 */
-	private function setup_hooks() {}
 	
 	/**
 	 * Issue a NFe Invoice.
@@ -63,19 +64,24 @@ class NFe_Woo {
 				return false;
 			}
 
-			$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
+			try {
+				$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
-			if ( is_wp_error( $invoice ) ) {
-				return false;
-			} 
-			else {	
 				$nfe = array(
 					'id' 	  	=> $invoice->id,
 					'status'  	=> $invoice->flowStatus,
-					'data' 		=> date_i18n('d/m/Y'),
+					'issuedOn'  => $body->issuedOn,
 				);
-
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
+
+				$this->logger( 'Nota Fiscal emitida com sucesso! Pedido: #' . $order_id );
+			} 
+			catch ( Exception $e ) {
+				$this->logger( 'Falha ao emitir nota fiscal! ' . $e->getMessage() );
+
+				throw new Exception( 'Falha ao emitir nota fiscal!' );
+
+				return false;
 			}
 		}
 
@@ -96,7 +102,15 @@ class NFe_Woo {
 
 		foreach ( $order_ids as $order_id ) {
 			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
-			$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
+
+			try {
+				$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
+
+				$this->logger( 'Donwload em PDF da nota fiscal feito com sucesso. Pedido: #' . $order_id );
+			}
+			catch ( Exception $e ) {
+				$this->logger( 'Houve um problema ao tentar baixar o PDF da nota fiscal. Pedido: #' . $order_id );
+			}
 		}
 
 		return $pdf;
@@ -109,10 +123,16 @@ class NFe_Woo {
 	 */
 	public function fetch_companies() {
 		$key = nfe_get_field('api_key');
-
 		NFe::setApiKey($key);
 
-		$companies = NFe_Company::fetch($key);
+		try {
+			$companies = NFe_Company::fetch($key);
+		}
+		catch ( Exception $e ) {
+			$companies = array();
+
+			$this->logger( 'Erro ao tentar procurar as empresas: ' . $e->getMessage() );
+		}
 
 		return $companies;
 	}
@@ -347,6 +367,12 @@ class NFe_Woo {
 		return $cep;	
 	}
 
+	/**
+	 * Clears
+	 * 
+	 * @param  string $string 
+	 * @return string
+	 */
 	public function clear( $string ) {
 		$string = str_replace( array(',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'), '', $string );
 
@@ -515,6 +541,20 @@ class NFe_Woo {
 
 		return $iso_codes;
 	}
+
+	/**
+     * Logging method.
+     *
+     * @param string $message
+     */
+    public static function logger( $message ) {
+        if ( nfe_get_field('debug') == 'yes' ) {
+            if ( empty( self::$logger ) ) {
+                self::$logger = new WC_Logger();
+            }
+            self::$logger->add( 'nfe_api', $message );
+        }
+    }
 }
 
 endif;

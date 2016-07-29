@@ -36,12 +36,11 @@ class WC_NFe_Webhook_Handler {
     public function handle() {
         $raw_body  = file_get_contents('php://input');
         $body      = json_decode($raw_body);
-        $nfe_event = wp_remote_retrieve_header( $body, 'X-Nfeio-Event' );
 
-        $this->logger( 'Novo Webhook ('. $nfe_event .') chamado: ' . $raw_body );
+        $this->logger( 'Novo Webhook chamado.' );
 
         try {
-            $this->process_event( $body, $nfe_event );
+            $this->process_event( $body );
         } 
         catch (Exception $e) {
             $this->logger( $e->getMessage() );
@@ -54,63 +53,32 @@ class WC_NFe_Webhook_Handler {
 	}
 
     /**
-     * Read json entity received and proccess the right event
+     * Read json entity received and proccess the webhook
      * 
      * @param string $body
      **/
-    private function process_event( $body, $event ) {
-        if ( null == $body || empty($event) ) {
-            throw new Exception( 'Falha ao interpretar JSON do webhook: Evento do Webhook não encontrado!' );
+    private function process_event( $body ) {
+        if ( null == $body ) {
+            throw new Exception( 'Falha ao interpretar JSON do webhook!' );
         }
 
-        if ( method_exists( $this, $event ) ) {
-            $this->logger('Novo Evento processado: ' . $event);
-            
-            return $this->{$event}($body);
-        }
+        $this->logger('Novo Evento processado.');
 
-        $this->logger('Evento do webhook ignorado pelo plugin: ' . $event);
-    }
+        $order = $this->find_order_by_nota_id( $body->id );
 
-    /**
-     * Cancel Webhook
-     * 
-     * @param  $data array
-     */
-    private function cancel( $data ) {
-        $status = $data->flowStatus;
-        $nfe_id = $data->id;
+        $nfe = array(
+            'id'        => $body->id,
+            'status'    => $body->flowStatus,
+            'issuedOn'  => $body->issuedOn,
+        );
 
-        if ( $status == 'Cancelled' ) {
-            $order = $this->find_order_by_nota_id( $nfe_id );
+        update_post_meta( $order->id, 'nfe_issued', $nfe );
 
-            $nfe = get_post_meta( $order->id, 'nfe_issued', true );
-
-            $nfe['status'] = 'Cancelled';
-
-            update_post_meta( $order->id, 'nfe_issued', $nfe );
-        }
-    }
-
-    // private function issue( $data ) {}
-
-    /**
-     * Finds order by id
-     * 
-     * @param  int $order_id 
-     * @return WC_Order
-     */
-    private function find_order_by_id( $order_id ) {
-        $order = nfe_wc_get_order( $order_id );
-
-        if ( empty($order) ) {
-            throw new Exception( 'Pedido #' . $order_id . ' não encontrado!', 2 );
-        }
-        return $order;
+        $this->logger('Pedido atualizado com sucesso. Pedido: #' . $order->id );
     }
     
     /**
-     * Find orders with NFe ID meta
+     * Find orders by NFe ID
      * 
      * @param  Nota ID $id 
      * @return WC_Order
@@ -118,9 +86,14 @@ class WC_NFe_Webhook_Handler {
     private function find_order_by_nota_id( $id ) {
         $args = array(
             'post_type'   => 'shop_order',
-            'meta_key'    => 'nfe_issued',
-            'meta_value'  => $id,
-            'post_status' => 'any',
+            'meta_query' => array(
+                array(
+                    'key'     => 'nfe_issued',
+                    'value'   => $id,
+                    'compare' => 'LIKE',
+                ),
+            ),
+            'post_status' => 'wc-completed',
         );
         $query = new WP_Query($args);
         
