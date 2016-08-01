@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
-"POT-Creation-Date: 2016-07-29 15:18:07+00:00\n"
+"POT-Creation-Date: 2016-08-01 13:18:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -30,75 +30,75 @@ msgstr ""
 msgid "WooCommerce NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:94 includes/admin/class-settings.php:137
+#: includes/admin/class-admin.php:95 includes/admin/class-settings.php:137
 #: includes/admin/class-settings.php:139
 msgid "CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:97 includes/admin/class-admin.php:162
+#: includes/admin/class-admin.php:98 includes/admin/class-admin.php:163
 msgid "Enter the CityServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:105 includes/admin/class-settings.php:144
+#: includes/admin/class-admin.php:106 includes/admin/class-settings.php:144
 #: includes/admin/class-settings.php:146
 msgid "FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:108 includes/admin/class-admin.php:172
+#: includes/admin/class-admin.php:109 includes/admin/class-admin.php:173
 msgid "Enter the FederalServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:116
+#: includes/admin/class-admin.php:117
 msgid "Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:119
+#: includes/admin/class-admin.php:120
 msgid "Description for this product output in NFe receipt."
 msgstr ""
 
-#: includes/admin/class-admin.php:160
+#: includes/admin/class-admin.php:161
 msgid "NFe CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:170
+#: includes/admin/class-admin.php:171
 msgid "NFe FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:180
+#: includes/admin/class-admin.php:181
 msgid "NFe Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:219 includes/frontend/class-frontend.php:63
+#: includes/admin/class-admin.php:220 includes/frontend/class-frontend.php:63
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:246 includes/frontend/class-frontend.php:85
+#: includes/admin/class-admin.php:247 includes/frontend/class-frontend.php:85
 msgid "NFe Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:252 includes/frontend/class-frontend.php:92
+#: includes/admin/class-admin.php:253 includes/frontend/class-frontend.php:92
 msgid "Issuing NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:259 includes/frontend/class-frontend.php:100
+#: includes/admin/class-admin.php:260 includes/frontend/class-frontend.php:100
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:267 includes/frontend/class-frontend.php:108
+#: includes/admin/class-admin.php:268 includes/frontend/class-frontend.php:108
 msgid "Download NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:276 includes/admin/class-admin.php:290
+#: includes/admin/class-admin.php:277 includes/admin/class-admin.php:291
 #: includes/frontend/class-frontend.php:117
 #: includes/frontend/class-frontend.php:132
 msgid "Issue NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:282 includes/frontend/class-frontend.php:124
+#: includes/admin/class-admin.php:283 includes/frontend/class-frontend.php:124
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:302 includes/frontend/class-frontend.php:144
+#: includes/admin/class-admin.php:303 includes/frontend/class-frontend.php:144
 msgid "Enable NFe"
 msgstr ""
 
@@ -112,11 +112,31 @@ msgstr ""
 msgid "NFe was issued successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:305
+#: includes/admin/class-api.php:58
+msgid "NFe issuing process started! Order: # %s"
+msgstr ""
+
+#: includes/admin/class-api.php:66
+msgid "Not possible to issue NFe without an order value! Order: # %s"
+msgstr ""
+
+#: includes/admin/class-api.php:85
+msgid "NFe sent sucessfully to issue! Order: # %s"
+msgstr ""
+
+#: includes/admin/class-api.php:90
+msgid "NFe issue failed! Error: %s"
+msgstr ""
+
+#: includes/admin/class-api.php:93
+msgid "NFe issued failed!"
+msgstr ""
+
+#: includes/admin/class-api.php:299
 msgid "Customers"
 msgstr ""
 
-#: includes/admin/class-api.php:308
+#: includes/admin/class-api.php:302
 msgid "Company"
 msgstr ""
 
@@ -267,7 +287,7 @@ msgid "Log events such as API requests, you can check this log in %s."
 msgstr ""
 
 #: includes/admin/class-settings.php:162
-msgid "Logs"
+msgid "System Status - Logs"
 msgstr ""
 
 #: includes/admin/class-settings.php:223

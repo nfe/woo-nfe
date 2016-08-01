@@ -98,8 +98,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		private function includes() {
 			
-			// NFe Client-PHP API
-			$composer_path = $this->plugin_dir . 'vendor/nfe/nfe/lib/init.php';
+			// NFe Client-PHP API - Composer Support
+			$composer_path = $this->plugin_dir . 'vendor/autoload.php';
 
 			if ( ! file_exists( $composer_path ) ) {
 				require( $this->plugin_dir . 'lib/client-php/lib/init.php' );

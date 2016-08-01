@@ -74,7 +74,7 @@ class WC_NFe_Webhook_Handler {
 
         update_post_meta( $order->id, 'nfe_issued', $nfe );
 
-        $this->logger('Pedido atualizado com sucesso. Pedido: #' . $order->id );
+        $this->logger('Pedido atualizado com sucesso. Pedido: #' . $order->id . ' Status da Nota: ' . $body->flowStatus );
     }
     
     /**

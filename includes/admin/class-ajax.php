@@ -123,9 +123,12 @@ class WC_NFe_Ajax {
 
 		self::download_base( $order_id );
 	}
-
+	
 	/**
-	 * Download Base
+	 * Download base
+	 * 
+	 * @param  int  $order_id Order ID
+	 * @return string PDF
 	 */
 	public static function download_base( $order_id ) {
 		// Bail if there is no order id

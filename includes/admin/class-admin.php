@@ -33,6 +33,7 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
 		
+		// WooCommerce Subscriptions Support
 		if ( class_exists('WC_Subscriptions') ) {
 			add_action( 'processed_subscription_payments_for_order', 				array( $this, 'issue_trigger') );
 			add_action( 'woocommerce_renewal_order_payment_complete', 				array( $this, 'issue_trigger') );

@@ -22,7 +22,7 @@ class NFe_Woo {
     public static $logger = false;
 		
 	/**
-	 * Nfe_Woo Instance.
+	 * NFe_Woo Instance.
 	 */
 	public static function instance() {
 		// Store the instance locally to avoid private static replication
@@ -32,9 +32,7 @@ class NFe_Woo {
 		if ( null === $instance ) {
 			$instance = new NFe_Woo;
 		}
-
-		// Always return the instance
-		return $instance;
+		return $instance; // Always return the instance
 	}
 
 	/**
@@ -57,10 +55,14 @@ class NFe_Woo {
 		NFe::setApiKey($key);
 		
 		foreach ( $order_ids as $order_id ) {
+			$this->logger( sprintf( __( 'NFe issuing process started! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
+
 			$total = nfe_wc_get_order( $order_id );
 
 			// If value is 0, don't issue it
 			if ( $total->order_total == 0 ) {
+				$this->logger( sprintf( __( 'Not possible to issue NFe without an order value! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
+
 				return false;
 			}
 
@@ -74,12 +76,12 @@ class NFe_Woo {
 				);
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
 
-				$this->logger( 'Nota Fiscal emitida com sucesso! Pedido: #' . $order_id );
+				$this->logger( sprintf( __( 'NFe sent sucessfully to issue! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
 			} 
 			catch ( Exception $e ) {
-				$this->logger( 'Falha ao emitir nota fiscal! ' . $e->getMessage() );
+				$this->logger( sprintf( __( 'NFe issue failed! Error: %s', 'woocommerce-nfe' ), $e->getMessage() ) );
 
-				throw new Exception( 'Falha ao emitir nota fiscal!' );
+				throw new Exception( sprintf( __( 'NFe issued failed!', 'woocommerce-nfe' ) ) );
 
 				return false;
 			}
@@ -109,32 +111,15 @@ class NFe_Woo {
 				$this->logger( 'Donwload em PDF da nota fiscal feito com sucesso. Pedido: #' . $order_id );
 			}
 			catch ( Exception $e ) {
-				$this->logger( 'Houve um problema ao tentar baixar o PDF da nota fiscal. Pedido: #' . $order_id );
+				$this->logger( 'Houve um problema ao tentar baixar o PDF da nota fiscal! Error: ' . $e->getMessage() );
+
+				throw new Exception( 'Falha ao baixar o PDF da nota fiscal!' );
+
+				return false;
 			}
 		}
 
 		return $pdf;
-	}
-
-	/**
-	 * Fetching all the companies a user has
-	 * 
-	 * @return array An array with all the companies a user NFe client might have
-	 */
-	public function fetch_companies() {
-		$key = nfe_get_field('api_key');
-		NFe::setApiKey($key);
-
-		try {
-			$companies = NFe_Company::fetch($key);
-		}
-		catch ( Exception $e ) {
-			$companies = array();
-
-			$this->logger( 'Erro ao tentar procurar as empresas: ' . $e->getMessage() );
-		}
-
-		return $companies;
 	}
 
 	/**

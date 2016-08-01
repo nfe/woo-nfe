@@ -159,7 +159,7 @@ class WC_NFe_Integration extends WC_Integration {
 					'type'              => 'checkbox',
 					'label'             => __( 'Enable logging', 'woocommerce-nfe' ),
 					'default'           => 'no',
-					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'Logs', 'woocommerce-nfe' ) . '</a>' ),
+					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status - Logs', 'woocommerce-nfe' ) . '</a>' ),
 				),
 			)
 		);
