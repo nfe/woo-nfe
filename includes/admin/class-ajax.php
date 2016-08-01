@@ -86,12 +86,12 @@ class WC_NFe_Ajax {
 		}
 
 		if ( nfe_order_address_filled( $order->id ) ) {
-			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woocommerce-nfe' ), 'error' );
+			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woo-nfe' ), 'error' );
 		}
 		else {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
 
-			wc_add_notice( __( 'NFe was issued successfully.', 'woocommerce-nfe' ) );
+			wc_add_notice( __( 'NFe was issued successfully.', 'woo-nfe' ) );
 		}
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
 		exit;

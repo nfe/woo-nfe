@@ -17,7 +17,7 @@
  * Author URI:        https://nfe.io
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
- * Text Domain:       woocommerce-nfe
+ * Text Domain:       woo-nfe
  * Domain Path:       /languages
  * Network:     	  false
  *
@@ -77,7 +77,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function setup_globals() {
-			$this->domain        = 'woocommerce-nfe';
+			$this->domain        = 'woo-nfe';
 			$this->name          = 'WooCommerce NFe';
 			$this->file          = __FILE__;
 			$this->basename      = plugin_basename( $this->file                     );
@@ -127,7 +127,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function setup_hooks() {
-			load_plugin_textdomain( 'woocommerce-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
 			// Check for SOAP.
 			if ( ! class_exists( 'SoapClient' ) ) {
@@ -151,10 +151,10 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 
 			global $woocommerce;
 			
-			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=nfe-woo-integration' );
+			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=woo-nfe' );
 			
 			if ( $woocommerce->version >= '2.1' ) {
-				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=nfe-woo-integration' );
+				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=woo-nfe' );
 			}
 
 			if ( ! defined( 'WOOCOMMERCE_NFE_SETTINGS_URL' ) ) {
@@ -226,7 +226,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		public function plugin_action_links( $links ) {
 			$plugin_links   = array(
-				'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woocommerce-nfe' ) . '</a>',
+				'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woo-nfe' ) . '</a>',
 			);
 			return array_merge( $plugin_links, $links );
 		}

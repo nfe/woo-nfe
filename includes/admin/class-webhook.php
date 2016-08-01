@@ -37,13 +37,13 @@ class WC_NFe_Webhook_Handler {
         $raw_body  = file_get_contents('php://input');
         $body      = json_decode($raw_body);
 
-        $this->logger( sprintf( __( 'New webhook called.', 'woocommerce-nfe' ) ) );
+        $this->logger( sprintf( __( 'New webhook called.', 'woo-nfe' ) ) );
 
         try {
             $this->process_event( $body );
         } 
         catch (Exception $e) {
-            $this->logger( sprintf( __( 'Error: %s.', 'woocommerce-nfe' ), $e->getMessage() ) );
+            $this->logger( sprintf( __( 'Error: %s.', 'woo-nfe' ), $e->getMessage() ) );
 
             if ( 2 === $e->getCode() ) {
                 http_response_code(422);
@@ -59,10 +59,10 @@ class WC_NFe_Webhook_Handler {
      **/
     private function process_event( $body ) {
         if ( null == $body ) {
-            throw new Exception( sprintf( __( 'Error while checking webhook JSON.', 'woocommerce-nfe' ) ) );
+            throw new Exception( sprintf( __( 'Error while checking webhook JSON.', 'woo-nfe' ) ) );
         }
 
-        $this->logger( sprintf( __( 'New event procced.', 'woocommerce-nfe' ) ) );
+        $this->logger( sprintf( __( 'New event procced.', 'woo-nfe' ) ) );
 
         $order = $this->find_order_by_nota_id( $body->id );
 
@@ -70,11 +70,15 @@ class WC_NFe_Webhook_Handler {
             'id'        => $body->id,
             'status'    => $body->flowStatus,
             'issuedOn'  => $body->issuedOn,
+            'amountNet' => $body->amountNet,
+            'checkCode' => $body->checkCode,
+            'number'    => $body->number,
         );
-
         update_post_meta( $order->id, 'nfe_issued', $nfe );
 
-        $this->logger('Pedido atualizado com sucesso. Pedido: #' . $order->id . ' Status da Nota: ' . $body->flowStatus );
+        $msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s .', 'woo-nfe' ), $order->id, $body->flowStatus );
+        $this->logger( $msg );
+        $order->add_order_note( $msg );
     }
     
     /**

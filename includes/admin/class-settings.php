@@ -19,9 +19,9 @@ class WC_NFe_Integration extends WC_Integration {
 	 * Init and hook in the integration.
 	 */
 	public function __construct() {
-		$this->id 				  = 'nfe-woo-integration';
-		$this->method_title 	  = __( 'NFe Integration', 'woocommerce-nfe' );
-		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woocommerce-nfe' );
+		$this->id 				  = 'woo-nfe';
+		$this->method_title 	  = __( 'NFe Integration', 'woo-nfe' );
+		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woo-nfe' );
 
 		// Load the settings.
 		$this->init_form_fields();
@@ -39,127 +39,127 @@ class WC_NFe_Integration extends WC_Integration {
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
 			$lists = $this->companies();
-			$company_list = array_merge( array( '' => __( 'Select a company...', 'woocommerce-nfe' ) ), $lists );
+			$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
 		} 
 		else {
-			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woocommerce-nfe' ) );
+			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ) );
 		}
 
 		$this->form_fields = apply_filters( 'woocommerce_nfe_settings', 
 			array(
 				'nfe_enable' 		=> array(
-					'title'             => __( 'Enable/Disable', 'woocommerce-nfe' ),
+					'title'             => __( 'Enable/Disable', 'woo-nfe' ),
 					'type'              => 'checkbox',
-					'label'             => __( 'Enable NFe.io', 'woocommerce-nfe' ),
+					'label'             => __( 'Enable NFe.io', 'woo-nfe' ),
 					'default'           => 'yes',
 				),
 				'api_key' 			=> array(
-					'title'             => __( 'API Key', 'woocommerce-nfe' ),
+					'title'             => __( 'API Key', 'woo-nfe' ),
 					'type'              => 'text',
-					'label'             => __( 'API Key', 'woocommerce-nfe' ),
+					'label'             => __( 'API Key', 'woo-nfe' ),
 					'default'           => '',
-					'description'       => sprintf( __( 'Log in to NFe.io to look up your API key. - %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account', 'woocommerce-nfe' ) . '</a>' ),
+					'description'       => sprintf( __( 'Log in to NFe.io to look up your API key. - %s', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account', 'woo-nfe' ) . '</a>' ),
 				),
 				'choose_company' 	=> array(
-					'title'             => __( 'Choose the Company', 'woocommerce-nfe' ),
+					'title'             => __( 'Choose the Company', 'woo-nfe' ),
 					'type'              => 'select',
-					'label'             => __( 'Choose the Company', 'woocommerce-nfe' ),
+					'label'             => __( 'Choose the Company', 'woo-nfe' ),
 					'default'           => '',
 					'options' 			=> $company_list,
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Choose one of your companies.', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
 				),
 				'where_note' 		=> array(
-					'title'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
+					'title'             => __( 'NFe.io Filling', 'woo-nfe' ),
 					'type'              => 'select',
-					'label'             => __( 'NFe.io Filling', 'woocommerce-nfe' ),
+					'label'             => __( 'NFe.io Filling', 'woo-nfe' ),
 					'default'           => 'before',
 					'options' 			=> array(
-						'before'     	=> __( 'Before Checkout (Default)', 'woocommerce-nfe' ),
+						'before'     	=> __( 'Before Checkout (Default)', 'woo-nfe' ),
 					),
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woo-nfe' ),
 				),
 				'emissao' 			=> array(
-					'title'             => __( 'NFe Issuing', 'woocommerce-nfe' ),
+					'title'             => __( 'NFe Issuing', 'woo-nfe' ),
 					'type'              => 'select',
-					'label'             => __( 'NFe Issuing', 'woocommerce-nfe' ),
+					'label'             => __( 'NFe Issuing', 'woo-nfe' ),
 					'default'           => 'before',
 					'options' 			=> array(
-						'auto'     	=> __( 'Automattic (Default)', 'woocommerce-nfe' ),
-						'manual'    => __( 'Manual', 'woocommerce-nfe' ),
+						'auto'     	=> __( 'Automattic (Default)', 'woo-nfe' ),
+						'manual'    => __( 'Manual', 'woo-nfe' ),
 					),
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woo-nfe' ),
 				),
 
 				'nfe_events_title' 	=> array(
-					'title' 			=> __( 'NFe.io Webkook Setup', 'woocommerce-nfe' ),
+					'title' 			=> __( 'NFe.io Webkook Setup', 'woo-nfe' ),
 					'type' 				=> 'title',
 				),
 				'nfe_events_url' => array(
-					'title'             => __( 'Webhook URL', 'woocommerce-nfe' ),
+					'title'             => __( 'Webhook URL', 'woo-nfe' ),
 					'type'              => 'text',
-					'label'             => __( 'Webhook URL', 'woocommerce-nfe' ),
+					'label'             => __( 'Webhook URL', 'woo-nfe' ),
 					'default'           => $this->get_events_url(),
 					'custom_attributes' => array(
 						'readonly' => 'readonly'
 					),
-					'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woocommerce-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/webhooks') . '">' . __( 'NFe.io Webhooks', 'woocommerce-nfe' ) . '</a>' ),
+					'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/webhooks') . '">' . __( 'NFe.io Webhooks', 'woo-nfe' ) . '</a>' ),
 				),
 
 				'issue_past_title' 	=> array(
-					'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woocommerce-nfe' ),
+					'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woo-nfe' ),
 					'type' 				=> 'title',
 				),
 				'issue_past_notes' => array(
-					'title'             => __( 'Enable Retroactive Issue', 'woocommerce-nfe' ),
+					'title'             => __( 'Enable Retroactive Issue', 'woo-nfe' ),
 					'type'              => 'checkbox',
-					'label'             => __( 'Enable to issue NFe.io in past products', 'woocommerce-nfe' ),
+					'label'             => __( 'Enable to issue NFe.io in past products', 'woo-nfe' ),
 					'default'           => 'no',
-					'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woocommerce-nfe' ),
+					'description'       => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'woo-nfe' ),
 				),
 				'issue_past_days' 	=> array(
-					'title'             => __( 'Days in the past', 'woocommerce-nfe' ),
+					'title'             => __( 'Days in the past', 'woo-nfe' ),
 					'type'              => 'number',
 					'default'  			=> '60',
 					'css'      			=> 'width:50px;',
-					'desc_tip'       	=> __( 'Days in the past to allow NFe manual issue.', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Days in the past to allow NFe manual issue.', 'woo-nfe' ),
 				),
 				'nfe_fiscal_title' 	=> array(
-					'title' 			=> __( 'Fiscal Activity (Global)', 'woocommerce-nfe' ),
+					'title' 			=> __( 'Fiscal Activity (Global)', 'woo-nfe' ),
 					'type' 				=> 'title',
 				),
 				'nfe_cityservicecode' => array(
-					'title'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
+					'title'             => __( 'CityServiceCode', 'woo-nfe' ),
 					'type'              => 'text',
-					'label'             => __( 'CityServiceCode', 'woocommerce-nfe' ),
+					'label'             => __( 'CityServiceCode', 'woo-nfe' ),
 					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woo-nfe' ),
 				),
 				'nfe_fedservicecode' => array(
-					'title'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
+					'title'             => __( 'FederalServiceCode', 'woo-nfe' ),
 					'type'              => 'text',
-					'label'             => __( 'FederalServiceCode', 'woocommerce-nfe' ),
+					'label'             => __( 'FederalServiceCode', 'woo-nfe' ),
 					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woo-nfe' ),
 				),
 				'nfe_cityservicecode_desc' => array(
-					'title'             => __( 'Description', 'woocommerce-nfe' ),
+					'title'             => __( 'Description', 'woo-nfe' ),
 					'type'              => 'text',
-					'label'             => __( 'Description', 'woocommerce-nfe' ),
+					'label'             => __( 'Description', 'woo-nfe' ),
 					'default'           => '',
-					'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woocommerce-nfe' ),
+					'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woo-nfe' ),
 				),
 				'debug' 			=> array(
-					'title'             => __( 'Debug Log', 'woocommerce-nfe' ),
+					'title'             => __( 'Debug Log', 'woo-nfe' ),
 					'type'              => 'checkbox',
-					'label'             => __( 'Enable logging', 'woocommerce-nfe' ),
+					'label'             => __( 'Enable logging', 'woo-nfe' ),
 					'default'           => 'no',
-					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woocommerce-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status - Logs', 'woocommerce-nfe' ) . '</a>' ),
+					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woo-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status - Logs', 'woo-nfe' ) . '</a>' ),
 				),
 			)
 		);
@@ -205,11 +205,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return string
 	 */
 	private function get_events_url() {
-		return sprintf('%s/index.php/wc-api/%s?token=%s', 
-			get_site_url(), 
-			WC_API_CALLBACK,
-			sanitize_file_name( wp_hash('nfe') )
-		);
+		return sprintf('%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
 	}
 
 	/**
@@ -220,11 +216,11 @@ class WC_NFe_Integration extends WC_Integration {
 	public function display_errors() {
 		if ( $this->is_active() ) {
 			if ( empty( nfe_get_field('api_key') ) ) {
-				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key provided. You should inform your API Key. %s', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woocommerce-nfe' ) . '</a>' ) );
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) );
 			}
 		
 			if ( nfe_get_field('issue_past_notes') == 'yes' && $this->issue_past_days() ) {
-				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woocommerce-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woocommerce-nfe' ) . '</a>' ) );
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woo-nfe' ) . '</a>' ) );
 			}
 		}
 	}
@@ -236,7 +232,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return html the message for the user
 	 */
 	public function nfe_api_error_msg() {
-		echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woocommerce-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woocommerce-nfe' ) ) );
+		echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woo-nfe' ) ) );
 	}
 
 	/**

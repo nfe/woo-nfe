@@ -1,0 +1,28 @@
+
+span.woo_nfe_actions {
+    padding: 3px 7px;
+    color: white;
+    display: block;
+    font-weight: bold;
+    border-radius: 3px;
+    font-size: 12px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+span.woo_nfe_expired {
+	background-color: grey;
+}
+
+span.woo_nfe_issuing,
+span.woo_nfe_pending_address {
+	background-color: orange;
+}
+
+span.woo_nfe_cancelled {
+	background-color: #e62f2f;
+}
+
+span.woo_nfe_download {
+	background-color: #56b356;
+}

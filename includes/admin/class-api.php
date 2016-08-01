@@ -54,37 +54,45 @@ class NFe_Woo {
 
 		NFe::setApiKey($key);
 		
-		foreach ( $order_ids as $order_id ) {
-			$this->logger( sprintf( __( 'NFe issuing process started! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
+		foreach ( $order_ids as $order_id ) { 
+			$this->logger( sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id ) );
 
-			$total = nfe_wc_get_order( $order_id );
+			$order = nfe_wc_get_order( $order_id );
 
 			// If value is 0, don't issue it
-			if ( $total->order_total == 0 ) {
-				$this->logger( sprintf( __( 'Not possible to issue NFe without an order value! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
+			if ( $order->order_total == 0 ) {
+				$nfe_error = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
+
+				$this->logger( $nfe_error );
+				$order->add_order_note( $nfe_error );
 
 				return false;
 			}
 
-			try {
-				$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
+			$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
 
-				$nfe = array(
-					'id' 	  	=> $invoice->id,
-					'status'  	=> $invoice->flowStatus,
-					'issuedOn'  => $invoice->issuedOn,
-				);
-				update_post_meta( $order_id, 'nfe_issued', $nfe );
+			if ( isset( $invoice->message ) ) {
+				$nfe_error = sprintf( __( 'An error occurred while issuing a NFe: ', 'woo-nfe' ) ) . print_r( $invoice->message, true );
 
-				$this->logger( sprintf( __( 'NFe sent sucessfully to issue! Order: # %s', 'woocommerce-nfe' ), $order_id ) );
-			} 
-			catch ( Exception $e ) {
-				$this->logger( sprintf( __( 'NFe issue failed! Error: %s', 'woocommerce-nfe' ), $e->getMessage() ) );
-
-				throw new Exception( sprintf( __( 'NFe issued failed!', 'woocommerce-nfe' ) ) );
+				$this->logger( $nfe_error );
+				$order->add_order_note( $nfe_error );
 
 				return false;
 			}
+
+			$nfe_issued = sprintf( __( 'NFe sent sucessfully to issue! Order: #%d', 'woo-nfe' ), $order_id );
+			$this->logger( $nfe_issued );
+			$order->add_order_note( $nfe_issued );
+
+			$nfe = array(
+				'id'        => $invoice->id,
+				'status'    => $invoice->flowStatus,
+				'issuedOn'  => $invoice->issuedOn,
+				'amountNet' => $invoice->amountNet,
+				'checkCode' => $invoice->checkCode,
+				'number'    => $invoice->number,
+			);
+			update_post_meta( $order_id, 'nfe_issued', $nfe );
 		}
 
 		return $invoice;
@@ -103,15 +111,22 @@ class NFe_Woo {
 		NFe::setApiKey($key);
 
 		foreach ( $order_ids as $order_id ) {
-			$nfe = get_post_meta( $order_id, 'nfe_issued', true );
+			$nfe   = get_post_meta( $order_id, 'nfe_issued', true );
+			$order = nfe_wc_get_order($order_id);
 
 			try {
 				$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
+				
+				$msg = sprintf( __( 'NFe PDF Donwload successfully. Order: #%d', 'woo-nfe' ), $order_id );
 
-				$this->logger( 'Donwload em PDF da nota fiscal feito com sucesso. Pedido: #' . $order_id );
+				$this->logger( $msg );
+				$order->add_order_note( $msg );
 			}
 			catch ( Exception $e ) {
-				$this->logger( 'Houve um problema ao tentar baixar o PDF da nota fiscal! Error: ' . $e->getMessage() );
+				$nfe_error = sprintf( __( 'There was a problem when trying to download NFe PDF! Error: ', 'woo-nfe' ) ) . print_r( $e->getMessage(), true );
+
+				$this->logger( $nfe_error );
+				$order->add_order_note( $nfe_error );
 
 				throw new Exception( 'Falha ao baixar o PDF da nota fiscal!' );
 
@@ -194,9 +209,20 @@ class NFe_Woo {
 
 		$url 		= 'https://open.nfe.io/v1/addresses/'. $cep .'?api_key='. $key .'';
 		$response 	= wp_remote_get( esc_url_raw( $url ) );
-		$address 	= json_decode( wp_remote_retrieve_body( $response ), true );
 
-		return $address['city']['code'];
+		if ( is_wp_error( $response ) ) {
+			$nfe_error = sprintf( __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' ) );
+
+			$this->logger( $nfe_error );
+			$order->add_order_note( $nfe_error );
+
+			return null;
+		}
+		else {
+			$address = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			return $address['city']['code'];
+		}
 	}
 
 	/**
@@ -287,10 +313,10 @@ class NFe_Woo {
 
 			case 'type': // Customer Type
 				if ( $type == 1 ) {
-					$output = __('Customers', 'woocommerce-nfe');
+					$output = __('Customers', 'woo-nfe');
 				} 
 				elseif ( $type == 2 ) {
-					$output = __('Company', 'woocommerce-nfe');
+					$output = __('Company', 'woo-nfe');
 				}
 				break;
 

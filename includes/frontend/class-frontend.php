@@ -35,7 +35,7 @@ class WC_NFe_FrontEnd {
 	 */
 	public function billing_notice() {
 		if ( nfe_get_field('nfe_enable') == 'yes' ) {
-			echo '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woocommerce-nfe' ) . '</div>';
+			echo '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woo-nfe' ) . '</div>';
 		}
 	}
 
@@ -45,7 +45,7 @@ class WC_NFe_FrontEnd {
 	 * @return string
 	 */
 	public function account_desc() {
-		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woocommerce-nfe' );
+		return __( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woo-nfe' );
 	}
 
 	/**
@@ -60,7 +60,7 @@ class WC_NFe_FrontEnd {
             $new_columns[ $column_name ] = $column_info;
 
             if ( 'order-total' == $column_name ) {
-                $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woocommerce-nfe' );
+                $new_columns['sales-receipt'] = __( 'Sales Receipt', 'woo-nfe' );
             }
         }
 
@@ -82,14 +82,14 @@ class WC_NFe_FrontEnd {
             if ( $nfe && $nfe['status'] == 'Cancelled' ) {
                 $actions['woo_nfe_cancelled'] = array(
                     'url'       => '#',
-                    'name'      => __( 'NFe Cancelled', 'woocommerce-nfe' ),
+                    'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
                     'action'    => 'woo_nfe_cancelled'
                 );
             }
             else if ( $nfe && in_array( $nfe['status'], $status ) ) {
                 $actions['woo_nfe_issuing'] = array(
                     'url'       => '#',
-                    'name'      => __( 'Issuing NFe', 'woocommerce-nfe' ),
+                    'name'      => __( 'Issuing NFe', 'woo-nfe' ),
                     'action'    => 'woo_nfe_issuing'
                 );
             }
@@ -97,7 +97,7 @@ class WC_NFe_FrontEnd {
                 if ( nfe_order_address_filled( $order_id ) ) {
                     $actions['woo_nfe_pending_address'] = array(
                         'url'       => esc_url( wc_get_endpoint_url( 'edit-address' ) ),
-                        'name'      => __( 'Pending Address', 'woocommerce-nfe' ),
+                        'name'      => __( 'Pending Address', 'woo-nfe' ),
                         'action'    => 'woo_nfe_pending_address'
                     );
                 }
@@ -105,7 +105,7 @@ class WC_NFe_FrontEnd {
                     if ( $nfe && $nfe['id'] ) {
                         $actions['woo_nfe_download'] = array(
                             'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
-                            'name'      => __( 'Download NFe', 'woocommerce-nfe' ),
+                            'name'      => __( 'Download NFe', 'woo-nfe' ),
                             'action'    => 'woo_nfe_download'
                         );
                     }
@@ -114,14 +114,14 @@ class WC_NFe_FrontEnd {
                             if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
                                 $actions['woo_nfe_issue'] = array(
                                     'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-                                    'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
+                                    'name'      => __( 'Issue NFe', 'woo-nfe' ),
                                     'action'    => 'woo_nfe_issue'
                                 );
                             }
                             else {
                                 $actions['woo_nfe_expired'] = array(
                                     'url'       => '#',
-                                    'name'      => __( 'Issue Expired', 'woocommerce-nfe' ),
+                                    'name'      => __( 'Issue Expired', 'woo-nfe' ),
                                     'action'    => 'woo_nfe_expired'
                                 );
                             }
@@ -129,7 +129,7 @@ class WC_NFe_FrontEnd {
                         else {
                             $actions['woo_nfe_issue'] = array(
                                 'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
-                                'name'      => __( 'Issue NFe', 'woocommerce-nfe' ),
+                                'name'      => __( 'Issue NFe', 'woo-nfe' ),
                                 'action'    => 'woo_nfe_issue'
                             );
                         }
@@ -141,7 +141,7 @@ class WC_NFe_FrontEnd {
         if ( nfe_get_field('nfe_enable') == 'no' && current_user_can('manage_woocommerce') ) {
             $actions['woo_nfe_tab'] = array(
                 'url'       => WOOCOMMERCE_NFE_SETTINGS_URL,
-                'name'      => __( 'Enable NFe', 'woocommerce-nfe' ),
+                'name'      => __( 'Enable NFe', 'woo-nfe' ),
                 'action'    => 'woo_nfe_tab'
             );
         } 

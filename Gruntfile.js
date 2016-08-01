@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 		// Check textdomain errors.
 		checktextdomain: {
 			options:{
-				text_domain: 'woocommerce-nfe',
+				text_domain: 'woo-nfe',
 				keywords: [
 					'__:1,2d',
 					'_e:1,2d',
@@ -38,8 +38,8 @@ module.exports = function(grunt) {
 			target: {
 				options: {
 					domainPath: '/languages/',
-					mainFile: 'woocommerce-nfe.php',
-					potFilename: 'woocommerce-nfe.pot',
+					mainFile: 'woo-nfe.php',
+					potFilename: 'woo-nfe.pot',
 					type: 'wp-plugin',
 					exclude: [],
 					include: [],
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
                     	'language': 'pt_BR',
                     	'last-translator': 'Renato Alves <contato@ralv.es',
 						'language-team': 'Renato Alves <contato@ralv.es',
-                    	'report-msgid-bugs-to': 'https://github.com/nfe/woocommerce-nfe/issues',
+                    	'report-msgid-bugs-to': 'https://github.com/nfe/woo-nfe/issues',
                     	'plural-forms': 'nplurals=2; plural=n != 1;',
 					    'x-poedit-country': 'Brasil',
 					    'x-poedit-language': 'Portuguese',

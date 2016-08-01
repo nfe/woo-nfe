@@ -22,15 +22,14 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 * @return void
 	 */
 	public function __construct() {
-
 		$this->id          = 'receipt_issued';
-		$this->title       = __( 'NFe Receipt Issued', 'woocommerce-nfe' );
-		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woocommerce-nfe' );
+		$this->title       = __( 'NFe Receipt Issued', 'woo-nfe' );
+		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woo-nfe' );
 
-		$this->heading     = __( 'NFe Receipt Issued', 'woocommerce-nfe' );
+		$this->heading     = __( 'NFe Receipt Issued', 'woo-nfe' );
 		
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
-		$this->subject     = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woocommerce-nfe' ), '{blogname}' );
+		$this->subject     = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woo-nfe' ), '{blogname}' );
 
 		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 		$this->template_html  = 'emails/nfe-receipt-issued.php';
@@ -120,34 +119,34 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled' => array(
-				'title'         => _x( 'Enable/Disable', 'an email notification', 'woocommerce-nfe' ),
+				'title'         => _x( 'Enable/Disable', 'an email notification', 'woo-nfe' ),
 				'type'          => 'checkbox',
-				'label'         => __( 'Enable this email notification', 'woocommerce-nfe' ),
+				'label'         => __( 'Enable this email notification', 'woo-nfe' ),
 				'default'       => 'yes',
 			),
 			'subject' => array(
-				'title'         => _x( 'Subject', 'of an email', 'woocommerce-nfe' ),
+				'title'         => _x( 'Subject', 'of an email', 'woo-nfe' ),
 				'type'          => 'text',
-				'description'   => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'woocommerce-nfe' ), $this->subject ),
+				'description'   => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'woo-nfe' ), $this->subject ),
 				'placeholder'   => '',
 				'default'       => '',
 			),
 			'heading' => array(
-				'title'         => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'woocommerce-nfe' ),
+				'title'         => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'woo-nfe' ),
 				'type'          => 'text',
-				'description'   => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'woocommerce-nfe' ), $this->heading ),
+				'description'   => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'woo-nfe' ), $this->heading ),
 				'placeholder'   => '',
 				'default'       => '',
 			),
 			'email_type' => array(
-				'title'         => _x( 'Email type', 'text, html or multipart', 'woocommerce-nfe' ),
+				'title'         => _x( 'Email type', 'text, html or multipart', 'woo-nfe' ),
 				'type'          => 'select',
-				'description'   => __( 'Choose which format of email to send.', 'woocommerce-nfe' ),
+				'description'   => __( 'Choose which format of email to send.', 'woo-nfe' ),
 				'default'       => 'html',
 				'class'         => 'email_type',
 				'options'       => array(
-					'plain'         => _x( 'Plain text', 'email type', 'woocommerce-nfe' ),
-					'html'          => _x( 'HTML', 'email type', 'woocommerce-nfe' ),
+					'plain'         => _x( 'Plain text', 'email type', 'woo-nfe' ),
+					'html'          => _x( 'HTML', 'email type', 'woo-nfe' ),
 				),
 			),
 		);
