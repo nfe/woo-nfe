@@ -37,13 +37,13 @@ class WC_NFe_Webhook_Handler {
         $raw_body  = file_get_contents('php://input');
         $body      = json_decode($raw_body);
 
-        $this->logger( 'Novo Webhook chamado.' );
+        $this->logger( sprintf( __( 'New webhook called.', 'woocommerce-nfe' ) ) );
 
         try {
             $this->process_event( $body );
         } 
         catch (Exception $e) {
-            $this->logger( $e->getMessage() );
+            $this->logger( sprintf( __( 'Error: %s.', 'woocommerce-nfe' ), $e->getMessage() ) );
 
             if ( 2 === $e->getCode() ) {
                 http_response_code(422);
@@ -59,10 +59,10 @@ class WC_NFe_Webhook_Handler {
      **/
     private function process_event( $body ) {
         if ( null == $body ) {
-            throw new Exception( 'Falha ao interpretar JSON do webhook!' );
+            throw new Exception( sprintf( __( 'Error while checking webhook JSON.', 'woocommerce-nfe' ) ) );
         }
 
-        $this->logger('Novo Evento processado.');
+        $this->logger( sprintf( __( 'New event procced.', 'woocommerce-nfe' ) ) );
 
         $order = $this->find_order_by_nota_id( $body->id );
 

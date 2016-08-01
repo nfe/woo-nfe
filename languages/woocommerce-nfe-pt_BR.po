@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woocommerce-nfe/issues\n"
-"POT-Creation-Date: 2016-08-01 10:18-0300\n"
-"PO-Revision-Date: 2016-08-01 10:19-0300\n"
+"POT-Creation-Date: 2016-08-01 10:36-0300\n"
+"PO-Revision-Date: 2016-08-01 10:37-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -113,27 +113,27 @@ msgstr "Nota emitida com sucesso."
 msgid "NFe issuing process started! Order: # %s"
 msgstr "Processo de emissão de nota fiscal iniciado! Pedido: # %s"
 
-#: includes/admin/class-api.php:66
+#: includes/admin/class-api.php:64
 msgid "Not possible to issue NFe without an order value! Order: # %s"
 msgstr "Não é permitido emitir nota fiscal sem um valor! Pedido: # %s"
 
-#: includes/admin/class-api.php:85
+#: includes/admin/class-api.php:79
 msgid "NFe sent sucessfully to issue! Order: # %s"
 msgstr "Nota fiscal enviada com sucesso para emissão! Pedido: # %s"
 
-#: includes/admin/class-api.php:90
+#: includes/admin/class-api.php:82
 msgid "NFe issue failed! Error: %s"
 msgstr "Falha ao emitir nota fiscal! Error: %s"
 
-#: includes/admin/class-api.php:93
+#: includes/admin/class-api.php:84
 msgid "NFe issued failed!"
 msgstr "Falha ao emitir nota fiscal!"
 
-#: includes/admin/class-api.php:299
+#: includes/admin/class-api.php:290
 msgid "Customers"
 msgstr "Clientes"
 
-#: includes/admin/class-api.php:302
+#: includes/admin/class-api.php:293
 msgid "Company"
 msgstr "Empresa"
 
@@ -315,6 +315,22 @@ msgstr "WooCommerce NFe.io"
 #: includes/admin/class-settings.php:239
 msgid "Unable to load the companies list from NFe.io."
 msgstr "Não é possível carregar a lista de empresas do NFe.io."
+
+#: includes/admin/class-webhook.php:40
+msgid "New webhook called."
+msgstr "Novo Webhook chamado."
+
+#: includes/admin/class-webhook.php:47
+msgid "Error: %s."
+msgstr "Error: %s."
+
+#: includes/admin/class-webhook.php:63
+msgid "Error while checking webhook JSON."
+msgstr "Falha ao interpretar JSON do webhook."
+
+#: includes/admin/class-webhook.php:67
+msgid "New event procced."
+msgstr "Novo Evento processado."
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:27
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:30
