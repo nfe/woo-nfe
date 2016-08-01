@@ -72,7 +72,7 @@ class NFe_Woo {
 				$nfe = array(
 					'id' 	  	=> $invoice->id,
 					'status'  	=> $invoice->flowStatus,
-					'issuedOn'  => $body->issuedOn,
+					'issuedOn'  => $invoice->issuedOn,
 				);
 				update_post_meta( $order_id, 'nfe_issued', $nfe );
 
