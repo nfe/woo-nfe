@@ -4,13 +4,13 @@
  * WooCommerce NFe plugin
  * 
  * @author 			  NFe.io
- * @link              https://github.com/nfe/woocommerce-nfe
+ * @link              https://github.com/nfe/woo-nfe
  * @since             1.0.0
  * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
- * Plugin URI:        https://github.com/nfe/woocommerce-nfe
+ * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
  * Version:           1.0.0
  * Author:            NFe.io

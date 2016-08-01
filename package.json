@@ -3,11 +3,11 @@
   "title": "WooCommerce NFe",
   "version": "1.0.0",
   "author": "NFe.io",
-  "homepage": "https://github.com/nfe/woocommerce-nfe",
+  "homepage": "https://github.com/nfe/woo-nfe",
   "description": "WooCommerce NFe.io is an extension for the NFe API",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nfe/woocommerce-nfe.git"
+    "url": "https://github.com/nfe/woo-nfe.git"
   },
   "main": "Gruntfile.js",
   "devDependencies": {
