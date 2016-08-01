@@ -1,16 +1,17 @@
 
-span.woo_nfe_actions {
+span.woo_nfe_actions,
+a.woo_nfe_actions {
     padding: 3px 7px;
     color: white;
     display: block;
     font-weight: bold;
     border-radius: 3px;
     font-size: 12px;
-    margin-top: 20px;
     text-align: center;
 }
 
-span.woo_nfe_expired {
+span.woo_nfe_expired,
+a.woo_nfe_issue {
 	background-color: grey;
 }
 

@@ -28,6 +28,7 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
+		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ) );
 		add_action( 'admin_enqueue_scripts',                 						array( $this, 'enqueue_scripts' ) );
 
 		// Issue triggers
@@ -319,7 +320,7 @@ class WC_NFe_Admin {
 					);
 				} 
 				else {
-					printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
+					printf( '<a class="woo_nfe_actions %s" href="%s" data-tip="%s">%s</a>', 
 						esc_attr( $action['action'] ), 
 						esc_url( $action['url'] ), 
 						esc_attr( $action['name'] ), 
@@ -331,6 +332,27 @@ class WC_NFe_Admin {
 			</p><?php
 		}
 	}
+
+	/**
+	 * Adds NFe information on order page
+	 * 
+	 * @param  WC_Order $order
+	 * @return string
+	 */
+	public function display_order_data_in_admin( $order ) {
+		$nfe = get_post_meta( $order->id, 'nfe_issued', true ); ?>
+	    <div class="nfe_details">
+	        <h4><?php esc_html_e( 'NFe Details', 'woo-nfe' ); ?></h4>
+	        <?php 
+	        	echo '<p>';
+	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
+	            echo '<strong>' . __( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
+	            echo '<strong>' . __( 'Issued on', 'woo-nfe' ) . ': </strong>' . $nfe['issuedOn'] . '<br />';
+	            echo '<strong>' . __( 'Price', 'woo-nfe' ) . ': </strong>' . $nfe['amountNet'] . '<br />';
+	            echo '</p>';
+			?>
+	    </div>
+	<?php }
 
 	/**
      * Adds the admin CSS

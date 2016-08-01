@@ -163,7 +163,6 @@ class WC_NFe_Integration extends WC_Integration {
 				),
 			)
 		);
-
 		return apply_filters( 'woocommerce_nfe_settings_' . $this->id, $this->form_fields );
 	}
 

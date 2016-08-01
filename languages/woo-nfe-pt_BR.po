@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-08-01 15:12-0300\n"
+"PO-Revision-Date: 2016-08-01 15:19-0300\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "X-Generator: Poedit 1.8.8\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -88,7 +88,7 @@ msgstr "Baixar NFe"
 #: includes/frontend/class-frontend.php:117
 #: includes/frontend/class-frontend.php:132
 msgid "Issue NFe"
-msgstr "Emitir Nota Fiscal"
+msgstr "Emitir Nota"
 
 #: includes/admin/class-admin.php:285 includes/frontend/class-frontend.php:124
 msgid "Issue Expired"
