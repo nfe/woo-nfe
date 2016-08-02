@@ -69,18 +69,6 @@ class WC_NFe_Integration extends WC_Integration {
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
 			),
-			'where_note' 		=> array(
-				'title'             => __( 'NFe.io Filling', 'woo-nfe' ),
-				'type'              => 'select',
-				'label'             => __( 'NFe.io Filling', 'woo-nfe' ),
-				'default'           => 'before',
-				'options' 			=> array(
-					'before'     	=> __( 'Before Checkout (Default)', 'woo-nfe' ),
-				),
-				'class'    			=> 'wc-enhanced-select',
-				'css'      			=> 'min-width:300px;',
-				'desc_tip'       	=> __( 'Option for user to fill the NFe.io information.', 'woo-nfe' ),
-			),
 			'emissao' 			=> array(
 				'title'             => __( 'NFe Issuing', 'woo-nfe' ),
 				'type'              => 'select',
