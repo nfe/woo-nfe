@@ -37,6 +37,8 @@ class WC_NFe_Ajax {
 
 	/**
 	 * NFe issue from the back-end
+	 * 
+	 * @return void
 	 */
 	public static function nfe_issue() {
 		if ( ! current_user_can( 'edit_shop_orders' ) && ! check_admin_referer( 'woo_nfe_issue' ) ) {

@@ -1,4 +1,13 @@
 
+.sales_receipt .button {
+    display: block;
+    text-align: center;
+}
+
+.sales_receipt .woo_nfe_download {
+    margin-top: 20px;
+}
+
 span.woo_nfe_actions,
 a.woo_nfe_actions {
     padding: 3px 7px;
@@ -10,12 +19,10 @@ a.woo_nfe_actions {
     text-align: center;
 }
 
-span.woo_nfe_expired,
-a.woo_nfe_issue {
+span.woo_nfe_expired {
 	background-color: grey;
 }
 
-span.woo_nfe_issuing,
 span.woo_nfe_pending_address {
 	background-color: orange;
 }
@@ -24,6 +31,11 @@ span.woo_nfe_cancelled {
 	background-color: #e62f2f;
 }
 
-a.woo_nfe_download {
-	background-color: #56b356 !important;
+span.woo_nfe_issuing {
+    background-color: blue;
+}
+
+span.woo_nfe_emitida {
+	background-color: #56b356;
+    margin-top: 10px;
 }

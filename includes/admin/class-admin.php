@@ -245,10 +245,24 @@ class WC_NFe_Admin {
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
-				if ( $nfe && $nfe['status'] == 'Cancelled' ) {
-					$actions['woo_nfe_cancelled'] = array(
-						'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
-						'action'    => 'woo_nfe_cancelled'
+				if ( $nfe && $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) {
+					if ( $nfe['status'] == 'Cancelled' ) {
+						$actions['woo_nfe_cancelled'] = array(
+							'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
+							'action'    => 'woo_nfe_cancelled'
+						);
+					}
+					else if ( $nfe['status'] == 'Issued' ) {
+						$actions['woo_nfe_emitida'] = array(
+							'name'      => __( 'Issued', 'woo-nfe' ),
+							'action'    => 'woo_nfe_emitida'
+						);
+					}
+
+					$actions['woo_nfe_download'] = array(
+						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
+						'name'      => __( 'Download NFe', 'woo-nfe' ),
+						'action'    => 'woo_nfe_download'
 					);
 				}
 				else if ( $nfe && in_array( $nfe['status'], $status ) ) {
@@ -265,36 +279,27 @@ class WC_NFe_Admin {
 						);
 					}
 					else {
-						if ( $nfe && $nfe['id'] ) {
-							$actions['woo_nfe_download'] = array(
-								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-								'name'      => __( 'Download NFe', 'woo-nfe' ),
-								'action'    => 'woo_nfe_download'
-							);
-						}
-						else {
-							if ( nfe_get_field('issue_past_notes') == 'yes' ) {
-								if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
-									$actions['woo_nfe_issue'] = array(
-										'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-										'name'      => __( 'Issue NFe', 'woo-nfe' ),
-										'action'    => 'woo_nfe_issue'
-									);
-								}
-								else {
-									$actions['woo_nfe_expired'] = array(
-										'name'      => __( 'Issue Expired', 'woo-nfe' ),
-										'action'    => 'woo_nfe_expired'
-									);
-								}
-							}
-							else {
+						if ( nfe_get_field('issue_past_notes') == 'yes' ) {
+							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 								$actions['woo_nfe_issue'] = array(
 									'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
 									'name'      => __( 'Issue NFe', 'woo-nfe' ),
 									'action'    => 'woo_nfe_issue'
 								);
 							}
+							else {
+								$actions['woo_nfe_expired'] = array(
+									'name'      => __( 'Issue Expired', 'woo-nfe' ),
+									'action'    => 'woo_nfe_expired'
+								);
+							}
+						}
+						else {
+							$actions['woo_nfe_issue'] = array(
+								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
+								'name'      => __( 'Issue NFe', 'woo-nfe' ),
+								'action'    => 'woo_nfe_issue'
+							);
 						}
 					}
 				}
@@ -309,20 +314,17 @@ class WC_NFe_Admin {
 			}
 
 			foreach ( $actions as $action ) {
-				if ( $action['action'] == 'woo_nfe_expired' 
-					|| $action['action'] == 'woo_nfe_pending_address'
-					|| $action['action'] == 'woo_nfe_cancelled' 
-					|| $action['action'] == 'woo_nfe_issuing' ) {
-					printf( '<span class="woo_nfe_actions %s" data-tip="%s">%s</span>', 
+				if ( $action['action'] == 'woo_nfe_issue' || $action['action'] == 'woo_nfe_download' ) {
+					printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
 						esc_attr( $action['action'] ), 
+						esc_url( $action['url'] ), 
 						esc_attr( $action['name'] ), 
 						esc_attr( $action['name'] ) 
 					);
-				} 
+				}
 				else {
-					printf( '<a class="woo_nfe_actions %s" href="%s" data-tip="%s">%s</a>', 
+					printf( '<span class="woo_nfe_actions %s" data-tip="%s">%s</span>', 
 						esc_attr( $action['action'] ), 
-						esc_url( $action['url'] ), 
 						esc_attr( $action['name'] ), 
 						esc_attr( $action['name'] ) 
 					);
@@ -349,7 +351,7 @@ class WC_NFe_Admin {
 	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
 	            echo '<strong>' . __( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
 	            echo '<strong>' . __( 'Check Code', 'woo-nfe' ) . ': </strong>' . $nfe['checkCode'] . '<br />';
-	            echo '<strong>' . __( 'Issued on:', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
+	            echo '<strong>' . __( 'Issued on', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
 	            echo '<strong>' . __( 'Price', 'woo-nfe' ) . ': </strong>' . wc_price( $nfe['amountNet'] ) . '<br />';
 	            echo '</p>';
 			?>
@@ -360,7 +362,7 @@ class WC_NFe_Admin {
      * Adds the NFe Admin CSS
      */
     public function register_enqueue_css() {
-        wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe-admin' ) . '.css' );
+        wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
         wp_enqueue_style( 'nfe-woo-admin-css' );
     }
 }
