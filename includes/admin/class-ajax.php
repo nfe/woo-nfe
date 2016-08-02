@@ -136,10 +136,12 @@ class WC_NFe_Ajax {
 			return;
 		}
 
+		$nfe = get_post_meta( $order_id, 'nfe_issued', true );
+
 		// PDF Location/directory, file name
 		$upload_dir = wp_upload_dir();
 		$dir        = $upload_dir['basedir'] . '/nfe/';
-		$name       = 'nfe-'. $order_id . '.pdf';
+		$name       = 'nfe-'. $nfe['id'] . '.pdf';
 		$file       = $dir . $name;
 
 		// Create directory if it doesn't already exist

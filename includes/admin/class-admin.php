@@ -28,7 +28,7 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
-		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ) );
+		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ), 20 );
 		add_action( 'admin_enqueue_scripts',                 						array( $this, 'enqueue_scripts' ) );
 
 		// Issue triggers
@@ -340,15 +340,17 @@ class WC_NFe_Admin {
 	 * @return string
 	 */
 	public function display_order_data_in_admin( $order ) {
-		$nfe = get_post_meta( $order->id, 'nfe_issued', true ); ?>
-	    <div class="nfe_details">
-	        <h4><?php esc_html_e( 'NFe Details', 'woo-nfe' ); ?></h4>
+		$nfe = get_post_meta( $order->id, 'nfe_issued', true ); 
+		?>
+	    <h4><?php echo '<strong>' . __( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
+	    <div class="shipping-status">
 	        <?php 
 	        	echo '<p>';
 	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
 	            echo '<strong>' . __( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
-	            echo '<strong>' . __( 'Issued on', 'woo-nfe' ) . ': </strong>' . $nfe['issuedOn'] . '<br />';
-	            echo '<strong>' . __( 'Price', 'woo-nfe' ) . ': </strong>' . $nfe['amountNet'] . '<br />';
+	            echo '<strong>' . __( 'Check Code', 'woo-nfe' ) . ': </strong>' . $nfe['checkCode'] . '<br />';
+	            echo '<strong>' . __( 'Issued on:', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
+	            echo '<strong>' . __( 'Price', 'woo-nfe' ) . ': </strong>' . wc_price( $nfe['amountNet'] ) . '<br />';
 	            echo '</p>';
 			?>
 	    </div>

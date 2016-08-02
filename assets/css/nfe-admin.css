@@ -24,6 +24,6 @@ span.woo_nfe_cancelled {
 	background-color: #e62f2f;
 }
 
-span.woo_nfe_download {
-	background-color: #56b356;
+a.woo_nfe_download {
+	background-color: #56b356 !important;
 }

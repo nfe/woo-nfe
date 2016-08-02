@@ -43,10 +43,10 @@ class NFe_Woo {
 	private function __construct() {}
 	
 	/**
-	 * Issue a NFe Invoice.
+	 * Issue a NFe invoice.
 	 * 
 	 * @param  array  $order_ids Orders to issue the NFe
-	 * @return string Error
+	 * @return The invoice
 	 */
 	public function issue_invoice( $order_ids = array() ) {
 		$key        = nfe_get_field('api_key');
