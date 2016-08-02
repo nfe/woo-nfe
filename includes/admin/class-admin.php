@@ -29,7 +29,7 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ), 20 );
-		add_action( 'admin_enqueue_scripts',                 						array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
 		// Issue triggers
 		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
@@ -343,7 +343,7 @@ class WC_NFe_Admin {
 		$nfe = get_post_meta( $order->id, 'nfe_issued', true ); 
 		?>
 	    <h4><?php echo '<strong>' . __( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
-	    <div class="shipping-status">
+	    <div class="nfe-details">
 	        <?php 
 	        	echo '<p>';
 	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
@@ -357,13 +357,10 @@ class WC_NFe_Admin {
 	<?php }
 
 	/**
-     * Adds the admin CSS
+     * Adds the NFe Admin CSS
      */
-    public function enqueue_scripts() {
-        wp_register_style( 'nfe-woo-admin-css', 
-            plugins_url( 'woo-nfe/assets/css/nfe-admin' ) . '.css', 
-            false, false
-        );
+    public function register_enqueue_css() {
+        wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe-admin' ) . '.css' );
         wp_enqueue_style( 'nfe-woo-admin-css' );
     }
 }

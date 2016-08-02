@@ -29,6 +29,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 		// Actions.
 		add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
+		add_action( 'network_admin_notices', 								array( $this, 'display_errors' ) );
 		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_update_options_integration',              	array( $this, 'process_admin_options') );
 	}
@@ -176,7 +177,7 @@ class WC_NFe_Integration extends WC_Integration {
 					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
 				}
 				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
+					set_transient( 'woo_nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
 				}
 			}
 		}
@@ -195,7 +196,7 @@ class WC_NFe_Integration extends WC_Integration {
 	/**
 	 * Displays notifications when the admin has something wrong with the NFe.io configuration.
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function display_errors() {
 		if ( $this->is_active() ) {
@@ -210,10 +211,10 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Display message to user if there is an issue with the NFe API call
+	 * Display message to user if there is an issue when fetching the companies
 	 *
 	 * @param void
-	 * @return html the message for the user
+	 * @return string The error message for the user
 	 */
 	public function nfe_api_error_msg() {
 		echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woo-nfe' ) ) );

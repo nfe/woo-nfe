@@ -34,6 +34,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 		$this->template_html  = 'emails/nfe-receipt-issued.php';
 		$this->template_plain = 'emails/plain/nfe-receipt-issued.php';
+		$this->customer_email = true;
 
 		// Triggers
 		add_action( 'woocommerce_order_status_pending_to_processing_notification',  array( $this, 'trigger' ) );

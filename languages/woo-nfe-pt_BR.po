@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2016-08-02 00:05-0300\n"
-"PO-Revision-Date: 2016-08-02 00:05-0300\n"
+"PO-Revision-Date: 2016-08-02 11:23-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -374,7 +374,7 @@ msgstr "Pedido atualizado. Pedido: #%d Status da nota: %s ."
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:26
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:29
 msgid "NFe Receipt Issued"
-msgstr "Nota da NFe emitida"
+msgstr "Nota fiscal emitida"
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:27
 msgid ""
