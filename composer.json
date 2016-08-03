@@ -1,7 +1,7 @@
 {
-	"name" : "nfe/woocommerce-nfe",
+	"name" : "nfe/woo-nfe",
 	"description": "WooCommerce extension for the NFe.io API.",
-	"homepage" : "https://github.com/nfe/woocommerce-nfe",
+	"homepage" : "https://github.com/nfe/woo-nfe",
 	"type" : "wordpress-plugin",
 	"keywords": [
 		"nfe",
@@ -21,9 +21,9 @@
 		}
 	],
 	"support": {
-		"issues": "https://github.com/nfe/woocommerce-nfe/issues",
-		"forum": "https://wordpress.org/support/plugin/woocommerce-nfe",
-		"source": "https://github.com/nfe/woocommerce-nfe/"
+		"issues": "https://github.com/nfe/woo-nfe/issues",
+		"forum": "https://wordpress.org/support/plugin/woo-nfe",
+		"source": "https://github.com/nfe/woo-nfe/"
 	},
 	"require": {
 		"composer/installers": "~1.0"

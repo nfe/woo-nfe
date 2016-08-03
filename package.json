@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "NFe.io",
   "homepage": "https://github.com/nfe/woo-nfe",
-  "description": "WooCommerce NFe.io is an extension for the NFe API",
+  "description": "WooCommerce extension for the NFe.io API.",
   "repository": {
     "type": "git",
     "url": "https://github.com/nfe/woo-nfe.git"
