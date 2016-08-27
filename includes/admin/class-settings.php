@@ -40,7 +40,16 @@ class WC_NFe_Integration extends WC_Integration {
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
 			$lists = $this->companies();
-			$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
+			
+			if(empty($lists) || $lists == NULL || $lists == '')
+			{
+				$company_list = array_merge( array( '' => __( 'No company found in account', 'woo-nfe' ) ), $lists );
+			}
+			
+			else
+			{
+				$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
+			}
 		} 
 		else {
 			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ) );
@@ -58,7 +67,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'API Key', 'woo-nfe' ),
 				'default'           => '',
-				'description'       => sprintf( __( 'Log in to NFe.io to look up your API key. - %s', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'NFe.io - Account', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( '%s to look up API Key', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
 			),
 			'choose_company' 	=> array(
 				'title'             => __( 'Choose the Company', 'woo-nfe' ),
@@ -69,6 +78,8 @@ class WC_NFe_Integration extends WC_Integration {
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
+				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/companies') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
+				
 			),
 			'emissao' 			=> array(
 				'title'             => __( 'NFe Issuing', 'woo-nfe' ),
@@ -173,11 +184,15 @@ class WC_NFe_Integration extends WC_Integration {
 			}
 			else {
 				$company_list = array();
-				foreach ( $companies['companies'] as $c ) {
-					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-				}
-				if ( sizeof( $company_list ) > 0 ) {
-					set_transient( 'woo_nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
+				
+				if ( sizeof($companies) > 0 && sizeof( $companies['companies'] ) > 0)
+				{
+					foreach ( $companies['companies'] as $c ) {
+						$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
+					}
+					if ( sizeof( $company_list ) > 0 ) {
+						set_transient( 'woo_nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
+					}
 				}
 			}
 		}

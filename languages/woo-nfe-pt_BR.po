@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2016-08-02 12:38-0300\n"
-"PO-Revision-Date: 2016-08-02 12:38-0300\n"
+"PO-Revision-Date: 2016-08-27 11:09-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -203,9 +203,21 @@ msgstr "Habilitar WooCommerce NFe"
 msgid "API Key"
 msgstr "Chave da API"
 
-#: includes/admin/class-settings.php:61
-msgid "Log in to NFe.io to look up your API key. - %s"
-msgstr "Entre no NFe.io para procurar sua chave de API. - %s"
+#: includes/admin/class-settings.php:70
+msgid "%s to look up API Key"
+msgstr "%s para consultar a Chave de API"
+
+#: includes/admin/class-settings.php:81
+msgid "%s to check the registered companies"
+msgstr "%s para verificar as empresas cadastradas"
+
+#: includes/admin/class-settings.php:81
+msgid "No company found in account"
+msgstr "Nenhuma empresa encontrada na conta"
+
+#: includes/admin/class-settings.php:70 includes/admin/class-settings.php:81
+msgid "Click here"
+msgstr "Clique aqui"
 
 #: includes/admin/class-settings.php:61
 msgid "NFe.io - Account"
