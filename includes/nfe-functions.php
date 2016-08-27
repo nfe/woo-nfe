@@ -5,7 +5,7 @@
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Functions
- * @version  1.0.0
+ * @version  1.0.1
  */
 
 // Exit if accessed directly
@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Function to fetch fields from the NFe WooCommerce Integration
- * 
+ *
  * @param  string $value Value to fetch
  * @return string
  */
@@ -22,7 +22,7 @@ function nfe_get_field( $value = '' ) {
 
 	if ( empty( $value ) ) {
 		$output = $nfe_fields;
-	} 
+	}
 	else {
 		$output = $nfe_fields[$value];
 	}
@@ -32,7 +32,7 @@ function nfe_get_field( $value = '' ) {
 
 /**
  * Check to make sure the order has all the fields for a NFe issue
- * 
+ *
  * @param  int $order Product Order
  * @return bool true|false
  */
@@ -63,7 +63,7 @@ function nfe_order_address_filled( $order_id ) {
 
 /**
  * Past Issue Check (It answers the question: Can we issue a past order?)
- * 
+ *
  * @param  string $post_date Post date
  * @param  string $past_days Days in the past for time check
  * @return bool true|false
@@ -88,7 +88,7 @@ function nfe_issue_past_orders( $order ) {
 function nfe_wc_get_order( $order_id ) {
 	if ( function_exists( 'wc_get_order' ) ) {
 		return wc_get_order( $order_id );
-	} 
+	}
 	else {
 		return new WC_Order( $order_id );
 	}

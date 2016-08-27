@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce NFe 1.0.0\n"
+"Project-Id-Version: WooCommerce NFe 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2016-08-02 12:38-0300\n"
-"PO-Revision-Date: 2016-08-27 11:09-0300\n"
+"PO-Revision-Date: 2016-08-27 11:26-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"

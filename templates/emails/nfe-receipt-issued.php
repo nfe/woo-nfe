@@ -8,7 +8,7 @@
  * @see 	    https://docs.woothemes.com/document/template-structure/
  * @author 		NFe.io
  * @package 	WooCommerce_NFe/Templates/Emails
- * @version     1.0.0
+ * @version     1.0.1
  */
 
 // Exit if accessed directly

@@ -11,10 +11,10 @@ if ( class_exists( 'WC_Integration' ) ) :
  * @author   NFe.io
  * @category Admin
  * @package  WooCommerce_NFe/Class/WC_NFe_Integration
- * @version  1.0.0
+ * @version  1.0.1
  */
 class WC_NFe_Integration extends WC_Integration {
-	
+
 	/**
 	 * Init and hook in the integration.
 	 */
@@ -40,17 +40,17 @@ class WC_NFe_Integration extends WC_Integration {
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
 			$lists = $this->companies();
-			
+
 			if(empty($lists) || $lists == NULL || $lists == '')
 			{
 				$company_list = array_merge( array( '' => __( 'No company found in account', 'woo-nfe' ) ), $lists );
 			}
-			
+
 			else
 			{
 				$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
 			}
-		} 
+		}
 		else {
 			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ) );
 		}
@@ -79,7 +79,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
 				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/companies') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
-				
+
 			),
 			'emissao' 			=> array(
 				'title'             => __( 'NFe Issuing', 'woo-nfe' ),
@@ -164,7 +164,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Fetches NFe Companies
-	 * 
+	 *
 	 * @return array An array of companies
 	 */
 	private function companies() {
@@ -175,7 +175,7 @@ class WC_NFe_Integration extends WC_Integration {
 			$url 		= 'https://api.nfe.io/v1/companies?api_key='. $key . '';
 			$response 	= wp_remote_get( esc_url_raw( $url ) );
 			$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
-			
+
 			if ( isset( $companies->message ) ) {
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
@@ -184,7 +184,7 @@ class WC_NFe_Integration extends WC_Integration {
 			}
 			else {
 				$company_list = array();
-				
+
 				if ( sizeof($companies) > 0 && sizeof( $companies['companies'] ) > 0)
 				{
 					foreach ( $companies['companies'] as $c ) {
@@ -201,7 +201,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * URL that will receive the webhooks.
-	 * 
+	 *
 	 * @return string
 	 */
 	private function get_events_url() {
@@ -218,7 +218,7 @@ class WC_NFe_Integration extends WC_Integration {
 			if ( empty( nfe_get_field('api_key') ) ) {
 				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) );
 			}
-		
+
 			if ( nfe_get_field('issue_past_notes') == 'yes' && $this->issue_past_days() ) {
 				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woo-nfe' ) . '</a>' ) );
 			}
@@ -237,7 +237,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Get message
-	 * 
+	 *
 	 * @return string Error
 	 */
 	private function get_message( $message, $type = 'error' ) {
@@ -252,7 +252,7 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Issue past date check
-	 * 
+	 *
 	 * @return bool true|false
 	 */
 	public function issue_past_days() {

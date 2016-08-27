@@ -10,13 +10,13 @@ if ( ! class_exists( 'WC_NFe_Webhook_Handler' ) ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_Webhook_Handler
- * @version  1.0.0
+ * @version  1.0.1
  */
 class WC_NFe_Webhook_Handler {
 
     /**
      * WC_Logger Logger instance
-     * 
+     *
      * @var boolean
      */
     public static $logger = false;
@@ -30,7 +30,7 @@ class WC_NFe_Webhook_Handler {
 
 	/**
      * Handling incoming webhooks
-     * 
+     *
      * @return void
      */
     public function handle() {
@@ -41,7 +41,7 @@ class WC_NFe_Webhook_Handler {
 
         try {
             $this->process_event( $body );
-        } 
+        }
         catch (Exception $e) {
             $this->logger( sprintf( __( 'Error: %s.', 'woo-nfe' ), $e->getMessage() ) );
 
@@ -54,7 +54,7 @@ class WC_NFe_Webhook_Handler {
 
     /**
      * Read json entity received and proccess the webhook
-     * 
+     *
      * @param string $body
      **/
     private function process_event( $body ) {
@@ -80,11 +80,11 @@ class WC_NFe_Webhook_Handler {
         $this->logger( $msg );
         $order->add_order_note( $msg );
     }
-    
+
     /**
      * Find orders by NFe ID
-     * 
-     * @param  Nota ID $id 
+     *
+     * @param  Nota ID $id
      * @return WC_Order
      */
     private function find_order_by_nota_id( $id ) {
@@ -100,7 +100,7 @@ class WC_NFe_Webhook_Handler {
             'post_status' => 'wc-completed',
         );
         $query = new WP_Query($args);
-        
+
         if ( false === $query->have_posts() ) {
             throw new Exception( 'Pedido com id de nota fiscal #' . $id . ' não encontrado!', 2 );
         }

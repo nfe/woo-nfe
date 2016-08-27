@@ -11,7 +11,7 @@ if ( ! class_exists('WC_NFe_Email_Receipt_Issued') ) :
  * @class 	WC_NFe_Email_Receipt_Issued
  * @author 	NFe.io
  * @package	WooCommerce_NFe/Class/Emails
- * @version	1.0.0
+ * @version	1.0.1
  * @extends WC_Email
  */
 class WC_NFe_Email_Receipt_Issued extends WC_Email {
@@ -27,7 +27,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woo-nfe' );
 
 		$this->heading     = __( 'NFe Receipt Issued', 'woo-nfe' );
-		
+
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
 		$this->subject     = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woo-nfe' ), '{blogname}' );
 

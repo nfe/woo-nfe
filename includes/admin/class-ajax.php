@@ -7,10 +7,10 @@ if ( ! class_exists('WC_NFe_Ajax') ) :
 
 /**
  * WooCommerce NFe Ajax Class
- * 
+ *
  * @package 	WooCommerce_NFe/Class/WC_NFe_Ajax
  * @author  	NFe.io
- * @version     1.0.0
+ * @version   1.0.1
  */
 class WC_NFe_Ajax {
 
@@ -37,7 +37,7 @@ class WC_NFe_Ajax {
 
 	/**
 	 * NFe issue from the back-end
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function nfe_issue() {
@@ -125,10 +125,10 @@ class WC_NFe_Ajax {
 
 		self::download_base( $order_id );
 	}
-	
+
 	/**
 	 * Download base
-	 * 
+	 *
 	 * @param  int  $order_id Order ID
 	 * @return string PDF
 	 */
@@ -168,7 +168,7 @@ class WC_NFe_Ajax {
 
 	/**
 	 * PDF Outputting
-	 * 
+	 *
 	 * @param  string 	$name Name of the PDF
 	 * @param  int 		$size Size of the PDF
 	 * @param  string 	$file PDF information with path location
@@ -177,7 +177,7 @@ class WC_NFe_Ajax {
 	public static function output_pdf( $name, $size, $file ) {
 		// turn off output buffering to decrease cpu usage
 		@ob_end_clean();
-		
+
 		// required for IE, otherwise Content-Disposition may be ignored
 		if ( ini_get('zlib.output_compression') ) {
 			ini_set('zlib.output_compression', 'Off');
@@ -204,7 +204,7 @@ class WC_NFe_Ajax {
 
 			if ( ! $range_end ) {
 				$range_end = $size - 1;
-			} 
+			}
 			else {
 				$range_end = intval($range_end);
 			}
@@ -212,7 +212,7 @@ class WC_NFe_Ajax {
 			header('HTTP/1.1 206 Partial Content');
 			header('Content-Length: $new_length');
 			header('Content-Range: bytes ' . $range - $range_end / $size );
-		} 
+		}
 		else {
 			$new_length = $size;
 			header('Content-Length: '. $size );
@@ -233,8 +233,8 @@ class WC_NFe_Ajax {
 				$bytes_send += strlen($buffer);
 			}
 			fclose($file);
-		} 
-		else { 
+		}
+		else {
 			wp_die('Error - can not open file.');
 		}
 	}

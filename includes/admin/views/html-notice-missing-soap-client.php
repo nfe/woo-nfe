@@ -5,7 +5,7 @@
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Admin/Notices
- * @version  1.0.0
+ * @version  1.0.1
  */
 
 // Exit if accessed directly

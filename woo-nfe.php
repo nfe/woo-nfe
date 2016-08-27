@@ -2,30 +2,30 @@
 
 /**
  * WooCommerce NFe plugin
- * 
- * @author 			  NFe.io
+ *
+ * @author 			      NFe.io
  * @link              https://github.com/nfe/woo-nfe
- * @since             1.0.0
+ * @since             1.0.1
  * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Renato Alves
  * Developer URI:     http://ralv.es
  * Text Domain:       woo-nfe
  * Domain Path:       /languages
- * Network:     	  false
+ * Network:     	    false
  *
  * Copyright: © 2016 NFe.io
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
- 
+
 // Exit if accessed directly
 defined( 'ABSPATH' ) || exit;
 
@@ -42,7 +42,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * Main instance
 		 *
 		 * @since 1.0.0
-		 * 
+		 *
 		 * @return instance
 		 */
 		public static function instance() {
@@ -66,7 +66,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * A dummy constructor to prevent WooCommerce_NFe from being loaded more than once.
 		 *
 		 * @since 1.0.0
-		 * 
+		 *
 		 * @see WooCommerce_NFe::instance()
 		 */
 		private function __construct() { /* Do nothing here */ }
@@ -97,7 +97,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function includes() {
-			
+
 			// NFe Client-PHP API - Composer Support
 			$composer_path = $this->plugin_dir . 'vendor/autoload.php';
 
@@ -150,9 +150,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			/******************************************************************************/
 
 			global $woocommerce;
-			
+
 			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=woo-nfe' );
-			
+
 			if ( $woocommerce->version >= '2.1' ) {
 				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=woo-nfe' );
 			}

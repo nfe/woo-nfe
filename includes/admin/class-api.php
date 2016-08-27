@@ -10,17 +10,17 @@ if ( ! class_exists('NFe_Woo') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.0
+ * @version  1.0.1
  */
 class NFe_Woo {
 
 	/**
      * WC_Logger Logger instance
-     * 
+     *
      * @var boolean
      */
     public static $logger = false;
-		
+
 	/**
 	 * NFe_Woo Instance.
 	 */
@@ -41,10 +41,10 @@ class NFe_Woo {
 	 * @see $this->instance Class Instance
 	 */
 	private function __construct() {}
-	
+
 	/**
 	 * Issue a NFe invoice.
-	 * 
+	 *
 	 * @param  array  $order_ids Orders to issue the NFe
 	 * @return The invoice
 	 */
@@ -53,8 +53,8 @@ class NFe_Woo {
 		$company_id = nfe_get_field('choose_company');
 
 		NFe::setApiKey($key);
-		
-		foreach ( $order_ids as $order_id ) { 
+
+		foreach ( $order_ids as $order_id ) {
 			$this->logger( sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id ) );
 
 			$order = nfe_wc_get_order( $order_id );
@@ -100,7 +100,7 @@ class NFe_Woo {
 
 	/**
 	 * Downloads the invoice(s)
-	 * 
+	 *
 	 * @param  array  $order_ids Array of order ids
 	 * @return string            Pdf url from NFe.io
 	 */
@@ -116,7 +116,7 @@ class NFe_Woo {
 
 			try {
 				$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
-				
+
 				$msg = sprintf( __( 'NFe PDF Donwload successfully. Order: #%d', 'woo-nfe' ), $order_id );
 
 				$this->logger( $msg );
@@ -139,7 +139,7 @@ class NFe_Woo {
 
 	/**
 	 * Preparing data to send to NFe API
-	 * 
+	 *
 	 * @param  int $order Order ID
 	 * @return array 	  Array with the order_id information to issue the invoice
 	 */
@@ -147,12 +147,12 @@ class NFe_Woo {
 		$total = nfe_wc_get_order( $order_id );
 
 		$data = array(
-			'cityServiceCode' 				=> $this->city_service_info( 'code', $order_id ), 
+			'cityServiceCode' 				=> $this->city_service_info( 'code', $order_id ),
 			'federalServiceCode'			=> $this->city_service_info( 'fed_code', $order_id ),
 			'description' 					=> $this->city_service_info( 'desc', $order_id ),
 			'servicesAmount' 				=> $total->order_total,
 			'borrower' 			=> array(
-				'name' 						=> $this->check_customer_info( 'name', $order_id ), 
+				'name' 						=> $this->check_customer_info( 'name', $order_id ),
 				'email' 					=> get_post_meta( $order_id, '_billing_email', true ),
 				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order_id ),
 				'address' 		=> array(
@@ -177,7 +177,7 @@ class NFe_Woo {
 
 	/**
 	 * Hack to bring support to Brazilian ISO code (Ex.: BRA instead of BR)
-	 * 
+	 *
 	 * @param  int $order_id Product ID
 	 * @return string
 	 */
@@ -195,7 +195,7 @@ class NFe_Woo {
 
 	/**
 	 * Fetches the IBGE Code
-	 * 
+	 *
 	 * @param  int $order_id Order ID
 	 * @return string
 	 */
@@ -227,12 +227,12 @@ class NFe_Woo {
 
 	/**
 	 * City Service Information (City and Federal Code, and Description).
-	 * 
+	 *
 	 * @param  string $field The field info being fetched
 	 * @return string
 	 */
 	public function city_service_info( $field = '', $post_id ) {
-		if ( empty( $field ) ) { 
+		if ( empty( $field ) ) {
 			return;
 		}
 
@@ -247,8 +247,8 @@ class NFe_Woo {
 				if ( $variation_id ) {
 					$cityservicecode    = get_post_meta( $variation_id, '_cityservicecode', true );
 					$federalservicecode = get_post_meta( $variation_id, '_federalservicecode', true );
-					$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );	
-				} 
+					$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );
+				}
 				else {
 					$cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
 					$federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
@@ -269,7 +269,7 @@ class NFe_Woo {
 			case 'desc':
 				$output = $product_desc ? $product_desc : nfe_get_field('nfe_cityservicecode_desc');
 				break;
-			
+
 			default:
 				$output = null;
 				break;
@@ -279,7 +279,7 @@ class NFe_Woo {
 
 	/**
 	 * Fetching customer info depending on the person type
-	 * 
+	 *
 	 * @param  string  $field       Field to fetch info from
 	 * @param  int  $order     		The order ID
 	 * @return string|empty 		Returns the customer info specific to the person type being fetched
@@ -296,7 +296,7 @@ class NFe_Woo {
 			case 'number': // Customer ID Number
 				if ( $type == 1 ) {
 					$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-				} 
+				}
 				elseif ( $type == 2 ) {
 					$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 				}
@@ -305,7 +305,7 @@ class NFe_Woo {
 			case 'name': // Customer Name/Razão Social
 				if ( $type == 1 ) {
 					$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-				} 
+				}
 				elseif ( $type == 2 ) {
 					$output = get_post_meta( $order, '_billing_company', true );
 				}
@@ -314,7 +314,7 @@ class NFe_Woo {
 			case 'type': // Customer Type
 				if ( $type == 1 ) {
 					$output = __('Customers', 'woo-nfe');
-				} 
+				}
 				elseif ( $type == 2 ) {
 					$output = __('Company', 'woo-nfe');
 				}
@@ -329,8 +329,8 @@ class NFe_Woo {
 
 	/**
 	 * CPF Converter
-	 * 
-	 * @param  string $cpf 
+	 *
+	 * @param  string $cpf
 	 * @return void
 	 */
 	public function cpf( $cpf ) {
@@ -341,13 +341,13 @@ class NFe_Woo {
 		$cpf = $this->clear( $cpf );
 		$cpf = $this->mask($cpf,'###.###.###-##');
 
-		return $cpf;	
+		return $cpf;
 	}
 
 	/**
 	 * CNPJ Converter
-	 * 
-	 * @param  $cnpj 
+	 *
+	 * @param  $cnpj
 	 * @return string
 	 */
 	public function cnpj( $cnpj ) {
@@ -357,13 +357,13 @@ class NFe_Woo {
 
 		$cnpj = $this->clear( $cnpj );
 		$cnpj = $this->mask($cnpj,'##.###.###/####-##');
-		
-		return $cnpj;	
+
+		return $cnpj;
 	}
 
 	/**
 	 * CEP Converter
-	 * 
+	 *
 	 * @param  $cep
 	 * @return string
 	 */
@@ -375,13 +375,13 @@ class NFe_Woo {
 		$cep = $this->clear( $cep );
 		$cep = $this->mask($cep,'#####-###');
 
-		return $cep;	
+		return $cep;
 	}
 
 	/**
 	 * Clears
-	 * 
-	 * @param  string $string 
+	 *
+	 * @param  string $string
 	 * @return string
 	 */
 	public function clear( $string ) {
@@ -389,10 +389,10 @@ class NFe_Woo {
 
 		return $string;
 	}
-	
+
 	/**
 	 * Masking
-	 * 
+	 *
 	 * @param  $val  Value that's gonna be masked
 	 * @param  $mask Mask pattern
 	 * @return string
@@ -417,7 +417,7 @@ class NFe_Woo {
 
 	/**
 	 * Country 2 and 3 ISO Codes
-	 * 
+	 *
 	 * @return array
 	 */
 	private function country_iso_codes() {
@@ -573,12 +573,12 @@ endif;
 /**
  * The main function responsible for returning the one true NFe_Woo Instance.
  *
- * @since 1.0.0
+ * @since 1.0.1
  *
  * @return NFe_Woo The one true NFe_Woo Instance.
  */
 function NFe_Woo() {
-	return NFe_Woo::instance();    
+	return NFe_Woo::instance();
 }
 
 // That's it! =)

@@ -10,7 +10,7 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_FrontEnd
- * @version  1.0.0
+ * @version  1.0.1
  */
 class WC_NFe_FrontEnd {
 
