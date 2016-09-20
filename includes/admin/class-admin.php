@@ -10,7 +10,7 @@ if ( ! class_exists('WC_NFe_Admin') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_Admin
- * @version  1.0.1
+ * @version  1.0.2
  */
 class WC_NFe_Admin {
 
@@ -32,9 +32,26 @@ class WC_NFe_Admin {
 		add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
 		// Issue triggers
-		add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
-		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
-		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
+		//add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
+		//add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
+		//add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
+
+		/*
+		Status trigger
+
+		woocommerce_order_status_pending
+		woocommerce_order_status_failed
+		woocommerce_order_status_on-hold
+		woocommerce_order_status_processing
+		woocommerce_order_status_completed
+		woocommerce_order_status_refunded
+		woocommerce_order_status_cancelled
+		*/
+
+		add_action( 'woocommerce_order_status_pending', 				array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_on-hold', 				array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_processing', 				array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_completed', 				array( $this, 'issue_trigger' ) );
 
 		// WooCommerce Subscriptions Support
 		if ( class_exists('WC_Subscriptions') ) {
@@ -45,15 +62,14 @@ class WC_NFe_Admin {
 
 	/**
 	 * Issue a NFe receipt when WooCommerce does its thing.
-	 *
+	 * Issue on order status
 	 * @param  int $order_id Order ID
 	 * @return bool true|false
 	 */
 	public function issue_trigger( $order_id ) {
-		if ( nfe_get_field('emissao') == 'manual' ) {
+		if ( nfe_get_field('issue_when') == 'manual' ) {
 			return;
 		}
-
 		if ( $order_id ) {
 			$order    = nfe_wc_get_order( $order_id );
 			$order_id = $order->id;
@@ -61,7 +77,10 @@ class WC_NFe_Admin {
 
 		// Don't issue if there is no order address information
 		if ( ! nfe_order_address_filled( $order_id ) ) {
-			NFe_Woo()->issue_invoice( array( $order_id ) );
+			if($order->post_status == nfe_get_field('issue_when_status'))
+			{
+				NFe_Woo()->issue_invoice( array( $order_id ) );
+			}
 		}
 	}
 
@@ -149,7 +168,7 @@ class WC_NFe_Admin {
 		update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
 	}
 
-   /**
+  /**
 	* Adds the NFe fields for product variations
 	*
 	* @param  array $loop
@@ -244,7 +263,8 @@ class WC_NFe_Admin {
 			<?php
 			$actions = array();
 
-			if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
+			//if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
+			if ( nfe_get_field('nfe_enable') == 'yes') {
 				if ( $nfe && $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) {
 					if ( $nfe['status'] == 'Cancelled' ) {
 						$actions['woo_nfe_cancelled'] = array(

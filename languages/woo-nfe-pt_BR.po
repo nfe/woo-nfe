@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2016-08-02 12:38-0300\n"
-"PO-Revision-Date: 2016-08-27 11:26-0300\n"
+"PO-Revision-Date: 2016-09-19 20:10-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -243,13 +243,13 @@ msgstr "Automático (Padrão)"
 msgid "Manual"
 msgstr "Manual"
 
-#: includes/admin/class-settings.php:84
+#: includes/admin/class-settings.php:84 includes/admin/class-settings.php:98
 msgid "Option to issue a NFe."
 msgstr "Opção de emissão da NFe."
 
 #: includes/admin/class-settings.php:87
-msgid "NFe.io Webkook Setup"
-msgstr "Configuração do Webhook"
+msgid "Issue on order status"
+msgstr "Emitir no status do pedido"
 
 #: includes/admin/class-settings.php:91 includes/admin/class-settings.php:93
 msgid "Webhook URL"

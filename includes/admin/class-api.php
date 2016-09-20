@@ -10,16 +10,16 @@ if ( ! class_exists('NFe_Woo') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.1
+ * @version  1.0.2
  */
 class NFe_Woo {
 
 	/**
-     * WC_Logger Logger instance
-     *
-     * @var boolean
-     */
-    public static $logger = false;
+   * WC_Logger Logger instance
+   *
+   * @var boolean
+   */
+  public static $logger = false;
 
 	/**
 	 * NFe_Woo Instance.
@@ -51,6 +51,7 @@ class NFe_Woo {
 	public function issue_invoice( $order_ids = array() ) {
 		$key        = nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
+		$issue_when_status = nfe_get_field('issue_when_status');
 
 		NFe::setApiKey($key);
 
@@ -58,6 +59,11 @@ class NFe_Woo {
 			$this->logger( sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id ) );
 
 			$order = nfe_wc_get_order( $order_id );
+
+			// If order status is diferent from issue_when status settings, don't issue
+			if ( $order->post_status != $issue_when_status ) {
+				return false;
+			}
 
 			// If value is 0, don't issue it
 			if ( $order->order_total == 0 ) {
@@ -144,6 +150,17 @@ class NFe_Woo {
 	 * @return array 	  Array with the order_id information to issue the invoice
 	 */
 	public function order_info( $order_id ) {
+
+		function removePontoTraco($string)
+		{
+			$string = str_replace(".","",$string);
+			$string = str_replace("-","",$string);
+			$string = str_replace("'","",$string);
+			$string = str_replace('"','',$string);
+			return($string);
+		}
+
+
 		$total = nfe_wc_get_order( $order_id );
 
 		$data = array(
@@ -154,7 +171,7 @@ class NFe_Woo {
 			'borrower' 			=> array(
 				'name' 						=> $this->check_customer_info( 'name', $order_id ),
 				'email' 					=> get_post_meta( $order_id, '_billing_email', true ),
-				'federalTaxNumber' 			=> $this->check_customer_info( 'number', $order_id ),
+				'federalTaxNumber' 			=> removePontoTraco(ltrim($this->check_customer_info( 'number', $order_id ),'0')),
 				'address' 		=> array(
 					'postalCode' 			=> $this->cep( get_post_meta( $order_id, '_billing_postcode', true ) ),
 					'street' 				=> get_post_meta( $order_id, '_billing_address_1', true ),
@@ -573,7 +590,7 @@ endif;
 /**
  * The main function responsible for returning the one true NFe_Woo Instance.
  *
- * @since 1.0.1
+ * @since 1.0.0
  *
  * @return NFe_Woo The one true NFe_Woo Instance.
  */

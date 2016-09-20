@@ -28,8 +28,8 @@ class WC_NFe_Integration extends WC_Integration {
 		$this->init_settings();
 
 		// Actions.
-		add_action( 'admin_notices', 										array( $this, 'display_errors' ) );
-		add_action( 'network_admin_notices', 								array( $this, 'display_errors' ) );
+		add_action( 'admin_notices', 																				array( $this, 'display_errors' ) );
+		add_action( 'network_admin_notices', 																array( $this, 'display_errors' ) );
 		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_update_options_integration',              	array( $this, 'process_admin_options') );
 	}
@@ -81,14 +81,32 @@ class WC_NFe_Integration extends WC_Integration {
 				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/companies') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
 
 			),
-			'emissao' 			=> array(
+			'issue_when' 			=> array(
 				'title'             => __( 'NFe Issuing', 'woo-nfe' ),
 				'type'              => 'select',
 				'label'             => __( 'NFe Issuing', 'woo-nfe' ),
-				'default'           => 'before',
+				'default'           => 'auto',
 				'options' 			=> array(
 					'auto'     	=> __( 'Automattic (Default)', 'woo-nfe' ),
 					'manual'    => __( 'Manual', 'woo-nfe' ),
+				),
+				'class'    			=> 'wc-enhanced-select',
+				'css'      			=> 'min-width:300px;',
+				'desc_tip'       	=> __( 'Option to issue a NFe.', 'woo-nfe' ),
+			),
+			'issue_when_status'		=> array(
+				'title'             => __( 'Issue on order status', 'woo-nfe' ),
+				'type'              => 'select',
+				'label'             => __( 'Issue on order status', 'woo-nfe' ),
+				'default'           => 'wc-completed',
+				'options' 			=> array(
+					'wc-pending'    => _x( 'Pending Payment', 'Order status', 'woocommerce' ),
+					'wc-processing' => _x( 'Processing', 'Order status', 'woocommerce' ),
+					'wc-on-hold'    => _x( 'On Hold', 'Order status', 'woocommerce' ),
+					'wc-completed'  => _x( 'Completed', 'Order status', 'woocommerce' ),
+					//'wc-cancelled'  => _x( 'Cancelled', 'Order status', 'woocommerce' ),
+					//'wc-refunded'   => _x( 'Refunded', 'Order status', 'woocommerce' ),
+					//'wc-failed'     => _x( 'Failed', 'Order status', 'woocommerce' ),
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',

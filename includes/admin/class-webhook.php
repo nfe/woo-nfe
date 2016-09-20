@@ -97,7 +97,7 @@ class WC_NFe_Webhook_Handler {
                     'compare' => 'LIKE',
                 ),
             ),
-            'post_status' => 'wc-completed',
+            'post_status' => 'wc-'.nfe_get_field('issue_when_status'),
         );
         $query = new WP_Query($args);
 
