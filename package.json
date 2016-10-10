@@ -1,10 +1,10 @@
 {
   "name": "nfe",
   "title": "WooCommerce NFe",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "NFe.io",
   "homepage": "https://github.com/nfe/woo-nfe",
-  "description": "WooCommerce extension for the NFe.io API.",
+  "description": "WooCommerce extension for issuing invoices using the NFe.io API",
   "repository": {
     "type": "git",
     "url": "https://github.com/nfe/woo-nfe.git"
