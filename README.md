@@ -1,7 +1,7 @@
 
-# WooCommerce NFe.io
+# Woo NFe
 
-WooCommerce NFe é uma extensão do WooCommerce para a API do NFe.
+Woo NFe é uma extensão do WooCommerce para emitir notas fiscais utilizando a API do NFe.io
 
 ## Instalação
 
