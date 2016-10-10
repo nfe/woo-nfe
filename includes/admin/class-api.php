@@ -10,7 +10,7 @@ if ( ! class_exists('NFe_Woo') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.2
+ * @version  1.0.3
  */
 class NFe_Woo {
 
@@ -75,7 +75,24 @@ class NFe_Woo {
 				return false;
 			}
 
-			$invoice = NFe_ServiceInvoice::create( $company_id, $this->order_info( $order_id ) );
+			$dataInvoice = $this->order_info( $order_id );
+
+			if(empty($dataInvoice['borrower']['address']['street']))
+			{
+				$dataInvoice['borrower']['address']['street'] = 'NÃO INFORMADO';
+			}
+
+			if(empty($dataInvoice['borrower']['address']['number']))
+			{
+				$dataInvoice['borrower']['address']['number'] = 'S/N';
+			}
+
+			if(empty($dataInvoice['borrower']['address']['district']))
+			{
+				$dataInvoice['borrower']['address']['district'] = 'NÃO INFORMADO';
+			}
+
+			$invoice = NFe_ServiceInvoice::create( $company_id, $dataInvoice );
 
 			if ( isset( $invoice->message ) ) {
 				$nfe_error = sprintf( __( 'An error occurred while issuing a NFe: ', 'woo-nfe' ) ) . print_r( $invoice->message, true );

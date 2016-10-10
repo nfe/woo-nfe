@@ -5,7 +5,7 @@
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Functions
- * @version  1.0.1
+ * @version  1.0.3
  */
 
 // Exit if accessed directly
@@ -46,6 +46,21 @@ function nfe_order_address_filled( $order_id ) {
 		'city'         => get_post_meta( $order_id, '_billing_city', true ),
 		'country'      => get_post_meta( $order_id, '_billing_country', true ),
 	);
+
+	if(empty($fields['neighborhood']))
+	{
+		$fields['neighborhood'] = 'NÃO INFORMADO';
+	}
+
+	if(empty($fields['address_1']))
+	{
+		$fields['address_1'] = 'NÃO INFORMADO';
+	}
+
+	if(empty($fields['number']))
+	{
+		$fields['number'] = 'S/N';
+	}
 
 	$count = 0;
 	foreach ( $fields as $field => $value ) {
