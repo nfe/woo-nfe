@@ -10,7 +10,7 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_FrontEnd
- * @version  1.0.1
+ * @version  1.0.4
  */
 class WC_NFe_FrontEnd {
 
@@ -30,7 +30,7 @@ class WC_NFe_FrontEnd {
 
 	/**
 	 * Notice added on the WooCommerce edit-address page
-	 * 
+	 *
 	 * @return string
 	 */
 	public function billing_notice() {
@@ -41,7 +41,7 @@ class WC_NFe_FrontEnd {
 
 	/**
 	 * Notice added in the My Account page
-	 * 
+	 *
 	 * @return string
 	 */
 	public function account_desc() {
@@ -50,7 +50,7 @@ class WC_NFe_FrontEnd {
 
 	/**
      * NFe Column Header on Recent Orders
-     * 
+     *
      * @return array
      */
 	public function nfe_column( $columns ) {
@@ -69,14 +69,16 @@ class WC_NFe_FrontEnd {
 
 	/**
      * NFe Sales Receipt Column Content on Recent Orders
-     * 
+     *
      * @return string
      */
-    public function column_content( $order ) {   	
+    public function column_content( $order ) {
         $order_id   = $order->id;
         $nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
         $actions 	= array();
         $status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
+				$issue_when = nfe_get_field('issue_when');
+				$issue_when_status = nfe_get_field('issue_when_status');
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
             if ( $nfe && $nfe['status'] == 'Cancelled' ) {
@@ -126,7 +128,7 @@ class WC_NFe_FrontEnd {
                                 );
                             }
                         }
-                        else {
+                        else if ( $issue_when == "manual"	|| $issue_when_status == $order->post_status ) {
                             $actions['woo_nfe_issue'] = array(
                                 'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
                                 'name'      => __( 'Issue NFe', 'woo-nfe' ),
@@ -144,14 +146,14 @@ class WC_NFe_FrontEnd {
                 'name'      => __( 'Enable NFe', 'woo-nfe' ),
                 'action'    => 'woo_nfe_tab'
             );
-        } 
+        }
 
         foreach ( $actions as $action ) {
-            printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>', 
-                esc_attr( $action['action'] ), 
-                esc_url( $action['url'] ), 
-                esc_attr( $action['name'] ), 
-                esc_attr( $action['name'] ) 
+            printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>',
+                esc_attr( $action['action'] ),
+                esc_url( $action['url'] ),
+                esc_attr( $action['name'] ),
+                esc_attr( $action['name'] )
             );
         }
     }

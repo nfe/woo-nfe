@@ -5,7 +5,7 @@
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Functions
- * @version  1.0.3
+ * @version  1.0.4
  */
 
 // Exit if accessed directly
@@ -49,12 +49,12 @@ function nfe_order_address_filled( $order_id ) {
 
 	if(empty($fields['neighborhood']))
 	{
-		$fields['neighborhood'] = 'NÃO INFORMADO';
+		$fields['neighborhood'] = 'NAO INFORMADO';
 	}
 
 	if(empty($fields['address_1']))
 	{
-		$fields['address_1'] = 'NÃO INFORMADO';
+		$fields['address_1'] = 'NAO INFORMADO';
 	}
 
 	if(empty($fields['number']))

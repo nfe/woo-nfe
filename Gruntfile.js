@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		
+
 		// Check textdomain errors.
 		checktextdomain: {
 			options:{
@@ -46,8 +46,8 @@ module.exports = function(grunt) {
 					potHeaders: {
                     	poedit: true,
                     	'language': 'pt_BR',
-                    	'last-translator': 'Renato Alves <contato@ralv.es',
-						'language-team': 'Renato Alves <contato@ralv.es',
+                    	'last-translator': 'Hackers <hackers@nfe.io>',
+											'language-team': 'Hackers <hackers@nfe.io>',
                     	'report-msgid-bugs-to': 'https://github.com/nfe/woo-nfe/issues',
                     	'plural-forms': 'nplurals=2; plural=n != 1;',
 					    'x-poedit-country': 'Brasil',
@@ -58,11 +58,11 @@ module.exports = function(grunt) {
 					    'x-textdomain-support': 'yes'
                 	},
 					updateTimestamp: true,
-                	updatePoFiles: false     
+                	updatePoFiles: false
 				}
 			}
 		},
 	});
-	
+
 	require('load-grunt-tasks')(grunt);
 }

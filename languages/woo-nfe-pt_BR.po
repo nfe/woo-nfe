@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2016-08-02 12:38-0300\n"
-"PO-Revision-Date: 2016-09-19 20:10-0300\n"
+"PO-Revision-Date: 2016-10-19 11:55-0200\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -144,12 +144,15 @@ msgstr "Processo de emissão de nota fiscal iniciado! Pedido: #%d"
 
 #: includes/admin/class-api.php:64
 msgid "Not possible to issue NFe without an order value! Order: #%d"
-msgstr ""
-"Não é possível emitir uma nota fiscal sem um valor do pedido! Pedido: #%d"
+msgstr "Não é possível emitir uma nota fiscal sem um valor do pedido! Pedido: #%d"
 
 #: includes/admin/class-api.php:75
 msgid "An error occurred while issuing a NFe: "
 msgstr "Ocorreu um erro ao emitir uma nota fiscal:"
+
+#: includes/admin/class-api.php:68
+msgid "It was not possible to issue the NF as the order status (%s) is not equal status for issue (%s)"
+msgstr "Não foi possível emitir a NF pois o status do pedido (%s) não é igual ao status para emissão (%s)"
 
 #: includes/admin/class-api.php:83
 msgid "NFe sent sucessfully to issue! Order: #%d"
@@ -277,8 +280,7 @@ msgstr "Habilite a emissão de notas NFe em produtos antigos"
 
 #: includes/admin/class-settings.php:109
 msgid ""
-"Enabling this allows users to issue nfe.io notes on bought products in the "
-"past."
+"Enabling this allows users to issue nfe.io notes on bought products in the past."
 msgstr ""
 "Se habilitado, essa funcionalidade permite a emissão de notas em produtos "
 "comprados no passado."
@@ -331,8 +333,8 @@ msgstr "Status do Sistema - Logs"
 msgid ""
 "Plugin is enabled but no API key provided. You should inform your API Key. %s"
 msgstr ""
-"O plugin está habilitado porém nenhuma chave de API foi adicionada. Você "
-"deve informar uma chave de API. %s"
+"O plugin está habilitado porém nenhuma chave de API foi adicionada. Você deve "
+"informar uma chave de API. %s"
 
 #: includes/admin/class-settings.php:204
 msgid "Click here to configure!"
@@ -383,8 +385,8 @@ msgstr "Nota fiscal emitida"
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:27
 msgid ""
-"Safe copy emails are sent when a customer issues an receipt. The e-mail is "
-"sent to the admin as a saving measure."
+"Safe copy emails are sent when a customer issues an receipt. The e-mail is sent "
+"to the admin as a saving measure."
 msgstr "E-mails de copia segura "
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:125
@@ -393,19 +395,19 @@ msgstr "Habilite esta notificação de email"
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:131
 msgid ""
-"This controls the email subject line. Leave blank to use the default "
-"subject: <code>%s</code>."
+"This controls the email subject line. Leave blank to use the default subject: "
+"<code>%s</code>."
 msgstr ""
 "Controla a linha de assunto do e-mail. Deixe em branco para usar o assunto "
 "padrão: <code>%s</code>."
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:138
 msgid ""
-"This controls the main heading contained within the email notification. "
-"Leave blank to use the default heading: <code>%s</code>."
+"This controls the main heading contained within the email notification. Leave "
+"blank to use the default heading: <code>%s</code>."
 msgstr ""
-"Controla o título do cabeçalho principal dentro da notificação do e-mail. "
-"Deixe em branco para usar o título padrão: <code>%s</code>."
+"Controla o título do cabeçalho principal dentro da notificação do e-mail. Deixe "
+"em branco para usar o título padrão: <code>%s</code>."
 
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:145
 msgid "Choose which format of email to send."
@@ -430,11 +432,11 @@ msgstr "WooCommerce Nfe.io"
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:23
 msgid ""
-"depends on the last version of WooCommerce Extra Checkout Fields for Brazil "
-"to work!"
+"depends on the last version of WooCommerce Extra Checkout Fields for Brazil to "
+"work!"
 msgstr ""
-"precisa da última versão do plugin WooCommerce Extra Checkout Fields dor "
-"Brazil para funcionar!"
+"precisa da última versão do plugin WooCommerce Extra Checkout Fields dor Brazil "
+"para funcionar!"
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:26
 msgid "Active WooCommerce Extra Checkout Fields for Brazil"
@@ -466,8 +468,8 @@ msgstr ""
 
 #: includes/frontend/class-frontend.php:48
 msgid ""
-"The following address(es) will be used on the checkout page by default and "
-"also when issuing a NFe sales receipt."
+"The following address(es) will be used on the checkout page by default and also "
+"when issuing a NFe sales receipt."
 msgstr ""
 "O seguinte endereço será usado na página de checkout por padrão e também ao "
 "emitir uma nota fiscal pelo NFe.io."
@@ -501,8 +503,8 @@ msgstr "https://nfe.io"
 #. when email is sent out
 #: includes/admin/emails/class-nfe-email-receipt-issued.php:32
 msgctxt ""
-"default email subject for safe copy emails sent to the admin or a custom "
-"email chosen in the NFe settings page"
+"default email subject for safe copy emails sent to the admin or a custom email "
+"chosen in the NFe settings page"
 msgid "[%s] NFe Receipt Issued"
 msgstr "[%s] Nota Fiscal Emitida"
 

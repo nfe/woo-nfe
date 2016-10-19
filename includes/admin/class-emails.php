@@ -8,9 +8,9 @@ if ( ! class_exists('WC_NFe_Emails') ) :
 /**
  * WooCommerce NFe Email Class
  *
- * @author  	NFe.io
- * @package 	WooCommerce_NFe/Class/WC_NFe_Emails
- * @version 	1.0.1
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Emails
+ * @version  1.0.1
  */
 class WC_NFe_Emails {
 

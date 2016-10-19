@@ -8,9 +8,9 @@ if ( ! class_exists('WC_NFe_Ajax') ) :
 /**
  * WooCommerce NFe Ajax Class
  *
- * @package 	WooCommerce_NFe/Class/WC_NFe_Ajax
- * @author  	NFe.io
- * @version   1.0.1
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Ajax
+ * @version  1.0.4
  */
 class WC_NFe_Ajax {
 
@@ -52,11 +52,6 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		// Bail if not completed
-		if ( ! $order->has_status( 'completed' ) ) {
-			return;
-		}
-
 		// Bail if order address needs to be updated
 		if ( ! nfe_order_address_filled( $order->id ) ) {
 			NFe_Woo()->issue_invoice( array( $order->id ) );
@@ -79,11 +74,6 @@ class WC_NFe_Ajax {
 
 		// Bail if there is no order id
 		if ( empty( $order->id ) ) {
-			return;
-		}
-
-		// Bail if not completed
-		if ( ! $order->has_status( 'completed' ) ) {
 			return;
 		}
 
