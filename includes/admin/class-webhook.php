@@ -37,7 +37,7 @@ class WC_NFe_Webhook_Handler
         $raw_body = file_get_contents('php://input');
         $body = json_decode($raw_body);
 
-        $this->logger(__('New webhook called.', 'woo-nfe') . " " . $body);
+        $this->logger(__('New webhook called.', 'woo-nfe') . " " . $raw_body);
 
         try {
             $this->process_event($body);
