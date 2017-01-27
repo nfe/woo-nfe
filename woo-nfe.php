@@ -3,23 +3,23 @@
 /**
  * WooCommerce NFe plugin
  *
- * @author 			      NFe.io
+ * @author 			  NFe.io
  * @link              https://github.com/nfe/woo-nfe
- * @since             1.0.5
+ * @since             1.0.7
  * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.0.5
+ * Version:           1.0.7
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
  * Developer URI:     https://github.com/nfe/woo-nfe/graphs/contributors
  * Text Domain:       woo-nfe
  * Domain Path:       /languages
- * Network:     	    false
+ * Network:     	  false
  *
  * Copyright: © 2016 NFe.io
  * License: GNU General Public License v3.0

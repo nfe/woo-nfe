@@ -10,7 +10,7 @@ if ( ! class_exists('NFe_Woo') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/NFe_Woo
- * @version  1.0.4
+ * @version  1.0.7
  */
 class NFe_Woo {
 
@@ -337,25 +337,25 @@ class NFe_Woo {
 
 		switch ($field) {
 			case 'number': // Customer ID Number
-				if ( $type == 1 ) {
+				if ( $type == 1 || empty($type) ) {
 					$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
 				}
-				elseif ( $type == 2 ) {
+				elseif ( $type == 2 || empty($type) || empty($output) ) {
 					$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 				}
 				break;
 
 			case 'name': // Customer Name/Razão Social
-				if ( $type == 1 ) {
+				if ( $type == 1 || empty($type) ) {
 					$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
 				}
-				elseif ( $type == 2 ) {
+				elseif ( $type == 2 || empty($type) || empty($output) ) {
 					$output = get_post_meta( $order, '_billing_company', true );
 				}
 				break;
 
 			case 'type': // Customer Type
-				if ( $type == 1 ) {
+				if ( $type == 1 || empty($type) ) {
 					$output = __('Customers', 'woo-nfe');
 				}
 				elseif ( $type == 2 ) {
