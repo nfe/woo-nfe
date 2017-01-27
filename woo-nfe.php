@@ -5,7 +5,7 @@
  *
  * @author 			      NFe.io
  * @link              https://github.com/nfe/woo-nfe
- * @since             1.0.5
+ * @since             1.0.6
  * @package           WooCommerce_NFe
  *
  * @wordpress-plugin

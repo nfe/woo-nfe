@@ -10,7 +10,7 @@ if ( ! class_exists('WC_NFe_Admin') ) :
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_Admin
- * @version  1.0.4
+ * @version  1.0.6
  */
 class WC_NFe_Admin {
 
@@ -28,24 +28,19 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
 		add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
-		add_action( 'woocommerce_admin_order_data_after_shipping_address', 	array( $this, 'display_order_data_in_admin' ), 20 );
-		add_action( 'admin_enqueue_scripts',                 								array( $this, 'register_enqueue_css' ) );
-
-		// Issue triggers
-		//add_action( 'woocommerce_order_status_pending_to_processing_notification', 	array( $this, 'issue_trigger' ) );
-		//add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'issue_trigger' ) );
-		//add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ), 20 );
+		add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
 		/*
-		Status trigger
+		Woo Commmerce status triggers
 
-		woocommerce_order_status_pending
-		woocommerce_order_status_failed
-		woocommerce_order_status_on-hold
-		woocommerce_order_status_processing
-		woocommerce_order_status_completed
-		woocommerce_order_status_refunded
-		woocommerce_order_status_cancelled
+		- woocommerce_order_status_pending
+		- woocommerce_order_status_failed
+		- woocommerce_order_status_on-hold
+		- woocommerce_order_status_processing
+		- woocommerce_order_status_completed
+		- woocommerce_order_status_refunded
+		- woocommerce_order_status_cancelled
 		*/
 
 		add_action( 'woocommerce_order_status_pending', 						array( $this, 'issue_trigger' ) );
@@ -368,6 +363,31 @@ class WC_NFe_Admin {
 	    <h4><?php echo '<strong>' . __( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
 	    <div class="nfe-details">
 	        <?php
+				if(!isset($nfe['status']))
+				{
+					$nfe['status'] = '';
+				}
+
+				if(!isset($nfe['number']))
+				{
+					$nfe['number'] = '';
+				}
+
+				if(!isset($nfe['checkCode']))
+				{
+					$nfe['checkCode'] = '';
+				}
+
+				if(!isset($nfe['issuedOn']))
+				{
+					$nfe['issuedOn'] = '';
+				}
+
+				if(!isset($nfe['amountNet']))
+				{
+					$nfe['amountNet'] = '';
+				}
+
 	        	echo '<p>';
 	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
 	            echo '<strong>' . __( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
