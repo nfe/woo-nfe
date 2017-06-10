@@ -73,12 +73,13 @@ class WC_NFe_FrontEnd {
      * @return string
      */
     public function column_content( $order ) {
-        $order_id   = $order->id;
+        $order_data = $order->get_data();
+        $order_id   = $order_data['id'];
         $nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
         $actions 	= array();
         $status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
-				$issue_when = nfe_get_field('issue_when');
-				$issue_when_status = nfe_get_field('issue_when_status');
+		$issue_when = nfe_get_field('issue_when');
+		$issue_when_status = nfe_get_field('issue_when_status');
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
             if ( $nfe && $nfe['status'] == 'Cancelled' ) {

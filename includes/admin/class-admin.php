@@ -249,17 +249,17 @@ class WC_NFe_Admin {
 	public function order_status_column_content( $column ) {
 		global $post;
 
-		$order    = nfe_wc_get_order( $post->ID );
-		$order_id = $order->id;
-		$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
-		$status   = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
+		$order    	= nfe_wc_get_order( (int) $post->ID );
+		$order_data = $order->get_data();
+		$order_id 	= $order_data['id'];
+		$nfe      	= get_post_meta( $order_id, 'nfe_issued', true );
+		$status   	= array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
 		if ( 'sales_receipt' == $column ) {
 			?><p>
 			<?php
 			$actions = array();
 
-			//if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
 			if ( nfe_get_field('nfe_enable') == 'yes') {
 				if ( $nfe && $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) {
 					if ( $nfe['status'] == 'Cancelled' ) {
