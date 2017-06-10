@@ -354,6 +354,8 @@ class WC_NFe_Admin {
 	/**
 	 * Adds NFe information on order page
 	 *
+	 * @since 1.0.8 Updated how details is being checked
+	 *
 	 * @param  WC_Order $order
 	 * @return string
 	 */
@@ -363,29 +365,12 @@ class WC_NFe_Admin {
 	    <h4><?php echo '<strong>' . __( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
 	    <div class="nfe-details">
 	        <?php
-				if(!isset($nfe['status']))
-				{
-					$nfe['status'] = '';
-				}
+		        $details = array('status', 'number', 'checkCode', 'issuedOn', 'amountNet');
 
-				if(!isset($nfe['number']))
-				{
-					$nfe['number'] = '';
-				}
-
-				if(!isset($nfe['checkCode']))
-				{
-					$nfe['checkCode'] = '';
-				}
-
-				if(!isset($nfe['issuedOn']))
-				{
-					$nfe['issuedOn'] = '';
-				}
-
-				if(!isset($nfe['amountNet']))
-				{
-					$nfe['amountNet'] = '';
+				foreach ($details as $data) {
+					if ( ! isset($nfe[$data]) ) {
+						$nfe[$data] = '';
+					}
 				}
 
 	        	echo '<p>';
