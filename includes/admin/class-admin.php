@@ -15,7 +15,9 @@ if ( ! class_exists('WC_NFe_Admin') ) :
 class WC_NFe_Admin {
 
 	/**
-	 * Constructor
+	 * Class Constructor
+	 *
+	 * @since 1.0.6
 	 */
 	public function __construct() {
 		// Filters
@@ -43,8 +45,8 @@ class WC_NFe_Admin {
 		- woocommerce_order_status_cancelled
 		*/
 
-		add_action( 'woocommerce_order_status_pending', 						array( $this, 'issue_trigger' ) );
-		add_action( 'woocommerce_order_status_on-hold', 						array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_pending', 					array( $this, 'issue_trigger' ) );
+		add_action( 'woocommerce_order_status_on-hold', 					array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_processing', 					array( $this, 'issue_trigger' ) );
 		add_action( 'woocommerce_order_status_completed', 					array( $this, 'issue_trigger' ) );
 
@@ -62,7 +64,7 @@ class WC_NFe_Admin {
 	 * @return bool true|false
 	 */
 	public function issue_trigger( $order_id ) {
-		if ( nfe_get_field('issue_when') == 'manual' ) {
+		if ( nfe_get_field('issue_when') === 'manual' ) {
 			return;
 		}
 		if ( $order_id ) {
@@ -74,7 +76,7 @@ class WC_NFe_Admin {
 		if ( ! nfe_order_address_filled( $order_id ) ) {
 			// We just can issue the invoice if the status
 			// is equal to the configured one
-			if ( $order->post_status == nfe_get_field('issue_when_status') ) {
+			if ( $order->post_status === nfe_get_field('issue_when_status') ) {
 				NFe_Woo()->issue_invoice( array( $order_id ) );
 			}
 		}
@@ -88,7 +90,7 @@ class WC_NFe_Admin {
 	 */
 	public function product_data_tab( $product_data_tabs ) {
 		$product_data_tabs['nfe-product-info-tab'] = array(
-			'label'     => __( 'WooCommerce NFe', 'woo-nfe' ),
+			'label'     => esc_html__( 'WooCommerce NFe', 'woo-nfe' ),
 			'target'    => 'nfe_product_info_data',
 			'class'     => array( 'hide_if_variable' ),
 		);
@@ -107,38 +109,32 @@ class WC_NFe_Admin {
 		?>
 		<div id="nfe_product_info_data" class="panel woocommerce_options_panel">
 			<?php
-			woocommerce_wp_text_input(
-				array(
-					'id'            => '_simple_cityservicecode',
-					'label'         => __( 'CityServiceCode', 'woo-nfe' ),
-					'wrapper_class' => 'hide_if_variable',
-					'desc_tip'      => 'true',
-					'description'   => __( 'Enter the CityServiceCode.', 'woo-nfe' ),
-					'value'         => get_post_meta( $post->ID, '_simple_cityservicecode', true )
-				)
-			);
+			woocommerce_wp_text_input( array(
+				'id'            => '_simple_cityservicecode',
+				'label'         => esc_html__( 'CityServiceCode', 'woo-nfe' ),
+				'wrapper_class' => 'hide_if_variable',
+				'desc_tip'      => 'true',
+				'description'   => esc_html__( 'Enter the CityServiceCode.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post->ID, '_simple_cityservicecode', true )
+			) );
 
-			woocommerce_wp_text_input(
-				array(
-					'id'            => '_simple_federalservicecode',
-					'label'         => __( 'FederalServiceCode', 'woo-nfe' ),
-					'wrapper_class' => 'hide_if_variable',
-					'desc_tip'      => 'true',
-					'description'   => __( 'Enter the FederalServiceCode.', 'woo-nfe' ),
-					'value'         => get_post_meta( $post->ID, '_simple_federalservicecode', true )
-				)
-			);
+			woocommerce_wp_text_input( array(
+				'id'            => '_simple_federalservicecode',
+				'label'         => esc_html__( 'FederalServiceCode', 'woo-nfe' ),
+				'wrapper_class' => 'hide_if_variable',
+				'desc_tip'      => 'true',
+				'description'   => esc_html__( 'Enter the FederalServiceCode.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post->ID, '_simple_federalservicecode', true )
+			) );
 
-			woocommerce_wp_textarea_input(
-				array(
-					'id'            => '_simple_nfe_product_desc',
-					'label'         => __( 'Product Description', 'woo-nfe' ),
-					'wrapper_class' => 'hide_if_variable',
-					'desc_tip'      => 'true',
-					'description'   => __( 'Description for this product output in NFe receipt.', 'woo-nfe' ),
-					'value'         => get_post_meta( $post->ID, '_simple_nfe_product_desc', true )
-				)
-			);
+			woocommerce_wp_textarea_input( array(
+				'id'            => '_simple_nfe_product_desc',
+				'label'         => esc_html__( 'Product Description', 'woo-nfe' ),
+				'wrapper_class' => 'hide_if_variable',
+				'desc_tip'      => 'true',
+				'description'   => esc_html__( 'Description for this product output in NFe receipt.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post->ID, '_simple_nfe_product_desc', true )
+			) );
 			?>
 		</div>
 		<?php
@@ -173,33 +169,27 @@ class WC_NFe_Admin {
 	* @return array
 	*/
 	public function variation_fields( $loop, $variation_data, $variation ) {
-		woocommerce_wp_text_input(
-			array(
-				'id'            => '_cityservicecode[' . $variation->ID . ']',
-				'label'         => __( 'NFe CityServiceCode', 'woo-nfe' ),
-				'desc_tip'      => 'true',
-				'description'   => __( 'Enter the CityServiceCode.', 'woo-nfe' ),
-				'value'         => get_post_meta( $variation->ID, '_cityservicecode', true )
-			)
-		);
+		woocommerce_wp_text_input( array(
+			'id'            => '_cityservicecode[' . $variation->ID . ']',
+			'label'         => esc_html__( 'NFe CityServiceCode', 'woo-nfe' ),
+			'desc_tip'      => 'true',
+			'description'   => esc_html__( 'Enter the CityServiceCode.', 'woo-nfe' ),
+			'value'         => get_post_meta( $variation->ID, '_cityservicecode', true )
+		) );
 
-		woocommerce_wp_text_input(
-			array(
-				'id'            => '_federalservicecode[' . $variation->ID . ']',
-				'label'         => __( 'NFe FederalServiceCode', 'woo-nfe' ),
-				'desc_tip'      => 'true',
-				'description'   => __( 'Enter the FederalServiceCode.', 'woo-nfe' ),
-				'value'         => get_post_meta( $variation->ID, '_federalservicecode', true )
-			)
-		);
+		woocommerce_wp_text_input( array(
+			'id'            => '_federalservicecode[' . $variation->ID . ']',
+			'label'         => esc_html__( 'NFe FederalServiceCode', 'woo-nfe' ),
+			'desc_tip'      => 'true',
+			'description'   => esc_html__( 'Enter the FederalServiceCode.', 'woo-nfe' ),
+			'value'         => get_post_meta( $variation->ID, '_federalservicecode', true )
+		) );
 
-		woocommerce_wp_textarea_input(
-			array(
-				'id'            => '_nfe_product_variation_desc[' . $variation->ID . ']',
-				'label'         => __( 'NFe Product Description', 'woo-nfe' ),
-				'value'         => get_post_meta( $variation->ID, '_nfe_product_variation_desc', true )
-			)
-		);
+		woocommerce_wp_textarea_input( array(
+			'id'            => '_nfe_product_variation_desc[' . $variation->ID . ']',
+			'label'         => esc_html__( 'NFe Product Description', 'woo-nfe' ),
+			'value'         => get_post_meta( $variation->ID, '_nfe_product_variation_desc', true )
+		) );
 	}
 
    /**
@@ -235,7 +225,7 @@ class WC_NFe_Admin {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_actions' === $column_name ) {
-				$new_columns['sales_receipt'] = __( 'Sales Receipt', 'woo-nfe' );
+				$new_columns['sales_receipt'] = esc_html__( 'Sales Receipt', 'woo-nfe' );
 			}
 		}
 		return $new_columns;
@@ -243,6 +233,8 @@ class WC_NFe_Admin {
 
 	/**
 	 * Column Content on Order Status
+	 *
+	 * @since 1.0.9
 	 *
 	 * @return string
 	 */
@@ -255,57 +247,57 @@ class WC_NFe_Admin {
 		$nfe      	= get_post_meta( $order_id, 'nfe_issued', true );
 		$status   	= array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
-		if ( 'sales_receipt' == $column ) {
+		if ( 'sales_receipt' === $column ) {
 			?><p>
 			<?php
 			$actions = array();
 
-			if ( nfe_get_field('nfe_enable') == 'yes') {
-				if ( ! empty($nfe) && ( $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) ) {
-					if ( $nfe['status'] == 'Cancelled' ) {
+			if ( nfe_get_field('nfe_enable') === 'yes') {
+				if ( ! empty($nfe) && ( $nfe['status'] === 'Cancelled' || $nfe['status'] === 'Issued' ) ) {
+					if ( $nfe['status'] === 'Cancelled' ) {
 						$actions['woo_nfe_cancelled'] = array(
-							'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
+							'name'      => esc_html__( 'NFe Cancelled', 'woo-nfe' ),
 							'action'    => 'woo_nfe_cancelled'
 						);
 					}
-					else if ( $nfe['status'] == 'Issued' ) {
+					elseif ( $nfe['status'] === 'Issued' ) {
 						$actions['woo_nfe_emitida'] = array(
-							'name'      => __( 'Issued', 'woo-nfe' ),
+							'name'      => esc_html__( 'Issued', 'woo-nfe' ),
 							'action'    => 'woo_nfe_emitida'
 						);
 					}
 
 					$actions['woo_nfe_download'] = array(
 						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-						'name'      => __( 'Download NFe', 'woo-nfe' ),
+						'name'      => esc_html__( 'Download NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_download'
 					);
 				}
 				elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
 					$actions['woo_nfe_issuing'] = array(
-						'name'      => __( 'Issuing NFe', 'woo-nfe' ),
+						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing'
 					);
 				}
 				else {
 					if ( nfe_order_address_filled( $order_id ) ) {
 						$actions['woo_nfe_pending_address'] = array(
-							'name'      => __( 'Pending Address', 'woo-nfe' ),
+							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
 							'action'    => 'woo_nfe_pending_address'
 						);
 					}
 					else {
-						if ( nfe_get_field('issue_past_notes') == 'yes' ) {
+						if ( nfe_get_field('issue_past_notes') === 'yes' ) {
 							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 								$actions['woo_nfe_issue'] = array(
 									'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-									'name'      => __( 'Issue NFe', 'woo-nfe' ),
+									'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
 									'action'    => 'woo_nfe_issue'
 								);
 							}
 							else {
 								$actions['woo_nfe_expired'] = array(
-									'name'      => __( 'Issue Expired', 'woo-nfe' ),
+									'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
 									'action'    => 'woo_nfe_expired'
 								);
 							}
@@ -313,7 +305,7 @@ class WC_NFe_Admin {
 						else {
 							$actions['woo_nfe_issue'] = array(
 								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-								'name'      => __( 'Issue NFe', 'woo-nfe' ),
+								'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
 								'action'    => 'woo_nfe_issue'
 							);
 						}
@@ -321,16 +313,16 @@ class WC_NFe_Admin {
 				}
 			}
 
-			if ( nfe_get_field('nfe_enable') == 'no' && current_user_can('manage_woocommerce') ) {
+			if ( nfe_get_field('nfe_enable') === 'no' && current_user_can('manage_woocommerce') ) {
 				$actions['woo_nfe_tab'] = array(
 					'url'       => WOOCOMMERCE_NFE_SETTINGS_URL,
-					'name'      => __( 'Enable NFe', 'woo-nfe' ),
+					'name'      => esc_html__( 'Enable NFe', 'woo-nfe' ),
 					'action'    => 'woo_nfe_tab'
 				);
 			}
 
 			foreach ( $actions as $action ) {
-				if ( $action['action'] == 'woo_nfe_issue' || $action['action'] == 'woo_nfe_download' ) {
+				if ( $action['action'] === 'woo_nfe_issue' || $action['action'] === 'woo_nfe_download' ) {
 					printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>',
 						esc_attr( $action['action'] ),
 						esc_url( $action['url'] ),
@@ -345,8 +337,7 @@ class WC_NFe_Admin {
 						esc_attr( $action['name'] )
 					);
 				}
-			}
-			?>
+			} ?>
 			</p><?php
 		}
 	}
@@ -362,7 +353,7 @@ class WC_NFe_Admin {
 	public function display_order_data_in_admin( $order ) {
 		$nfe = get_post_meta( $order->id, 'nfe_issued', true );
 		?>
-	    <h4><?php echo '<strong>' . __( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
+	    <h4><?php echo '<strong>' . esc_html__( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
 	    <div class="nfe-details">
 	        <?php
 		        $details = array('status', 'number', 'checkCode', 'issuedOn', 'amountNet');
@@ -374,11 +365,11 @@ class WC_NFe_Admin {
 				}
 
 	        	echo '<p>';
-	            echo '<strong>' . __( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
-	            echo '<strong>' . __( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
-	            echo '<strong>' . __( 'Check Code', 'woo-nfe' ) . ': </strong>' . $nfe['checkCode'] . '<br />';
-	            echo '<strong>' . __( 'Issued on', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
-	            echo '<strong>' . __( 'Price', 'woo-nfe' ) . ': </strong>' . wc_price( $nfe['amountNet'] ) . '<br />';
+	            echo '<strong>' . esc_html__( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
+	            echo '<strong>' . esc_html__( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
+	            echo '<strong>' . esc_html__( 'Check Code', 'woo-nfe' ) . ': </strong>' . $nfe['checkCode'] . '<br />';
+	            echo '<strong>' . esc_html__( 'Issued on', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
+	            echo '<strong>' . esc_html__( 'Price', 'woo-nfe' ) . ': </strong>' . wc_price( $nfe['amountNet'] ) . '<br />';
 	            echo '</p>';
 			?>
 	    </div>
