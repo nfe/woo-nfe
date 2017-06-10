@@ -261,7 +261,7 @@ class WC_NFe_Admin {
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') == 'yes') {
-				if ( $nfe && $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) {
+				if ( ! empty($nfe) && ( $nfe['status'] == 'Cancelled' || $nfe['status'] == 'Issued' ) ) {
 					if ( $nfe['status'] == 'Cancelled' ) {
 						$actions['woo_nfe_cancelled'] = array(
 							'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
@@ -281,7 +281,7 @@ class WC_NFe_Admin {
 						'action'    => 'woo_nfe_download'
 					);
 				}
-				else if ( $nfe && in_array( $nfe['status'], $status ) ) {
+				elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
 					$actions['woo_nfe_issuing'] = array(
 						'name'      => __( 'Issuing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing'

@@ -82,14 +82,14 @@ class WC_NFe_FrontEnd {
 		$issue_when_status = nfe_get_field('issue_when_status');
 
         if ( nfe_get_field('nfe_enable') == 'yes' && $order->has_status( 'completed' ) ) {
-            if ( $nfe && $nfe['status'] == 'Cancelled' ) {
+            if ( ! empty($nfe) && $nfe['status'] == 'Cancelled' ) {
                 $actions['woo_nfe_cancelled'] = array(
                     'url'       => '#',
                     'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
                     'action'    => 'woo_nfe_cancelled'
                 );
             }
-            else if ( $nfe && in_array( $nfe['status'], $status ) ) {
+            elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
                 $actions['woo_nfe_issuing'] = array(
                     'url'       => '#',
                     'name'      => __( 'Issuing NFe', 'woo-nfe' ),
@@ -105,7 +105,7 @@ class WC_NFe_FrontEnd {
                     );
                 }
                 else {
-                    if ( $nfe && $nfe['id'] ) {
+                    if ( ! empty($nfe) && $nfe['id'] ) {
                         $actions['woo_nfe_download'] = array(
                             'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order->id ), 'woo_nfe_download' ),
                             'name'      => __( 'Download NFe', 'woo-nfe' ),
@@ -129,7 +129,7 @@ class WC_NFe_FrontEnd {
                                 );
                             }
                         }
-                        else if ( $issue_when == "manual"	|| $issue_when_status == $order->post_status ) {
+                        else if ( $issue_when == 'manual' || $issue_when_status == $order->post_status ) {
                             $actions['woo_nfe_issue'] = array(
                                 'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
                                 'name'      => __( 'Issue NFe', 'woo-nfe' ),
