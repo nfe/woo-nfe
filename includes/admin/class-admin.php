@@ -243,7 +243,7 @@ class WC_NFe_Admin {
 
 		$order    	= nfe_wc_get_order( (int) $post->ID );
 		$order_data = $order->get_data();
-		$order_id 	= $order_data['id'];
+		$order_id 	= (int) $order_data['id'];
 		$nfe      	= get_post_meta( $order_id, 'nfe_issued', true );
 		$status   	= array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
@@ -351,7 +351,9 @@ class WC_NFe_Admin {
 	 * @return string
 	 */
 	public function display_order_data_in_admin( $order ) {
-		$nfe = get_post_meta( $order->id, 'nfe_issued', true );
+		$order_data = $order->get_data();
+		$order_id 	= (int) $order_data['id'];
+		$nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
 		?>
 	    <h4><?php echo '<strong>' . esc_html__( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
 	    <div class="nfe-details">
