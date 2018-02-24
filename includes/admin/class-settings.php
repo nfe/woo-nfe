@@ -20,7 +20,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function __construct() {
 		$this->id 				  = 'woo-nfe';
-		$this->method_title 	  = __( 'NFe Integration', 'woo-nfe' );
+		$this->method_title 	  = __( 'Receipts (NFE.io)', 'woo-nfe' );
 		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woo-nfe' );
 
 		// Load the settings.
