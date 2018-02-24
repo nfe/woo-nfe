@@ -37,7 +37,7 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
-			$lists = $this->companies();
+			$lists = $this->get_companies();
 
 			if ( empty( $lists ) ) {
 				$company_list = array_merge( array( '' => __( 'No company found in account', 'woo-nfe' ) ), $lists );
@@ -171,38 +171,43 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Fetches NFe Companies
+	 * Fetches companies via the NFe API.
 	 *
-	 * @return array An array of companies
+	 * @return bool|array Bail with error message | An array of companies.
 	 */
-	private function companies() {
+	private function get_companies() {
 		$key          = nfe_get_field( 'api_key' );
-		$company_list = get_transient( 'woo_nfecompanylist_' . md5( $key ) );
+		$api_key      = md5( $key );
+		$cache_key    = 'woo_nfecompanylist_' . $api_key;
+		$company_list = get_transient( $cache_key );
 
-		if ( false === $company_list ) {
-			$url       = "https://api.nfe.io/v1/companies?api_key={$key}";
-			$response  = wp_remote_get( esc_url_raw( $url ) );
-			$companies = json_decode( wp_remote_retrieve_body( $response ), true );
+		// If there is a list from cache, load it.
+		if ( isset( $company_list ) ) {
+			return $company_list;
+		}
 
-			if ( isset( $companies->message ) ) {
-				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+		$url       = "https://api.nfe.io/v1/companies?api_key={$key}";
+		$response  = wp_remote_get( esc_url_raw( $url ) );
+		$companies = json_decode( wp_remote_retrieve_body( $response ), true );
 
-				return false;
-			} else {
-				$company_list = array();
+		if ( isset( $companies->message ) ) {
+			add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+			add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
-				if ( sizeof( $companies ) > 0 && sizeof( $companies['companies'] ) > 0 ) {
-					foreach ( $companies['companies'] as $c ) {
-						$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-					}
-					if ( sizeof( $company_list ) > 0 ) {
-						set_transient( 'woo_nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
-					}
+			return false;
+		} else {
+			$company_list = array();
+
+			if ( count( $companies ) > 0 && count( $companies['companies'] ) > 0 ) {
+				foreach ( $companies['companies'] as $c ) {
+					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
+				}
+
+				if ( count( $company_list ) > 0 ) {
+					set_transient( $cache_key, $company_list, 24 * HOUR_IN_SECONDS );
 				}
 			}
 		}
-		return $company_list;
 	}
 
 	/**
