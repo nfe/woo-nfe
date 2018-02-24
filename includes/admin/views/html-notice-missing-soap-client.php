@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Missing dependencies notice.
  *
@@ -8,9 +7,9 @@
  * @version  1.0.1
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; ?>
 
 <div class="error">
-	<p><strong><?php _e( 'The WooCommerce NFe plugin', 'woo-nfe' ); ?></strong> <?php printf( __( 'needs the %s to work!', 'woo-nfe' ), '<a href="https://secure.php.net/manual/en/class.soapclient.php" target="_blank">' . __( 'SOAP module', 'woo-nfe' ) . '</a>' ); ?></p>
+	<p><strong><?php esc_html_e( 'The WooCommerce NFe plugin', 'woo-nfe' ); ?></strong> <?php printf( __( 'needs the %s to work!', 'woo-nfe' ), '<a href="https://secure.php.net/manual/en/class.soapclient.php" target="_blank">' . __( 'SOAP module', 'woo-nfe' ) . '</a>' ); ?></p>
 </div>
