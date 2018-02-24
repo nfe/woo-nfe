@@ -15,10 +15,12 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Init and hook in the integration.
+	 *
+	 * @return void
 	 */
 	public function __construct() {
-		$this->id 				  = 'woo-nfe';
-		$this->method_title 	  = __( 'NFe Integration', 'woo-nfe' );
+		$this->id                 = 'woo-nfe';
+		$this->method_title       = __( 'NFe Integration', 'woo-nfe' );
 		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woo-nfe' );
 
 		// Load the settings.
@@ -34,6 +36,8 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Initialize integration settings form fields.
+	 *
+	 * @return void
 	 */
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
@@ -71,7 +75,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
-				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/companies') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url( 'https://app.nfe.io/companies' ) . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
 
 			),
 			'issue_when' 			=> array(
@@ -114,7 +118,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'custom_attributes' => array(
 					'readonly' => 'readonly'
 				),
-				'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/webhooks') . '">' . __( 'NFe.io Webhooks', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woo-nfe' ), '<a href="' . esc_url( 'https://app.nfe.io/account/webhooks' ) . '">' . __( 'NFe.io Webhooks', 'woo-nfe' ) . '</a>' ),
 			),
 			'issue_past_title' 	=> array(
 				'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woo-nfe' ),
@@ -299,7 +303,13 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return bool
 	 */
 	public function is_active() {
-		if ( nfe_get_field( 'nfe_enable' ) === 'yes' ) {
+		$enabled = nfe_get_field( 'nfe_enable' );
+
+		if ( empty( $enabled ) ) {
+			return false;
+		}
+
+		if ( 'yes' === $enabled ) {
 			return true;
 		}
 
