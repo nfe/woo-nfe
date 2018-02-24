@@ -190,9 +190,9 @@ class WC_NFe_Integration extends WC_Integration {
 			return $company_list;
 		}
 
-		$url       = "https://api.nfe.io/v1/companies?api_key={$key}";
-		$response  = wp_remote_get( esc_url_raw( $url ) );
-		$companies = json_decode( wp_remote_retrieve_body( $response ), true );
+		NFe::setApiKey( $key );
+
+		$companies = NFe_Company::search();
 
 		if ( isset( $companies->message ) ) {
 			add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
