@@ -402,7 +402,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					'status'     => isset( $nfe['status'] ) ?: '',
 					'number'     => isset( $nfe['number'] ) ?: '',
 					'check_code' => isset( $nfe['checkCode'] ) ?: '',
-					'price'      => isset( $nfe['amountNet'] ) ? wc_price( $nfe['amountNet'] ) : '',
 					'issued'     => isset( $nfe['issuedOn'] )
 						? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) )
 						: '',
@@ -438,11 +437,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					<# if ( data.nfe.check_code ) { #>
 						<strong><?php esc_html_e( 'CheckCode', 'woo-nfe' ); ?></strong>
 						{{{ data.nfe.check_code }}}
-					<# } #>
-
-					<# if ( data.nfe.price ) { #>
-						<strong><?php esc_html_e( 'Price', 'woo-nfe' ); ?></strong>
-						{{{ data.nfe.price }}}
 					<# } #>
 
 					<# if ( data.nfe.issued ) { #>
