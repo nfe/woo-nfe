@@ -8,13 +8,13 @@
  * @version  1.0.4
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Function to fetch fields from the NFe WooCommerce Integration
+ * Function to fetch fields from the NFe WooCommerce Integration.
  *
- * @param  string $value Value to fetch
+ * @param  string $value Value to fetch.
  * @return string
  */
 function nfe_get_field( $value = '' ) {
@@ -22,9 +22,8 @@ function nfe_get_field( $value = '' ) {
 
 	if ( empty( $value ) ) {
 		$output = $nfe_fields;
-	}
-	else {
-		$output = $nfe_fields[$value];
+	} else {
+		$output = $nfe_fields[ $value ];
 	}
 
 	return $output;
