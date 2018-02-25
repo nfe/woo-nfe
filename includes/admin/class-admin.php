@@ -240,7 +240,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 *
 		 * @since 1.0.9
 		 *
-		 * @return string
+		 * @return void
 		 */
 		public function order_status_column_content( $column ) {
 			global $post;
@@ -449,6 +449,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		public function nfe_admin_order_preview() {
 			?>
+			<# if ( data.nfe ) { #>
 			<div class="wc-order-preview-addresses">
 				<div class="wc-order-preview-address">
 					<h2><?php esc_html_e( 'NFe Details', 'woo-nfe' ); ?></h2>
@@ -474,6 +475,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					<# } #>
 				</div>
 			</div>
+			<# } #>
 			<?php
 		}
 
