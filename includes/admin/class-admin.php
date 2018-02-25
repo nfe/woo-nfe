@@ -25,6 +25,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_filter( 'manage_edit-shop_order_columns', [ $this, 'order_status_column_header' ] );
 			add_action( 'manage_shop_order_posts_custom_column', [ $this, 'order_status_column_content' ], 10, 1 );
 
+			// Addings NFe actions to the order edit screen.
+			add_action( 'woocommerce_order_actions', [ $this, 'download_and_issue_actions' ], 10 , 1 );
+			add_action( 'woocommerce_order_action_nfe_download_order_action', [ $this, 'download_issue_action' ] );
+			add_action( 'woocommerce_order_action_nfe_issue_order_action', [ $this, 'issue_order_action' ] );
+
 			// Filters
 			add_filter( 'woocommerce_product_data_tabs',                				array( $this, 'product_data_tab' ) );
 
@@ -193,6 +198,66 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				'label'         => esc_html__( 'NFe Product Description', 'woo-nfe' ),
 				'value'         => get_post_meta( $variation->ID, '_nfe_product_variation_desc', true )
 			) );
+		}
+
+		/**
+		 * Adds the Download and Issue actions to the actions list in the order edit page.
+		 *
+		 * @param array $actions Order actions array to display.
+		 *
+		 * @return array List of actions.
+		 */
+		public function download_and_issue_actions( $actions ) {
+			global $theorder, $post;
+
+			if ( ! is_object( $theorder ) ) {
+				$theorder = wc_get_order( $post->ID );
+			}
+
+			$download = get_post_meta( $theorder->id, 'nfe_issued', true );
+
+			// Load the download actin if there is a issue to download.
+			if ( ! empty( $download ) && isset( $download['id'] ) ) {
+				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
+			}
+
+			// Load the issue action if the requirements are ok.
+			if ( ! nfe_order_address_filled( $theorder->id ) ) {
+				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
+			}
+
+			return $actions;
+		}
+
+		/**
+		 * NFe receipt downloading actoin.
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @return void
+		 */
+		public function download_issue_action( $order ) {
+
+			// add the order note.
+			$message = esc_html__( 'NFe receipt downloaded %s.', 'woo-nfe' );
+			$order->add_order_note( $message );
+
+			WC_NFe_Ajax::download_pdf( $order->id );
+		}
+
+		/**
+		 * NFe receipt issuing action.
+		 *
+		 * @param  WC_Order $order Order object.
+		 * @return void
+		 */
+		public function issue_order_action( $order ) {
+
+			// Add the order note.
+			$message = esc_html__( 'NFe receipt for this order was issued.', 'woo-nfe' );
+			$order->add_order_note( $message );
+
+			// Issue NFe receipt.
+			NFe_Woo()->issue_invoice( array( $order->id ) );
 		}
 
 	   /**
