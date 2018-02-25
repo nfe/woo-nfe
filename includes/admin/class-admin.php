@@ -67,9 +67,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 		/**
 		 * Issue a NFe receipt when WooCommerce does its thing.
-		 * Issue on order status
-		 * @param  int $order_id Order ID
-		 * @return bool true|false
+		 *
+		 * @param  int $order_id Order ID.
+		 * @return void
 		 */
 		public function issue_trigger( $order_id ) {
 			if ( nfe_get_field( 'issue_when' ) === 'manual' ) {
@@ -77,19 +77,20 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			$order = nfe_wc_get_order( $order_id );
-			$order_id = $order->id;
+			$order_id = $order->get_id();
 
 			if ( ! $order_id ) {
 				return;
 			}
 
-			// Checking if the address of order is filled
-			if ( ! nfe_order_address_filled( $order_id ) ) {
-				// We just can issue the invoice if the status
-				// is equal to the configured one
-				if ( $order->post_status === nfe_get_field('issue_when_status') ) {
-					NFe_Woo()->issue_invoice( array( $order_id ) );
-				}
+			// Checking if the address of order is filled.
+			if ( nfe_order_address_filled( $order_id ) ) {
+				return;
+			}
+
+			// We just can issue the invoice if the status is equal to the configured one.
+			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
+				NFe_Woo()->issue_invoice( array( $order_id ) );
 			}
 		}
 
@@ -218,7 +219,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Only for paid orders.
-			if ( ! $theorder->is_paid() ) {
+			if ( ! $theorder->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
 				return $actions;
 			}
 
@@ -329,7 +330,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<?php
 			$actions = array();
 
-			if ( $order->is_paid() ) {
+			if ( $order->has_status( 'completed' ) ) {
 				if ( ! empty( $nfe ) && ( 'Cancelled' === $nfe['status'] || 'Issued' === $nfe['status'] ) ) {
 					if ( 'Cancelled' === $nfe['status'] ) {
 						$actions['woo_nfe_cancelled'] = array(
