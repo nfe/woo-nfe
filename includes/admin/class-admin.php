@@ -89,7 +89,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// We just can issue the invoice if the status is equal to the configured one.
-			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
+			if ( $order->has_status( 'completed' ) ) {
 				NFe_Woo()->issue_invoice( array( $order_id ) );
 			}
 		}
@@ -228,8 +228,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return $actions;
 			}
 
-			if ( $theorder->has_status( nfe_get_field( 'issue_when_status' ) )
-				&& ! nfe_order_address_filled( $order_id )  ) {
+			if ( $theorder->has_status( 'completed' ) && ! nfe_order_address_filled( $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 
 				return $actions;
