@@ -218,23 +218,21 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				$theorder = nfe_wc_get_order( get_the_ID() );
 			}
 
-			// Only for paid orders.
-			if ( ! $theorder->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
-				return $actions;
-			}
-
 			$order_id = $theorder->get_id();
-
 			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
 			// Load the download actin if there is a issue to download.
 			if ( ! empty( $download ) && isset( $download['id'] ) ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
+
+				return $actions;
 			}
 
-			// Load the issue action if the requirements are ok.
-			if ( ! nfe_order_address_filled( $order_id ) ) {
+			if ( $theorder->has_status( nfe_get_field( 'issue_when_status' ) )
+				&& ! nfe_order_address_filled( $order_id )  ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
+
+				return $actions;
 			}
 
 			return $actions;
