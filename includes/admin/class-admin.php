@@ -72,12 +72,15 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return bool true|false
 		 */
 		public function issue_trigger( $order_id ) {
-			if ( nfe_get_field('issue_when') === 'manual' ) {
+			if ( nfe_get_field( 'issue_when' ) === 'manual' ) {
 				return;
 			}
-			if ( $order_id ) {
-				$order    = nfe_wc_get_order( $order_id );
-				$order_id = $order->id;
+
+			$order = nfe_wc_get_order( $order_id );
+			$order_id = $order->id;
+
+			if ( ! $order_id ) {
+				return;
 			}
 
 			// Checking if the address of order is filled
@@ -290,7 +293,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		public function order_status_column_header( $columns ) {
 			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFe.io API', 'woo-nfe' ) . '">' . esc_attr__( 'Sales Receipt', 'woo-nfe' ) . '</span>';
 
-			$new_columns = wcs_array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
+			$new_columns = $this->array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
 
 			return $new_columns;
 		}
@@ -305,11 +308,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return void
 		 */
 		public function order_status_column_content( $column ) {
-			global $post;
-
-			$order      = nfe_wc_get_order( (int) $post->ID );
-			$order_data = $order->get_data();
-			$order_id   = (int) $order_data['id'];
+			// Get information.
+			$order      = nfe_wc_get_order( get_the_ID() );
+			$order_id   = $order->get_id();
 			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
 			$status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
@@ -317,54 +318,61 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			if ( 'nfe_receipts' !== $column ) {
 				return;
 			}
-
-			?><p>
+			?>
+			<mark>
 			<?php
 			$actions = array();
 
-			if ( ! empty( $nfe ) && ( $nfe['status'] === 'Cancelled' || $nfe['status'] === 'Issued' ) ) {
-				if ( $nfe['status'] === 'Cancelled' ) {
-					$actions['woo_nfe_cancelled'] = array(
-						'name'      => esc_html__( 'NFe Cancelled', 'woo-nfe' ),
-						'action'    => 'woo_nfe_cancelled',
-					);
-				} elseif ( $nfe['status'] === 'Issued' ) {
-					$actions['woo_nfe_emitida'] = array(
-						'name'      => esc_html__( 'Issued', 'woo-nfe' ),
-						'action'    => 'woo_nfe_emitida',
-					);
-				}
-			} elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
-				$actions['woo_nfe_issuing'] = array(
-					'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
-					'action'    => 'woo_nfe_issuing',
-				);
-			} else {
-				if ( nfe_order_address_filled( $order_id ) ) {
-					$actions['woo_nfe_pending_address'] = array(
-						'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
-						'action'    => 'woo_nfe_pending_address',
+			if ( $order->is_paid() ) {
+				if ( ! empty( $nfe ) && ( 'Cancelled' === $nfe['status'] || 'Issued' === $nfe['status'] ) ) {
+					if ( 'Cancelled' === $nfe['status'] ) {
+						$actions['woo_nfe_cancelled'] = array(
+							'name'      => esc_html__( 'NFe Cancelled', 'woo-nfe' ),
+							'action'    => 'woo_nfe_cancelled',
+						);
+					} elseif ( 'Issued' === $nfe['status'] ) {
+						$actions['woo_nfe_emitida'] = array(
+							'name'      => esc_html__( 'Issued', 'woo-nfe' ),
+							'action'    => 'woo_nfe_emitida',
+						);
+					}
+				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], $status, true ) ) {
+					$actions['woo_nfe_issuing'] = array(
+						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
+						'action'    => 'woo_nfe_issuing',
 					);
 				} else {
-					if ( nfe_get_field('issue_past_notes') === 'yes' ) {
-						if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+					if ( nfe_order_address_filled( $order_id ) ) {
+						$actions['woo_nfe_pending_address'] = array(
+							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
+							'action'    => 'woo_nfe_pending_address',
+						);
+					} else {
+						if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
+							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+								$actions['woo_nfe_issue'] = array(
+									'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
+									'action'    => 'woo_nfe_issue',
+								);
+							} else {
+								$actions['woo_nfe_expired'] = array(
+									'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
+									'action'    => 'woo_nfe_expired',
+								);
+							}
+						} else {
 							$actions['woo_nfe_issue'] = array(
 								'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
 								'action'    => 'woo_nfe_issue',
 							);
-						} else {
-							$actions['woo_nfe_expired'] = array(
-								'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
-								'action'    => 'woo_nfe_expired',
-							);
 						}
-					} else {
-						$actions['woo_nfe_issue'] = array(
-							'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
-							'action'    => 'woo_nfe_issue',
-						);
 					}
 				}
+			} else {
+				$actions['woo_nfe_payment'] = array(
+					'name'      => esc_html__( 'Pending Payment', 'woo-nfe' ),
+					'action'    => 'woo_nfe_payment',
+				);
 			}
 
 			foreach ( $actions as $action ) {
@@ -374,7 +382,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					esc_attr( $action['name'] )
 				);
 			} ?>
-			</p><?php
+			</mark>
+			<?php
 		}
 
 		/**
@@ -418,6 +427,37 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 	    public function register_enqueue_css() {
 	        wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
 	        wp_enqueue_style( 'nfe-woo-admin-css' );
+	    }
+
+	    /**
+	     * Inserts a new key/value after the key in the array.
+	     *
+	     * @param string $needle    The array key to insert the element after.
+	     * @param array  $haystack  An array to insert the element into.
+	     * @param string $new_key   The key to insert.
+	     * @param string $new_value An value to insert.
+	     *
+	     * @return The new array if the $needle key exists, otherwise an unmodified $haystack
+	     */
+	    protected function array_insert_after( $needle, $haystack, $new_key, $new_value ) {
+
+	    	if ( array_key_exists( $needle, $haystack ) ) {
+
+	    		$new_array = array();
+
+	    		foreach ( $haystack as $key => $value ) {
+
+	    			$new_array[ $key ] = $value;
+
+	    			if ( $key === $needle ) {
+	    				$new_array[ $new_key ] = $new_value;
+	    			}
+	    		}
+
+	    		return $new_array;
+	    	}
+
+	    	return $haystack;
 	    }
 	}
 

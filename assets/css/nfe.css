@@ -1,15 +1,10 @@
 
-.sales_receipt .button {
+.nfe_receipts .button {
     display: block;
     text-align: center;
 }
 
-.sales_receipt .woo_nfe_download {
-    margin-top: 20px;
-}
-
-span.woo_nfe_actions,
-a.woo_nfe_actions {
+span.woo_nfe_actions {
     padding: 3px 7px;
     color: white;
     display: block;
@@ -17,6 +12,11 @@ a.woo_nfe_actions {
     border-radius: 3px;
     font-size: 12px;
     text-align: center;
+}
+
+span.woo_nfe_issue,
+span.woo_nfe_payment {
+	background-color: #686666;
 }
 
 span.woo_nfe_expired {
