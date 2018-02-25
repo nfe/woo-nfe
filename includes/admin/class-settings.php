@@ -19,8 +19,8 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->id                 = 'woo-nfe';
-		$this->method_title       = __( 'NFe Integration', 'woo-nfe' );
+		$this->id = 'woo-nfe';
+		$this->method_title = __( 'Receipts (NFE.io)', 'woo-nfe' );
 		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woo-nfe' );
 
 		// Load the settings.
@@ -147,21 +147,21 @@ class WC_NFe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'CityServiceCode', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'nfe_fedservicecode' => array(
 				'title'             => __( 'FederalServiceCode', 'woo-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'FederalServiceCode', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'nfe_cityservicecode_desc' => array(
-				'title'             => __( 'Description', 'woo-nfe' ),
+				'title'             => __( 'Product Description', 'woo-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'Description', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'debug' 			=> array(
 				'title'             => __( 'Debug Log', 'woo-nfe' ),

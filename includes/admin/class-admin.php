@@ -98,14 +98,12 @@ class WC_NFe_Admin {
 	}
 
 	/**
-	 * Adds NFe product fields (tab content)
+	 * Adds NFe product fields (tab content).
 	 *
-	 * @global int $post Uses to fetch the current product ID
-	 *
-	 * @return string
+	 * @return void
 	 */
 	public function product_data_fields() {
-		global $post;
+		$post_id = get_the_ID();
 		?>
 		<div id="nfe_product_info_data" class="panel woocommerce_options_panel">
 			<?php
@@ -114,8 +112,8 @@ class WC_NFe_Admin {
 				'label'         => esc_html__( 'CityServiceCode', 'woo-nfe' ),
 				'wrapper_class' => 'hide_if_variable',
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'Enter the CityServiceCode.', 'woo-nfe' ),
-				'value'         => get_post_meta( $post->ID, '_simple_cityservicecode', true )
+				'description'   => esc_html__( 'CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post_id, '_simple_cityservicecode', true ),
 			) );
 
 			woocommerce_wp_text_input( array(
@@ -123,8 +121,8 @@ class WC_NFe_Admin {
 				'label'         => esc_html__( 'FederalServiceCode', 'woo-nfe' ),
 				'wrapper_class' => 'hide_if_variable',
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'Enter the FederalServiceCode.', 'woo-nfe' ),
-				'value'         => get_post_meta( $post->ID, '_simple_federalservicecode', true )
+				'description'   => esc_html__( 'FederalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post_id, '_simple_federalservicecode', true ),
 			) );
 
 			woocommerce_wp_textarea_input( array(
@@ -132,8 +130,8 @@ class WC_NFe_Admin {
 				'label'         => esc_html__( 'Product Description', 'woo-nfe' ),
 				'wrapper_class' => 'hide_if_variable',
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'Description for this product output in NFe receipt.', 'woo-nfe' ),
-				'value'         => get_post_meta( $post->ID, '_simple_nfe_product_desc', true )
+				'description'   => esc_html__( 'Description used when issuing a receipt.', 'woo-nfe' ),
+				'value'         => get_post_meta( $post_id, '_simple_nfe_product_desc', true ),
 			) );
 			?>
 		</div>
@@ -143,73 +141,81 @@ class WC_NFe_Admin {
 	/**
 	 * Saving product data information.
 	 *
-	 * @param  int $post_id Product ID
-	 * @return bool true|false
+	 * @param  int $post_id Product ID.
+	 *
+	 * @return void
 	 */
 	public function product_data_fields_save( $post_id ) {
-		// Text Field - City Service Code
-		$simple_cityservicecode = $_POST['_simple_cityservicecode'];
-		update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $simple_cityservicecode ) );
 
-		// Text Field - Federal Service Code
-		$simple_federalservicecode = $_POST['_simple_federalservicecode'];
-		update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $simple_federalservicecode ) );
+		// Text Field - City Service Code.
+		update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $_POST['_simple_cityservicecode'] ) );
 
-		// TextArea Field - Product Description
-		$simple_product_desc = $_POST['_simple_nfe_product_desc'];
-		update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $simple_product_desc ) );
+		// Text Field - Federal Service Code.
+		update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $_POST['_simple_federalservicecode'] ) );
+
+		// TextArea Field - Product Description.
+		update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $_POST['_simple_nfe_product_desc'] ) );
 	}
 
-  /**
-	* Adds the NFe fields for product variations
-	*
-	* @param  array $loop
-	* @param  string $variation_data
-	* @param  string $variation
-	* @return array
-	*/
+	/**
+	 * Adds the NFe fields for the product variations.
+	 *
+	 * @param  array  $loop           Product loop.
+	 * @param  array  $variation_data Product/variation data.
+	 * @param  string $variation      Variation.
+	 *
+	 * @return void
+	 */
 	public function variation_fields( $loop, $variation_data, $variation ) {
+
+		// Product ID.
+		$product_id = $variation->ID;
+
 		woocommerce_wp_text_input( array(
-			'id'            => '_cityservicecode[' . $variation->ID . ']',
-			'label'         => esc_html__( 'NFe CityServiceCode', 'woo-nfe' ),
+			'id'            => '_cityservicecode[' . $product_id . ']',
+			'label'         => esc_html__( 'CityServiceCode', 'woo-nfe' ),
 			'desc_tip'      => 'true',
-			'description'   => esc_html__( 'Enter the CityServiceCode.', 'woo-nfe' ),
-			'value'         => get_post_meta( $variation->ID, '_cityservicecode', true )
+			'description'   => esc_html__( 'CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+			'value'         => get_post_meta( $variation->ID, '_cityservicecode', true ),
 		) );
 
 		woocommerce_wp_text_input( array(
-			'id'            => '_federalservicecode[' . $variation->ID . ']',
-			'label'         => esc_html__( 'NFe FederalServiceCode', 'woo-nfe' ),
+			'id'            => '_federalservicecode[' . $product_id . ']',
+			'label'         => esc_html__( 'FederalServiceCode', 'woo-nfe' ),
 			'desc_tip'      => 'true',
-			'description'   => esc_html__( 'Enter the FederalServiceCode.', 'woo-nfe' ),
-			'value'         => get_post_meta( $variation->ID, '_federalservicecode', true )
+			'description'   => esc_html__( 'FederalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+			'value'         => get_post_meta( $product_id, '_federalservicecode', true ),
 		) );
 
 		woocommerce_wp_textarea_input( array(
-			'id'            => '_nfe_product_variation_desc[' . $variation->ID . ']',
-			'label'         => esc_html__( 'NFe Product Description', 'woo-nfe' ),
-			'value'         => get_post_meta( $variation->ID, '_nfe_product_variation_desc', true )
+			'id'            => '_nfe_product_variation_desc[' . $product_id . ']',
+			'label'         => esc_html__( 'Product Description', 'woo-nfe' ),
+			'desc_tip'      => 'true',
+			'description'   => esc_html__( 'Description used when issuing a receipt.', 'woo-nfe' ),
+			'value'         => get_post_meta( $product_id, '_nfe_product_variation_desc', true ),
 		) );
 	}
 
    /**
-	* Save the NFe fields for product variations
+	* Save the NFe fields for product variations.
 	*
-	* @param  int $post_id Product ID
-	* @return bool true|false
+	* @param  int $post_id Product ID.
+	*
+	* @return void
 	*/
 	public function save_variations_fields( $post_id ) {
+
 		// Text Field - City Service Code
-		$cityservicecode = $_POST['_cityservicecode'][ $post_id ];
-		update_post_meta( $post_id, '_cityservicecode', esc_attr( $cityservicecode ) );
+		update_post_meta( $post_id, '_cityservicecode',
+			esc_attr( $_POST['_cityservicecode'][ $post_id ] ) );
 
-		// Text Field - Federal Service Code
-		$_federalservicecode = $_POST['_federalservicecode'][ $post_id ];
-		update_post_meta( $post_id, '_federalservicecode', esc_attr( $_federalservicecode ) );
+		// Text Field - Federal Service Code.
+		update_post_meta( $post_id, '_federalservicecode',
+			esc_attr( $_POST['_federalservicecode'][ $post_id ] ) );
 
-		// TextArea Field - Product Variation Description
-		$product_desc = $_POST['_nfe_product_variation_desc'][ $post_id ];
-		update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $product_desc ) );
+		// TextArea Field - Product Variation Description.
+		update_post_meta( $post_id, '_nfe_product_variation_desc',
+			esc_html( $_POST['_nfe_product_variation_desc'][ $post_id ] ) );
 	}
 
 	/**
