@@ -20,12 +20,15 @@ class WC_NFe_Admin {
 	 * @since 1.0.6
 	 */
 	public function __construct() {
+
+		// Add column to show receipt status updated via NFe.io API.
+		add_filter( 'manage_edit-shop_order_columns', [ $this, 'order_status_column_header' ] );
+		add_action( 'manage_shop_order_posts_custom_column', [ $this, 'order_status_column_content' ], 10, 1 );
+
 		// Filters
-		add_filter( 'manage_edit-shop_order_columns',               				array( $this, 'order_status_column_header' ), 20 );
 		add_filter( 'woocommerce_product_data_tabs',                				array( $this, 'product_data_tab' ) );
 
 		// Actions
-		add_action( 'manage_shop_order_posts_custom_column',         				array( $this, 'order_status_column_content' ) );
 		add_action( 'woocommerce_product_after_variable_attributes', 				array( $this, 'variation_fields' ), 10, 3 );
 		add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 		add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
@@ -213,21 +216,17 @@ class WC_NFe_Admin {
 	}
 
 	/**
-	 * NFe Column Header on Order Status
+	 * Add column to show receipt status updated via NFe.io API.
 	 *
-	 * @param  array $columns Array of Columns
-	 * @return array          NFe Custom Column
+	 * @param  array $columns Array of Columns.
+	 *
+	 * @return array Array of colunms with the NFe one.
 	 */
 	public function order_status_column_header( $columns ) {
-		$new_columns = array();
+		$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFe.io API', 'woo-nfe' ) . '">' . esc_attr__( 'Sales Receipt', 'woo-nfe' ) . '</span>';
 
-		foreach ( $columns as $column_name => $column_info ) {
-			$new_columns[ $column_name ] = $column_info;
+		$new_columns = wcs_array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
 
-			if ( 'order_actions' === $column_name ) {
-				$new_columns['sales_receipt'] = esc_html__( 'Sales Receipt', 'woo-nfe' );
-			}
-		}
 		return $new_columns;
 	}
 
@@ -236,107 +235,82 @@ class WC_NFe_Admin {
 	 *
 	 * @since 1.0.9
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function order_status_column_content( $column ) {
 		global $post;
 
-		$order    	= nfe_wc_get_order( (int) $post->ID );
+		$order      = nfe_wc_get_order( (int) $post->ID );
 		$order_data = $order->get_data();
-		$order_id 	= (int) $order_data['id'];
-		$nfe      	= get_post_meta( $order_id, 'nfe_issued', true );
-		$status   	= array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
+		$order_id   = (int) $order_data['id'];
+		$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
+		$status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
-		if ( 'sales_receipt' === $column ) {
+		if ( 'nfe_receipts' === $column ) {
 			?><p>
 			<?php
 			$actions = array();
 
 			if ( nfe_get_field('nfe_enable') === 'yes') {
-				if ( ! empty($nfe) && ( $nfe['status'] === 'Cancelled' || $nfe['status'] === 'Issued' ) ) {
+				if ( ! empty( $nfe ) && ( $nfe['status'] === 'Cancelled' || $nfe['status'] === 'Issued' ) ) {
 					if ( $nfe['status'] === 'Cancelled' ) {
 						$actions['woo_nfe_cancelled'] = array(
 							'name'      => esc_html__( 'NFe Cancelled', 'woo-nfe' ),
-							'action'    => 'woo_nfe_cancelled'
+							'action'    => 'woo_nfe_cancelled',
 						);
-					}
-					elseif ( $nfe['status'] === 'Issued' ) {
+					} elseif ( $nfe['status'] === 'Issued' ) {
 						$actions['woo_nfe_emitida'] = array(
 							'name'      => esc_html__( 'Issued', 'woo-nfe' ),
-							'action'    => 'woo_nfe_emitida'
+							'action'    => 'woo_nfe_emitida',
 						);
 					}
-
-					$actions['woo_nfe_download'] = array(
-						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-						'name'      => esc_html__( 'Download NFe', 'woo-nfe' ),
-						'action'    => 'woo_nfe_download'
-					);
-				}
-				elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
+				} elseif ( ! empty($nfe) && in_array( $nfe['status'], $status ) ) {
 					$actions['woo_nfe_issuing'] = array(
 						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
-						'action'    => 'woo_nfe_issuing'
+						'action'    => 'woo_nfe_issuing',
 					);
-				}
-				else {
+				} else {
 					if ( nfe_order_address_filled( $order_id ) ) {
 						$actions['woo_nfe_pending_address'] = array(
 							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
-							'action'    => 'woo_nfe_pending_address'
+							'action'    => 'woo_nfe_pending_address',
 						);
-					}
-					else {
+					} else {
 						if ( nfe_get_field('issue_past_notes') === 'yes' ) {
 							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 								$actions['woo_nfe_issue'] = array(
-									'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
 									'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
-									'action'    => 'woo_nfe_issue'
+									'action'    => 'woo_nfe_issue',
 								);
-							}
-							else {
+							} else {
 								$actions['woo_nfe_expired'] = array(
 									'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
-									'action'    => 'woo_nfe_expired'
+									'action'    => 'woo_nfe_expired',
 								);
 							}
-						}
-						else {
+						} else {
 							$actions['woo_nfe_issue'] = array(
-								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
 								'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
-								'action'    => 'woo_nfe_issue'
+								'action'    => 'woo_nfe_issue',
 							);
 						}
 					}
 				}
 			}
 
-			if ( nfe_get_field('nfe_enable') === 'no' && current_user_can('manage_woocommerce') ) {
+			if ( nfe_get_field( 'nfe_enable' ) === 'no' && current_user_can( 'manage_woocommerce' ) ) {
 				$actions['woo_nfe_tab'] = array(
-					'url'       => WOOCOMMERCE_NFE_SETTINGS_URL,
 					'name'      => esc_html__( 'Enable NFe', 'woo-nfe' ),
-					'action'    => 'woo_nfe_tab'
+					'action'    => 'woo_nfe_tab',
 				);
 			}
 
 			foreach ( $actions as $action ) {
-				if ( $action['action'] === 'woo_nfe_issue' || $action['action'] === 'woo_nfe_download' ) {
-					printf( '<a class="button view %s" href="%s" data-tip="%s">%s</a>',
-						esc_attr( $action['action'] ),
-						esc_url( $action['url'] ),
-						esc_attr( $action['name'] ),
-						esc_attr( $action['name'] )
-					);
-				}
-				else {
-					printf( '<span class="woo_nfe_actions %s" data-tip="%s">%s</span>',
-						esc_attr( $action['action'] ),
-						esc_attr( $action['name'] ),
-						esc_attr( $action['name'] )
-					);
-				}
+				printf( '<span class="woo_nfe_actions %s" data-tip="%s">%s</span>',
+					esc_attr( $action['action'] ),
+					esc_attr( $action['name'] ),
+					esc_attr( $action['name'] )
+				);
 			} ?>
 			</p><?php
 		}
