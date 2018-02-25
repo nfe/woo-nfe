@@ -30,7 +30,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 			add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
 			add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
-			add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ), 20 );
 			add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
 			/*
@@ -50,13 +49,14 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'woocommerce_order_status_processing', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_completed', 					array( $this, 'issue_trigger' ) );
 
-			// WooCommerce Subscriptions Support
-			if ( class_exists('WC_Subscriptions') ) {
+			// WooCommerce Subscriptions Support.
+			if ( class_exists( 'WC_Subscriptions' ) ) {
 				add_action( 'processed_subscription_payments_for_order',	array( $this, 'issue_trigger') );
 				add_action( 'woocommerce_renewal_order_payment_complete',	array( $this, 'issue_trigger') );
 			}
 
-			// Order Preview.
+			// NFe.io Order Details Preview.
+			add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'display_order_data_preview_in_admin' ], 20 );
 			add_action( 'woocommerce_admin_order_preview_start', [ $this, 'nfe_admin_order_preview' ] );
 			add_filter( 'woocommerce_admin_order_preview_get_order_details', [ $this, 'nfe_admin_order_preview_details' ], 20, 2 );
 		}
@@ -347,37 +347,66 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		}
 
 		/**
-		 * Adds NFe information on order page
+		 * Adds NFe information preview on order page.
 		 *
 		 * @since 1.0.8 Updated how details is being checked
 		 *
-		 * @param  WC_Order $order
-		 * @return string
+		 * @param  WC_Order $order Order object.
+		 *
+		 * @return void
 		 */
-		public function display_order_data_in_admin( $order ) {
+		public function display_order_data_preview_in_admin( $order ) {
 			$order_data = $order->get_data();
-			$order_id 	= (int) $order_data['id'];
-			$nfe 		= get_post_meta( $order_id, 'nfe_issued', true );
+			$order_id   = (int) $order_data['id'];
+			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
 			?>
-		    <h4><?php echo '<strong>' . esc_html__( 'NFe Details', 'woo-nfe' ) . '</strong><br />'; ?></h4>
-		    <div class="nfe-details">
-		        <?php
-			        $details = array('status', 'number', 'checkCode', 'issuedOn', 'amountNet');
+			<h4>
+				<strong>
+				<?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?>
+				</strong>
+				<br />
+			</h4>
+			<div class="nfe-details">
+				<?php
+				$details = array( 'status', 'number', 'checkCode', 'issuedOn', 'amountNet' );
 
-					foreach ( $details as $data ) {
-						if ( ! isset( $nfe[ $data ] ) ) {
-							$nfe[ $data ] = '';
-						}
+				foreach ( $details as $data ) {
+					if ( ! isset( $nfe[ $data ] ) ) {
+						$nfe[ $data ] = '';
 					}
-
-		        	echo '<p>';
-		            echo '<strong>' . esc_html__( 'Status', 'woo-nfe' ) . ': </strong>' . $nfe['status'] . '<br />';
-		            echo '<strong>' . esc_html__( 'Number', 'woo-nfe' ) . ': </strong>' . $nfe['number'] . '<br />';
-		            echo '<strong>' . esc_html__( 'Check Code', 'woo-nfe' ) . ': </strong>' . $nfe['checkCode'] . '<br />';
-		            echo '<strong>' . esc_html__( 'Issued on', 'woo-nfe' ) . ': </strong>' . date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) . '<br />';
-		            echo '<strong>' . esc_html__( 'Price', 'woo-nfe' ) . ': </strong>' . wc_price( $nfe['amountNet'] ) . '<br />';
-		            echo '</p>';
+				}
 				?>
+				<p>
+					<strong><?php esc_html_e( 'Status: ', 'woo-nfe' ); ?></strong>
+					<?php if ( ! empty( $nfe['status'] ) ) : ?>
+						<?php esc_html( $nfe['status'] ); ?>
+					<?php endif; ?>
+					<br />
+
+					<strong><?php esc_html_e( 'Number: ', 'woo-nfe' ); ?></strong>
+					<?php if ( ! empty( $nfe['number'] ) ) : ?>
+						<?php esc_html( $nfe['number'] ); ?>
+					<?php endif; ?>
+					<br />
+
+					<strong><?php esc_html_e( 'CheckCode: ', 'woo-nfe' ); ?></strong>
+					<?php if ( ! empty( $nfe['checkCode'] ) ) : ?>
+						<?php esc_html( $nfe['checkCode'] ); ?>
+					<?php endif; ?>
+					<br />
+
+					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
+					<?php if ( ! empty( $nfe['issuedOn'] ) ) : ?>
+						<?php date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); ?>
+					<?php endif; ?>
+					<br />
+
+					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
+					<?php if ( ! empty( $nfe['amountNet'] ) ) : ?>
+						<?php esc_html( wp_price( $nfe['amountNet'] ) ); ?>
+					<?php endif; ?>
+					<br />
+				</p>
 		    </div>
 		<?php }
 
@@ -450,10 +479,12 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 		/**
 		 * Adds the NFe Admin CSS
+		 *
+		 * @return void
 		 */
 		public function register_enqueue_css() {
-		    wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
-		    wp_enqueue_style( 'nfe-woo-admin-css' );
+			wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
+			wp_enqueue_style( 'nfe-woo-admin-css' );
 		}
 	}
 
