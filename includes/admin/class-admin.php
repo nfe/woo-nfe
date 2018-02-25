@@ -215,7 +215,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			global $theorder;
 
 			if ( ! is_object( $theorder ) ) {
-				$theorder = wc_get_order( get_the_ID() );
+				$theorder = nfe_wc_get_order( get_the_ID() );
 			}
 
 			// Only for paid orders.
@@ -383,9 +383,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			foreach ( $actions as $action ) {
-				printf( '<span class="woo_nfe_actions %s" data-tip="%s">%s</span>',
+				printf( '<span class="woo_nfe_actions %s">%s</span>',
 					esc_attr( $action['action'] ),
-					esc_attr( $action['name'] ),
 					esc_attr( $action['name'] )
 				);
 			} ?>
