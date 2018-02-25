@@ -211,13 +211,20 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return array List of actions.
 		 */
 		public function download_and_issue_actions( $actions ) {
-			global $theorder, $post;
+			global $theorder;
 
 			if ( ! is_object( $theorder ) ) {
-				$theorder = wc_get_order( $post->ID );
+				$theorder = wc_get_order( get_the_ID() );
 			}
 
-			$download = get_post_meta( $theorder->id, 'nfe_issued', true );
+			// Only for paid orders.
+			if ( ! $theorder->is_paid() ) {
+				return $actions;
+			}
+
+			$order_id = $theorder->get_id();
+
+			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
 			// Load the download actin if there is a issue to download.
 			if ( ! empty( $download ) && isset( $download['id'] ) ) {
@@ -225,7 +232,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Load the issue action if the requirements are ok.
-			if ( ! nfe_order_address_filled( $theorder->id ) ) {
+			if ( ! nfe_order_address_filled( $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 			}
 
@@ -240,27 +247,26 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		public function download_issue_action( $order ) {
 
-			// add the order note.
-			$message = esc_html__( 'NFe receipt downloaded %s.', 'woo-nfe' );
+			// Order note.
+			$message = esc_html__( 'NFe receipt downloaded.', 'woo-nfe' );
 			$order->add_order_note( $message );
 
-			WC_NFe_Ajax::download_pdf( $order->id );
+			WC_NFe_Ajax::download_pdf( $order->get_id() );
 		}
 
 		/**
-		 * NFe receipt issuing action.
+		 * Issuing a NFe receipt.
 		 *
 		 * @param  WC_Order $order Order object.
 		 * @return void
 		 */
 		public function issue_order_action( $order ) {
-
-			// Add the order note.
-			$message = esc_html__( 'NFe receipt for this order was issued.', 'woo-nfe' );
-			$order->add_order_note( $message );
-
 			// Issue NFe receipt.
-			NFe_Woo()->issue_invoice( array( $order->id ) );
+			$invoice = NFe_Woo()->issue_invoice( array( $order->get_id() ) );
+
+			if ( ! is_object( $invoice ) ) {
+				return;
+			}
 		}
 
 	   /**
