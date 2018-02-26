@@ -408,33 +408,18 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		/**
 		 * Adds NFe information preview on order page.
 		 *
-		 * @since 1.0.8 Updated how details is being checked
-		 *
 		 * @param  WC_Order $order Order object.
 		 *
 		 * @return void
 		 */
 		public function display_order_data_preview_in_admin( $order ) {
-			$order_data = $order->get_data();
-			$order_id   = (int) $order_data['id'];
-			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
+			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
 			?>
 			<h4>
-				<strong>
-				<?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?>
-				</strong>
+				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?></strong>
 				<br />
 			</h4>
 			<div class="nfe-details">
-				<?php
-				$details = array( 'status', 'number', 'checkCode', 'issuedOn', 'amountNet' );
-
-				foreach ( $details as $data ) {
-					if ( ! isset( $nfe[ $data ] ) ) {
-						$nfe[ $data ] = '';
-					}
-				}
-				?>
 				<p>
 					<strong><?php esc_html_e( 'Status: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['status'] ) ) : ?>
