@@ -1,14 +1,14 @@
-# Copyright (C) 2016 NFe.io
+# Copyright (C) 2018 NFe.io
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce NFe 1.0.4\n"
+"Project-Id-Version: WooCommerce NFe 1.0.7\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2016-10-19 15:54:09+00:00\n"
+"POT-Creation-Date: 2018-02-24 22:24:28+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Hackers <hackers@nfe.io>\n"
 "Language-Team: Hackers <hackers@nfe.io>\n"
 "X-Generator: grunt-wp-i18n 0.5.4\n"
@@ -30,103 +30,103 @@ msgstr ""
 msgid "WooCommerce NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:118 includes/admin/class-settings.php:152
+#: includes/admin/class-admin.php:114 includes/admin/class-settings.php:152
 #: includes/admin/class-settings.php:154
 msgid "CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:121 includes/admin/class-admin.php:186
+#: includes/admin/class-admin.php:117 includes/admin/class-admin.php:176
 msgid "Enter the CityServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:129 includes/admin/class-settings.php:159
+#: includes/admin/class-admin.php:123 includes/admin/class-settings.php:159
 #: includes/admin/class-settings.php:161
 msgid "FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:132 includes/admin/class-admin.php:196
+#: includes/admin/class-admin.php:126 includes/admin/class-admin.php:184
 msgid "Enter the FederalServiceCode."
 msgstr ""
 
-#: includes/admin/class-admin.php:140
+#: includes/admin/class-admin.php:132
 msgid "Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:143
+#: includes/admin/class-admin.php:135
 msgid "Description for this product output in NFe receipt."
 msgstr ""
 
-#: includes/admin/class-admin.php:184
+#: includes/admin/class-admin.php:174
 msgid "NFe CityServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:194
+#: includes/admin/class-admin.php:182
 msgid "NFe FederalServiceCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:204
+#: includes/admin/class-admin.php:190
 msgid "NFe Product Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:243 includes/frontend/class-frontend.php:63
+#: includes/admin/class-admin.php:228 includes/frontend/class-frontend.php:65
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:272 includes/frontend/class-frontend.php:87
+#: includes/admin/class-admin.php:259 includes/frontend/class-frontend.php:92
 msgid "NFe Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:278
+#: includes/admin/class-admin.php:265
 msgid "Issued"
 msgstr ""
 
-#: includes/admin/class-admin.php:285 includes/frontend/class-frontend.php:110
+#: includes/admin/class-admin.php:272 includes/frontend/class-frontend.php:115
 msgid "Download NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:291 includes/frontend/class-frontend.php:94
+#: includes/admin/class-admin.php:278 includes/frontend/class-frontend.php:99
 msgid "Issuing NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:298 includes/frontend/class-frontend.php:102
+#: includes/admin/class-admin.php:285 includes/frontend/class-frontend.php:107
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:307 includes/admin/class-admin.php:321
-#: includes/frontend/class-frontend.php:119
-#: includes/frontend/class-frontend.php:134
+#: includes/admin/class-admin.php:294 includes/admin/class-admin.php:308
+#: includes/frontend/class-frontend.php:124
+#: includes/frontend/class-frontend.php:139
 msgid "Issue NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:313 includes/frontend/class-frontend.php:126
+#: includes/admin/class-admin.php:300 includes/frontend/class-frontend.php:131
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:332 includes/frontend/class-frontend.php:146
+#: includes/admin/class-admin.php:319 includes/frontend/class-frontend.php:151
 msgid "Enable NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:368
+#: includes/admin/class-admin.php:358
 msgid "NFe Details"
 msgstr ""
 
-#: includes/admin/class-admin.php:372
+#: includes/admin/class-admin.php:370
 msgid "Status"
 msgstr ""
 
-#: includes/admin/class-admin.php:373
+#: includes/admin/class-admin.php:371
 msgid "Number"
 msgstr ""
 
-#: includes/admin/class-admin.php:374
+#: includes/admin/class-admin.php:372
 msgid "Check Code"
 msgstr ""
 
-#: includes/admin/class-admin.php:375
+#: includes/admin/class-admin.php:373
 msgid "Issued on"
 msgstr ""
 
-#: includes/admin/class-admin.php:376
+#: includes/admin/class-admin.php:374
 msgid "Price"
 msgstr ""
 
@@ -174,16 +174,16 @@ msgstr ""
 msgid "There was a problem when trying to download NFe PDF! Error: "
 msgstr ""
 
-#: includes/admin/class-api.php:364
+#: includes/admin/class-api.php:359
 msgid "Customers"
 msgstr ""
 
-#: includes/admin/class-api.php:367
+#: includes/admin/class-api.php:362
 msgid "Company"
 msgstr ""
 
 #: includes/admin/class-settings.php:23
-msgid "NFe Integration"
+msgid "Receipts (NFE.io)"
 msgstr ""
 
 #: includes/admin/class-settings.php:24
@@ -452,13 +452,13 @@ msgstr ""
 msgid "Install WooCommerce"
 msgstr ""
 
-#: includes/frontend/class-frontend.php:38
+#: includes/frontend/class-frontend.php:40
 msgid ""
 "The following address will <strong>also</strong> be used when issuing a NFe "
 "Sales Receipt."
 msgstr ""
 
-#: includes/frontend/class-frontend.php:48
+#: includes/frontend/class-frontend.php:50
 msgid ""
 "The following address(es) will be used on the checkout page by default and "
 "also when issuing a NFe sales receipt."
