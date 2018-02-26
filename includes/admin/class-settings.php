@@ -184,7 +184,7 @@ class WC_NFe_Integration extends WC_Integration {
 		$company_list = get_transient( $cache_key );
 
 		// If there is a list from cache, load it.
-		if ( isset( $company_list ) ) {
+		if ( ! empty( $company_list ) && is_array( $company_list ) ) {
 			return $company_list;
 		}
 
@@ -192,24 +192,22 @@ class WC_NFe_Integration extends WC_Integration {
 
 		$companies = NFe_Company::search();
 
-		if ( isset( $companies->message ) ) {
+		// Bail early with error message.
+		if ( isset( $companies->message ) || empty( $companies ) || empty( $companies['companies'] ) ) {
 			add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 			add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
 			return false;
-		} else {
-			$company_list = array();
-
-			if ( count( $companies ) > 0 && count( $companies['companies'] ) > 0 ) {
-				foreach ( $companies['companies'] as $c ) {
-					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-				}
-
-				if ( count( $company_list ) > 0 ) {
-					set_transient( $cache_key, $company_list, 24 * HOUR_IN_SECONDS );
-				}
-			}
 		}
+
+		$company_list = array();
+		foreach ( $companies['companies'] as $company ) {
+			$company_list[ $company->id ] = ucwords( strtolower( $company->name ) );
+		}
+
+		set_transient( $cache_key, $company_list, 30 * DAY_IN_SECONDS );
+
+		return $company_list;
 	}
 
 	/**
