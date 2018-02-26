@@ -132,7 +132,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					<?php
 						/* translators: %s: order count */
 						printf(
-							_n( '<strong>%s receipt</strong> issuing', '<strong>%s receipts</strong> issuing', $nfe_issuing_count, 'woo-nfe' ),
+							_n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ),
 							$nfe_issuing_count
 						);
 					?>
