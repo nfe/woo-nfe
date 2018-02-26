@@ -101,22 +101,48 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 		}
 
+		protected function get_order_count( $value ) {
+			$args = array(
+			    'post_type' => 'shop_order',
+			    'cache_results' => true,
+			    'update_post_meta_cache' => false,
+			    'update_post_term_cache' => false,
+			    'meta_query' => array(
+			        array(
+			            'key' => 'nfe_issued',
+			            'value' => $value,
+			            'compare' => 'LIKE',
+			        ),
+			    ),
+			);
+
+			$query = new WP_Query( $args );
+
+			if ( ! $query->have_posts() ) {
+				return 0;
+			}
+
+			return $query->found_posts;
+		}
+
 		/**
 		 * Show NFe.io order data is status widget.
+		 *
+		 * @return void
 		 */
 		public function nfe_status_widget_order_rows() {
 			if ( ! current_user_can( 'edit_shop_orders' ) ) {
 				return;
 			}
 
-			$nfe_issued_count = 0;
-			$nfe_issuing_count = 0;
-			$nfe_error_count = 0;
-			$nfe_cancelled_count = 0;
+			$nfe_issued_count    = $this->get_order_count( 'Issued' );
+			$nfe_issuing_count   = $this->get_order_count( 'WaitingCalculateTaxes' );
+			$nfe_error_count     = $this->get_order_count( 'WaitingCalculateTaxes' );
+			$nfe_cancelled_count = $this->get_order_count( 'Cancelled' );
 			?>
 
 			<li class="nfe-issued-orders">
-				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
 						/* translators: %s: order count */
 						printf(
@@ -128,7 +154,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			</li>
 
 			<li class="nfe-processing-orders">
-				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
 						/* translators: %s: order count */
 						printf(
@@ -140,7 +166,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			</li>
 
 			<li class="nfe-error-orders">
-				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
 						/* translators: %s: order count */
 						printf(
@@ -152,7 +178,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			</li>
 
 			<li class="nfe-cancelled-orders">
-				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
 						/* translators: %s: order count */
 						printf(
