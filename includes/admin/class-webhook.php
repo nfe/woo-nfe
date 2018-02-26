@@ -88,8 +88,9 @@ class WC_NFe_Webhook_Handler
      *
      * @return WC_Order
      */
-    private function find_order_by_nota_id($id)
-    {
+    private function find_order_by_nota_id($id) {
+    	$issue_status = nfe_get_field( 'issue_when_status' );
+
         $args = array(
             'post_type' => 'shop_order',
             'meta_query' => array(
@@ -99,7 +100,7 @@ class WC_NFe_Webhook_Handler
                     'compare' => 'LIKE',
                 ),
             ),
-            'post_status' => 'wc-'.nfe_get_field('issue_when_status'),
+            'post_status' => "wc-{$issue_status}",
         );
         $query = new WP_Query($args);
 

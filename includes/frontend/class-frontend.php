@@ -132,8 +132,7 @@ class WC_NFe_FrontEnd {
                                     'action'    => 'woo_nfe_expired'
                                 );
                             }
-                        }
-                        elseif ( $issue_when === 'manual' || $issue_when_status == $order->post_status ) {
+                        } elseif ( $issue_when === 'manual' || $order->has_status( $issue_when_status ) ) {
                             $actions['woo_nfe_issue'] = array(
                                 'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order->id ), 'woo_nfe_issue' ),
                                 'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
