@@ -36,8 +36,6 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Initialize integration settings form fields.
-	 *
-	 * @return void
 	 */
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
@@ -97,10 +95,10 @@ class WC_NFe_Integration extends WC_Integration {
 				'label'             => __( 'Issue on order status', 'woo-nfe' ),
 				'default'           => 'wc-completed',
 				'options' 			=> array(
-					'wc-pending'    => _x( 'Pending Payment', 'Order status', 'woocommerce' ),
-					'wc-processing' => _x( 'Processing', 'Order status', 'woocommerce' ),
-					'wc-on-hold'    => _x( 'On Hold', 'Order status', 'woocommerce' ),
-					'wc-completed'  => _x( 'Completed', 'Order status', 'woocommerce' ),
+					'pending'    => _x( 'Pending Payment', 'Order status', 'woocommerce' ),
+					'processing' => _x( 'Processing', 'Order status', 'woocommerce' ),
+					'on-hold'    => _x( 'On Hold', 'Order status', 'woocommerce' ),
+					'completed'  => _x( 'Completed', 'Order status', 'woocommerce' ),
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
@@ -186,7 +184,7 @@ class WC_NFe_Integration extends WC_Integration {
 		$company_list = get_transient( $cache_key );
 
 		// If there is a list from cache, load it.
-		if ( isset( $company_list ) ) {
+		if ( ! empty( $company_list ) && is_array( $company_list ) ) {
 			return $company_list;
 		}
 
@@ -194,24 +192,22 @@ class WC_NFe_Integration extends WC_Integration {
 
 		$companies = NFe_Company::search();
 
-		if ( isset( $companies->message ) ) {
+		// Bail early with error message.
+		if ( isset( $companies->message ) || empty( $companies ) || empty( $companies['companies'] ) ) {
 			add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 			add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
 			return false;
-		} else {
-			$company_list = array();
-
-			if ( count( $companies ) > 0 && count( $companies['companies'] ) > 0 ) {
-				foreach ( $companies['companies'] as $c ) {
-					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-				}
-
-				if ( count( $company_list ) > 0 ) {
-					set_transient( $cache_key, $company_list, 24 * HOUR_IN_SECONDS );
-				}
-			}
 		}
+
+		$company_list = array();
+		foreach ( $companies['companies'] as $company ) {
+			$company_list[ $company->id ] = ucwords( strtolower( $company->name ) );
+		}
+
+		set_transient( $cache_key, $company_list, 30 * DAY_IN_SECONDS );
+
+		return $company_list;
 	}
 
 	/**

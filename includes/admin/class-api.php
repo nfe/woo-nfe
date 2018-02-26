@@ -64,8 +64,8 @@ class NFe_Woo {
 			$order->add_order_note( $log );
 
 			// If order status is diferent from issue_when status settings, don't issue
-			if ( $order->post_status != $issue_when_status ) {
-				$log = sprintf( __( 'It was not possible to issue the NF as the order status (%s) is not equal status for issue (%s)', 'woo-nfe' ), $order->post_status, $issue_when_status );
+			if ( ! $order->has_status( $issue_when_status ) ) {
+				$log = sprintf( __( 'It was not possible to issue the NF as the order status (%s) is not equal status for issue (%s)', 'woo-nfe' ), $order->post_status, "wc-{$issue_when_status}" );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
@@ -73,7 +73,7 @@ class NFe_Woo {
 			}
 
 			// If value is 0, don't issue it
-			if ( $order->order_total == 0 ) {
+			if ( $order->get_total() == 0 ) {
 				$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -134,12 +134,12 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Downloads the invoice(s)
+	 * Downloads the invoice(s).
 	 *
-	 * @param  array  $order_ids Array of order ids
+	 * @param  array  $order_ids Array of order ids.
 	 * @return string            Pdf url from NFe.io
 	 */
-	public function down_invoice( $order_ids = array() ) {
+	public function download_pdf_invoice( $order_ids = array() ) {
 		$key 		= nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
 
@@ -194,7 +194,7 @@ class NFe_Woo {
 			'cityServiceCode' 			=> $this->city_service_info( 'code', $order_id ),
 			'federalServiceCode'		=> $this->city_service_info( 'fed_code', $order_id ),
 			'description' 					=> remover_caracter($this->city_service_info( 'desc', $order_id )),
-			'servicesAmount' 				=> $total->order_total,
+			'servicesAmount' 				=> $total->get_total(),
 			'borrower' 			=> array(
 				'name' 							=> remover_caracter($this->check_customer_info( 'name', $order_id )),
 				'email' 						=> get_post_meta( $order_id, '_billing_email', true ),
