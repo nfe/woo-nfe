@@ -64,8 +64,8 @@ class NFe_Woo {
 			$order->add_order_note( $log );
 
 			// If order status is diferent from issue_when status settings, don't issue
-			if ( $order->post_status != $issue_when_status ) {
-				$log = sprintf( __( 'It was not possible to issue the NF as the order status (%s) is not equal status for issue (%s)', 'woo-nfe' ), $order->post_status, $issue_when_status );
+			if ( ! $order->has_status( $issue_when_status ) ) {
+				$log = sprintf( __( 'It was not possible to issue the NF as the order status (%s) is not equal status for issue (%s)', 'woo-nfe' ), $order->post_status, "wc-{$issue_when_status}" );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
