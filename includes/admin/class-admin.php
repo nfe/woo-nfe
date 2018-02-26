@@ -221,14 +221,21 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order_id = $theorder->get_id();
 			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
+			// Bail early.
+			if ( empty( $download ) ) {
+				return $actions;
+			}
+
 			// Load the download actin if there is a issue to download.
-			if ( ! empty( $download ) && isset( $download['id'] ) ) {
+			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
 
 				return $actions;
 			}
 
-			if ( $theorder->has_status( nfe_get_field( 'issue_when_status' ) ) && ! nfe_order_address_filled( $order_id ) ) {
+			if ( empty( $download['id'] )
+				&& $theorder->has_status( nfe_get_field( 'issue_when_status' ) )
+				&& ! nfe_order_address_filled( $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 
 				return $actions;
