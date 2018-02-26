@@ -85,7 +85,7 @@ class WC_NFe_Ajax {
 		// PDF Location/directory, file name.
 		$upload_dir = wp_upload_dir();
 		$dir        = $upload_dir['basedir'] . '/nfe/';
-		$name       = "nfe-{$nfe['id']}.pdf";
+		$name       = "nfse-{$nfe['id']}.pdf";
 		$file       = $dir . $name;
 
 		// Create directory if it doesn't already exist.
@@ -96,7 +96,7 @@ class WC_NFe_Ajax {
 		// Check if file already exists.
 		if ( ! file_exists( $file ) ) {
 			// Save PDF info fetched from NFe API.
-			$pdf = NFe_Woo()->down_invoice( array( $order_id ) );
+			$pdf = NFe_Woo()->download_pdf_invoice( array( $order_id ) );
 
 			// If it doesn't, put the content on this pdf.
 			file_put_contents( $file, file_get_contents( $pdf ) );

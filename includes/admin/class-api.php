@@ -134,12 +134,12 @@ class NFe_Woo {
 	}
 
 	/**
-	 * Downloads the invoice(s)
+	 * Downloads the invoice(s).
 	 *
-	 * @param  array  $order_ids Array of order ids
+	 * @param  array  $order_ids Array of order ids.
 	 * @return string            Pdf url from NFe.io
 	 */
-	public function down_invoice( $order_ids = array() ) {
+	public function download_pdf_invoice( $order_ids = array() ) {
 		$key 		= nfe_get_field('api_key');
 		$company_id = nfe_get_field('choose_company');
 

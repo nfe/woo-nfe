@@ -15,7 +15,7 @@ class NFe_Test extends WP_UnitTestCase {
 	public function test_download() {
 		// Fetch an ID in the Orders page - /wp-admin/edit.php?post_type=shop_order
 		$order = nfe_wc_get_order( 102 );
-		$pdf   = NFe_Woo()->down_invoice( array( $order ) );
+		$pdf   = NFe_Woo()->download_pdf_invoice( array( $order ) );
 
 		$this->assertNotNull($pdf);
 	}
