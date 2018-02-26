@@ -102,7 +102,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$nfe_cancelled_count = 0;
 			?>
 
-			<li class="processing-orders">
+			<li class="nfe-issued-orders">
 				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
 					<?php
 						/* translators: %s: order count */
@@ -114,7 +114,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				</a>
 			</li>
 
-			<li class="on-hold-orders">
+			<li class="nfe-processing-orders">
 				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
 					<?php
 						/* translators: %s: order count */
@@ -126,7 +126,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				</a>
 			</li>
 
-			<li class="low-in-stock">
+			<li class="nfe-error-orders">
 				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
 					<?php
 						/* translators: %s: order count */
@@ -138,7 +138,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				</a>
 			</li>
 
-			<li class="out-of-stock">
+			<li class="nfe-cancelled-orders">
 				<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
 					<?php
 						/* translators: %s: order count */

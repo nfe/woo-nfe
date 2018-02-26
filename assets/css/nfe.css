@@ -1,4 +1,25 @@
 
+#woocommerce_dashboard_status .wc_status_list li.nfe-issued-orders a:before {
+
+    content: "\e015";
+    color: #7ad03a;
+}
+
+#woocommerce_dashboard_status .wc_status_list li.nfe-cancelled-orders a:before {
+    content: "\e013";
+    color: #ffba00;
+}
+
+#woocommerce_dashboard_status .wc_status_list li.nfe-processing-orders a:before {
+    content: "\e011";
+    color: #999;
+}
+
+#woocommerce_dashboard_status .wc_status_list li.nfe-error-orders a:before {
+    content: "\e016";
+    color: #a00;
+}
+
 .sales_receipt .button {
     display: block;
     text-align: center;
