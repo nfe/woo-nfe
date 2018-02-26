@@ -1,9 +1,7 @@
 <?php
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
-
-if ( class_exists( 'WC_Integration' ) ) :
 
 /**
  * WooCommerce NFe.io Integration
@@ -17,10 +15,12 @@ class WC_NFe_Integration extends WC_Integration {
 
 	/**
 	 * Init and hook in the integration.
+	 *
+	 * @return void
 	 */
 	public function __construct() {
-		$this->id 				  = 'woo-nfe';
-		$this->method_title 	  = __( 'NFe Integration', 'woo-nfe' );
+		$this->id = 'woo-nfe';
+		$this->method_title = __( 'Receipts (NFE.io)', 'woo-nfe' );
 		$this->method_description = __( 'This is the NFe.io integration/settings page.', 'woo-nfe' );
 
 		// Load the settings.
@@ -28,10 +28,10 @@ class WC_NFe_Integration extends WC_Integration {
 		$this->init_settings();
 
 		// Actions.
-		add_action( 'admin_notices', 																				array( $this, 'display_errors' ) );
-		add_action( 'network_admin_notices', 																array( $this, 'display_errors' ) );
-		add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
-		add_action( 'woocommerce_update_options_integration',              	array( $this, 'process_admin_options') );
+		add_action( 'admin_notices', array( $this, 'display_errors' ) );
+		add_action( 'network_admin_notices', array( $this, 'display_errors' ) );
+		add_action( 'woocommerce_update_options_integration_' . $this->id, array( $this, 'process_admin_options' ) );
+		add_action( 'woocommerce_update_options_integration', array( $this, 'process_admin_options' ) );
 	}
 
 	/**
@@ -39,19 +39,14 @@ class WC_NFe_Integration extends WC_Integration {
 	 */
 	public function init_form_fields() {
 		if ( $this->has_api_key() ) {
-			$lists = $this->companies();
+			$lists = $this->get_companies();
 
-			if(empty($lists) || $lists == NULL || $lists == '')
-			{
+			if ( empty( $lists ) ) {
 				$company_list = array_merge( array( '' => __( 'No company found in account', 'woo-nfe' ) ), $lists );
-			}
-
-			else
-			{
+			} else {
 				$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
 			}
-		}
-		else {
+		} else {
 			$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ) );
 		}
 
@@ -67,7 +62,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'API Key', 'woo-nfe' ),
 				'default'           => '',
-				'description'       => sprintf( __( '%s to look up API Key', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/apikeys') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( '%s to look up API Key', 'woo-nfe' ), '<a href="' . esc_url( 'https://app.nfe.io/account/apikeys' ) . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
 			),
 			'choose_company' 	=> array(
 				'title'             => __( 'Choose the Company', 'woo-nfe' ),
@@ -78,7 +73,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
 				'desc_tip'       	=> __( 'Choose one of your companies.', 'woo-nfe' ),
-				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/companies') . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( '%s to check the registered companies', 'woo-nfe' ), '<a href="' . esc_url( 'https://app.nfe.io/companies' ) . '">' . __( 'Click here', 'woo-nfe' ) . '</a>' ),
 
 			),
 			'issue_when' 			=> array(
@@ -104,9 +99,6 @@ class WC_NFe_Integration extends WC_Integration {
 					'processing' => _x( 'Processing', 'Order status', 'woocommerce' ),
 					'on-hold'    => _x( 'On Hold', 'Order status', 'woocommerce' ),
 					'completed'  => _x( 'Completed', 'Order status', 'woocommerce' ),
-					//'wc-cancelled'  => _x( 'Cancelled', 'Order status', 'woocommerce' ),
-					//'wc-refunded'   => _x( 'Refunded', 'Order status', 'woocommerce' ),
-					//'wc-failed'     => _x( 'Failed', 'Order status', 'woocommerce' ),
 				),
 				'class'    			=> 'wc-enhanced-select',
 				'css'      			=> 'min-width:300px;',
@@ -124,7 +116,7 @@ class WC_NFe_Integration extends WC_Integration {
 				'custom_attributes' => array(
 					'readonly' => 'readonly'
 				),
-				'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woo-nfe' ), '<a href="' . esc_url('https://app.nfe.io/account/webhooks') . '">' . __( 'NFe.io Webhooks', 'woo-nfe' ) . '</a>' ),
+				'description'       => sprintf( __( 'Copy this link and use it to set up the %s', 'woo-nfe' ), '<a href="' . esc_url( 'https://app.nfe.io/account/webhooks' ) . '">' . __( 'NFe.io Webhooks', 'woo-nfe' ) . '</a>' ),
 			),
 			'issue_past_title' 	=> array(
 				'title' 			=> __( 'Manual Retroactive Issue of NFe', 'woo-nfe' ),
@@ -153,21 +145,21 @@ class WC_NFe_Integration extends WC_Integration {
 				'type'              => 'text',
 				'label'             => __( 'CityServiceCode', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: Used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'nfe_fedservicecode' => array(
 				'title'             => __( 'FederalServiceCode', 'woo-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'FederalServiceCode', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: federalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'nfe_cityservicecode_desc' => array(
-				'title'             => __( 'Description', 'woo-nfe' ),
+				'title'             => __( 'Product Description', 'woo-nfe' ),
 				'type'              => 'text',
 				'label'             => __( 'Description', 'woo-nfe' ),
 				'default'           => '',
-				'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt', 'woo-nfe' ),
+				'desc_tip'       	=> __( 'Global value: Description used when issuing a receipt.', 'woo-nfe' ),
 			),
 			'debug' 			=> array(
 				'title'             => __( 'Debug Log', 'woo-nfe' ),
@@ -181,40 +173,43 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * Fetches NFe Companies
+	 * Fetches companies via the NFe API.
 	 *
-	 * @return array An array of companies
+	 * @return bool|array Bail with error message | An array of companies.
 	 */
-	private function companies() {
-		$key 			= nfe_get_field('api_key');
-		$company_list 	= get_transient( 'woo_nfecompanylist_' . md5( $key ) );
+	private function get_companies() {
+		$key          = nfe_get_field( 'api_key' );
+		$api_key      = md5( $key );
+		$cache_key    = 'woo_nfecompanylist_' . $api_key;
+		$company_list = get_transient( $cache_key );
 
-		if ( false === $company_list ) {
-			$url 		= 'https://api.nfe.io/v1/companies?api_key='. $key . '';
-			$response 	= wp_remote_get( esc_url_raw( $url ) );
-			$companies 	= json_decode( wp_remote_retrieve_body( $response ), true );
+		// If there is a list from cache, load it.
+		if ( isset( $company_list ) ) {
+			return $company_list;
+		}
 
-			if ( isset( $companies->message ) ) {
-				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+		NFe::setApiKey( $key );
 
-				return false;
-			}
-			else {
-				$company_list = array();
+		$companies = NFe_Company::search();
 
-				if ( sizeof($companies) > 0 && sizeof( $companies['companies'] ) > 0)
-				{
-					foreach ( $companies['companies'] as $c ) {
-						$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
-					}
-					if ( sizeof( $company_list ) > 0 ) {
-						set_transient( 'woo_nfecompanylist_' . md5( $key ), $company_list, 5 * HOUR_IN_SECONDS );
-					}
+		if ( isset( $companies->message ) ) {
+			add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
+			add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+
+			return false;
+		} else {
+			$company_list = array();
+
+			if ( count( $companies ) > 0 && count( $companies['companies'] ) > 0 ) {
+				foreach ( $companies['companies'] as $c ) {
+					$company_list[ $c['id'] ] = ucwords( strtolower( $c['name'] ) );
+				}
+
+				if ( count( $company_list ) > 0 ) {
+					set_transient( $cache_key, $company_list, 24 * HOUR_IN_SECONDS );
 				}
 			}
 		}
-		return $company_list;
 	}
 
 	/**
@@ -223,71 +218,62 @@ class WC_NFe_Integration extends WC_Integration {
 	 * @return string
 	 */
 	private function get_events_url() {
-		return sprintf('%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
+		return sprintf( '%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
 	}
 
 	/**
 	 * Displays notifications when the admin has something wrong with the NFe.io configuration.
 	 *
-	 * @return string
+	 * @return void
 	 */
 	public function display_errors() {
 		if ( $this->is_active() ) {
-			if ( empty( nfe_get_field('api_key') ) ) {
-				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) );
+			if ( empty( nfe_get_field( 'api_key' ) ) ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key was provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) );
 			}
 
-			if ( nfe_get_field('issue_past_notes') == 'yes' && $this->issue_past_days() ) {
+			if ( nfe_get_field( 'issue_past_notes' ) === 'yes' && $this->issue_past_days() ) {
 				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woo-nfe' ) . '</a>' ) );
 			}
 		}
 	}
 
 	/**
-	 * Display message to user if there is an issue when fetching the companies
+	 * Display message to user if there is an issue when fetching the companies.
 	 *
-	 * @param void
-	 * @return string The error message for the user
+	 * @return void
 	 */
 	public function nfe_api_error_msg() {
 		echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woo-nfe' ) ) );
 	}
 
 	/**
-	 * Get message
+	 * Get error message.
+	 *
+	 * @param string $message Message.
+	 * @param string $type    Message type.
 	 *
 	 * @return string Error
 	 */
 	private function get_message( $message, $type = 'error' ) {
 		ob_start();
 		?>
-		<div class="<?php echo esc_attr( $type ) ?>">
-			<p><?php echo $message ?></p>
+		<div class="<?php echo esc_attr( $type ); ?>">
+			<p><?php echo $message; // WPCS: XSS ok. ?></p>
 		</div>
 		<?php
 		return ob_get_clean();
 	}
 
 	/**
-	 * Issue past date check
+	 * Issue past date check.
 	 *
-	 * @return bool true|false
+	 * @return bool
 	 */
 	public function issue_past_days() {
-		$days = nfe_get_field('issue_past_days');
+		$days = nfe_get_field( 'issue_past_days' );
 
-		if ( empty( $days ) || $days == 0 ) {
-			return true;
-		}
-	}
-
-	/**
-	 * has_api_key function.
-	 *
-	 * @return void
-	 */
-	public function has_api_key() {
-		if ( nfe_get_field('api_key') ) {
+		if ( empty( $days ) ) {
 			return true;
 		}
 
@@ -295,19 +281,36 @@ class WC_NFe_Integration extends WC_Integration {
 	}
 
 	/**
-	 * is_active function.
+	 * The API key exists?
 	 *
-	 * @return void
+	 * @return bool
+	 */
+	public function has_api_key() {
+		$key = nfe_get_field( 'api_key' );
+
+		if ( empty( $key ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Is the plugin active?
+	 *
+	 * @return bool
 	 */
 	public function is_active() {
-		if ( nfe_get_field('nfe_enable') == 'yes'  ) {
+		$enabled = nfe_get_field( 'nfe_enable' );
+
+		if ( empty( $enabled ) ) {
+			return false;
+		}
+
+		if ( 'yes' === $enabled ) {
 			return true;
 		}
 
 		return false;
 	}
 }
-
-endif;
-
-// That's it! =)

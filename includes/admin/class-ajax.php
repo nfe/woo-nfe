@@ -27,7 +27,7 @@ class WC_NFe_Ajax {
 	 */
 	public static function front_issue() {
 		// Nothing to do
-		if ( ! isset( $_GET['nfe_issuue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
+		if ( ! isset( $_GET['nfe_issue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ class WC_NFe_Ajax {
 
 		// Download it.
 		header( 'Content-type: application/pdf' );
-		header( 'Content-Disposition: attachment; filename="'. $name .'"' );
+		header( 'Content-Disposition: attachment; filename="' . $name . '"' );
 		header( 'Content-Transfer-Encoding: binary' );
 		header( 'Accept-Ranges: bytes' );
 		header( 'Content-Length: '. $size );
