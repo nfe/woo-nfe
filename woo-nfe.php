@@ -21,7 +21,10 @@
  * Domain Path:       /languages
  * Network:     	  false
  *
- * Copyright: © 2016 NFe.io
+ * WC requires at least: 2.5
+ * WC tested up to: 3.3.3
+ *
+ * Copyright: © 2018 NFe.io
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
