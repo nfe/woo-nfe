@@ -33,6 +33,8 @@ class WC_NFe_Admin {
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', 			array( $this, 'display_order_data_in_admin' ), 20 );
 		add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
+		add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows'] );
+
 		/*
 		Woo Commmerce status triggers
 
@@ -80,6 +82,70 @@ class WC_NFe_Admin {
 				NFe_Woo()->issue_invoice( array( $order_id ) );
 			}
 		}
+	}
+
+	/**
+	 * Show NFe.io order data is status widget.
+	 */
+	public function nfe_status_widget_order_rows() {
+		if ( ! current_user_can( 'edit_shop_orders' ) ) {
+			return;
+		}
+
+		$nfe_issued_count = 0;
+		$nfe_issuing_count = 0;
+		$nfe_error_count = 0;
+		$nfe_cancelled_count = 0;
+		?>
+
+		<li class="processing-orders">
+			<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<?php
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ),
+						$nfe_issued_count
+					);
+				?>
+			</a>
+		</li>
+
+		<li class="on-hold-orders">
+			<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<?php
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> issuing', '<strong>%s receipts</strong> issuing', $nfe_issuing_count, 'woo-nfe' ),
+						$nfe_issuing_count
+					);
+				?>
+			</a>
+		</li>
+
+		<li class="low-in-stock">
+			<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<?php
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ),
+						$nfe_error_count
+					);
+				?>
+			</a>
+		</li>
+
+		<li class="out-of-stock">
+			<a href="<?php echo admin_url( 'edit.php?post_type=shop_order' ); ?>">
+				<?php
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ),
+						$nfe_cancelled_count
+					);
+				?>
+			</a>
+		</li>
+		<?php
 	}
 
 	/**
