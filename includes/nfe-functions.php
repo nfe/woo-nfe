@@ -78,15 +78,20 @@ function nfe_order_address_filled( $order_id ) {
 /**
  * Past Issue Check (It answers the question: Can we issue a past order?)
  *
- * @param  string $post_date Post date
- * @param  string $past_days Days in the past for time check
- * @return bool true|false
+ * @param  WC_Order $order Order object.
+ *
+ * @return bool
  */
 function nfe_issue_past_orders( $order ) {
-	$time = $order->post->post_date;
-	$days = '-' . nfe_get_field( 'issue_past_days' ) . ' days';
+	$past_days = nfe_get_field( 'issue_past_days' );
 
-	if ( strtotime( $days ) < strtotime( $time ) ) {
+	if ( empty( $past_days ) ) {
+		return false;
+	}
+
+	$days = '-' . $past_days . ' days';
+
+	if ( strtotime( $days ) < strtotime( $order->post->post_date ) ) {
 		return true;
 	}
 
@@ -96,14 +101,12 @@ function nfe_issue_past_orders( $order ) {
 /**
  * WooCommerce 2.2 support for wc_get_order.
  *
- * @param int $order_id
- * @return void
+ * @param int $order_id Order ID.
+ *
+ * @return WC_Order Order object.
  */
 function nfe_wc_get_order( $order_id ) {
-	if ( function_exists( 'wc_get_order' ) ) {
-		return wc_get_order( $order_id );
-	}
-	else {
-		return new WC_Order( $order_id );
-	}
+	return ( function_exists( 'wc_get_order' ) )
+		? wc_get_order( $order_id )
+		: WC_Order( $order_id );
 }
