@@ -1,25 +1,24 @@
 <?php
-
 /**
  * WooCommerce NFe plugin
  *
- * @author 			  NFe.io
+ * @author            NFe.io
  * @link              https://github.com/nfe/woo-nfe
- * @since             1.0.7
+ * @since             1.0.8
  * @package           WooCommerce_NFe
  *
  * @wordpress-plugin
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.0.7
+ * Version:           1.0.8
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
  * Developer URI:     https://github.com/nfe/woo-nfe/graphs/contributors
  * Text Domain:       woo-nfe
  * Domain Path:       /languages
- * Network:     	  false
+ * Network:           false
  *
  * WC requires at least: 2.5
  * WC tested up to: 3.3.3
@@ -29,7 +28,7 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WooCommerce_NFe' ) ) :
@@ -50,18 +49,18 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		public static function instance() {
 
-			// Store the instance locally to avoid private static replication
+			// Store the instance locally to avoid private static replication.
 			static $instance = null;
 
-			// Only run these methods if they haven't been run previously
+			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
-				$instance = new WooCommerce_NFe;
+				$instance = new WooCommerce_NFe();
 				$instance->setup_globals();
 				$instance->includes();
 				$instance->setup_hooks();
 			}
 
-			// Always return the instance
+			// Always return the instance.
 			return $instance;
 		}
 
@@ -88,7 +87,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->plugin_url    = plugin_dir_url( $this->file                      );
 			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
 
-			// WooCommerce Webhook Callback
+			// WooCommerce Webhook Callback.
 			if ( ! defined( 'WC_API_CALLBACK' ) ) {
 				define( 'WC_API_CALLBACK', 'nfe_webhook' );
 			}
@@ -101,17 +100,16 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		private function includes() {
 
-			// NFe Client-PHP API - Composer Support
+			// NFe Client-PHP API - Composer Support.
 			$composer_path = $this->plugin_dir . 'vendor/autoload.php';
 
 			if ( ! file_exists( $composer_path ) ) {
 				require( $this->plugin_dir . 'lib/client-php/lib/init.php' );
-			}
-			else {
+			} else {
 				require( $composer_path );
 			}
 
-			// Admin
+			// Admin.
 			require( $this->includes_dir . 'nfe-functions.php'           );
 			require( $this->includes_dir . 'admin/class-settings.php'    );
 			require( $this->includes_dir . 'admin/class-ajax.php'        );
@@ -120,7 +118,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			require( $this->includes_dir . 'admin/class-emails.php'      );
 			require( $this->includes_dir . 'admin/class-webhook.php' 	 );
 
-			// Front-end
+			// Front-end.
 			require( $this->includes_dir . 'frontend/class-frontend.php' );
 		}
 
@@ -168,7 +166,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 				define( 'WOOCOMMERCE_NFE_PATH', plugin_dir_path( $this->file ) );
 			}
 
-			// Filters
+			// Filters.
 			add_filter( 'woocommerce_integrations',                array( $this, 'nfe_integration' ) );
 			add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
 		}
@@ -177,6 +175,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * Adds our custom WC_NFe_Integration integration to WooCommerce.
 		 *
 		 * @since 1.0.0
+		 *
+		 * @param array $integrations WooCommerce Integrations.
 		 *
 		 * @return array
 		 */
@@ -190,8 +190,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * SOAPClient missing notice.
 		 *
 		 * @since 1.0.0
-		 *
-		 * @return string
 		 */
 		public function soap_missing_notice() {
 			include $this->includes_dir . 'admin/views/html-notice-missing-soap-client.php';
@@ -201,8 +199,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * WooCommerce missing notice.
 		 *
 		 * @since 1.0.0
-		 *
-		 * @return string
 		 */
 		public function woocommerce_missing_notice() {
 			include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce.php';
@@ -212,8 +208,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * WooCommerce Extra Checkout Fields for Brazil missing notice.
 		 *
 		 * @since 1.0.0
-		 *
-		 * @return string
 		 */
 		public function extra_checkout_fields_missing_notice() {
 			include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php';
@@ -224,29 +218,26 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array $links
+		 * @param array $links Links.
 		 * @return array
 		 */
 		public function plugin_action_links( $links ) {
-			$plugin_links   = array(
+			return array_merge(  array(
 				'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woo-nfe' ) . '</a>',
-			);
-			return array_merge( $plugin_links, $links );
+			), $links );
 		}
 	}
 
+	/**
+	 * The main function responsible for returning the one true WooCommerce_NFe Instance.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return WooCommerce_NFe
+	 */
+	function WooCommerce_NFe() {
+		return WooCommerce_NFe::instance();
+	}
+	add_action( 'plugins_loaded', 'WooCommerce_NFe' );
+
 endif;
-
-/**
- * The main function responsible for returning the one true WooCommerce_NFe Instance.
- *
- * @since 1.0.0
- *
- * @return WooCommerce_NFe
- */
-function WooCommerce_NFe() {
-	return WooCommerce_NFe::instance();
-}
-add_action( 'plugins_loaded', 'WooCommerce_NFe');
-
-// That's it! =)
