@@ -101,26 +101,29 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 		}
 
+		/**
+		 * Get orders count.
+		 *
+		 * @param  string $value NFe status.
+		 * @return int
+		 */
 		protected function get_order_count( $value ) {
 			$args = array(
-			    'post_type' => 'shop_order',
-			    'cache_results' => true,
+			    'post_type'              => 'shop_order',
+			    'cache_results'          => true,
 			    'update_post_meta_cache' => false,
 			    'update_post_term_cache' => false,
-			    'meta_query' => array(
+			    'post_status'            => 'any',
+			    'meta_query'             => array(
 			        array(
 			            'key' => 'nfe_issued',
-			            'value' => $value,
+			            'value' => sprintf(':"%s";', $value ),
 			            'compare' => 'LIKE',
 			        ),
 			    ),
 			);
 
 			$query = new WP_Query( $args );
-
-			if ( ! $query->have_posts() ) {
-				return 0;
-			}
 
 			return $query->found_posts;
 		}
@@ -137,7 +140,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 			$nfe_issued_count    = $this->get_order_count( 'Issued' );
 			$nfe_issuing_count   = $this->get_order_count( 'WaitingCalculateTaxes' );
-			$nfe_error_count     = $this->get_order_count( 'WaitingCalculateTaxes' );
+			$nfe_error_count     = $this->get_order_count( 'Error' );
 			$nfe_cancelled_count = $this->get_order_count( 'Cancelled' );
 			?>
 
@@ -424,7 +427,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order      = nfe_wc_get_order( get_the_ID() );
 			$order_id   = $order->get_id();
 			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
-			$status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
 			// Bail early.
 			if ( 'nfe_receipts' !== $column ) {
@@ -448,7 +450,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 							'action'    => 'woo_nfe_emitida',
 						);
 					}
-				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], $status, true ) ) {
+				} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) ) {
 					$actions['woo_nfe_issuing'] = array(
 						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing',
