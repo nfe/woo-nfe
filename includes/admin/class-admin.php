@@ -46,6 +46,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 			add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 
+			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows'] );
+
 			/*
 			Woo Commmerce status triggers
 
@@ -97,6 +99,99 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
 				NFe_Woo()->issue_invoice( array( $order_id ) );
 			}
+		}
+
+		/**
+		 * Get orders count.
+		 *
+		 * @param  string $value NFe status.
+		 * @return int
+		 */
+		protected function get_order_count( $value ) {
+			$args = array(
+			    'post_type'              => 'shop_order',
+			    'cache_results'          => true,
+			    'update_post_meta_cache' => false,
+			    'update_post_term_cache' => false,
+			    'post_status'            => 'any',
+			    'meta_query'             => array(
+			        array(
+			            'key' => 'nfe_issued',
+			            'value' => sprintf(':"%s";', $value ),
+			            'compare' => 'LIKE',
+			        ),
+			    ),
+			);
+
+			$query = new WP_Query( $args );
+
+			return $query->found_posts;
+		}
+
+		/**
+		 * Show NFe.io order data is status widget.
+		 *
+		 * @return void
+		 */
+		public function nfe_status_widget_order_rows() {
+			if ( ! current_user_can( 'edit_shop_orders' ) ) {
+				return;
+			}
+
+			$nfe_issued_count    = $this->get_order_count( 'Issued' );
+			$nfe_issuing_count   = $this->get_order_count( 'WaitingCalculateTaxes' );
+			$nfe_error_count     = $this->get_order_count( 'Error' );
+			$nfe_cancelled_count = $this->get_order_count( 'Cancelled' );
+			?>
+
+			<li class="nfe-issued-orders">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+					<?php
+						/* translators: %s: order count */
+						printf(
+							_n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ),
+							$nfe_issued_count
+						);
+					?>
+				</a>
+			</li>
+
+			<li class="nfe-processing-orders">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+					<?php
+						/* translators: %s: order count */
+						printf(
+							_n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ),
+							$nfe_issuing_count
+						);
+					?>
+				</a>
+			</li>
+
+			<li class="nfe-error-orders">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+					<?php
+						/* translators: %s: order count */
+						printf(
+							_n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ),
+							$nfe_error_count
+						);
+					?>
+				</a>
+			</li>
+
+			<li class="nfe-cancelled-orders">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+					<?php
+						/* translators: %s: order count */
+						printf(
+							_n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ),
+							$nfe_cancelled_count
+						);
+					?>
+				</a>
+			</li>
+			<?php
 		}
 
 		/**
@@ -332,7 +427,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order      = nfe_wc_get_order( get_the_ID() );
 			$order_id   = $order->get_id();
 			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
-			$status     = array( 'PullFromCityHall', 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber' );
 
 			// Bail early.
 			if ( 'nfe_receipts' !== $column ) {
@@ -356,7 +450,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 							'action'    => 'woo_nfe_emitida',
 						);
 					}
-				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], $status, true ) ) {
+				} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) {
 					$actions['woo_nfe_issuing'] = array(
 						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing',
