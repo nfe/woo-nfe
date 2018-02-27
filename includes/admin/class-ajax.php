@@ -133,9 +133,9 @@ class WC_NFe_Ajax {
 		header( 'Content-Length: '. $size );
 
 		// The three lines below basically make the	download_pdf non-cacheable.
-		header( "Cache-control: private" );
-		header( 'Pragma: private');
-		header( "Expires: Mon, 26 Jul 1997 05:00:00 GMT" );
+		header( 'Cache-control: private' );
+		header( 'Pragma: private' );
+		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
 
 		// multipart-download_pdf and download_pdf resuming support.
 		if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
@@ -155,7 +155,7 @@ class WC_NFe_Ajax {
 			header( 'Content-Range: bytes ' . $range - $range_end / $size );
 		} else {
 			$new_length = $size;
-			header( 'Content-Length: '. $size );
+			header( 'Content-Length: ' . $size );
 		}
 
 		// output the file itself.
@@ -180,4 +180,3 @@ class WC_NFe_Ajax {
 }
 
 WC_NFe_Ajax::init();
-
