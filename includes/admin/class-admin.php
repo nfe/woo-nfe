@@ -450,7 +450,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 							'action'    => 'woo_nfe_emitida',
 						);
 					}
-				} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) ) {
+				} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) {
 					$actions['woo_nfe_issuing'] = array(
 						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing',
