@@ -83,6 +83,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return;
 			}
 
+			// Check if order exists first.
 			$order = nfe_wc_get_order( $order_id );
 			$order_id = $order->get_id();
 
