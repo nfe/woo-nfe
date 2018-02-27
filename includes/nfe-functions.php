@@ -1,7 +1,6 @@
 <?php
-
 /**
- * WooCommerce NFe Custom Functions
+ * WooCommerce NFe Custom Functions.
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Functions
@@ -30,10 +29,10 @@ function nfe_get_field( $value = '' ) {
 }
 
 /**
- * Check to make sure the order has all the fields for a NFe issue
+ * Check to make sure the order has all the fields for a NFe issue.
  *
- * @param  int $order Product Order
- * @return bool true|false
+ * @param  int $order_id Order ID.
+ * @return bool
  */
 function nfe_order_address_filled( $order_id ) {
 	$fields = array(
@@ -45,21 +44,6 @@ function nfe_order_address_filled( $order_id ) {
 		'city'         => get_post_meta( $order_id, '_billing_city', true ),
 		'country'      => get_post_meta( $order_id, '_billing_country', true ),
 	);
-
-	if(empty($fields['neighborhood']))
-	{
-		$fields['neighborhood'] = 'NAO INFORMADO';
-	}
-
-	if(empty($fields['address_1']))
-	{
-		$fields['address_1'] = 'NAO INFORMADO';
-	}
-
-	if(empty($fields['number']))
-	{
-		$fields['number'] = 'S/N';
-	}
 
 	$count = 0;
 	foreach ( $fields as $field => $value ) {
