@@ -30,6 +30,6 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": ">=3.7@stable",
-		"nfe/nfe": "2.0"
+		"nfe/nfe": ">=2.0"
   }
 }
