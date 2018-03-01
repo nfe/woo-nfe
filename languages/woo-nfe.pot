@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.8\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-02-27 14:47:37+00:00\n"
+"POT-Creation-Date: 2018-03-01 03:40:01+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -59,30 +59,40 @@ msgid "WooCommerce NFe"
 msgstr ""
 
 #: includes/admin/class-admin.php:225 includes/admin/class-admin.php:289
-#: includes/admin/class-settings.php:144 includes/admin/class-settings.php:146
-msgid "CityServiceCode"
+#: includes/admin/class-settings.php:147
+msgid "City Service Code (CityServiceCode)"
 msgstr ""
 
 #: includes/admin/class-admin.php:228 includes/admin/class-admin.php:291
-msgid "CityServiceCode, used when issuing a receipt."
+#: includes/admin/class-settings.php:151
+msgid ""
+"City Service Code, this is the code that will identify to the cityhall "
+"which type of service you are delivering."
 msgstr ""
 
 #: includes/admin/class-admin.php:234 includes/admin/class-admin.php:297
-#: includes/admin/class-settings.php:151 includes/admin/class-settings.php:153
-msgid "FederalServiceCode"
+#: includes/admin/class-settings.php:154
+msgid "Federal Service Code LC 116 (FederalServiceCode)"
 msgstr ""
 
 #: includes/admin/class-admin.php:237 includes/admin/class-admin.php:299
-msgid "FederalServiceCode, used when issuing a receipt."
+#: includes/admin/class-settings.php:158
+msgid ""
+"Service Code based on the Federal Law (LC 116), this is a federal code that "
+"will identify to the cityhall which type of service you are delivering."
 msgstr ""
 
 #: includes/admin/class-admin.php:243 includes/admin/class-admin.php:305
-#: includes/admin/class-settings.php:158
-msgid "Product Description"
+#: includes/admin/class-settings.php:161 includes/admin/class-settings.php:163
+msgid "Service Description"
 msgstr ""
 
 #: includes/admin/class-admin.php:246 includes/admin/class-admin.php:307
-msgid "Description used when issuing a receipt."
+#: includes/admin/class-settings.php:165
+msgid ""
+"Put the description that will appear in the receipt. This description must "
+"explain in detail what service was delivered. Ask your accountant, if in "
+"doubt."
 msgstr ""
 
 #: includes/admin/class-admin.php:358
@@ -346,66 +356,64 @@ msgid "Days in the past to allow NFe manual issue."
 msgstr ""
 
 #: includes/admin/class-settings.php:140
-msgid "Fiscal Activity (Global)"
+msgid "Receipt Service Settings"
 msgstr ""
 
-#: includes/admin/class-settings.php:148
-msgid "Global value: CityServiceCode, used when issuing a receipt."
+#: includes/admin/class-settings.php:142
+msgid ""
+"If you are in doubt on how to fill the fields below, ask for help from you "
+"accountant or get in contact with our team via <a href=\"mailto:%s\">%s</a>"
 msgstr ""
 
-#: includes/admin/class-settings.php:155
-msgid "Global value: federalServiceCode, used when issuing a receipt."
+#: includes/admin/class-settings.php:149
+msgid "City Service Code"
 msgstr ""
 
-#: includes/admin/class-settings.php:160
-msgid "Description"
+#: includes/admin/class-settings.php:156
+msgid "Federal Service Code"
 msgstr ""
 
-#: includes/admin/class-settings.php:162
-msgid "Global value: Description used when issuing a receipt."
-msgstr ""
-
-#: includes/admin/class-settings.php:165
+#: includes/admin/class-settings.php:168
 msgid "Debug Log"
 msgstr ""
 
-#: includes/admin/class-settings.php:167
+#: includes/admin/class-settings.php:170
 msgid "Enable logging"
 msgstr ""
 
-#: includes/admin/class-settings.php:169
+#: includes/admin/class-settings.php:172
 msgid "Log events such as API requests, you can check this log in %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:169
+#: includes/admin/class-settings.php:172
 msgid "System Status - Logs"
 msgstr ""
 
-#: includes/admin/class-settings.php:230
+#: includes/admin/class-settings.php:233
 msgid ""
 "Plugin is enabled but no API key was provided. You should inform your API "
 "Key. %s"
 msgstr ""
 
-#: includes/admin/class-settings.php:230
+#: includes/admin/class-settings.php:233
 msgid "Click here to configure!"
 msgstr ""
 
-#: includes/admin/class-settings.php:234
+#: includes/admin/class-settings.php:237
 msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:234
+#: includes/admin/class-settings.php:237
 msgid "Add a date to calculate or disable it."
 msgstr ""
 
-#: includes/admin/class-settings.php:245
+#: includes/admin/class-settings.php:248
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 #: includes/admin/views/html-notice-missing-woocommerce.php:22
 msgid "WooCommerce NFe.io"
 msgstr ""
 
-#: includes/admin/class-settings.php:245
+#: includes/admin/class-settings.php:248
 msgid "Unable to load the companies list from NFe.io."
 msgstr ""
 

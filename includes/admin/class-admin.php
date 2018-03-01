@@ -222,28 +222,28 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				<?php
 				woocommerce_wp_text_input( array(
 					'id'            => '_simple_cityservicecode',
-					'label'         => esc_html__( 'CityServiceCode', 'woo-nfe' ),
+					'label'         => __( 'City Service Code (CityServiceCode)', 'woo-nfe' ),
 					'wrapper_class' => 'hide_if_variable',
 					'desc_tip'      => 'true',
-					'description'   => esc_html__( 'CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+					'description'   => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
 					'value'         => get_post_meta( $post_id, '_simple_cityservicecode', true ),
 				) );
 
 				woocommerce_wp_text_input( array(
 					'id'            => '_simple_federalservicecode',
-					'label'         => esc_html__( 'FederalServiceCode', 'woo-nfe' ),
+					'label'         => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'woo-nfe' ),
 					'wrapper_class' => 'hide_if_variable',
 					'desc_tip'      => 'true',
-					'description'   => esc_html__( 'FederalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+					'description'   => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
 					'value'         => get_post_meta( $post_id, '_simple_federalservicecode', true ),
 				) );
 
 				woocommerce_wp_textarea_input( array(
 					'id'            => '_simple_nfe_product_desc',
-					'label'         => esc_html__( 'Product Description', 'woo-nfe' ),
+					'label'         => __( 'Service Description', 'woo-nfe' ),
 					'wrapper_class' => 'hide_if_variable',
 					'desc_tip'      => 'true',
-					'description'   => esc_html__( 'Description used when issuing a receipt.', 'woo-nfe' ),
+					'description'   => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'woo-nfe' ),
 					'value'         => get_post_meta( $post_id, '_simple_nfe_product_desc', true ),
 				) );
 				?>
@@ -286,25 +286,25 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 			woocommerce_wp_text_input( array(
 				'id'            => '_cityservicecode[' . $product_id . ']',
-				'label'         => esc_html__( 'CityServiceCode', 'woo-nfe' ),
+				'label'         => __( 'City Service Code (CityServiceCode)', 'woo-nfe' ),
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'CityServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+				'description'   => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
 				'value'         => get_post_meta( $variation->ID, '_cityservicecode', true ),
 			) );
 
 			woocommerce_wp_text_input( array(
 				'id'            => '_federalservicecode[' . $product_id . ']',
-				'label'         => esc_html__( 'FederalServiceCode', 'woo-nfe' ),
+				'label'         => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'woo-nfe' ),
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'FederalServiceCode, used when issuing a receipt.', 'woo-nfe' ),
+				'description'   => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
 				'value'         => get_post_meta( $product_id, '_federalservicecode', true ),
 			) );
 
 			woocommerce_wp_textarea_input( array(
 				'id'            => '_nfe_product_variation_desc[' . $product_id . ']',
-				'label'         => esc_html__( 'Product Description', 'woo-nfe' ),
+				'label'         => __( 'Service Description', 'woo-nfe' ),
 				'desc_tip'      => 'true',
-				'description'   => esc_html__( 'Description used when issuing a receipt.', 'woo-nfe' ),
+				'description'   => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'woo-nfe' ),
 				'value'         => get_post_meta( $product_id, '_nfe_product_variation_desc', true ),
 			) );
 		}
@@ -320,15 +320,15 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_cityservicecode',
-				esc_attr( $_POST['_cityservicecode'][ $post_id ] ) );
+				esc_attr( $_POST['_cityservicecode'][ intval( $post_id ) ] ) );
 
 			// Text Field - Federal Service Code.
 			update_post_meta( $post_id, '_federalservicecode',
-				esc_attr( $_POST['_federalservicecode'][ $post_id ] ) );
+				esc_attr( $_POST['_federalservicecode'][ intval( $post_id ) ] ) );
 
 			// TextArea Field - Product Variation Description.
 			update_post_meta( $post_id, '_nfe_product_variation_desc',
-				esc_html( $_POST['_nfe_product_variation_desc'][ $post_id ] ) );
+				esc_html( $_POST['_nfe_product_variation_desc'][ intval( $post_id ) ] ) );
 		}
 
 		/**
