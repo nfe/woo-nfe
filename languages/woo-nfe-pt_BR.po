@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-02-27 14:47:37+00:00\n"
-"PO-Revision-Date: 2018-02-27 11:54-0300\n"
+"POT-Creation-Date: 2018-03-01 03:40:01+00:00\n"
+"PO-Revision-Date: 2018-03-01 00:42-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: pt_BR\n"
@@ -55,31 +55,49 @@ msgid "WooCommerce NFe"
 msgstr "WooCommerce NFe"
 
 #: includes/admin/class-admin.php:225 includes/admin/class-admin.php:289
-#: includes/admin/class-settings.php:144 includes/admin/class-settings.php:146
-msgid "CityServiceCode"
-msgstr "CityServiceCode"
+#: includes/admin/class-settings.php:147
+msgid "City Service Code (CityServiceCode)"
+msgstr "Cód. Serviço na Cidade (CityServiceCode)"
 
 #: includes/admin/class-admin.php:228 includes/admin/class-admin.php:291
-msgid "CityServiceCode, used when issuing a receipt."
-msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+#: includes/admin/class-settings.php:151
+msgid ""
+"City Service Code, this is the code that will identify to the cityhall which "
+"type of service you are delivering."
+msgstr ""
+"Código de Serviço na Cidade, este é o código que identificará para a "
+"prefeitura qual o serviço que está sendo prestado pela sua empresa."
 
 #: includes/admin/class-admin.php:234 includes/admin/class-admin.php:297
-#: includes/admin/class-settings.php:151 includes/admin/class-settings.php:153
-msgid "FederalServiceCode"
-msgstr "FederalServiceCode"
+#: includes/admin/class-settings.php:154
+msgid "Federal Service Code LC 116 (FederalServiceCode)"
+msgstr "Cód. Serviço Federal LC 116 (FederalServiceCode)"
 
 #: includes/admin/class-admin.php:237 includes/admin/class-admin.php:299
-msgid "FederalServiceCode, used when issuing a receipt."
-msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+#: includes/admin/class-settings.php:158
+msgid ""
+"Service Code based on the Federal Law (LC 116), this is a federal code that "
+"will identify to the cityhall which type of service you are delivering."
+msgstr ""
+"Código de Serviço com base na Lei Federal (LC 116), este é o código federal "
+"que identifica para a prefeitura qual o serviço que está sendo prestado pela "
+"sua empresa."
 
 #: includes/admin/class-admin.php:243 includes/admin/class-admin.php:305
-#: includes/admin/class-settings.php:158
-msgid "Product Description"
+#: includes/admin/class-settings.php:161 includes/admin/class-settings.php:163
+msgid "Service Description"
 msgstr "Descrição do Produto"
 
 #: includes/admin/class-admin.php:246 includes/admin/class-admin.php:307
-msgid "Description used when issuing a receipt."
-msgstr "Valor global: Descrição usada na emissão de nota."
+#: includes/admin/class-settings.php:165
+msgid ""
+"Put the description that will appear in the receipt. This description must "
+"explain in detail what service was delivered. Ask your accountant, if in "
+"doubt."
+msgstr ""
+"Digite aqui a descrição que você deseja na nota fiscal, esta descrição deve "
+"explicar qual foi o serviço prestado entre outros detalhes. Peça ajuda a seu "
+"contador caso tenha dúvidas."
 
 #: includes/admin/class-admin.php:358
 msgid "Download NFe receipt"
@@ -349,42 +367,43 @@ msgid "Days in the past to allow NFe manual issue."
 msgstr "Dias no passado permitido para emissão manual da NFe."
 
 #: includes/admin/class-settings.php:140
-msgid "Fiscal Activity (Global)"
-msgstr "Atividade Fiscal (Global)"
+msgid "Receipt Service Settings"
+msgstr "Configurações de Serviço para Nota Fiscal"
 
-#: includes/admin/class-settings.php:148
-msgid "Global value: CityServiceCode, used when issuing a receipt."
-msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+#: includes/admin/class-settings.php:142
+msgid ""
+"If you are in doubt on how to fill the fields below, ask for help from you "
+"accountant or get in contact with our team via <a href=\"mailto:%s\">%s</a>"
+msgstr ""
+"Caso tenha dúvidas sobre o que colocar nesses campos, peça ajuda para seu "
+"contador ou entre em contato com nossa equipe pelo <a href=\"mailto:%s\">%s</"
+"a>"
 
-#: includes/admin/class-settings.php:155
-msgid "Global value: federalServiceCode, used when issuing a receipt."
-msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+#: includes/admin/class-settings.php:149
+msgid "City Service Code"
+msgstr "Cód. Serviço na Cidade"
 
-#: includes/admin/class-settings.php:160
-msgid "Description"
-msgstr "Descrição"
+#: includes/admin/class-settings.php:156
+msgid "Federal Service Code"
+msgstr "Cód. de Serviço na Cidade"
 
-#: includes/admin/class-settings.php:162
-msgid "Global value: Description used when issuing a receipt."
-msgstr "Valor global: Descrição usada na emissão de nota."
-
-#: includes/admin/class-settings.php:165
+#: includes/admin/class-settings.php:168
 msgid "Debug Log"
 msgstr "Log de depuração"
 
-#: includes/admin/class-settings.php:167
+#: includes/admin/class-settings.php:170
 msgid "Enable logging"
 msgstr "Ativar logs"
 
-#: includes/admin/class-settings.php:169
+#: includes/admin/class-settings.php:172
 msgid "Log events such as API requests, you can check this log in %s."
 msgstr "Registrar eventos da API do NFe. Você pode verificar o log em %s."
 
-#: includes/admin/class-settings.php:169
+#: includes/admin/class-settings.php:172
 msgid "System Status - Logs"
 msgstr "Status do Sistema - Logs"
 
-#: includes/admin/class-settings.php:230
+#: includes/admin/class-settings.php:233
 msgid ""
 "Plugin is enabled but no API key was provided. You should inform your API "
 "Key. %s"
@@ -392,27 +411,27 @@ msgstr ""
 "O plugin está habilitado porém, nenhuma chave de API foi adicionada. Você "
 "deve informar uma chave de API. %s"
 
-#: includes/admin/class-settings.php:230
+#: includes/admin/class-settings.php:233
 msgid "Click here to configure!"
 msgstr "Clique aqui para configurar!"
 
-#: includes/admin/class-settings.php:234
+#: includes/admin/class-settings.php:237
 msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
 msgstr ""
 "Emissão retroativa de nota fiscal está ativa, porém nenhuma data foi "
 "adicionada. %s."
 
-#: includes/admin/class-settings.php:234
+#: includes/admin/class-settings.php:237
 msgid "Add a date to calculate or disable it."
 msgstr "Adicione uma data para calcular ou desabilite essa funcionalidade."
 
-#: includes/admin/class-settings.php:245
+#: includes/admin/class-settings.php:248
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 #: includes/admin/views/html-notice-missing-woocommerce.php:22
 msgid "WooCommerce NFe.io"
 msgstr "WooCommerce NFe.io"
 
-#: includes/admin/class-settings.php:245
+#: includes/admin/class-settings.php:248
 msgid "Unable to load the companies list from NFe.io."
 msgstr "Não é possível carregar a lista de empresas do NFe.io."
 
@@ -631,8 +650,38 @@ msgctxt "email type"
 msgid "HTML"
 msgstr "HTML"
 
-#~ msgid "Enter the CityServiceCode."
-#~ msgstr "Preencha o CityServiceCode."
+#~ msgid "CityServiceCode"
+#~ msgstr "CityServiceCode"
+
+#~ msgid "CityServiceCode, used when issuing a receipt."
+#~ msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+
+#~ msgid "FederalServiceCode"
+#~ msgstr "FederalServiceCode"
+
+#~ msgid "FederalServiceCode, used when issuing a receipt."
+#~ msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+
+#~ msgid "Product Description"
+#~ msgstr "Descrição do Produto"
+
+#~ msgid "Description used when issuing a receipt."
+#~ msgstr "Valor global: Descrição usada na emissão de nota."
+
+#~ msgid "Fiscal Activity (Global)"
+#~ msgstr "Atividade Fiscal (Global)"
+
+#~ msgid "Global value: CityServiceCode, used when issuing a receipt."
+#~ msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+
+#~ msgid "Global value: federalServiceCode, used when issuing a receipt."
+#~ msgstr "Valor global: federalServiceCode, usando na emissão de nota."
+
+#~ msgid "Description"
+#~ msgstr "Descrição"
+
+#~ msgid "Global value: Description used when issuing a receipt."
+#~ msgstr "Valor global: Descrição usada na emissão de nota."
 
 #~ msgid "Enter the FederalServiceCode."
 #~ msgstr "Preencha o FederalServiceCode."
@@ -642,9 +691,6 @@ msgstr "HTML"
 
 #~ msgid "NFe CityServiceCode"
 #~ msgstr "CityServiceCode para a NFe"
-
-#~ msgid "NFe FederalServiceCode"
-#~ msgstr "FederalServiceCode para a NFe"
 
 #~ msgid "NFe Product Description"
 #~ msgstr "Descrição do Produto para a NFe"
