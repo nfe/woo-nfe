@@ -156,11 +156,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		private function setup_hooks() {
 			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 
-			global $woocommerce;
-
 			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=woo-nfe' );
-
-			if ( $woocommerce->version >= '2.1' ) {
+			if ( $this->version_check( '2.1' ) ) {
 				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=woo-nfe' );
 			}
 
