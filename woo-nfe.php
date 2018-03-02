@@ -11,7 +11,7 @@
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.0.8
+ * Version:           1.2
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -20,7 +20,7 @@
  * Domain Path:       /languages
  * Network:           false
  *
- * WC requires at least: 2.5
+ * WC requires at least: 3.3.3
  * WC tested up to: 3.3.3
  *
  * Copyright: © 2018 NFe.io
@@ -56,6 +56,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			if ( null === $instance ) {
 				$instance = new WooCommerce_NFe();
 				$instance->setup_globals();
+				$instance->dependencies();
 				$instance->includes();
 				$instance->setup_hooks();
 			}
@@ -82,10 +83,10 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$this->domain        = 'woo-nfe';
 			$this->name          = 'WooCommerce NFe';
 			$this->file          = __FILE__;
-			$this->basename      = plugin_basename( $this->file                     );
-			$this->plugin_dir    = plugin_dir_path( $this->file                     );
-			$this->plugin_url    = plugin_dir_url( $this->file                      );
-			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes'  );
+			$this->basename      = plugin_basename( $this->file );
+			$this->plugin_dir    = plugin_dir_path( $this->file );
+			$this->plugin_url    = plugin_dir_url( $this->file );
+			$this->includes_dir  = trailingslashit( $this->plugin_dir . 'includes' );
 
 			// WooCommerce Webhook Callback.
 			if ( ! defined( 'WC_API_CALLBACK' ) ) {
@@ -123,32 +124,37 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		}
 
 		/**
+		 * Class dependencies.
+		 *
+		 * @return void
+		 */
+		private function dependencies() {
+			// Check for SOAP.
+			if ( ! class_exists( 'SoapClient' ) ) {
+				add_action( 'admin_notices', [ $this, 'soap_missing_notice' ] );
+				return;
+			}
+
+			// Checks if WooCommerce is installed and with the proper version.
+			if ( ! $this->version_check() ) {
+				add_action( 'admin_notices', [ $this, 'woocommerce_missing_notice' ] );
+				return;
+			}
+
+			// Checks if WooCommerce Extra Checkout Fields for Brazil is installed.
+			if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
+				add_action( 'admin_notices', [ $this, 'extra_checkout_fields_missing_notice' ] );
+				return;
+			}
+		}
+
+		/**
 		 * Set hooks.
 		 *
 		 * @since 1.0.0
 		 */
 		private function setup_hooks() {
 			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-
-			// Check for SOAP.
-			if ( ! class_exists( 'SoapClient' ) ) {
-				add_action( 'admin_notices', array( $this, 'soap_missing_notice' ) );
-				return;
-			}
-
-			// Checks if WooCommerce is installed.
-			if ( ! class_exists( 'WooCommerce' ) ) {
-				add_action( 'admin_notices', array( $this, 'woocommerce_missing_notice' ) );
-				return;
-			}
-
-			// Checks if WooCommerce Extra Checkout Fields for Brazil is installed.
-			if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-				add_action( 'admin_notices', array( $this, 'extra_checkout_fields_missing_notice' ) );
-			   return;
-			}
-
-			/******************************************************************************/
 
 			global $woocommerce;
 
@@ -226,6 +232,23 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 				'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woo-nfe' ) . '</a>',
 			), $links );
 		}
+
+		/**
+		 * Version check.
+		 *
+		 * @param  string $version Version to check against.
+		 * @return bool
+		 */
+		protected function version_check( $version = '3.3.3' ) {
+			if ( class_exists( 'WooCommerce' ) ) {
+				global $woocommerce;
+				if ( version_compare( $woocommerce->version, $version, ">=" ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	/**
@@ -235,9 +258,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 	 *
 	 * @return WooCommerce_NFe
 	 */
-	function WooCommerce_NFe() {
+	function woo_nfe() {
 		return WooCommerce_NFe::instance();
 	}
-	add_action( 'plugins_loaded', 'WooCommerce_NFe' );
+	add_action( 'plugins_loaded', 'woo_nfe' );
 
 endif;
