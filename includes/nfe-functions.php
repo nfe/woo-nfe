@@ -49,14 +49,15 @@ function nfe_order_address_filled( $order_id ) {
 	foreach ( $fields as $field => $value ) {
 		if ( empty( $value ) ) {
 			$count = 1;
+			break;
 		}
 	}
 
 	if ( $count >= 1 ) {
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 /**

@@ -38,7 +38,7 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		if ( nfe_order_address_filled( $order->id ) ) {
+		if ( ! nfe_order_address_filled( $order->id ) ) {
 			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woo-nfe' ), 'error' );
 		} else {
 			NFe_Woo()->issue_invoice( array( $order->id ) );

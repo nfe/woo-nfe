@@ -92,7 +92,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Checking if the address of order is filled.
-			if ( nfe_order_address_filled( $order_id ) ) {
+			if ( ! nfe_order_address_filled( $order_id ) ) {
 				return;
 			}
 
@@ -353,7 +353,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
 			}
 
-			if ( $this->issue_helper( $download, $theorder, $order_id ) ) {
+			if ( $this->issue_helper( $download, $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 			}
 
@@ -369,23 +369,24 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 *
 		 * @return bool
 		 */
-		protected function issue_helper( $download, $order, $order_id ) {
-			$yes = false;
+		protected function issue_helper( $download, $order_id ) {
 
-			// Bail if there is
+			// Bail if there is an ID.
 			if ( ! empty( $download['id'] ) ) {
 				return false;
 			}
 
-			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) && ! nfe_order_address_filled( $order_id ) ) {
-				$yes = true;
+			// Bail for these stati.
+			if ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) {
+				return false;
 			}
 
-			if ( ( 'manual' === nfe_get_field( 'issue_when' ) && $yes ) || ( 'auto' === nfe_get_field( 'issue_when' ) && $yes ) ) {
-				return true;
+			// Bail if there is no address.
+			if ( ! nfe_order_address_filled( $order_id ) ) {
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		/**
@@ -474,7 +475,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 						'action'    => 'woo_nfe_issuing',
 					);
 				} else {
-					if ( nfe_order_address_filled( $order_id ) ) {
+					if ( ! nfe_order_address_filled( $order_id ) ) {
 						$actions['woo_nfe_pending_address'] = array(
 							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
 							'action'    => 'woo_nfe_pending_address',
