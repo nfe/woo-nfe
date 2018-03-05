@@ -92,11 +92,9 @@ class WC_NFe_Webhook_Handler {
 	 * @return WC_Order Order ID.
 	 */
 	protected function get_order_by_nota_id( $id ) {
-		$issue_status = nfe_get_field( 'issue_when_status' );
-
 		$query_args = array(
 			'post_type' => 'shop_order',
-			'post_status' => "wc-{$issue_status}",
+			'post_status' => 'any',
 			'meta_query' => array( // WPCS: slow query ok.
 				array(
 					'key' => 'nfe_issued',
