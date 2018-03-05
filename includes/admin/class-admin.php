@@ -377,7 +377,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Bail for these stati.
-			if ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) {
+			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
 				return false;
 			}
 
