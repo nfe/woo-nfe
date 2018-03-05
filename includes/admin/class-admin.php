@@ -348,27 +348,44 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order_id = $theorder->get_id();
 			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
-			// Bail early.
-			if ( empty( $download ) ) {
-				return $actions;
-			}
-
 			// Load the download actin if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
-
-				return $actions;
 			}
 
-			if ( empty( $download['id'] )
-				&& $theorder->has_status( nfe_get_field( 'issue_when_status' ) )
-				&& ! nfe_order_address_filled( $order_id ) ) {
+			if ( $this->issue_helper( $download, $theorder, $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
-
-				return $actions;
 			}
 
 			return $actions;
+		}
+
+		/**
+		 * Issue Helper Method.
+		 *
+		 * @param  array    $download NFe info.
+		 * @param  WC_Order $order    Order object.
+		 * @param  int      $order_id Order ID.
+		 *
+		 * @return bool
+		 */
+		protected function issue_helper( $download, $order, $order_id ) {
+			$yes = false;
+
+			// Bail if there is
+			if ( ! empty( $download['id'] ) ) {
+				return false;
+			}
+
+			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) && ! nfe_order_address_filled( $order_id ) ) {
+				$yes = true;
+			}
+
+			if ( ( 'manual' === nfe_get_field( 'issue_when' ) && $yes ) || ( 'auto' === nfe_get_field( 'issue_when' ) && $yes ) ) {
+				return true;
+			}
+
+			return false;
 		}
 
 		/**
