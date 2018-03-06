@@ -2,9 +2,9 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce NFe 1.0.8\n"
+"Project-Id-Version: WooCommerce NFe 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-03-01 03:40:01+00:00\n"
+"POT-Creation-Date: 2018-03-06 13:53:31+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,28 +26,28 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Poedit-Language: Portuguese\n"
 
-#: includes/admin/class-admin.php:153
+#: includes/admin/class-admin.php:151
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> issued"
 msgid_plural "<strong>%s receipts</strong> issued"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:165
+#: includes/admin/class-admin.php:163
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> processing"
 msgid_plural "<strong>%s receipts</strong> processing"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:177
+#: includes/admin/class-admin.php:175
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> with error"
 msgid_plural "<strong>%s receipts</strong> with error"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:189
+#: includes/admin/class-admin.php:187
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> cancelled"
 msgid_plural "<strong>%s receipts</strong> cancelled"
@@ -58,134 +58,134 @@ msgstr[1] ""
 msgid "WooCommerce NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:225 includes/admin/class-admin.php:289
-#: includes/admin/class-settings.php:147
+#: includes/admin/class-admin.php:223 includes/admin/class-admin.php:287
+#: includes/admin/class-settings.php:149
 msgid "City Service Code (CityServiceCode)"
 msgstr ""
 
-#: includes/admin/class-admin.php:228 includes/admin/class-admin.php:291
-#: includes/admin/class-settings.php:151
+#: includes/admin/class-admin.php:226 includes/admin/class-admin.php:289
+#: includes/admin/class-settings.php:153
 msgid ""
 "City Service Code, this is the code that will identify to the cityhall "
 "which type of service you are delivering."
 msgstr ""
 
-#: includes/admin/class-admin.php:234 includes/admin/class-admin.php:297
-#: includes/admin/class-settings.php:154
+#: includes/admin/class-admin.php:232 includes/admin/class-admin.php:295
+#: includes/admin/class-settings.php:156
 msgid "Federal Service Code LC 116 (FederalServiceCode)"
 msgstr ""
 
-#: includes/admin/class-admin.php:237 includes/admin/class-admin.php:299
-#: includes/admin/class-settings.php:158
+#: includes/admin/class-admin.php:235 includes/admin/class-admin.php:297
+#: includes/admin/class-settings.php:160
 msgid ""
 "Service Code based on the Federal Law (LC 116), this is a federal code that "
 "will identify to the cityhall which type of service you are delivering."
 msgstr ""
 
-#: includes/admin/class-admin.php:243 includes/admin/class-admin.php:305
-#: includes/admin/class-settings.php:161 includes/admin/class-settings.php:163
+#: includes/admin/class-admin.php:241 includes/admin/class-admin.php:303
+#: includes/admin/class-settings.php:163 includes/admin/class-settings.php:165
 msgid "Service Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:246 includes/admin/class-admin.php:307
-#: includes/admin/class-settings.php:165
+#: includes/admin/class-admin.php:244 includes/admin/class-admin.php:305
+#: includes/admin/class-settings.php:167
 msgid ""
 "Put the description that will appear in the receipt. This description must "
 "explain in detail what service was delivered. Ask your accountant, if in "
 "doubt."
 msgstr ""
 
-#: includes/admin/class-admin.php:358
+#: includes/admin/class-admin.php:351
 msgid "Download NFe receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:366
+#: includes/admin/class-admin.php:355
 msgid "Issue NFe receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:383
+#: includes/admin/class-admin.php:399
 msgid "NFe receipt downloaded."
 msgstr ""
 
-#: includes/admin/class-admin.php:412
+#: includes/admin/class-admin.php:427
 msgid "Sales Receipt updated via NFe.io API"
 msgstr ""
 
-#: includes/admin/class-admin.php:412 includes/frontend/class-frontend.php:65
+#: includes/admin/class-admin.php:427 includes/frontend/class-frontend.php:65
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:445 includes/frontend/class-frontend.php:92
+#: includes/admin/class-admin.php:460 includes/frontend/class-frontend.php:94
 msgid "NFe Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:450
+#: includes/admin/class-admin.php:465
 msgid "Issued"
 msgstr ""
 
-#: includes/admin/class-admin.php:456 includes/frontend/class-frontend.php:99
+#: includes/admin/class-admin.php:471 includes/frontend/class-frontend.php:100
 msgid "Issuing NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:462 includes/frontend/class-frontend.php:107
+#: includes/admin/class-admin.php:477 includes/frontend/class-frontend.php:107
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:469 includes/admin/class-admin.php:480
-#: includes/frontend/class-frontend.php:124
-#: includes/frontend/class-frontend.php:138
+#: includes/admin/class-admin.php:484 includes/admin/class-admin.php:495
+#: includes/frontend/class-frontend.php:122
+#: includes/frontend/class-frontend.php:135
 msgid "Issue NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:131
+#: includes/admin/class-admin.php:489 includes/frontend/class-frontend.php:128
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:488
+#: includes/admin/class-admin.php:503
 msgid "Pending Payment"
 msgstr ""
 
-#: includes/admin/class-admin.php:514
+#: includes/admin/class-admin.php:529
 msgid "Receipts Details (NFE.io)"
 msgstr ""
 
-#: includes/admin/class-admin.php:519
+#: includes/admin/class-admin.php:534
 msgid "Status: "
 msgstr ""
 
-#: includes/admin/class-admin.php:525
+#: includes/admin/class-admin.php:540
 msgid "Number: "
 msgstr ""
 
-#: includes/admin/class-admin.php:531
+#: includes/admin/class-admin.php:546
 msgid "CheckCode: "
 msgstr ""
 
-#: includes/admin/class-admin.php:537
+#: includes/admin/class-admin.php:552
 msgid "Issued On: "
 msgstr ""
 
-#: includes/admin/class-admin.php:543
+#: includes/admin/class-admin.php:558
 msgid "Price: "
 msgstr ""
 
-#: includes/admin/class-admin.php:625
+#: includes/admin/class-admin.php:640
 msgid "NFe Details"
 msgstr ""
 
-#: includes/admin/class-admin.php:628
+#: includes/admin/class-admin.php:643
 msgid "Status"
 msgstr ""
 
-#: includes/admin/class-admin.php:633
+#: includes/admin/class-admin.php:648
 msgid "Number"
 msgstr ""
 
-#: includes/admin/class-admin.php:638
+#: includes/admin/class-admin.php:653
 msgid "CheckCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:643
+#: includes/admin/class-admin.php:658
 msgid "Issued On"
 msgstr ""
 
@@ -199,221 +199,215 @@ msgstr ""
 msgid "NFe was issued successfully."
 msgstr ""
 
-#: includes/admin/class-api.php:62
+#: includes/admin/class-api.php:63
 msgid "NFe issuing process started! Order: #%d"
 msgstr ""
 
-#: includes/admin/class-api.php:68
-msgid ""
-"It was not possible to issue the NF as the order status (%s) is not equal "
-"status for issue (%s)"
-msgstr ""
-
-#: includes/admin/class-api.php:77
+#: includes/admin/class-api.php:69
 msgid "Not possible to issue NFe without an order value! Order: #%d"
 msgstr ""
 
-#: includes/admin/class-api.php:103
+#: includes/admin/class-api.php:80
 msgid "There was a problem fetching IBGE code! Check your CEP information."
 msgstr ""
 
-#: includes/admin/class-api.php:111
-msgid "An error occurred while issuing a NFe: "
+#: includes/admin/class-api.php:88
+msgid "An error occurred while issuing a NFe: %s"
 msgstr ""
 
-#: includes/admin/class-api.php:118
+#: includes/admin/class-api.php:95
 msgid "NFe sent sucessfully to issue! Order: #%d"
 msgstr ""
 
-#: includes/admin/class-api.php:155
+#: includes/admin/class-api.php:132
 msgid "NFe PDF Donwload successfully. Order: #%d"
 msgstr ""
 
-#: includes/admin/class-api.php:160
-msgid "There was a problem when trying to download NFe PDF! Error: "
+#: includes/admin/class-api.php:136
+msgid "There was a problem when trying to download NFe PDF! Error: %s"
 msgstr ""
 
-#: includes/admin/class-api.php:359
+#: includes/admin/class-api.php:335
 msgid "Customers"
 msgstr ""
 
-#: includes/admin/class-api.php:362
+#: includes/admin/class-api.php:338
 msgid "Company"
 msgstr ""
 
-#: includes/admin/class-settings.php:23
+#: includes/admin/class-settings.php:25
 msgid "Receipts (NFE.io)"
 msgstr ""
 
-#: includes/admin/class-settings.php:24
+#: includes/admin/class-settings.php:26
 msgid "This is the NFe.io integration/settings page."
 msgstr ""
 
-#: includes/admin/class-settings.php:45
+#: includes/admin/class-settings.php:47
 msgid "No company found in account"
 msgstr ""
 
-#: includes/admin/class-settings.php:47
+#: includes/admin/class-settings.php:49
 msgid "Select a company..."
 msgstr ""
 
-#: includes/admin/class-settings.php:50
+#: includes/admin/class-settings.php:52
 msgid "Enter your API key to see your company(ies)."
 msgstr ""
 
-#: includes/admin/class-settings.php:55
+#: includes/admin/class-settings.php:57
 msgid "Enable/Disable"
 msgstr ""
 
-#: includes/admin/class-settings.php:57
+#: includes/admin/class-settings.php:59
 msgid "Enable NFe.io"
 msgstr ""
 
-#: includes/admin/class-settings.php:61 includes/admin/class-settings.php:63
+#: includes/admin/class-settings.php:63 includes/admin/class-settings.php:65
 msgid "API Key"
 msgstr ""
 
-#: includes/admin/class-settings.php:65
+#: includes/admin/class-settings.php:67
 msgid "%s to look up API Key"
 msgstr ""
 
-#: includes/admin/class-settings.php:65 includes/admin/class-settings.php:76
+#: includes/admin/class-settings.php:67 includes/admin/class-settings.php:78
 msgid "Click here"
 msgstr ""
 
-#: includes/admin/class-settings.php:68 includes/admin/class-settings.php:70
+#: includes/admin/class-settings.php:70 includes/admin/class-settings.php:72
 msgid "Choose the Company"
 msgstr ""
 
-#: includes/admin/class-settings.php:75
+#: includes/admin/class-settings.php:77
 msgid "Choose one of your companies."
 msgstr ""
 
-#: includes/admin/class-settings.php:76
+#: includes/admin/class-settings.php:78
 msgid "%s to check the registered companies"
 msgstr ""
 
-#: includes/admin/class-settings.php:80 includes/admin/class-settings.php:82
+#: includes/admin/class-settings.php:82 includes/admin/class-settings.php:84
 msgid "NFe Issuing"
 msgstr ""
 
-#: includes/admin/class-settings.php:85
+#: includes/admin/class-settings.php:87
 msgid "Automattic (Default)"
 msgstr ""
 
-#: includes/admin/class-settings.php:86
+#: includes/admin/class-settings.php:88
 msgid "Manual"
 msgstr ""
 
-#: includes/admin/class-settings.php:90 includes/admin/class-settings.php:105
+#: includes/admin/class-settings.php:92 includes/admin/class-settings.php:107
 msgid "Option to issue a NFe."
 msgstr ""
 
-#: includes/admin/class-settings.php:93 includes/admin/class-settings.php:95
+#: includes/admin/class-settings.php:95 includes/admin/class-settings.php:97
 msgid "Issue on order status"
 msgstr ""
 
-#: includes/admin/class-settings.php:108
+#: includes/admin/class-settings.php:110
 msgid "NFe.io Webkook Setup"
 msgstr ""
 
-#: includes/admin/class-settings.php:112 includes/admin/class-settings.php:114
+#: includes/admin/class-settings.php:114 includes/admin/class-settings.php:116
 msgid "Webhook URL"
 msgstr ""
 
-#: includes/admin/class-settings.php:119
+#: includes/admin/class-settings.php:121
 msgid "Copy this link and use it to set up the %s"
 msgstr ""
 
-#: includes/admin/class-settings.php:119
+#: includes/admin/class-settings.php:121
 msgid "NFe.io Webhooks"
 msgstr ""
 
-#: includes/admin/class-settings.php:122
+#: includes/admin/class-settings.php:124
 msgid "Manual Retroactive Issue of NFe"
 msgstr ""
 
-#: includes/admin/class-settings.php:126
+#: includes/admin/class-settings.php:128
 msgid "Enable Retroactive Issue"
 msgstr ""
 
-#: includes/admin/class-settings.php:128
+#: includes/admin/class-settings.php:130
 msgid "Enable to issue NFe.io in past products"
 msgstr ""
 
-#: includes/admin/class-settings.php:130
+#: includes/admin/class-settings.php:132
 msgid ""
 "Enabling this allows users to issue nfe.io notes on bought products in the "
 "past."
 msgstr ""
 
-#: includes/admin/class-settings.php:133
+#: includes/admin/class-settings.php:135
 msgid "Days in the past"
 msgstr ""
 
-#: includes/admin/class-settings.php:137
+#: includes/admin/class-settings.php:139
 msgid "Days in the past to allow NFe manual issue."
 msgstr ""
 
-#: includes/admin/class-settings.php:140
+#: includes/admin/class-settings.php:142
 msgid "Receipt Service Settings"
 msgstr ""
 
-#: includes/admin/class-settings.php:142
+#: includes/admin/class-settings.php:144
 msgid ""
 "If you are in doubt on how to fill the fields below, ask for help from you "
 "accountant or get in contact with our team via <a href=\"mailto:%s\">%s</a>"
 msgstr ""
 
-#: includes/admin/class-settings.php:149
+#: includes/admin/class-settings.php:151
 msgid "City Service Code"
 msgstr ""
 
-#: includes/admin/class-settings.php:156
+#: includes/admin/class-settings.php:158
 msgid "Federal Service Code"
 msgstr ""
 
-#: includes/admin/class-settings.php:168
+#: includes/admin/class-settings.php:170
 msgid "Debug Log"
 msgstr ""
 
-#: includes/admin/class-settings.php:170
+#: includes/admin/class-settings.php:172
 msgid "Enable logging"
 msgstr ""
 
-#: includes/admin/class-settings.php:172
+#: includes/admin/class-settings.php:174
 msgid "Log events such as API requests, you can check this log in %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:172
+#: includes/admin/class-settings.php:174
 msgid "System Status - Logs"
 msgstr ""
 
-#: includes/admin/class-settings.php:233
+#: includes/admin/class-settings.php:235
 msgid ""
 "Plugin is enabled but no API key was provided. You should inform your API "
 "Key. %s"
 msgstr ""
 
-#: includes/admin/class-settings.php:233
+#: includes/admin/class-settings.php:235
 msgid "Click here to configure!"
 msgstr ""
 
-#: includes/admin/class-settings.php:237
+#: includes/admin/class-settings.php:239
 msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
 msgstr ""
 
-#: includes/admin/class-settings.php:237
+#: includes/admin/class-settings.php:239
 msgid "Add a date to calculate or disable it."
 msgstr ""
 
-#: includes/admin/class-settings.php:248
+#: includes/admin/class-settings.php:250
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 #: includes/admin/views/html-notice-missing-woocommerce.php:22
 msgid "WooCommerce NFe.io"
 msgstr ""
 
-#: includes/admin/class-settings.php:248
+#: includes/admin/class-settings.php:250
 msgid "Unable to load the companies list from NFe.io."
 msgstr ""
 
@@ -440,7 +434,7 @@ msgstr ""
 msgid "Order updated. Order: #%d NFe status: %s ."
 msgstr ""
 
-#: includes/admin/class-webhook.php:113
+#: includes/admin/class-webhook.php:111
 #. translators: Order with receipt number.
 msgid "Order with receipt number #%d not found."
 msgstr ""
@@ -526,11 +520,11 @@ msgid ""
 "also when issuing a NFe sales receipt."
 msgstr ""
 
-#: includes/frontend/class-frontend.php:115
+#: includes/frontend/class-frontend.php:114
 msgid "Download NFe"
 msgstr ""
 
-#: includes/frontend/class-frontend.php:150
+#: includes/frontend/class-frontend.php:147
 msgid "Enable NFe"
 msgstr ""
 
@@ -539,7 +533,7 @@ msgstr ""
 msgid "NFe issued successfully. Here follows an email for your backing."
 msgstr ""
 
-#: woo-nfe.php:226
+#: woo-nfe.php:229
 msgid "Settings"
 msgstr ""
 
@@ -559,22 +553,22 @@ msgstr ""
 msgid "https://nfe.io"
 msgstr ""
 
-#: includes/admin/class-settings.php:98
+#: includes/admin/class-settings.php:100
 msgctxt "Order status"
 msgid "Pending Payment"
 msgstr ""
 
-#: includes/admin/class-settings.php:99
+#: includes/admin/class-settings.php:101
 msgctxt "Order status"
 msgid "Processing"
 msgstr ""
 
-#: includes/admin/class-settings.php:100
+#: includes/admin/class-settings.php:102
 msgctxt "Order status"
 msgid "On Hold"
 msgstr ""
 
-#: includes/admin/class-settings.php:101
+#: includes/admin/class-settings.php:103
 msgctxt "Order status"
 msgid "Completed"
 msgstr ""

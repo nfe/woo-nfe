@@ -45,8 +45,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
 
 			add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
-
-			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows'] );
+			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows' ] );
 
 			/*
 			Woo Commmerce status triggers
@@ -59,7 +58,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			- woocommerce_order_status_refunded
 			- woocommerce_order_status_cancelled
 			*/
-
 			add_action( 'woocommerce_order_status_pending', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_on-hold', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_processing', 					array( $this, 'issue_trigger' ) );
@@ -92,7 +90,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Checking if the address of order is filled.
-			if ( nfe_order_address_filled( $order_id ) ) {
+			if ( ! nfe_order_address_filled( $order_id ) ) {
 				return;
 			}
 
@@ -348,27 +346,45 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order_id = $theorder->get_id();
 			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
-			// Bail early.
-			if ( empty( $download ) ) {
-				return $actions;
-			}
-
 			// Load the download actin if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
-
-				return $actions;
 			}
 
-			if ( empty( $download['id'] )
-				&& $theorder->has_status( nfe_get_field( 'issue_when_status' ) )
-				&& ! nfe_order_address_filled( $order_id ) ) {
+			if ( $this->issue_helper( $download, $order_id ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
-
-				return $actions;
 			}
 
 			return $actions;
+		}
+
+		/**
+		 * Issue Helper Method.
+		 *
+		 * @param  array    $download NFe info.
+		 * @param  WC_Order $order    Order object.
+		 * @param  int      $order_id Order ID.
+		 *
+		 * @return bool
+		 */
+		protected function issue_helper( $download, $order_id ) {
+
+			// Bail if there is an ID.
+			if ( ! empty( $download['id'] ) ) {
+				return false;
+			}
+
+			// Bail for these stati.
+			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
+				return false;
+			}
+
+			// Bail if there is no address.
+			if ( ! nfe_order_address_filled( $order_id ) ) {
+				return false;
+			}
+
+			return true;
 		}
 
 		/**
@@ -380,8 +396,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		public function download_issue_action( $order ) {
 
 			// Order note.
-			$message = esc_html__( 'NFe receipt downloaded.', 'woo-nfe' );
-			$order->add_order_note( $message );
+			$order->add_order_note( esc_html__( 'NFe receipt downloaded.', 'woo-nfe' ) );
 
 			WC_NFe_Ajax::download_pdf( $order->get_id() );
 		}
@@ -457,7 +472,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 						'action'    => 'woo_nfe_issuing',
 					);
 				} else {
-					if ( nfe_order_address_filled( $order_id ) ) {
+					if ( ! nfe_order_address_filled( $order_id ) ) {
 						$actions['woo_nfe_pending_address'] = array(
 							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
 							'action'    => 'woo_nfe_pending_address',
