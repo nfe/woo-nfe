@@ -33,8 +33,8 @@ class WC_NFe_Ajax {
 
 		$order = nfe_wc_get_order( absint( $_GET['nfe_issue'] ) );
 
-		// Bail if there is no order id.
-		if ( empty( $order->id ) ) {
+		// Bail if there is no order id or it is false.
+		if ( empty( $order->id ) || ! $order ) {
 			return;
 		}
 
@@ -57,9 +57,14 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		$order_id = absint( $_GET['nfe_download_pdf'] );
+		$order = nfe_wc_get_order( absint( $_GET['nfe_download_pdf'] ) );
 
-		self::download_pdf( $order_id );
+		// Bail if there is no order id or it is false.
+		if ( empty( $order->id ) || ! $order ) {
+			return;
+		}
+
+		self::download_pdf( $order->id );
 	}
 
 	/**

@@ -45,8 +45,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'woocommerce_process_product_meta',              				array( $this, 'product_data_fields_save' ) );
 
 			add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
-
-			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows'] );
+			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows' ] );
 
 			/*
 			Woo Commmerce status triggers
@@ -59,7 +58,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			- woocommerce_order_status_refunded
 			- woocommerce_order_status_cancelled
 			*/
-
 			add_action( 'woocommerce_order_status_pending', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_on-hold', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_processing', 					array( $this, 'issue_trigger' ) );
@@ -398,8 +396,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		public function download_issue_action( $order ) {
 
 			// Order note.
-			$message = esc_html__( 'NFe receipt downloaded.', 'woo-nfe' );
-			$order->add_order_note( $message );
+			$order->add_order_note( esc_html__( 'NFe receipt downloaded.', 'woo-nfe' ) );
 
 			WC_NFe_Ajax::download_pdf( $order->get_id() );
 		}
