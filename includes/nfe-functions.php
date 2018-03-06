@@ -114,7 +114,7 @@ function nfe_get_order_by_nota_value( $value ) {
 		'meta_query'             => array( // WPCS: slow query ok.
 		    array(
 		        'key' => 'nfe_issued',
-		        'value' => sprintf(':"%s";', $value ),
+		        'value' => sprintf( ':"%s";', $value ),
 		        'compare' => 'LIKE',
 		    ),
 		),
