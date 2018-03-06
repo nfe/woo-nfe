@@ -46,7 +46,8 @@ if ( ! class_exists('NFe_Woo') ) :
 		 * Issue a NFe invoice.
 		 *
 		 * @param  array  $order_ids Orders to issue the NFe
-		 * @return The invoice
+		 *
+		 * @return bool|string
 		 */
 		public function issue_invoice( $order_ids = array() ) {
 			$key        = nfe_get_field('api_key');
@@ -64,7 +65,7 @@ if ( ! class_exists('NFe_Woo') ) :
 				$order->add_order_note( $log );
 
 				// If value is 0, don't issue it
-				if ( $order->get_total() == 0 ) {
+				if ( 0 === $order->get_total() ) {
 					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -73,21 +74,6 @@ if ( ! class_exists('NFe_Woo') ) :
 				}
 
 				$dataInvoice = $this->order_info( $order_id );
-
-				// If is empty, set default value
-				if ( empty( $dataInvoice['borrower']['address']['street'] ) ) {
-					$dataInvoice['borrower']['address']['street'] = 'NAO INFORMADO';
-				}
-
-				// If is empty, set default value
-				if ( empty( $dataInvoice['borrower']['address']['number'] ) ) {
-					$dataInvoice['borrower']['address']['number'] = 'S/N';
-				}
-
-				// If is empty, set default value
-				if ( empty( $dataInvoice['borrower']['address']['district'] ) ) {
-					$dataInvoice['borrower']['address']['district'] = 'NAO INFORMADO';
-				}
 
 				// Check if there was a problem on fetch the city code from IBGE using the postal code
 				if ( empty($dataInvoice['borrower']['address']['city']['code']) )	{
