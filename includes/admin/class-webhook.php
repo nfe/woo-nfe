@@ -92,21 +92,9 @@ class WC_NFe_Webhook_Handler {
 	 * @return WC_Order Order ID.
 	 */
 	protected function get_order_by_nota_id( $id ) {
-		$query_args = array(
-			'post_type' => 'shop_order',
-			'post_status' => 'any',
-			'meta_query' => array( // WPCS: slow query ok.
-				array(
-					'key' => 'nfe_issued',
-					'value' => $id,
-					'compare' => 'LIKE',
-				),
-			),
-		);
+		$query = nfe_get_order_by_nota_value( $id );
 
-		$query = new WP_Query( $query_args );
-
-		if ( false === $query->have_posts() ) {
+		if ( ! $query->have_posts() ) {
 			// translators: Order with receipt number.
 			throw new Exception( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ), 2 );
 		}

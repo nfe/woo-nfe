@@ -95,3 +95,30 @@ function nfe_wc_get_order( $order_id ) {
 		? wc_get_order( $order_id )
 		: WC_Order( $order_id );
 }
+
+/**
+ * Get order information.
+ *
+ * @since 1.2.2
+ *
+ * @param  string $value Value to search against.
+ * @return WP_Query
+ */
+function nfe_get_order_by_nota_value( $value ) {
+	$query_args = array(
+		'post_type' => 'shop_order',
+		'cache_results'          => true,
+		'update_post_meta_cache' => false,
+		'update_post_term_cache' => false,
+		'post_status' => 'any',
+		'meta_query'             => array( // WPCS: slow query ok.
+		    array(
+		        'key' => 'nfe_issued',
+		        'value' => sprintf(':"%s";', $value ),
+		        'compare' => 'LIKE',
+		    ),
+		),
+	);
+
+	return new WP_Query( $query_args );
+}
