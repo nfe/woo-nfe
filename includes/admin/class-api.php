@@ -50,8 +50,8 @@ if ( ! class_exists('NFe_Woo') ) :
 		 * @return bool|string
 		 */
 		public function issue_invoice( $order_ids = array() ) {
-			$key        = nfe_get_field('api_key');
-			$company_id = nfe_get_field('choose_company');
+			$key               = nfe_get_field('api_key');
+			$company_id        = nfe_get_field('choose_company');
 			$issue_when_status = nfe_get_field('issue_when_status');
 
 			NFe::setApiKey($key);
@@ -75,8 +75,8 @@ if ( ! class_exists('NFe_Woo') ) :
 
 				$dataInvoice = $this->order_info( $order_id );
 
-				// Check if there was a problem on fetch the city code from IBGE using the postal code
-				if ( empty($dataInvoice['borrower']['address']['city']['code']) )	{
+				// Check if there was a problem on fetch the city code from IBGE using the postal code.
+				if ( empty( $dataInvoice['borrower']['address']['city']['code'] ) )	{
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -85,7 +85,7 @@ if ( ! class_exists('NFe_Woo') ) :
 				$invoice = NFe_ServiceInvoice::create( $company_id, $dataInvoice );
 
 				if ( isset( $invoice->message ) ) {
-					$log = __( 'An error occurred while issuing a NFe: ', 'woo-nfe' ) . print_r( $invoice->message, true );
+					$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), print_r( $invoice->message, true ) );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
@@ -132,13 +132,12 @@ if ( ! class_exists('NFe_Woo') ) :
 					$log = sprintf( __( 'NFe PDF Donwload successfully. Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
-				}
-				catch ( Exception $e ) {
-					$log = __( 'There was a problem when trying to download NFe PDF! Error: ', 'woo-nfe' ) . print_r( $e->getMessage(), true );
+				} catch ( Exception $e ) {
+					$log = sprintf( __( 'There was a problem when trying to download NFe PDF! Error: %s', 'woo-nfe' ), print_r( $e->getMessage(), true ) );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
-					throw new Exception( 'Falha ao baixar o PDF da nota fiscal!' );
+					throw new Exception( $log );
 
 					return false;
 				}
@@ -170,30 +169,30 @@ if ( ! class_exists('NFe_Woo') ) :
 			$data = array(
 				'cityServiceCode' 			=> $this->city_service_info( 'code', $order_id ),
 				'federalServiceCode'		=> $this->city_service_info( 'fed_code', $order_id ),
-				'description' 					=> remover_caracter($this->city_service_info( 'desc', $order_id )),
-				'servicesAmount' 				=> $total->get_total(),
-				'borrower' 			=> array(
-					'name' 							=> remover_caracter($this->check_customer_info( 'name', $order_id )),
-					'email' 						=> get_post_meta( $order_id, '_billing_email', true ),
-					'federalTaxNumber'	=> removePontoTraco(ltrim($this->check_customer_info( 'number', $order_id ),'0')),
-					'address' 		=> array(
-						'postalCode' 		=> $this->cep( get_post_meta( $order_id, '_billing_postcode', true ) ),
-						'street' 				=> remover_caracter(get_post_meta( $order_id, '_billing_address_1', true )),
-						'number' 				=> remover_caracter(get_post_meta( $order_id, '_billing_number', true )),
-						'additionalInformation' => remover_caracter(get_post_meta( $order_id, '_billing_address_2', true )),
-						'district' 			=> remover_caracter(get_post_meta( $order_id, '_billing_neighborhood', true )),
-						'country' 			=> remover_caracter($this->billing_country( $order_id )),
-						'state' 				=> remover_caracter(get_post_meta( $order_id, '_billing_state', true )),
-						'city' 		=> array(
+				'description' 				=> remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
+				'servicesAmount' 			=> $total->get_total(),
+				'borrower' 					=> array(
+					'name' 						=> remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
+					'email' 					=> get_post_meta( $order_id, '_billing_email', true ),
+					'federalTaxNumber'			=> removePontoTraco( ltrim( $this->check_customer_info( 'number', $order_id ),'0') ),
+					'address' 				=> array(
+						'postalCode' 			=> $this->cep( get_post_meta( $order_id, '_billing_postcode', true ) ),
+						'street' 					=> remover_caracter(get_post_meta( $order_id, '_billing_address_1', true ) ),
+						'number' 					=> remover_caracter(get_post_meta( $order_id, '_billing_number', true ) ),
+						'additionalInformation' 	=> remover_caracter(get_post_meta( $order_id, '_billing_address_2', true ) ),
+						'district' 			=> remover_caracter( get_post_meta( $order_id, '_billing_neighborhood', true ) ),
+						'country' 			=> remover_caracter( $this->billing_country( $order_id ) ),
+						'state' 			=> remover_caracter( get_post_meta( $order_id, '_billing_state', true ) ),
+						'city' 				=> array(
 							'code' 				=> $this->ibge_code( $order_id ),
-							'name' 				=> remover_caracter(get_post_meta( $order_id, '_billing_city', true )),
+							'name' 				=> remover_caracter( get_post_meta( $order_id, '_billing_city', true ) ),
 						),
 					),
 				),
 			);
 
-			// Removes empty, false and null fields from the array
-			return array_filter($data);
+			// Removes empty, false and null fields from the array.
+			return array_filter( $data );
 		}
 
 		/**
@@ -211,6 +210,7 @@ if ( ! class_exists('NFe_Woo') ) :
 					$c = $iso3;
 				}
 			}
+
 			return $c;
 		}
 
@@ -232,13 +232,12 @@ if ( ! class_exists('NFe_Woo') ) :
 				return;
 			}
 
-			$url 				= 'https://open.nfe.io/v1/addresses/'. $postalCode .'?api_key='. $key;
+			$url 	    = 'https://open.nfe.io/v1/addresses/'. $postalCode .'?api_key='. $key;
 			$response 	= wp_remote_get( esc_url_raw( $url ) );
 
 			if ( is_wp_error( $response ) ) {
 				return;
-			}
-			else {
+			} else {
 				$address = json_decode( wp_remote_retrieve_body( $response ), true );
 
 				return $address['city']['code'];
