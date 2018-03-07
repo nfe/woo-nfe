@@ -107,7 +107,7 @@ class WC_NFe_Webhook_Handler {
 
 		if ( ! $query->have_posts() ) {
 			// translators: Order with receipt number.
-			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id );
+			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ) );
 
 			// translators: Order with receipt number.
 			throw new Exception( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ), 2 );
