@@ -85,7 +85,7 @@ class WC_NFe_Webhook_Handler {
 		$meta = update_post_meta( $order->get_id(), 'nfe_issued', $nfe );
 
 		if ( ! $meta ) {
-			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() );
+			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() ) );
 		}
 
 		// translators: Order updated with its status.
