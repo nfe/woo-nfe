@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-03-06 13:53:31+00:00\n"
+"POT-Creation-Date: 2018-03-07 17:15:55+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,28 +26,28 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Poedit-Language: Portuguese\n"
 
-#: includes/admin/class-admin.php:151
+#: includes/admin/class-admin.php:136
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> issued"
 msgid_plural "<strong>%s receipts</strong> issued"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:163
+#: includes/admin/class-admin.php:148
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> processing"
 msgid_plural "<strong>%s receipts</strong> processing"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:175
+#: includes/admin/class-admin.php:160
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> with error"
 msgid_plural "<strong>%s receipts</strong> with error"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/admin/class-admin.php:187
+#: includes/admin/class-admin.php:172
 #. translators: %s: order count
 msgid "<strong>%s receipt</strong> cancelled"
 msgid_plural "<strong>%s receipts</strong> cancelled"
@@ -58,36 +58,36 @@ msgstr[1] ""
 msgid "WooCommerce NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:223 includes/admin/class-admin.php:287
+#: includes/admin/class-admin.php:208 includes/admin/class-admin.php:272
 #: includes/admin/class-settings.php:149
 msgid "City Service Code (CityServiceCode)"
 msgstr ""
 
-#: includes/admin/class-admin.php:226 includes/admin/class-admin.php:289
+#: includes/admin/class-admin.php:211 includes/admin/class-admin.php:274
 #: includes/admin/class-settings.php:153
 msgid ""
 "City Service Code, this is the code that will identify to the cityhall "
 "which type of service you are delivering."
 msgstr ""
 
-#: includes/admin/class-admin.php:232 includes/admin/class-admin.php:295
+#: includes/admin/class-admin.php:217 includes/admin/class-admin.php:280
 #: includes/admin/class-settings.php:156
 msgid "Federal Service Code LC 116 (FederalServiceCode)"
 msgstr ""
 
-#: includes/admin/class-admin.php:235 includes/admin/class-admin.php:297
+#: includes/admin/class-admin.php:220 includes/admin/class-admin.php:282
 #: includes/admin/class-settings.php:160
 msgid ""
 "Service Code based on the Federal Law (LC 116), this is a federal code that "
 "will identify to the cityhall which type of service you are delivering."
 msgstr ""
 
-#: includes/admin/class-admin.php:241 includes/admin/class-admin.php:303
+#: includes/admin/class-admin.php:226 includes/admin/class-admin.php:288
 #: includes/admin/class-settings.php:163 includes/admin/class-settings.php:165
 msgid "Service Description"
 msgstr ""
 
-#: includes/admin/class-admin.php:244 includes/admin/class-admin.php:305
+#: includes/admin/class-admin.php:229 includes/admin/class-admin.php:290
 #: includes/admin/class-settings.php:167
 msgid ""
 "Put the description that will appear in the receipt. This description must "
@@ -95,97 +95,97 @@ msgid ""
 "doubt."
 msgstr ""
 
-#: includes/admin/class-admin.php:351
+#: includes/admin/class-admin.php:336
 msgid "Download NFe receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:355
+#: includes/admin/class-admin.php:340
 msgid "Issue NFe receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:399
+#: includes/admin/class-admin.php:384
 msgid "NFe receipt downloaded."
 msgstr ""
 
-#: includes/admin/class-admin.php:427
+#: includes/admin/class-admin.php:412
 msgid "Sales Receipt updated via NFe.io API"
 msgstr ""
 
-#: includes/admin/class-admin.php:427 includes/frontend/class-frontend.php:65
+#: includes/admin/class-admin.php:412 includes/frontend/class-frontend.php:65
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:460 includes/frontend/class-frontend.php:94
+#: includes/admin/class-admin.php:445 includes/frontend/class-frontend.php:94
 msgid "NFe Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:465
+#: includes/admin/class-admin.php:450
 msgid "Issued"
 msgstr ""
 
-#: includes/admin/class-admin.php:471 includes/frontend/class-frontend.php:100
+#: includes/admin/class-admin.php:456 includes/frontend/class-frontend.php:100
 msgid "Issuing NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:477 includes/frontend/class-frontend.php:107
+#: includes/admin/class-admin.php:462 includes/frontend/class-frontend.php:107
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:484 includes/admin/class-admin.php:495
+#: includes/admin/class-admin.php:469 includes/admin/class-admin.php:480
 #: includes/frontend/class-frontend.php:122
 #: includes/frontend/class-frontend.php:135
 msgid "Issue NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:489 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:128
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:503
+#: includes/admin/class-admin.php:488
 msgid "Pending Payment"
 msgstr ""
 
-#: includes/admin/class-admin.php:529
+#: includes/admin/class-admin.php:514
 msgid "Receipts Details (NFE.io)"
 msgstr ""
 
-#: includes/admin/class-admin.php:534
+#: includes/admin/class-admin.php:519
 msgid "Status: "
 msgstr ""
 
-#: includes/admin/class-admin.php:540
+#: includes/admin/class-admin.php:525
 msgid "Number: "
 msgstr ""
 
-#: includes/admin/class-admin.php:546
+#: includes/admin/class-admin.php:531
 msgid "CheckCode: "
 msgstr ""
 
-#: includes/admin/class-admin.php:552
+#: includes/admin/class-admin.php:537
 msgid "Issued On: "
 msgstr ""
 
-#: includes/admin/class-admin.php:558
+#: includes/admin/class-admin.php:543
 msgid "Price: "
 msgstr ""
 
-#: includes/admin/class-admin.php:640
+#: includes/admin/class-admin.php:625
 msgid "NFe Details"
 msgstr ""
 
-#: includes/admin/class-admin.php:643
+#: includes/admin/class-admin.php:628
 msgid "Status"
 msgstr ""
 
-#: includes/admin/class-admin.php:648
+#: includes/admin/class-admin.php:633
 msgid "Number"
 msgstr ""
 
-#: includes/admin/class-admin.php:653
+#: includes/admin/class-admin.php:638
 msgid "CheckCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:658
+#: includes/admin/class-admin.php:643
 msgid "Issued On"
 msgstr ""
 
@@ -416,25 +416,37 @@ msgstr ""
 msgid "New webhook called. %s"
 msgstr ""
 
-#: includes/admin/class-webhook.php:43
+#: includes/admin/class-webhook.php:43 includes/admin/class-webhook.php:66
 #. translators: Error message from event.
 msgid "Error: %s."
 msgstr ""
 
 #: includes/admin/class-webhook.php:62
+msgid "Starting to proccess new webhook event."
+msgstr ""
+
+#: includes/admin/class-webhook.php:65 includes/admin/class-webhook.php:68
 msgid "Error while checking webhook JSON."
 msgstr ""
 
-#: includes/admin/class-webhook.php:65
-msgid "New event procced."
+#: includes/admin/class-webhook.php:71
+msgid "Getting Order ID of the webhook."
 msgstr ""
 
-#: includes/admin/class-webhook.php:81
+#: includes/admin/class-webhook.php:83
+msgid "Updating Order with NFe info."
+msgstr ""
+
+#: includes/admin/class-webhook.php:88
+msgid "There was a problem while updating the Order #%d with the NFe information."
+msgstr ""
+
+#: includes/admin/class-webhook.php:92
 #. translators: Order updated with its status.
 msgid "Order updated. Order: #%d NFe status: %s ."
 msgstr ""
 
-#: includes/admin/class-webhook.php:111
+#: includes/admin/class-webhook.php:110 includes/admin/class-webhook.php:113
 #. translators: Order with receipt number.
 msgid "Order with receipt number #%d not found."
 msgstr ""

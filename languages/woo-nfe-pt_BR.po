@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce NFe 1.0.1\n"
+"Project-Id-Version: WooCommerce NFe 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-03-06 13:53:31+00:00\n"
-"PO-Revision-Date: 2018-03-06 10:57-0300\n"
+"POT-Creation-Date: 2018-03-07 17:15:55+00:00\n"
+"PO-Revision-Date: 2018-03-07 14:18-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: en_US\n"
@@ -23,28 +23,28 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 
 #. translators: %s: order count
-#: includes/admin/class-admin.php:151
+#: includes/admin/class-admin.php:136
 msgid "<strong>%s receipt</strong> issued"
 msgid_plural "<strong>%s receipts</strong> issued"
 msgstr[0] "<strong>%s nota fiscal</strong> emitida"
 msgstr[1] "<strong>%s nota fiscais</strong> emitidas"
 
 #. translators: %s: order count
-#: includes/admin/class-admin.php:163
+#: includes/admin/class-admin.php:148
 msgid "<strong>%s receipt</strong> processing"
 msgid_plural "<strong>%s receipts</strong> processing"
 msgstr[0] "<strong>%s nota fiscal</strong> processando"
 msgstr[1] "<strong>%s notas fiscais</strong> processando"
 
 #. translators: %s: order count
-#: includes/admin/class-admin.php:175
+#: includes/admin/class-admin.php:160
 msgid "<strong>%s receipt</strong> with error"
 msgid_plural "<strong>%s receipts</strong> with error"
 msgstr[0] "<strong>%s nota fiscal</strong> com erro"
 msgstr[1] "<strong>%s notas fiscais</strong> com erro"
 
 #. translators: %s: order count
-#: includes/admin/class-admin.php:187
+#: includes/admin/class-admin.php:172
 msgid "<strong>%s receipt</strong> cancelled"
 msgid_plural "<strong>%s receipts</strong> cancelled"
 msgstr[0] "<strong>%s nota fiscal</strong> cancelada"
@@ -54,12 +54,12 @@ msgstr[1] "<strong>%s notas fiscais</strong> canceladas"
 msgid "WooCommerce NFe"
 msgstr "WooCommerce NFe"
 
-#: includes/admin/class-admin.php:223 includes/admin/class-admin.php:287
+#: includes/admin/class-admin.php:208 includes/admin/class-admin.php:272
 #: includes/admin/class-settings.php:149
 msgid "City Service Code (CityServiceCode)"
 msgstr "Cód. Serviço na Cidade (CityServiceCode)"
 
-#: includes/admin/class-admin.php:226 includes/admin/class-admin.php:289
+#: includes/admin/class-admin.php:211 includes/admin/class-admin.php:274
 #: includes/admin/class-settings.php:153
 msgid ""
 "City Service Code, this is the code that will identify to the cityhall which "
@@ -68,12 +68,12 @@ msgstr ""
 "Código de Serviço na Cidade, este é o código que identificará para a "
 "prefeitura qual o serviço que está sendo prestado pela sua empresa."
 
-#: includes/admin/class-admin.php:232 includes/admin/class-admin.php:295
+#: includes/admin/class-admin.php:217 includes/admin/class-admin.php:280
 #: includes/admin/class-settings.php:156
 msgid "Federal Service Code LC 116 (FederalServiceCode)"
 msgstr "Cód. Serviço Federal LC 116 (FederalServiceCode)"
 
-#: includes/admin/class-admin.php:235 includes/admin/class-admin.php:297
+#: includes/admin/class-admin.php:220 includes/admin/class-admin.php:282
 #: includes/admin/class-settings.php:160
 msgid ""
 "Service Code based on the Federal Law (LC 116), this is a federal code that "
@@ -83,12 +83,12 @@ msgstr ""
 "que identifica para a prefeitura qual o serviço que está sendo prestado pela "
 "sua empresa."
 
-#: includes/admin/class-admin.php:241 includes/admin/class-admin.php:303
+#: includes/admin/class-admin.php:226 includes/admin/class-admin.php:288
 #: includes/admin/class-settings.php:163 includes/admin/class-settings.php:165
 msgid "Service Description"
 msgstr "Descrição do Produto"
 
-#: includes/admin/class-admin.php:244 includes/admin/class-admin.php:305
+#: includes/admin/class-admin.php:229 includes/admin/class-admin.php:290
 #: includes/admin/class-settings.php:167
 msgid ""
 "Put the description that will appear in the receipt. This description must "
@@ -99,97 +99,97 @@ msgstr ""
 "explicar qual foi o serviço prestado entre outros detalhes. Peça ajuda a seu "
 "contador caso tenha dúvidas."
 
-#: includes/admin/class-admin.php:351
+#: includes/admin/class-admin.php:336
 msgid "Download NFe receipt"
 msgstr "Baixar nota fiscal"
 
-#: includes/admin/class-admin.php:355
+#: includes/admin/class-admin.php:340
 msgid "Issue NFe receipt"
 msgstr "Emitir nota fiscal"
 
-#: includes/admin/class-admin.php:399
+#: includes/admin/class-admin.php:384
 msgid "NFe receipt downloaded."
 msgstr "Download de nota fiscal realizado."
 
-#: includes/admin/class-admin.php:427
+#: includes/admin/class-admin.php:412
 msgid "Sales Receipt updated via NFe.io API"
 msgstr "Nota fiscal atualizada via API do NFe.io"
 
-#: includes/admin/class-admin.php:427 includes/frontend/class-frontend.php:65
+#: includes/admin/class-admin.php:412 includes/frontend/class-frontend.php:65
 msgid "Sales Receipt"
 msgstr "Nota Fiscal"
 
-#: includes/admin/class-admin.php:460 includes/frontend/class-frontend.php:94
+#: includes/admin/class-admin.php:445 includes/frontend/class-frontend.php:94
 msgid "NFe Cancelled"
 msgstr "Cancelada"
 
-#: includes/admin/class-admin.php:465
+#: includes/admin/class-admin.php:450
 msgid "Issued"
 msgstr "Emitida"
 
-#: includes/admin/class-admin.php:471 includes/frontend/class-frontend.php:100
+#: includes/admin/class-admin.php:456 includes/frontend/class-frontend.php:100
 msgid "Issuing NFe"
 msgstr "Emitindo"
 
-#: includes/admin/class-admin.php:477 includes/frontend/class-frontend.php:107
+#: includes/admin/class-admin.php:462 includes/frontend/class-frontend.php:107
 msgid "Pending Address"
 msgstr "End. Pendente"
 
-#: includes/admin/class-admin.php:484 includes/admin/class-admin.php:495
+#: includes/admin/class-admin.php:469 includes/admin/class-admin.php:480
 #: includes/frontend/class-frontend.php:122
 #: includes/frontend/class-frontend.php:135
 msgid "Issue NFe"
 msgstr "Emitir"
 
-#: includes/admin/class-admin.php:489 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:128
 msgid "Issue Expired"
 msgstr "Emissão Expirada"
 
-#: includes/admin/class-admin.php:503
+#: includes/admin/class-admin.php:488
 msgid "Pending Payment"
 msgstr "Pagamento Pendente"
 
-#: includes/admin/class-admin.php:529
+#: includes/admin/class-admin.php:514
 msgid "Receipts Details (NFE.io)"
 msgstr "Notas Fiscais (NFE.io)"
 
-#: includes/admin/class-admin.php:534
+#: includes/admin/class-admin.php:519
 msgid "Status: "
 msgstr "Status: "
 
-#: includes/admin/class-admin.php:540
+#: includes/admin/class-admin.php:525
 msgid "Number: "
 msgstr "Número: "
 
-#: includes/admin/class-admin.php:546
+#: includes/admin/class-admin.php:531
 msgid "CheckCode: "
 msgstr "Cód. Verificação: "
 
-#: includes/admin/class-admin.php:552
+#: includes/admin/class-admin.php:537
 msgid "Issued On: "
 msgstr "Emitido em: "
 
-#: includes/admin/class-admin.php:558
+#: includes/admin/class-admin.php:543
 msgid "Price: "
 msgstr "Valor Líquido: "
 
-#: includes/admin/class-admin.php:640
+#: includes/admin/class-admin.php:625
 msgid "NFe Details"
 msgstr "Detalhes da Nota Fiscal"
 
-#: includes/admin/class-admin.php:643
+#: includes/admin/class-admin.php:628
 msgid "Status"
 msgstr "Status"
 
-#: includes/admin/class-admin.php:648
+#: includes/admin/class-admin.php:633
 msgid "Number"
 msgstr "Número"
 
-#: includes/admin/class-admin.php:653
+#: includes/admin/class-admin.php:638
 msgid "CheckCode"
 msgstr "Cód. Verificação"
 
-#: includes/admin/class-admin.php:658
+#: includes/admin/class-admin.php:643
 msgid "Issued On"
 msgstr "Emitido em"
 
@@ -433,25 +433,39 @@ msgid "New webhook called. %s"
 msgstr "Novo Webhook chamado. %s"
 
 #. translators: Error message from event.
-#: includes/admin/class-webhook.php:43
+#: includes/admin/class-webhook.php:43 includes/admin/class-webhook.php:66
 msgid "Error: %s."
 msgstr "Error: %s."
 
 #: includes/admin/class-webhook.php:62
+msgid "Starting to proccess new webhook event."
+msgstr "Processando um novo webhook."
+
+#: includes/admin/class-webhook.php:65 includes/admin/class-webhook.php:68
 msgid "Error while checking webhook JSON."
 msgstr "Falha ao interpretar JSON do webhook."
 
-#: includes/admin/class-webhook.php:65
-msgid "New event procced."
-msgstr "Novo Evento processado."
+#: includes/admin/class-webhook.php:71
+msgid "Getting Order ID of the webhook."
+msgstr "Procurando ID do Pedido do webhook em questão."
+
+#: includes/admin/class-webhook.php:83
+msgid "Updating Order with NFe info."
+msgstr "Atualizando Pedido com as informações do NFe.io."
+
+#: includes/admin/class-webhook.php:88
+msgid ""
+"There was a problem while updating the Order #%d with the NFe information."
+msgstr ""
+"Houve um problema ano atualizar o Pedido #%d com as informações do NFe."
 
 #. translators: Order updated with its status.
-#: includes/admin/class-webhook.php:81
+#: includes/admin/class-webhook.php:92
 msgid "Order updated. Order: #%d NFe status: %s ."
 msgstr "Pedido atualizado. Pedido: #%d Status da nota: %s ."
 
 #. translators: Order with receipt number.
-#: includes/admin/class-webhook.php:111
+#: includes/admin/class-webhook.php:110 includes/admin/class-webhook.php:113
 msgid "Order with receipt number #%d not found."
 msgstr "Pedido com nota fiscal de número #%d não encontrado."
 
@@ -641,6 +655,9 @@ msgstr "Plain text"
 msgctxt "email type"
 msgid "HTML"
 msgstr "HTML"
+
+#~ msgid "New event procced."
+#~ msgstr "Novo Evento processado."
 
 #~ msgid ""
 #~ "It was not possible to issue the NF as the order status (%s) is not equal "
