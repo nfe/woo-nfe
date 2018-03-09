@@ -58,12 +58,17 @@ class WC_NFe_Webhook_Handler {
 	 * @return void
 	 */
 	protected function process_event( $body ) {
+
+		$this->logger( __( 'Starting to proccess new webhook event.', 'woo-nfe' ) );
+
 		if ( is_null( $body ) ) {
-			throw new Exception( sprintf( __( 'Error while checking webhook JSON.', 'woo-nfe' ) ) );
+			$this->logger( __( 'Error while checking webhook JSON.', 'woo-nfe' ) );
+			$this->logger( sprintf( __( 'Error: %s.', 'woo-nfe' ), $body ) );
+
+			throw new Exception( __( 'Error while checking webhook JSON.', 'woo-nfe' ) );
 		}
 
-		$this->logger( sprintf( __( 'New event procced.', 'woo-nfe' ) ) );
-
+		$this->logger( __( 'Getting Order ID of the webhook.', 'woo-nfe' ) );
 		$order = $this->get_order_by_nota_id( $body->id );
 
 		$nfe = array(
@@ -75,7 +80,13 @@ class WC_NFe_Webhook_Handler {
 			'number'    => $body->number,
 		);
 
-		update_post_meta( $order->get_id(), 'nfe_issued', $nfe );
+		$this->logger( __( 'Updating Order with NFe info.', 'woo-nfe' ) );
+
+		$meta = update_post_meta( $order->get_id(), 'nfe_issued', $nfe );
+
+		if ( ! $meta ) {
+			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() );
+		}
 
 		// translators: Order updated with its status.
 		$msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s .', 'woo-nfe' ), $order->get_id(), $body->flowStatus );
@@ -92,21 +103,12 @@ class WC_NFe_Webhook_Handler {
 	 * @return WC_Order Order ID.
 	 */
 	protected function get_order_by_nota_id( $id ) {
-		$query_args = array(
-			'post_type' => 'shop_order',
-			'post_status' => 'any',
-			'meta_query' => array( // WPCS: slow query ok.
-				array(
-					'key' => 'nfe_issued',
-					'value' => $id,
-					'compare' => 'LIKE',
-				),
-			),
-		);
+		$query = nfe_get_order_by_nota_value( $id );
 
-		$query = new WP_Query( $query_args );
+		if ( ! $query->have_posts() ) {
+			// translators: Order with receipt number.
+			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id );
 
-		if ( false === $query->have_posts() ) {
 			// translators: Order with receipt number.
 			throw new Exception( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ), 2 );
 		}

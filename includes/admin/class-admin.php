@@ -107,22 +107,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return int
 		 */
 		protected function get_order_count( $value ) {
-			$args = array(
-			    'post_type'              => 'shop_order',
-			    'cache_results'          => true,
-			    'update_post_meta_cache' => false,
-			    'update_post_term_cache' => false,
-			    'post_status'            => 'any',
-			    'meta_query'             => array(
-			        array(
-			            'key' => 'nfe_issued',
-			            'value' => sprintf(':"%s";', $value ),
-			            'compare' => 'LIKE',
-			        ),
-			    ),
-			);
-
-			$query = new WP_Query( $args );
+			$query = nfe_get_order_by_nota_value( $value );
 
 			return $query->found_posts;
 		}
