@@ -85,7 +85,7 @@ class WC_NFe_Webhook_Handler {
 		$meta = update_post_meta( $order->get_id(), 'nfe_issued', $nfe );
 
 		if ( ! $meta ) {
-			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() );
+			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() ) );
 		}
 
 		// translators: Order updated with its status.
@@ -107,7 +107,7 @@ class WC_NFe_Webhook_Handler {
 
 		if ( ! $query->have_posts() ) {
 			// translators: Order with receipt number.
-			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id );
+			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ) );
 
 			// translators: Order with receipt number.
 			throw new Exception( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ), 2 );
