@@ -518,36 +518,37 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				<p>
 					<strong><?php esc_html_e( 'Status: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['status'] ) ) : ?>
-						<?php esc_html( $nfe['status'] ); ?>
+						<?php echo esc_html( $nfe['status'] ); ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Number: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['number'] ) ) : ?>
-						<?php esc_html( $nfe['number'] ); ?>
+						<?php echo esc_html( $nfe['number'] ); ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'CheckCode: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['checkCode'] ) ) : ?>
-						<?php esc_html( $nfe['checkCode'] ); ?>
+						<?php echo esc_html( $nfe['checkCode'] ); ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['issuedOn'] ) ) : ?>
-						<?php date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); ?>
+						<?php echo date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) : ?>
-						<?php esc_html( wc_price( $nfe['amountNet'] ) ); ?>
+						<?php echo esc_html( $nfe['amountNet'] ); ?>
 					<?php endif; ?>
 					<br />
 				</p>
 		    </div>
-		<?php }
+		<?php
+		}
 
 		/**
 		 * Inserts a new key/value after the key in the array.
@@ -591,17 +592,14 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return array Modified order details.
 		 */
 		public function nfe_admin_order_preview_details( $fields, $order ) {
-
-			$order_data = $order->get_data();
-			$order_id   = (int) $order_data['id'];
-			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
+			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
 
 			if ( isset( $fields ) ) {
 				$fields['nfe'] = [
-					'status'     => isset( $nfe['status'] ) ?: '',
-					'number'     => isset( $nfe['number'] ) ?: '',
-					'check_code' => isset( $nfe['checkCode'] ) ?: '',
-					'issued'     => isset( $nfe['issuedOn'] )
+					'status'     => ! empty( $nfe['status'] ) ? $nfe['status'] : '',
+					'number'     => ! empty( $nfe['number'] ) ? $nfe['number'] : '',
+					'check_code' => ! empty( $nfe['checkCode'] ) ? $nfe['checkCode'] : '',
+					'issued'     => ! empty( $nfe['issuedOn'] )
 						? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) )
 						: '',
 				];
