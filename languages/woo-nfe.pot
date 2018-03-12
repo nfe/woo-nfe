@@ -2,9 +2,9 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce NFe 1.2.1\n"
+"Project-Id-Version: WooCommerce NFe 1.2.3\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-03-07 17:15:55+00:00\n"
+"POT-Creation-Date: 2018-03-12 22:19:29+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -115,77 +115,81 @@ msgstr ""
 msgid "Sales Receipt"
 msgstr ""
 
-#: includes/admin/class-admin.php:445 includes/frontend/class-frontend.php:94
+#: includes/admin/class-admin.php:443 includes/frontend/class-frontend.php:95
 msgid "NFe Cancelled"
 msgstr ""
 
-#: includes/admin/class-admin.php:450
-msgid "Issued"
+#: includes/admin/class-admin.php:448 includes/frontend/class-frontend.php:101
+msgid "NFe Issued"
 msgstr ""
 
-#: includes/admin/class-admin.php:456 includes/frontend/class-frontend.php:100
-msgid "Issuing NFe"
+#: includes/admin/class-admin.php:453 includes/frontend/class-frontend.php:107
+msgid "NFe Cancelling Failed"
 msgstr ""
 
-#: includes/admin/class-admin.php:462 includes/frontend/class-frontend.php:107
+#: includes/admin/class-admin.php:458 includes/frontend/class-frontend.php:113
+msgid "NFe Issuing Failed"
+msgstr ""
+
+#: includes/admin/class-admin.php:463 includes/frontend/class-frontend.php:119
+msgid "Processing NFe"
+msgstr ""
+
+#: includes/admin/class-admin.php:469 includes/frontend/class-frontend.php:126
 msgid "Pending Address"
 msgstr ""
 
-#: includes/admin/class-admin.php:469 includes/admin/class-admin.php:480
-#: includes/frontend/class-frontend.php:122
-#: includes/frontend/class-frontend.php:135
+#: includes/admin/class-admin.php:476 includes/admin/class-admin.php:487
+#: includes/frontend/class-frontend.php:141
+#: includes/frontend/class-frontend.php:154
 msgid "Issue NFe"
 msgstr ""
 
-#: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:481 includes/frontend/class-frontend.php:147
 msgid "Issue Expired"
 msgstr ""
 
-#: includes/admin/class-admin.php:488
-msgid "Pending Payment"
-msgstr ""
-
-#: includes/admin/class-admin.php:514
+#: includes/admin/class-admin.php:516
 msgid "Receipts Details (NFE.io)"
 msgstr ""
 
-#: includes/admin/class-admin.php:519
+#: includes/admin/class-admin.php:521
 msgid "Status: "
 msgstr ""
 
-#: includes/admin/class-admin.php:525
+#: includes/admin/class-admin.php:527
 msgid "Number: "
 msgstr ""
 
-#: includes/admin/class-admin.php:531
+#: includes/admin/class-admin.php:533
 msgid "CheckCode: "
 msgstr ""
 
-#: includes/admin/class-admin.php:537
+#: includes/admin/class-admin.php:539
 msgid "Issued On: "
 msgstr ""
 
-#: includes/admin/class-admin.php:543
+#: includes/admin/class-admin.php:545
 msgid "Price: "
 msgstr ""
 
-#: includes/admin/class-admin.php:625
+#: includes/admin/class-admin.php:623
 msgid "NFe Details"
 msgstr ""
 
-#: includes/admin/class-admin.php:628
+#: includes/admin/class-admin.php:626
 msgid "Status"
 msgstr ""
 
-#: includes/admin/class-admin.php:633
+#: includes/admin/class-admin.php:631
 msgid "Number"
 msgstr ""
 
-#: includes/admin/class-admin.php:638
+#: includes/admin/class-admin.php:636
 msgid "CheckCode"
 msgstr ""
 
-#: includes/admin/class-admin.php:643
+#: includes/admin/class-admin.php:641
 msgid "Issued On"
 msgstr ""
 
@@ -532,12 +536,8 @@ msgid ""
 "also when issuing a NFe sales receipt."
 msgstr ""
 
-#: includes/frontend/class-frontend.php:114
+#: includes/frontend/class-frontend.php:133
 msgid "Download NFe"
-msgstr ""
-
-#: includes/frontend/class-frontend.php:147
-msgid "Enable NFe"
 msgstr ""
 
 #: templates/emails/nfe-receipt-issued.php:22

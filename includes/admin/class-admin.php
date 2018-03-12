@@ -438,21 +438,29 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<?php
 			$actions = array();
 
-			if ( ! empty( $nfe ) && ( 'Cancelled' === $nfe['status'] || 'Issued' === $nfe['status'] ) ) {
-				if ( 'Cancelled' === $nfe['status'] ) {
-					$actions['woo_nfe_cancelled'] = array(
-						'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
-						'action'    => 'woo_nfe_cancelled',
-					);
-				} elseif ( 'Issued' === $nfe['status'] ) {
-					$actions['woo_nfe_emitida'] = array(
-						'name'      => __( 'Issued', 'woo-nfe' ),
-						'action'    => 'woo_nfe_emitida',
-					);
-				}
-			} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) {
+			if ( ! empty( $nfe ) && 'Cancelled' === $nfe['status'] ) {
+				$actions['woo_nfe_cancelled'] = array(
+					'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
+					'action'    => 'woo_nfe_cancelled',
+				);
+			} elseif ( ! empty( $nfe ) && 'Issued' === $nfe['status'] ) {
+				$actions['woo_nfe_emitida'] = array(
+					'name'      => __( 'NFe Issued', 'woo-nfe' ),
+					'action'    => 'woo_nfe_emitida',
+				);
+			} elseif ( ! empty( $nfe ) && 'CancelledFailed' === $nfe['status'] ) {
+				$actions['woo_nfe_issue'] = array(
+					'name'      => __( 'NFe Cancelling Failed', 'woo-nfe' ),
+					'action'    => 'woo_nfe_issue',
+				);
+			} elseif ( ! empty( $nfe ) && 'IssueFailed' === $nfe['status'] ) {
+				$actions['woo_nfe_issue'] = array(
+					'name'      => __( 'NFe Issuing Failed', 'woo-nfe' ),
+					'action'    => 'woo_nfe_issue',
+				);
+			} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], nfe_processing_status(), true ) ) {
 				$actions['woo_nfe_issuing'] = array(
-					'name'      => __( 'Issuing NFe', 'woo-nfe' ),
+					'name'      => __( 'Processing NFe', 'woo-nfe' ),
 					'action'    => 'woo_nfe_issuing',
 				);
 			} else {
@@ -536,11 +544,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) : ?>
-						<?php echo wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ); ?>
+						<?php echo wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ); // WPCS: XSS ok. ?>
 					<?php endif; ?>
 					<br />
 				</p>
-		    </div>
+			</div>
 		<?php
 		}
 
