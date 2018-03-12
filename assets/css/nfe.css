@@ -33,8 +33,7 @@ span.woo_nfe_actions {
     text-align: center;
 }
 
-span.woo_nfe_issue,
-span.woo_nfe_payment {
+span.woo_nfe_issue {
 	background-color: #444;
 }
 

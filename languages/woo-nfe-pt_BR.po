@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
 "POT-Creation-Date: 2018-03-07 17:15:55+00:00\n"
-"PO-Revision-Date: 2018-03-07 14:18-0300\n"
+"PO-Revision-Date: 2018-03-12 16:14-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: en_US\n"
@@ -139,7 +139,7 @@ msgstr "End. Pendente"
 #: includes/frontend/class-frontend.php:122
 #: includes/frontend/class-frontend.php:135
 msgid "Issue NFe"
-msgstr "Emitir"
+msgstr "Aguardando Emissão"
 
 #: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:128
 msgid "Issue Expired"
