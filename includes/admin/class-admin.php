@@ -438,56 +438,49 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<?php
 			$actions = array();
 
-			if ( $order->has_status( 'completed' ) ) {
-				if ( ! empty( $nfe ) && ( 'Cancelled' === $nfe['status'] || 'Issued' === $nfe['status'] ) ) {
-					if ( 'Cancelled' === $nfe['status'] ) {
-						$actions['woo_nfe_cancelled'] = array(
-							'name'      => esc_html__( 'NFe Cancelled', 'woo-nfe' ),
-							'action'    => 'woo_nfe_cancelled',
-						);
-					} elseif ( 'Issued' === $nfe['status'] ) {
-						$actions['woo_nfe_emitida'] = array(
-							'name'      => esc_html__( 'Issued', 'woo-nfe' ),
-							'action'    => 'woo_nfe_emitida',
-						);
-					}
-				} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) {
-					$actions['woo_nfe_issuing'] = array(
-						'name'      => esc_html__( 'Issuing NFe', 'woo-nfe' ),
-						'action'    => 'woo_nfe_issuing',
+			if ( ! empty( $nfe ) && ( 'Cancelled' === $nfe['status'] || 'Issued' === $nfe['status'] ) ) {
+				if ( 'Cancelled' === $nfe['status'] ) {
+					$actions['woo_nfe_cancelled'] = array(
+						'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
+						'action'    => 'woo_nfe_cancelled',
+					);
+				} elseif ( 'Issued' === $nfe['status'] ) {
+					$actions['woo_nfe_emitida'] = array(
+						'name'      => __( 'Issued', 'woo-nfe' ),
+						'action'    => 'woo_nfe_emitida',
+					);
+				}
+			} elseif ( ! empty( $nfe ) && 'WaitingCalculateTaxes' === $nfe['status'] ) {
+				$actions['woo_nfe_issuing'] = array(
+					'name'      => __( 'Issuing NFe', 'woo-nfe' ),
+					'action'    => 'woo_nfe_issuing',
+				);
+			} else {
+				if ( ! nfe_order_address_filled( $order_id ) ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'name'      => __( 'Pending Address', 'woo-nfe' ),
+						'action'    => 'woo_nfe_pending_address',
 					);
 				} else {
-					if ( ! nfe_order_address_filled( $order_id ) ) {
-						$actions['woo_nfe_pending_address'] = array(
-							'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
-							'action'    => 'woo_nfe_pending_address',
-						);
-					} else {
-						if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
-							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
-								$actions['woo_nfe_issue'] = array(
-									'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
-									'action'    => 'woo_nfe_issue',
-								);
-							} else {
-								$actions['woo_nfe_expired'] = array(
-									'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
-									'action'    => 'woo_nfe_expired',
-								);
-							}
-						} else {
+					if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
+						if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 							$actions['woo_nfe_issue'] = array(
-								'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
+								'name'      => __( 'Issue NFe', 'woo-nfe' ),
 								'action'    => 'woo_nfe_issue',
 							);
+						} else {
+							$actions['woo_nfe_expired'] = array(
+								'name'      => __( 'Issue Expired', 'woo-nfe' ),
+								'action'    => 'woo_nfe_expired',
+							);
 						}
+					} else {
+						$actions['woo_nfe_issue'] = array(
+							'name'      => __( 'Issue NFe', 'woo-nfe' ),
+							'action'    => 'woo_nfe_issue',
+						);
 					}
 				}
-			} else {
-				$actions['woo_nfe_payment'] = array(
-					'name'      => esc_html__( 'Pending Payment', 'woo-nfe' ),
-					'action'    => 'woo_nfe_payment',
-				);
 			}
 
 			foreach ( $actions as $action ) {
@@ -495,7 +488,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					esc_attr( $action['action'] ),
 					esc_attr( $action['name'] )
 				);
-			} ?>
+			}
+			?>
 			</mark>
 			<?php
 		}
@@ -536,13 +530,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['issuedOn'] ) ) : ?>
-						<?php echo date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); ?>
+						<?php echo date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); // WPCS: XSS ok. ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) : ?>
-						<?php echo esc_html( $nfe['amountNet'] ); ?>
+						<?php echo wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ); ?>
 					<?php endif; ?>
 					<br />
 				</p>
@@ -599,9 +593,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					'status'     => ! empty( $nfe['status'] ) ? $nfe['status'] : '',
 					'number'     => ! empty( $nfe['number'] ) ? $nfe['number'] : '',
 					'check_code' => ! empty( $nfe['checkCode'] ) ? $nfe['checkCode'] : '',
-					'issued'     => ! empty( $nfe['issuedOn'] )
-						? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) )
-						: '',
+					'issued'     => ! empty( $nfe['issuedOn'] ) ? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) : '',
 				];
 			}
 
