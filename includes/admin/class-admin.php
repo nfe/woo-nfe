@@ -530,13 +530,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['issuedOn'] ) ) : ?>
-						<?php echo date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); ?>
+						<?php echo date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ); // WPCS: XSS ok. ?>
 					<?php endif; ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) : ?>
-						<?php echo esc_html( $nfe['amountNet'] ); ?>
+						<?php echo wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ); ?>
 					<?php endif; ?>
 					<br />
 				</p>
@@ -593,9 +593,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					'status'     => ! empty( $nfe['status'] ) ? $nfe['status'] : '',
 					'number'     => ! empty( $nfe['number'] ) ? $nfe['number'] : '',
 					'check_code' => ! empty( $nfe['checkCode'] ) ? $nfe['checkCode'] : '',
-					'issued'     => ! empty( $nfe['issuedOn'] )
-						? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) )
-						: '',
+					'issued'     => ! empty( $nfe['issuedOn'] ) ? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) : '',
 				];
 			}
 
