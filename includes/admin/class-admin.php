@@ -346,9 +346,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		/**
 		 * Issue Helper Method.
 		 *
-		 * @param  array    $download NFe info.
-		 * @param  WC_Order $order    Order object.
-		 * @param  int      $order_id Order ID.
+		 * @param  array $download NFe info.
+		 * @param  int   $order_id Order ID.
 		 *
 		 * @return bool
 		 */

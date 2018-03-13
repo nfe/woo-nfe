@@ -126,6 +126,8 @@ function nfe_get_order_by_nota_value( $value ) {
 /**
  * Status when the NFe in being processed.
  *
+ * @since 1.2.4
+ *
  * @return array
  */
 function nfe_processing_status() {
