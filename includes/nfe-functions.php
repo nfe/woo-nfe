@@ -112,13 +112,24 @@ function nfe_get_order_by_nota_value( $value ) {
 		'update_post_term_cache' => false,
 		'post_status' => 'any',
 		'meta_query'             => array( // WPCS: slow query ok.
-		    array(
-		        'key' => 'nfe_issued',
-		        'value' => sprintf( ':"%s";', $value ),
-		        'compare' => 'LIKE',
-		    ),
+			array(
+				'key' => 'nfe_issued',
+				'value' => sprintf( ':"%s";', $value ),
+				'compare' => 'LIKE',
+			),
 		),
 	);
 
 	return new WP_Query( $query_args );
+}
+
+/**
+ * Status when the NFe in being processed.
+ *
+ * @since 1.2.4
+ *
+ * @return array
+ */
+function nfe_processing_status() {
+	return [ 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload' ];
 }

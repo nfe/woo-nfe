@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WooCommerce NFe 1.2.1\n"
 "Report-Msgid-Bugs-To: https://github.com/nfe/woo-nfe/issues\n"
-"POT-Creation-Date: 2018-03-07 17:15:55+00:00\n"
-"PO-Revision-Date: 2018-03-12 16:14-0300\n"
+"POT-Creation-Date: 2018-03-12 22:19:29+00:00\n"
+"PO-Revision-Date: 2018-03-12 19:21-0300\n"
 "Last-Translator: Renato Alves <espellcaste@gmail.com>\n"
 "Language-Team: Renato Alves <contato@ralv.es>\n"
 "Language: en_US\n"
@@ -119,77 +119,81 @@ msgstr "Nota fiscal atualizada via API do NFe.io"
 msgid "Sales Receipt"
 msgstr "Nota Fiscal"
 
-#: includes/admin/class-admin.php:445 includes/frontend/class-frontend.php:94
+#: includes/admin/class-admin.php:443 includes/frontend/class-frontend.php:95
 msgid "NFe Cancelled"
 msgstr "Cancelada"
 
-#: includes/admin/class-admin.php:450
-msgid "Issued"
+#: includes/admin/class-admin.php:448 includes/frontend/class-frontend.php:101
+msgid "NFe Issued"
 msgstr "Emitida"
 
-#: includes/admin/class-admin.php:456 includes/frontend/class-frontend.php:100
-msgid "Issuing NFe"
-msgstr "Emitindo"
+#: includes/admin/class-admin.php:453 includes/frontend/class-frontend.php:107
+msgid "NFe Cancelling Failed"
+msgstr "Cancelamento com Falha"
 
-#: includes/admin/class-admin.php:462 includes/frontend/class-frontend.php:107
+#: includes/admin/class-admin.php:458 includes/frontend/class-frontend.php:113
+msgid "NFe Issuing Failed"
+msgstr "Emissão com Falha"
+
+#: includes/admin/class-admin.php:463 includes/frontend/class-frontend.php:119
+msgid "Processing NFe"
+msgstr "Processando"
+
+#: includes/admin/class-admin.php:469 includes/frontend/class-frontend.php:126
 msgid "Pending Address"
 msgstr "End. Pendente"
 
-#: includes/admin/class-admin.php:469 includes/admin/class-admin.php:480
-#: includes/frontend/class-frontend.php:122
-#: includes/frontend/class-frontend.php:135
+#: includes/admin/class-admin.php:476 includes/admin/class-admin.php:487
+#: includes/frontend/class-frontend.php:141
+#: includes/frontend/class-frontend.php:154
 msgid "Issue NFe"
 msgstr "Aguardando Emissão"
 
-#: includes/admin/class-admin.php:474 includes/frontend/class-frontend.php:128
+#: includes/admin/class-admin.php:481 includes/frontend/class-frontend.php:147
 msgid "Issue Expired"
 msgstr "Emissão Expirada"
 
-#: includes/admin/class-admin.php:488
-msgid "Pending Payment"
-msgstr "Pagamento Pendente"
-
-#: includes/admin/class-admin.php:514
+#: includes/admin/class-admin.php:516
 msgid "Receipts Details (NFE.io)"
 msgstr "Notas Fiscais (NFE.io)"
 
-#: includes/admin/class-admin.php:519
+#: includes/admin/class-admin.php:521
 msgid "Status: "
 msgstr "Status: "
 
-#: includes/admin/class-admin.php:525
+#: includes/admin/class-admin.php:527
 msgid "Number: "
 msgstr "Número: "
 
-#: includes/admin/class-admin.php:531
+#: includes/admin/class-admin.php:533
 msgid "CheckCode: "
 msgstr "Cód. Verificação: "
 
-#: includes/admin/class-admin.php:537
+#: includes/admin/class-admin.php:539
 msgid "Issued On: "
 msgstr "Emitido em: "
 
-#: includes/admin/class-admin.php:543
+#: includes/admin/class-admin.php:545
 msgid "Price: "
 msgstr "Valor Líquido: "
 
-#: includes/admin/class-admin.php:625
+#: includes/admin/class-admin.php:623
 msgid "NFe Details"
 msgstr "Detalhes da Nota Fiscal"
 
-#: includes/admin/class-admin.php:628
+#: includes/admin/class-admin.php:626
 msgid "Status"
 msgstr "Status"
 
-#: includes/admin/class-admin.php:633
+#: includes/admin/class-admin.php:631
 msgid "Number"
 msgstr "Número"
 
-#: includes/admin/class-admin.php:638
+#: includes/admin/class-admin.php:636
 msgid "CheckCode"
 msgstr "Cód. Verificação"
 
-#: includes/admin/class-admin.php:643
+#: includes/admin/class-admin.php:641
 msgid "Issued On"
 msgstr "Emitido em"
 
@@ -562,13 +566,9 @@ msgstr ""
 "O seguinte endereço será usado na página de checkout por padrão e também ao "
 "emitir uma nota fiscal pelo NFe.io."
 
-#: includes/frontend/class-frontend.php:114
+#: includes/frontend/class-frontend.php:133
 msgid "Download NFe"
 msgstr "Download"
-
-#: includes/frontend/class-frontend.php:147
-msgid "Enable NFe"
-msgstr "Habilitar o Woocommerce NFe"
 
 #: templates/emails/nfe-receipt-issued.php:22
 #: templates/emails/plain/nfe-receipt-issued.php:19
@@ -655,6 +655,18 @@ msgstr "Plain text"
 msgctxt "email type"
 msgid "HTML"
 msgstr "HTML"
+
+#~ msgid "Issued"
+#~ msgstr "Emitida"
+
+#~ msgid "Issuing NFe"
+#~ msgstr "Emitindo"
+
+#~ msgid "Pending Payment"
+#~ msgstr "Pagamento Pendente"
+
+#~ msgid "Enable NFe"
+#~ msgstr "Habilitar o Woocommerce NFe"
 
 #~ msgid "New event procced."
 #~ msgstr "Novo Evento processado."
