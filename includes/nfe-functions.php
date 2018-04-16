@@ -29,38 +29,6 @@ function nfe_get_field( $value = '' ) {
 }
 
 /**
- * Check to make sure the order has all the fields for a NFe issue.
- *
- * @param  int $order_id Order ID.
- * @return bool
- */
-function nfe_order_address_filled( $order_id ) {
-	$fields = array(
-		'neighborhood' => get_post_meta( $order_id, '_billing_neighborhood', true ),
-		'address_1'    => get_post_meta( $order_id, '_billing_address_1', true ),
-		'number'       => get_post_meta( $order_id, '_billing_number', true ),
-		'postcode'     => get_post_meta( $order_id, '_billing_postcode', true ),
-		'state'        => get_post_meta( $order_id, '_billing_state', true ),
-		'city'         => get_post_meta( $order_id, '_billing_city', true ),
-		'country'      => get_post_meta( $order_id, '_billing_country', true ),
-	);
-
-	$count = 0;
-	foreach ( $fields as $field => $value ) {
-		if ( empty( $value ) ) {
-			$count = 1;
-			break;
-		}
-	}
-
-	if ( $count >= 1 ) {
-		return false;
-	}
-
-	return true;
-}
-
-/**
  * Past Issue Check (It answers the question: Can we issue a past order?)
  *
  * @param  WC_Order $order Order object.

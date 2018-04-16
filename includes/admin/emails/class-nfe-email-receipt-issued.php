@@ -59,11 +59,6 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 			return;
 		}
 
-		// Checking if the address of order is filled.
-		if ( ! nfe_order_address_filled( $order_id ) ) {
-			return;
-		}
-
 		$this->object    = $order;
 		$this->recipient = $this->object->billing_email;
 
