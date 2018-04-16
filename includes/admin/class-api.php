@@ -64,8 +64,8 @@ if ( ! class_exists('NFe_Woo') ) :
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
-				// If value is 0, don't issue it
-				if ( 0 === $order->get_total() ) {
+				// If value is 0, don't issue it.
+				if ( '0.00' === $order->get_total() ) {
 					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -73,16 +73,16 @@ if ( ! class_exists('NFe_Woo') ) :
 					return false;
 				}
 
-				$dataInvoice = $this->order_info( $order_id );
+				$datainvoice = $this->order_info( $order_id );
 
 				// Check if there was a problem on fetch the city code from IBGE using the postal code.
-				if ( empty( $dataInvoice['borrower']['address']['city']['code'] ) )	{
+				if ( empty( $datainvoice['borrower']['address']['city']['code'] ) )	{
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 				}
 
-				$invoice = NFe_ServiceInvoice::create( $company_id, $dataInvoice );
+				$invoice = NFe_ServiceInvoice::create( $company_id, $datainvoice );
 
 				if ( isset( $invoice->message ) ) {
 					$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), print_r( $invoice->message, true ) );

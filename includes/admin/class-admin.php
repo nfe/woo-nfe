@@ -85,7 +85,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$order = nfe_wc_get_order( $order_id );
 			$order_id = $order->get_id();
 
+			// Bail for no order.
 			if ( ! $order_id ) {
+				return;
+			}
+
+			// Bail for zeroed order.
+			if ( '0.00' === $order->get_total() ) {
 				return;
 			}
 
@@ -336,7 +342,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
 			}
 
-			if ( $this->issue_helper( $download, $order_id ) ) {
+			if ( $this->issue_helper( $download, $theorder ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 			}
 
@@ -346,15 +352,20 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		/**
 		 * Issue Helper Method.
 		 *
-		 * @param  array $download NFe info.
-		 * @param  int   $order_id Order ID.
+		 * @param  array    $download NFe info.
+		 * @param  WC_Order $order    Order.
 		 *
 		 * @return bool
 		 */
-		protected function issue_helper( $download, $order_id ) {
+		protected function issue_helper( $download, $order ) {
 
 			// Bail if there is an ID.
 			if ( ! empty( $download['id'] ) ) {
+				return false;
+			}
+
+			// Bail for zeroed order.
+			if ( '0.00' === $order->get_total() ) {
 				return false;
 			}
 
@@ -364,7 +375,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			// Bail if there is no address.
-			if ( ! nfe_order_address_filled( $order_id ) ) {
+			if ( ! nfe_order_address_filled( $order->get_id() ) ) {
 				return false;
 			}
 
@@ -463,9 +474,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					'action'    => 'woo_nfe_issuing',
 				);
 			} else {
-				if ( ! nfe_order_address_filled( $order_id ) ) {
+				if ( '0.00' === $order->get_total() ) {
 					$actions['woo_nfe_pending_address'] = array(
-						'name'      => __( 'Pending Address', 'woo-nfe' ),
+						'name'      => __( 'Zero Order', 'woo-nfe' ),
 						'action'    => 'woo_nfe_pending_address',
 					);
 				} else {

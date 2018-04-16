@@ -120,43 +120,39 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 					'action'    => 'woo_nfe_issuing',
 				);
 			} else {
-				if ( ! nfe_order_address_filled( $order_id ) ) {
-					$actions['woo_nfe_pending_address'] = array(
-						'url'       => esc_url( wc_get_endpoint_url( 'edit-address' ) ),
-						'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
-						'action'    => 'woo_nfe_pending_address',
+				if ( ! empty( $nfe ) && $nfe['id'] ) {
+					$actions['woo_nfe_download'] = array(
+						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
+						'name'      => esc_html__( 'Download NFe', 'woo-nfe' ),
+						'action'    => 'woo_nfe_download',
 					);
 				} else {
-					if ( ! empty( $nfe ) && $nfe['id'] ) {
-						$actions['woo_nfe_download'] = array(
-							'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-							'name'      => esc_html__( 'Download NFe', 'woo-nfe' ),
-							'action'    => 'woo_nfe_download',
-						);
-					} else {
-						if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
-							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
-								$actions['woo_nfe_issue'] = array(
-									'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-									'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
-									'action'    => 'woo_nfe_issue',
-								);
-							} else {
-								$actions['woo_nfe_expired'] = array(
-									'url'       => '#',
-									'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
-									'action'    => 'woo_nfe_expired',
-								);
-							}
-						} else {
+					if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
+						if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 							$actions['woo_nfe_issue'] = array(
 								'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
 								'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
 								'action'    => 'woo_nfe_issue',
 							);
+						} else {
+							$actions['woo_nfe_expired'] = array(
+								'url'       => '#',
+								'name'      => esc_html__( 'Issue Expired', 'woo-nfe' ),
+								'action'    => 'woo_nfe_expired',
+							);
 						}
+					} else {
+						$actions['woo_nfe_issue'] = array(
+							'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
+							'name'      => esc_html__( 'Issue NFe', 'woo-nfe' ),
+							'action'    => 'woo_nfe_issue',
+						);
 					}
 				}
+			}
+
+			if ( '0.00' === $order->get_total() ) {
+				$actions = array();
 			}
 
 			foreach ( $actions as $action ) {
