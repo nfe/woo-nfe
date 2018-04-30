@@ -120,7 +120,13 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 					'action'    => 'woo_nfe_issuing',
 				);
 			} else {
-				if ( ! empty( $nfe ) && $nfe['id'] ) {
+				if ( ! nfe_order_address_filled( $order_id ) ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'url'       => esc_url( wc_get_endpoint_url( 'edit-address' ) ),
+						'name'      => esc_html__( 'Pending Address', 'woo-nfe' ),
+						'action'    => 'woo_nfe_pending_address',
+					);
+				} elseif ( ! empty( $nfe ) && $nfe['id'] ) {
 					$actions['woo_nfe_download'] = array(
 						'url'       => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
 						'name'      => esc_html__( 'Download NFe', 'woo-nfe' ),

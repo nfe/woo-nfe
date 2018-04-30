@@ -479,6 +479,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 						'name'      => __( 'Zero Order', 'woo-nfe' ),
 						'action'    => 'woo_nfe_pending_address',
 					);
+				} elseif ( ! nfe_order_address_filled( $order_id ) ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'name'      => __( 'Pending Address', 'woo-nfe' ),
+						'action'    => 'woo_nfe_pending_address',
+					);
 				} else {
 					if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
 						if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
