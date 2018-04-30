@@ -95,11 +95,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return;
 			}
 
-			// Checking if the address of order is filled.
-			if ( ! nfe_order_address_filled( $order_id ) ) {
-				return;
-			}
-
 			// We just can issue the invoice if the status is equal to the configured one.
 			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
 				NFe_Woo()->issue_invoice( array( $order_id ) );
@@ -374,11 +369,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return false;
 			}
 
-			// Bail if there is no address.
-			if ( ! nfe_order_address_filled( $order->get_id() ) ) {
-				return false;
-			}
-
 			return true;
 		}
 
@@ -475,9 +465,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				);
 			} else {
 				if ( '0.00' === $order->get_total() ) {
-					$actions['woo_nfe_pending_address'] = array(
+					$actions['woo_nfe_zero_order'] = array(
 						'name'      => __( 'Zero Order', 'woo-nfe' ),
-						'action'    => 'woo_nfe_pending_address',
+						'action'    => 'woo_nfe_zero_order',
 					);
 				} elseif ( ! nfe_order_address_filled( $order_id ) ) {
 					$actions['woo_nfe_pending_address'] = array(

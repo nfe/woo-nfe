@@ -26,7 +26,7 @@ class WC_NFe_Ajax {
 	 * @return void
 	 */
 	public static function front_issue() {
-		// Nothing to do
+		// Nothing to do.
 		if ( ! isset( $_GET['nfe_issue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
 			return;
 		}
@@ -38,15 +38,10 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		if ( ! nfe_order_address_filled( $order->id ) ) {
-			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woo-nfe' ), 'error' );
-		} else {
-			NFe_Woo()->issue_invoice( array( $order->id ) );
-
-			wc_add_notice( __( 'NFe was issued successfully.', 'woo-nfe' ) );
-		}
+		NFe_Woo()->issue_invoice( array( $order->id ) );
+		wc_add_notice( __( 'NFe was issued successfully.', 'woo-nfe' ) );
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
-		exit;
+		exit();
 	}
 
 	/**
