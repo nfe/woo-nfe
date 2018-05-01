@@ -102,9 +102,22 @@ if ( class_exists( 'WC_Integration' ) ) {
 						'on-hold'    => _x( 'On Hold', 'Order status', 'woo-nfe' ),
 						'completed'  => _x( 'Completed', 'Order status', 'woo-nfe' ),
 					),
+					'class'				=> 'wc-enhanced-select',
+					'css'				=> 'min-width:300px;',
+					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woo-nfe' ),
+				),
+				'require_address'		=> array(
+					'title'             => __( 'Require address to issue', 'woo-nfe' ),
+					'type'              => 'select',
+					'label'             => __( 'Does an address is required to issue a NFe?', 'woo-nfe' ),
+					'default'           => 'yes',
+					'options' 			=> array(
+						'yes'   => __( 'Yes (Default)', 'woo-nfe' ),
+						'no'    => __( 'No', 'woo-nfe' ),
+					),
 					'class'    			=> 'wc-enhanced-select',
 					'css'      			=> 'min-width:300px;',
-					'desc_tip'       	=> __( 'Option to issue a NFe.', 'woo-nfe' ),
+					'desc_tip'       	=> __( 'Does an address is required to issue a NFe?', 'woo-nfe' ),
 				),
 				'nfe_events_title' 	=> array(
 					'title' 			=> __( 'NFe.io Webkook Setup', 'woo-nfe' ),

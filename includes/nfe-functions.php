@@ -29,12 +29,17 @@ function nfe_get_field( $value = '' ) {
 }
 
 /**
- * Check to make sure the order has all the fields for a NFe issue.
+ * MAke sure address is required and if all the fields are available.
  *
  * @param  int $order_id Order ID.
  * @return bool
  */
 function nfe_order_address_filled( $order_id ) {
+
+	if ( false === nfe_require_address() ) {
+		return true;
+	}
+
 	$fields = array(
 		'neighborhood' => get_post_meta( $order_id, '_billing_neighborhood', true ),
 		'address_1'    => get_post_meta( $order_id, '_billing_address_1', true ),
@@ -132,4 +137,23 @@ function nfe_get_order_by_nota_value( $value ) {
  */
 function nfe_processing_status() {
 	return [ 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload' ];
+}
+
+/**
+ * Does an address is requried?
+ *
+ * @return bool
+ */
+function nfe_require_address() {
+	$retval = nfe_get_field( 'require_address' );
+
+	if ( empty( $retval ) ) {
+		return false;
+	}
+
+	if ( 'yes' === $retval ) {
+		return true;
+	}
+
+	return false;
 }
