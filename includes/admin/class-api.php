@@ -1,9 +1,9 @@
 <?php
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists('NFe_Woo') ) :
+if ( ! class_exists( 'NFe_Woo' ) ) :
 
 	/**
 	 * WooCommerce NFe NFe_Woo Class
@@ -15,24 +15,25 @@ if ( ! class_exists('NFe_Woo') ) :
 	class NFe_Woo {
 
 		/**
-	   * WC_Logger Logger instance
-	   *
-	   * @var boolean
-	   */
-	  public static $logger = false;
+		 * WC_Logger Instance
+		 *
+		 * @var boolean
+		 */
+		public static $logger = false;
 
 		/**
 		 * NFe_Woo Instance.
 		 */
 		public static function instance() {
-			// Store the instance locally to avoid private static replication
+			// Store the instance locally to avoid private static replication.
 			static $instance = null;
 
-			// Only run these methods if they haven't been run previously
+			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
 				$instance = new NFe_Woo();
 			}
-			return $instance; // Always return the instance
+
+			return $instance; // Always return the instance.
 		}
 
 		/**
@@ -45,16 +46,16 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Issue a NFe invoice.
 		 *
-		 * @param  array  $order_ids Orders to issue the NFe
+		 * @param array  $order_ids Orders to issue the NFe.
 		 *
 		 * @return bool|string
 		 */
 		public function issue_invoice( $order_ids = array() ) {
-			$key               = nfe_get_field('api_key');
-			$company_id        = nfe_get_field('choose_company');
-			$issue_when_status = nfe_get_field('issue_when_status');
+			$key               = nfe_get_field( 'api_key' );
+			$company_id        = nfe_get_field( 'choose_company' );
+			$issue_when_status = nfe_get_field( 'issue_when_status' );
 
-			NFe::setApiKey($key);
+			NFe::setApiKey( $key );
 
 			foreach ( $order_ids as $order_id ) {
 
@@ -76,7 +77,7 @@ if ( ! class_exists('NFe_Woo') ) :
 				$datainvoice = $this->order_info( $order_id );
 
 				// Check if there was a problem on fetch the city code from IBGE using the postal code.
-				if ( empty( $datainvoice['borrower']['address']['city']['code'] ) )	{
+				if ( empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -113,18 +114,20 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Downloads the invoice(s).
 		 *
-		 * @param  array  $order_ids Array of order ids.
+		 * @throws Exception
+		 *
+		 * @param array  $order_ids Array of order ids.
 		 * @return string            Pdf url from NFe.io
 		 */
 		public function download_pdf_invoice( $order_ids = array() ) {
-			$key 		= nfe_get_field('api_key');
-			$company_id = nfe_get_field('choose_company');
+			$key        = nfe_get_field( 'api_key' );
+			$company_id = nfe_get_field( 'choose_company' );
 
-			NFe::setApiKey($key);
+			NFe::setApiKey( $key );
 
 			foreach ( $order_ids as $order_id ) {
 				$nfe   = get_post_meta( $order_id, 'nfe_issued', true );
-				$order = nfe_wc_get_order($order_id);
+				$order = nfe_wc_get_order( $order_id );
 
 				try {
 					$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
@@ -138,8 +141,6 @@ if ( ! class_exists('NFe_Woo') ) :
 					$order->add_order_note( $log );
 
 					throw new Exception( $log );
-
-					return false;
 				}
 			}
 
@@ -149,46 +150,39 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Preparing data to send to NFe API
 		 *
-		 * @param  int $order Order ID
-		 * @return array 	  Array with the order_id information to issue the invoice
+		 * @param int $order_id Order ID.
+		 *
+		 * @return array Array with the order_id information to issue the invoice
 		 */
 		public function order_info( $order_id ) {
 
-			function removePontoTraco( $string ) {
-				return preg_replace("/[^0-9]/", "", $string);
-			}
-
-			function remover_caracter( $string ) {
-				$string = preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities($string, ENT_COMPAT, 'UTF-8'));
-				$string = preg_replace("/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/", "", $string);
-				return $string;
-			}
-
 			$total = nfe_wc_get_order( $order_id );
 
-			$data = array(
-				'cityServiceCode' 			=> $this->city_service_info( 'code', $order_id ),
-				'federalServiceCode'		=> $this->city_service_info( 'fed_code', $order_id ),
-				'description' 				=> remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
-				'servicesAmount' 			=> $total->get_total(),
-				'borrower' 					=> array(
-					'name' 						=> remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
-					'email' 					=> get_post_meta( $order_id, '_billing_email', true ),
-					'federalTaxNumber'			=> removePontoTraco( ltrim( $this->check_customer_info( 'number', $order_id ),'0') ),
-					'address' 				=> array(
-						'postalCode' 			=> $this->cep( get_post_meta( $order_id, '_billing_postcode', true ) ),
-						'street' 					=> remover_caracter(get_post_meta( $order_id, '_billing_address_1', true ) ),
-						'number' 					=> remover_caracter(get_post_meta( $order_id, '_billing_number', true ) ),
-						'additionalInformation' 	=> remover_caracter(get_post_meta( $order_id, '_billing_address_2', true ) ),
-						'district' 			=> remover_caracter( get_post_meta( $order_id, '_billing_neighborhood', true ) ),
-						'country' 			=> remover_caracter( $this->billing_country( $order_id ) ),
-						'state' 			=> remover_caracter( get_post_meta( $order_id, '_billing_state', true ) ),
-						'city' 				=> array(
-							'code' 				=> $this->ibge_code( $order_id ),
-							'name' 				=> remover_caracter( get_post_meta( $order_id, '_billing_city', true ) ),
-						),
+			$borrower = array(
+				'name' => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
+				'email' => get_post_meta( $order_id, '_billing_email', true ),
+				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
+				'address' => array(
+					'postalCode' => $this->cep( $this->check_customer_info( 'cep', $order_id ) ),
+					'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
+					'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
+					'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
+					'district' => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
+					'country' => $this->remover_caracter( $this->billing_country( $order_id ) ),
+					'state' => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
+					'city' => array(
+						'code' => $this->ibge_code( $order_id ),
+						'name' => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
 					),
 				),
+			);
+
+			$data = array(
+				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
+				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
+				'description'        => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
+				'servicesAmount'     => $total->get_total(),
+				'borrower'           => $borrower,
 			);
 
 			// Removes empty, false and null fields from the array.
@@ -198,15 +192,21 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Hack to bring support to Brazilian ISO code (Ex.: BRA instead of BR)
 		 *
-		 * @param  int $order_id Product ID
+		 * @param int $order_id Product ID.
+		 *
 		 * @return string
 		 */
-		public function billing_country( $order_id ) {
-			$country   = get_post_meta( $order_id, '_billing_country', true );
+		protected function billing_country( $order_id ) {
+			$country = get_post_meta( $order_id, '_billing_country', true );
+
+			if ( empty( $country ) ) {
+				$country = 'BR';
+			}
+
 			$countries = $this->country_iso_codes();
 
 			foreach ( $countries as $iso3 => $iso2 ) {
-				if ( $country == $iso2 ) {
+				if ( $country === $iso2 ) {
 					$c = $iso3;
 				}
 			}
@@ -217,37 +217,39 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Fetches the IBGE Code
 		 *
-		 * @param  int $order_id Order ID
+		 * @param  int $order_id Order ID.
 		 * @return string
 		 */
-		public function ibge_code( $order_id ) {
+		protected function ibge_code( $order_id ) {
 			if ( empty( $order_id ) ) {
 				return;
 			}
 
-			$key = nfe_get_field('api_key');
-			$postalCode = get_post_meta( $order_id, '_billing_postcode', true );
+			$key = nfe_get_field( 'api_key' );
+			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
 
-			if ( empty( $postalCode ) ) {
+			if ( empty( $post_code ) ) {
 				return;
 			}
 
-			$url 	    = 'https://open.nfe.io/v1/addresses/'. $postalCode .'?api_key='. $key;
-			$response 	= wp_remote_get( esc_url_raw( $url ) );
+			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $key;
+			$response = wp_remote_get( esc_url_raw( $url ) );
 
 			if ( is_wp_error( $response ) ) {
 				return;
-			} else {
-				$address = json_decode( wp_remote_retrieve_body( $response ), true );
-
-				return $address['city']['code'];
 			}
+
+			$address = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			return $address['city']['code'];
 		}
 
 		/**
 		 * City Service Information (City and Federal Code, and Description).
 		 *
-		 * @param  string $field The field info being fetched
+		 * @param string $field   The field info being fetched.
+		 * @param int    $post_id Post ID.
+		 *
 		 * @return string
 		 */
 		public function city_service_info( $field = '', $post_id ) {
@@ -258,7 +260,7 @@ if ( ! class_exists('NFe_Woo') ) :
 			$order = nfe_wc_get_order( $post_id );
 
 			if ( 0 < count( $order->get_items() ) ) {
-				// Variations or Simple Product Info
+				// Variations or Simple Product Info.
 				foreach ( $order->get_items() as $key => $item ) {
 					$product_id   = $item['product_id'];
 					$variation_id = $item['variation_id'];
@@ -267,8 +269,7 @@ if ( ! class_exists('NFe_Woo') ) :
 						$cityservicecode    = get_post_meta( $variation_id, '_cityservicecode', true );
 						$federalservicecode = get_post_meta( $variation_id, '_federalservicecode', true );
 						$product_desc       = get_post_meta( $variation_id, '_nfe_product_variation_desc', true );
-					}
-					else {
+					} else {
 						$cityservicecode    = get_post_meta( $product_id, '_simple_cityservicecode', true );
 						$federalservicecode = get_post_meta( $product_id, '_simple_federalservicecode', true );
 						$product_desc       = get_post_meta( $product_id, '_simple_nfe_product_desc', true );
@@ -276,80 +277,170 @@ if ( ! class_exists('NFe_Woo') ) :
 				}
 			}
 
-			switch ($field) {
+			switch ( $field ) {
 				case 'code':
-					$output = $cityservicecode ? $cityservicecode : nfe_get_field('nfe_cityservicecode');
+					$output = $cityservicecode ? $cityservicecode : nfe_get_field( 'nfe_cityservicecode' );
 					break;
 
 				case 'fed_code':
-					$output = $federalservicecode ? $federalservicecode : nfe_get_field('nfe_fedservicecode');
+					$output = $federalservicecode ? $federalservicecode : nfe_get_field( 'nfe_fedservicecode' );
 					break;
 
 				case 'desc':
-					$output = $product_desc ? $product_desc : nfe_get_field('nfe_cityservicecode_desc');
+					$output = $product_desc ? $product_desc : nfe_get_field( 'nfe_cityservicecode_desc' );
 					break;
 
 				default:
 					$output = null;
 					break;
 			}
+
 			return $output;
 		}
 
 		/**
-		 * Fetching customer info depending on the person type
+		 * Fetching customer info depending on the person type.
 		 *
-		 * @param  string  $field       Field to fetch info from
-		 * @param  int  $order     		The order ID
-		 * @return string|empty 		Returns the customer info specific to the person type being fetched
+		 * @param string $field Field to fetch info from.
+		 * @param int    $order The order ID.
+		 *
+		 * @return string|empty Returns the customer info specific to the person type being fetched.
 		 */
-		public function check_customer_info( $field = '', $order ) {
-			if ( empty($field) ) {
+		protected function check_customer_info( $field = '', $order ) {
+
+			if ( empty( $field ) ) {
 				return;
 			}
 
-			// Customer Person Type
+			// Customer Person Type.
 			(int) $type = get_post_meta( $order, '_billing_persontype', true );
 
-			switch ($field) {
-				case 'number': // Customer ID Number
+			switch ( $field ) {
+				case 'number': // Customer ID Number.
 					if ( $type == 1 || empty($type) ) {
 						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-					}
-					elseif ( $type == 2 || empty($type) || empty($output) ) {
+					} elseif ( $type == 2 || empty($type) || empty($output) ) {
 						$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 					}
 					break;
 
-				case 'name': // Customer Name/Razão Social
+				case 'name': // Customer Name/Razão Social.
 					if ( $type == 1 || empty($type) ) {
 						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-					}
-					elseif ( $type == 2 || empty($type) || empty($output) ) {
+					} elseif ( $type == 2 || empty($type) || empty($output) ) {
 						$output = get_post_meta( $order, '_billing_company', true );
 					}
 					break;
 
-				case 'type': // Customer Type
-					if ( $type == 1 || empty($type) ) {
-						$output = __('Customers', 'woo-nfe');
+				case 'type': // Customer Type.
+					if ( 1 === $type || empty( $type ) ) {
+						$output = __( 'Customers', 'woo-nfe' );
+					} elseif ( 2 === $type ) {
+						$output = __( 'Company', 'woo-nfe' );
 					}
-					elseif ( $type == 2 ) {
-						$output = __('Company', 'woo-nfe');
-					}
+					break;
+
+				case 'city':
+					$output = get_post_meta( $order, '_billing_city', true );
+					$output ?: $this->get_company_info( 'city' );
+					break;
+
+				case 'state':
+					$output = get_post_meta( $order, '_billing_state', true );
+					$output ?: $this->get_company_info( 'state' );
+					break;
+
+				case 'district':
+					$output = get_post_meta( $order, '_billing_neighborhood', true );
+					$output ?: $this->get_company_info( 'district', __( 'Not Informed', 'woo-nfe' ) );
+					break;
+
+				case 'address_number':
+					$output = get_post_meta( $order, '_billing_number', true );
+					$output ?: $this->get_company_info( 'address', __( 'SN', 'woo-nfe' ) );
+					break;
+
+				case 'street':
+					$output = get_post_meta( $order, '_billing_address_1', true );
+					$output ?: $this->get_company_info( 'street', __( 'Street Not informed', 'woo-nfe' ) );
+					break;
+
+				case 'cep':
+					$output = get_post_meta( $order, '_billing_postcode', true );
+					$output ?: $this->get_company_info( 'cep', __( '00000-000', 'woo-nfe' ) );
 					break;
 
 				default:
 					$output = null;
 					break;
 			}
+
 			return $output;
+		}
+
+		/**
+		 * Get current company info.
+		 *
+		 * @param  string $field    Field.
+		 * @param  string $fallback Field fallback. Default: false.
+		 *
+		 * @return string
+		 */
+		protected function get_company_info( $field, $fallback = false ) {
+
+			// If address is required, return empty.
+			if ( nfe_require_address() ) {
+				return null;
+			}
+
+			// Return fallback early for some fields.
+			if ( $fallback ) {
+				return $fallback;
+			}
+
+			// Get info.
+			$key        = nfe_get_field( 'api_key' );
+			$company_id = nfe_get_field( 'choose_company' );
+
+			$url        = 'https://open.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
+			$response   = wp_remote_get( esc_url_raw( $url ) );
+
+			if ( is_wp_error( $response ) ) {
+				return;
+			}
+
+			$company = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			return $company['companies']['address'][ $field ];
+		}
+
+		/**
+		 * Remove Ponto Traco.
+		 *
+		 * @param  string $string Content to remove.
+		 * @return string
+		 */
+		protected function removepontotraco( $string ) {
+			return ltrim( preg_replace( '/[^0-9]/', '', $string ), '0' );
+		}
+
+		/**
+		 * Remove Caracter.
+		 *
+		 * @param  string $string Content to remove.
+		 * @return string
+		 */
+		protected function remover_caracter( $string ) {
+			$string = preg_replace( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities( $string, ENT_COMPAT, 'UTF-8' ) );
+			$string = preg_replace( '/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/', '', $string );
+
+			return $string;
 		}
 
 		/**
 		 * CPF Converter
 		 *
-		 * @param  string $cpf
+		 * @param  string $cpf CPF.
 		 * @return void
 		 */
 		public function cpf( $cpf ) {
@@ -358,7 +449,7 @@ if ( ! class_exists('NFe_Woo') ) :
 			}
 
 			$cpf = $this->clear( $cpf );
-			$cpf = $this->mask($cpf,'###.###.###-##');
+			$cpf = $this->mask( $cpf,'###.###.###-##' );
 
 			return $cpf;
 		}
@@ -366,7 +457,7 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * CNPJ Converter
 		 *
-		 * @param  $cnpj
+		 * @param  string $cnpj CNPJ.
 		 * @return string
 		 */
 		public function cnpj( $cnpj ) {
@@ -375,15 +466,15 @@ if ( ! class_exists('NFe_Woo') ) :
 			}
 
 			$cnpj = $this->clear( $cnpj );
-			$cnpj = $this->mask($cnpj,'##.###.###/####-##');
+			$cnpj = $this->mask( $cnpj,'##.###.###/####-##' );
 
 			return $cnpj;
 		}
 
 		/**
-		 * CEP Converter
+		 * CEP Converter.
 		 *
-		 * @param  $cep
+		 * @param  string $cep Content.
 		 * @return string
 		 */
 		public function cep( $cep ) {
@@ -392,7 +483,7 @@ if ( ! class_exists('NFe_Woo') ) :
 			}
 
 			$cep = $this->clear( $cep );
-			$cep = $this->mask($cep,'#####-###');
+			$cep = $this->mask( $cep, '#####-###' );
 
 			return $cep;
 		}
@@ -400,11 +491,11 @@ if ( ! class_exists('NFe_Woo') ) :
 		/**
 		 * Clears
 		 *
-		 * @param  string $string
+		 * @param string $string Content.
 		 * @return string
 		 */
 		public function clear( $string ) {
-			$string = str_replace( array(',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'), '', $string );
+			$string = str_replace( array( ',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€' ), '', $string );
 
 			return $string;
 		}
@@ -573,18 +664,18 @@ if ( ! class_exists('NFe_Woo') ) :
 		}
 
 		/**
-	     * Logging method.
-	     *
-	     * @param string $message
-	     */
-	    public static function logger( $message ) {
-	        if ( nfe_get_field('debug') == 'yes' ) {
-	            if ( empty( self::$logger ) ) {
-	                self::$logger = new WC_Logger();
-	            }
-	            self::$logger->add( 'nfe_api', $message );
-	        }
-	    }
+		 * Logging method.
+		 *
+		 * @param string $message Message.
+		 */
+		public static function logger( $message ) {
+			if ( nfe_get_field( 'debug' ) === 'yes' ) {
+				if ( empty( self::$logger ) ) {
+					self::$logger = new WC_Logger();
+				}
+				self::$logger->add( 'nfe_api', $message );
+			}
+		}
 	}
 
 	/**

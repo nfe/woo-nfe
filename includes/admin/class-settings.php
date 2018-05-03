@@ -211,7 +211,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 			$companies = NFe_Company::search();
 
 			// Bail early with error message.
-			if ( isset( $companies->message ) || empty( $companies ) || empty( $companies['companies'] ) ) {
+			if ( ! empty( $companies->message ) || empty( $companies ) || empty( $companies['companies'] ) ) {
 				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
 				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
 
