@@ -36,6 +36,7 @@ function nfe_get_field( $value = '' ) {
  */
 function nfe_order_address_filled( $order_id ) {
 
+	// If address is not required, go along.
 	if ( false === nfe_require_address() ) {
 		return true;
 	}
@@ -140,7 +141,7 @@ function nfe_processing_status() {
 }
 
 /**
- * Does an address is requried?
+ * Does an address is required?
  *
  * @return bool
  */
@@ -148,12 +149,12 @@ function nfe_require_address() {
 	$retval = nfe_get_field( 'require_address' );
 
 	if ( empty( $retval ) ) {
-		return false;
-	}
-
-	if ( 'yes' === $retval ) {
 		return true;
 	}
 
-	return false;
+	if ( 'no' === $retval ) {
+		return false;
+	}
+
+	return true;
 }

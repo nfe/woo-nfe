@@ -6,10 +6,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * NFe Receipt Issued Email
  *
- * @class 	WC_NFe_Email_Receipt_Issued
- * @author 	NFe.io
- * @package	WooCommerce_NFe/Class/Emails
- * @version	1.0.1
+ * @class   WC_NFe_Email_Receipt_Issued
+ * @author  NFe.io
+ * @package WooCommerce_NFe/Class/Emails
+ * @version 1.0.1
  * @extends WC_Email
  */
 class WC_NFe_Email_Receipt_Issued extends WC_Email {
@@ -110,7 +110,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 				'email_heading' => $this->get_heading(),
 				'sent_to_admin' => false,
 				'plain_text'    => true,
-				'email'			=> $this
+				'email'         => $this,
 			),
 			'',
 			$this->template_base

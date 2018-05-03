@@ -3,7 +3,7 @@ Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
 Requires at least: 4.7
 Tested up to: 4.9.4
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,3 +53,8 @@ Thanks in advance for your help on any translation efforts!
 = 1.0.4 =
 * Fix support to issue invoices without all address fields filled
 * Fix trigger to issue invoices on specific status
+
+= 1.2.5 =
+* Added option to require an address when issuing an invoice.
+* Fixed a bug where zero orders could be issued.
+* Added notice in the order list when a order is zeroed.

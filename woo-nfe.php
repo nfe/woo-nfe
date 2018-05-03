@@ -11,7 +11,7 @@
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.2.4
+ * Version:           1.2.5
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -111,13 +111,13 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			}
 
 			// Admin.
-			require( $this->includes_dir . 'nfe-functions.php'           );
-			require( $this->includes_dir . 'admin/class-settings.php'    );
-			require( $this->includes_dir . 'admin/class-ajax.php'        );
-			require( $this->includes_dir . 'admin/class-admin.php'       );
-			require( $this->includes_dir . 'admin/class-api.php'         );
-			require( $this->includes_dir . 'admin/class-emails.php'      );
-			require( $this->includes_dir . 'admin/class-webhook.php' 	 );
+			require( $this->includes_dir . 'nfe-functions.php' );
+			require( $this->includes_dir . 'admin/class-settings.php' );
+			require( $this->includes_dir . 'admin/class-ajax.php' );
+			require( $this->includes_dir . 'admin/class-admin.php' );
+			require( $this->includes_dir . 'admin/class-api.php' );
+			require( $this->includes_dir . 'admin/class-emails.php' );
+			require( $this->includes_dir . 'admin/class-webhook.php' );
 
 			// Front-end.
 			require( $this->includes_dir . 'frontend/class-frontend.php' );
@@ -239,7 +239,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		protected function version_check( $version = '3.3.3' ) {
 			if ( class_exists( 'WooCommerce' ) ) {
 				global $woocommerce;
-				if ( version_compare( $woocommerce->version, $version, ">=" ) ) {
+				if ( version_compare( $woocommerce->version, $version, '>=' ) ) {
 					return true;
 				}
 			}
