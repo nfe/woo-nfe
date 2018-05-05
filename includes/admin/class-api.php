@@ -46,7 +46,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Issue a NFe invoice.
 		 *
-		 * @param array  $order_ids Orders to issue the NFe.
+		 * @param array $order_ids Orders to issue the NFe.
 		 *
 		 * @return bool|string
 		 */
@@ -114,7 +114,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Downloads the invoice(s).
 		 *
-		 * @throws Exception
+		 * @throws Exception Exception.
 		 *
 		 * @param array $order_ids Array of order ids.
 		 * @return string            Pdf url from NFe.io
@@ -494,23 +494,23 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Masking
 		 *
-		 * @param  $val  Value that's gonna be masked
-		 * @param  $mask Mask pattern
+		 * @param string $val  Value that's gonna be masked.
+		 * @param string $mask Mask pattern.
 		 * @return string
 		 */
 		public function mask( $val, $mask ) {
-		   $maskared = '';
-		   $k 		 = 0;
+			$maskared = '';
+			$k = 0;
+			$mark = strlen( $mask );
 
-			for( $i = 0; $i <= strlen($mask) - 1; $i++ ) {
-				if ( $mask[$i] == '#' ) {
-					if ( isset($val[$k]) ) {
-					   $maskared .= $val[$k++];
+			for ( $i = 0; $i <= $mark - 1; $i++ ) {
+				if ( '#' === $mask[ $i ] ) {
+					if ( isset( $val[ $k ] ) ) {
+						$maskared .= $val[ $k++ ];
 					}
-
-			   } elseif ( isset($mask[$i]) ) {
-					$maskared .= $mask[$i];
-			   }
+				} elseif ( isset( $mask[ $i ] ) ) {
+					$maskared .= $mask[ $i ];
+				}
 			}
 
 			return $maskared;
