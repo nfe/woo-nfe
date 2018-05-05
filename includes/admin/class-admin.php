@@ -526,6 +526,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		public function display_order_data_preview_in_admin( $order ) {
 			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
+
 			?>
 			<h4>
 				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?></strong>
@@ -612,6 +613,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
 
 			if ( isset( $fields ) ) {
+
+				if ( empty( $nfe ) ) {
+					return $fields;
+				}
+
 				$fields['nfe'] = [
 					'status'     => ! empty( $nfe['status'] ) ? $nfe['status'] : '',
 					'number'     => ! empty( $nfe['number'] ) ? $nfe['number'] : '',
