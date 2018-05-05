@@ -51,7 +51,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @return bool|string
 		 */
 		public function issue_invoice( $order_ids = array() ) {
-			$key               = nfe_get_field( 'api_key' );
+			$key               = $this->get_key();
 			$company_id        = nfe_get_field( 'choose_company' );
 			$issue_when_status = nfe_get_field( 'issue_when_status' );
 
@@ -116,11 +116,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 *
 		 * @throws Exception
 		 *
-		 * @param array  $order_ids Array of order ids.
+		 * @param array $order_ids Array of order ids.
 		 * @return string            Pdf url from NFe.io
 		 */
 		public function download_pdf_invoice( $order_ids = array() ) {
-			$key        = nfe_get_field( 'api_key' );
+			$key        = $this->get_key();
 			$company_id = nfe_get_field( 'choose_company' );
 
 			NFe::setApiKey( $key );
@@ -148,40 +148,42 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Preparing data to send to NFe API
+		 * Preparing data to send to NFe.io API.
 		 *
 		 * @param int $order_id Order ID.
 		 *
-		 * @return array Array with the order_id information to issue the invoice
+		 * @return array Information to issue the invoice.
 		 */
 		public function order_info( $order_id ) {
 
-			$total = nfe_wc_get_order( $order_id );
+			$order = nfe_wc_get_order( $order_id );
+
+			$address = array(
+				'postalCode' => $this->cep( $this->check_customer_info( 'cep', $order_id ) ),
+				'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
+				'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
+				'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
+				'district' => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
+				'country' => $this->remover_caracter( $this->billing_country( $order_id ) ),
+				'state' => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
+				'city' => [
+					'code' => $this->ibge_code( $order_id ),
+					'name' => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
+				],
+			);
 
 			$borrower = array(
-				'name' => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
-				'email' => get_post_meta( $order_id, '_billing_email', true ),
+				'name'             => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
+				'email'            => get_post_meta( $order_id, '_billing_email', true ),
 				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
-				'address' => array(
-					'postalCode' => $this->cep( $this->check_customer_info( 'cep', $order_id ) ),
-					'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
-					'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
-					'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
-					'district' => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
-					'country' => $this->remover_caracter( $this->billing_country( $order_id ) ),
-					'state' => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
-					'city' => array(
-						'code' => $this->ibge_code( $order_id ),
-						'name' => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
-					),
-				),
+				'address'          => ( false === nfe_require_address() ) ? null : $address,
 			);
 
 			$data = array(
 				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
 				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
 				'description'        => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
-				'servicesAmount'     => $total->get_total(),
+				'servicesAmount'     => $order->get_total(),
 				'borrower'           => $borrower,
 			);
 
@@ -225,7 +227,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				return;
 			}
 
-			$key = nfe_get_field( 'api_key' );
+			$key = $this->get_key();
 			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
 
 			if ( empty( $post_code ) ) {
@@ -252,7 +254,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 *
 		 * @return string
 		 */
-		public function city_service_info( $field = '', $post_id ) {
+		protected function city_service_info( $field = '', $post_id ) {
 			if ( empty( $field ) ) {
 				return;
 			}
@@ -313,21 +315,22 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			}
 
 			// Customer Person Type.
-			(int) $type = get_post_meta( $order, '_billing_persontype', true );
+			$type = get_post_meta( $order, '_billing_persontype', true );
+			$type = absint( $type );
 
 			switch ( $field ) {
 				case 'number': // Customer ID Number.
-					if ( $type == 1 || empty($type) ) {
+					if ( empty( $type ) || 1 === $type ) {
 						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-					} elseif ( $type == 2 || empty($type) || empty($output) ) {
+					} elseif ( empty( $type ) || 2 === $type || empty( $output ) ) {
 						$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 					}
 					break;
 
 				case 'name': // Customer Name/Razão Social.
-					if ( $type == 1 || empty($type) ) {
+					if ( 1 === $type || empty( $type ) ) {
 						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-					} elseif ( $type == 2 || empty($type) || empty($output) ) {
+					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
 						$output = get_post_meta( $order, '_billing_company', true );
 					}
 					break;
@@ -352,22 +355,21 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 				case 'district':
 					$output = get_post_meta( $order, '_billing_neighborhood', true );
-					$output ?: $this->get_company_info( 'district', __( 'Not Informed', 'woo-nfe' ) );
+					$output ?: $this->get_company_info( 'district' );
 					break;
 
 				case 'address_number':
 					$output = get_post_meta( $order, '_billing_number', true );
-					$output ?: $this->get_company_info( 'address', __( 'SN', 'woo-nfe' ) );
 					break;
 
 				case 'street':
 					$output = get_post_meta( $order, '_billing_address_1', true );
-					$output ?: $this->get_company_info( 'street', __( 'Street Not informed', 'woo-nfe' ) );
+					$output ?: $this->get_company_info( 'street' );
 					break;
 
 				case 'cep':
 					$output = get_post_meta( $order, '_billing_postcode', true );
-					$output ?: $this->get_company_info( 'cep', __( '00000-000', 'woo-nfe' ) );
+					$output ?: $this->get_company_info( 'cep' );
 					break;
 
 				default:
@@ -381,25 +383,14 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Get current company info.
 		 *
-		 * @param  string $field    Field.
-		 * @param  string $fallback Field fallback. Default: false.
+		 * @param  string $field Field.
 		 *
 		 * @return string
 		 */
-		protected function get_company_info( $field, $fallback = false ) {
-
-			// If address is required, return empty.
-			if ( nfe_require_address() ) {
-				return null;
-			}
-
-			// Return fallback early for some fields.
-			if ( $fallback ) {
-				return $fallback;
-			}
+		protected function get_company_info( $field ) {
 
 			// Get info.
-			$key        = nfe_get_field( 'api_key' );
+			$key        = $this->get_key();
 			$company_id = nfe_get_field( 'choose_company' );
 
 			$url        = 'https://open.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
@@ -523,6 +514,15 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			}
 
 			return $maskared;
+		}
+
+		/**
+		 * Get NFe API key.
+		 *
+		 * @return string
+		 */
+		protected function get_key() {
+			return nfe_get_field( 'api_key' );
 		}
 
 		/**
