@@ -159,7 +159,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$order = nfe_wc_get_order( $order_id );
 
 			$address = array(
-				'postalCode' => $this->cep( $this->check_customer_info( 'cep', $order_id ) ),
+				'postalCode' => $this->check_customer_info( 'cep', $order_id ),
 				'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
 				'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
 				'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
@@ -176,7 +176,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				'name'             => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
 				'email'            => get_post_meta( $order_id, '_billing_email', true ),
 				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
-				'address'          => ( false === nfe_require_address() ) ? null : $address,
+				'address'          => $address,
 			);
 
 			$data = array(
@@ -231,7 +231,14 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
 
 			if ( empty( $post_code ) ) {
-				return;
+
+				if ( false === nfe_require_address() ) {
+					$city = $this->get_company_info( 'code' );
+
+					return $city['code'];
+				}
+
+				return null;
 			}
 
 			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $key;
@@ -345,31 +352,56 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 				case 'city':
 					$output = get_post_meta( $order, '_billing_city', true );
-					$output ?: $this->get_company_info( 'city' );
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'city' );
+					}
 					break;
 
 				case 'state':
 					$output = get_post_meta( $order, '_billing_state', true );
-					$output ?: $this->get_company_info( 'state' );
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'state' );
+					}
 					break;
 
 				case 'district':
 					$output = get_post_meta( $order, '_billing_neighborhood', true );
-					$output ?: $this->get_company_info( 'district' );
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'district' );
+					}
 					break;
 
 				case 'address_number':
 					$output = get_post_meta( $order, '_billing_number', true );
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'number' );
+					}
 					break;
 
 				case 'street':
-					$output = get_post_meta( $order, '_billing_address_1', true );
-					$output ?: $this->get_company_info( 'street' );
+					$output = get_post_meta( $order, '_billing_address_1', true );;
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'street' );
+					}
 					break;
 
 				case 'cep':
 					$output = get_post_meta( $order, '_billing_postcode', true );
-					$output ?: $this->get_company_info( 'cep' );
+					if ( ! empty( $output ) ) {
+						$output = $output;
+					} elseif ( false === nfe_require_address() ) {
+						$output = $this->get_company_info( 'postalCode' );
+					}
 					break;
 
 				default:
@@ -393,7 +425,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$key        = $this->get_key();
 			$company_id = nfe_get_field( 'choose_company' );
 
-			$url        = 'https://open.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
+			$url        = 'https://api.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
 			$response   = wp_remote_get( esc_url_raw( $url ) );
 
 			if ( is_wp_error( $response ) ) {
@@ -401,6 +433,14 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			}
 
 			$company = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( 'city' === $field ) {
+				return  $company['companies']['address']['city']['name'];
+			}
+
+			if ( 'code' === $field ) {
+				return $company['companies']['address']['city']['code'];
+			}
 
 			return $company['companies']['address'][ $field ];
 		}
