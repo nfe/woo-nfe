@@ -35,10 +35,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'woocommerce_admin_order_preview_start', [ $this, 'nfe_admin_order_preview' ] );
 			add_filter( 'woocommerce_admin_order_preview_get_order_details', [ $this, 'nfe_admin_order_preview_details' ], 20, 2 );
 
-			// Filters
 			add_filter( 'woocommerce_product_data_tabs',                				array( $this, 'product_data_tab' ) );
-
-			// Actions
 			add_action( 'woocommerce_product_after_variable_attributes', 				array( $this, 'variation_fields' ), 10, 3 );
 			add_action( 'woocommerce_save_product_variation',            				array( $this, 'save_variations_fields' ), 10, 2 );
 			add_action( 'woocommerce_product_data_panels',               				array( $this, 'product_data_fields' ) );
@@ -47,17 +44,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			add_action( 'admin_enqueue_scripts',                 						array( $this, 'register_enqueue_css' ) );
 			add_action( 'woocommerce_after_dashboard_status_widget', [ $this, 'nfe_status_widget_order_rows' ] );
 
-			/*
-			Woo Commmerce status triggers
-
-			- woocommerce_order_status_pending
-			- woocommerce_order_status_failed
-			- woocommerce_order_status_on-hold
-			- woocommerce_order_status_processing
-			- woocommerce_order_status_completed
-			- woocommerce_order_status_refunded
-			- woocommerce_order_status_cancelled
-			*/
+			// NFe issue triggers.
 			add_action( 'woocommerce_order_status_pending', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_on-hold', 					array( $this, 'issue_trigger' ) );
 			add_action( 'woocommerce_order_status_processing', 					array( $this, 'issue_trigger' ) );
@@ -95,7 +82,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return;
 			}
 
-			// Checking if the address of order is filled.
+			// Checking if the address is required and if the order address was filled.
 			if ( ! nfe_order_address_filled( $order_id ) ) {
 				return;
 			}
@@ -187,7 +174,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		/**
 		 * Adds NFe custom tab
 		 *
-		 * @param array $product_data_tabs Array of product tabs
+		 * @param array $product_data_tabs Array of product tabs.
 		 * @return array Array with product data tabs
 		 */
 		public function product_data_tab( $product_data_tabs ) {
@@ -302,29 +289,24 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * Save the NFe fields for product variations.
 		 *
 		 * @param  int $post_id Product ID.
-		 *
 		 * @return void
 		 */
 		public function save_variations_fields( $post_id ) {
 
 			// Text Field - City Service Code.
-			update_post_meta( $post_id, '_cityservicecode',
-				esc_attr( $_POST['_cityservicecode'][ intval( $post_id ) ] ) );
+			update_post_meta( $post_id, '_cityservicecode', esc_attr( $_POST['_cityservicecode'][ intval( $post_id ) ] ) );
 
 			// Text Field - Federal Service Code.
-			update_post_meta( $post_id, '_federalservicecode',
-				esc_attr( $_POST['_federalservicecode'][ intval( $post_id ) ] ) );
+			update_post_meta( $post_id, '_federalservicecode', esc_attr( $_POST['_federalservicecode'][ intval( $post_id ) ] ) );
 
 			// TextArea Field - Product Variation Description.
-			update_post_meta( $post_id, '_nfe_product_variation_desc',
-				esc_html( $_POST['_nfe_product_variation_desc'][ intval( $post_id ) ] ) );
+			update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $_POST['_nfe_product_variation_desc'][ intval( $post_id ) ] ) );
 		}
 
 		/**
 		 * Adds the Download and Issue actions to the actions list in the order edit page.
 		 *
 		 * @param array $actions Order actions array to display.
-		 *
 		 * @return array List of actions.
 		 */
 		public function download_and_issue_actions( $actions ) {
@@ -335,14 +317,19 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 
 			$order_id = $theorder->get_id();
+
+			if ( ! $order_id ) {
+				return;
+			}
+
 			$download = get_post_meta( $order_id, 'nfe_issued', true );
 
-			// Load the download actin if there is a issue to download.
+			// Load the download action if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
 			}
 
-			if ( $this->issue_helper( $download, $theorder ) ) {
+			if ( $this->should_we_issue( $download, $theorder ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 			}
 
@@ -350,40 +337,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		}
 
 		/**
-		 * Issue Helper Method.
-		 *
-		 * @param  array    $download NFe info.
-		 * @param  WC_Order $order    Order.
-		 *
-		 * @return bool
-		 */
-		protected function issue_helper( $download, $order ) {
-
-			// Bail if there is an ID.
-			if ( ! empty( $download['id'] ) ) {
-				return false;
-			}
-
-			// Bail for zeroed order.
-			if ( '0.00' === $order->get_total() ) {
-				return false;
-			}
-
-			// Bail for these stati.
-			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
-				return false;
-			}
-
-			// Bail if there is no address.
-			if ( ! nfe_order_address_filled( $order->get_id() ) ) {
-				return false;
-			}
-
-			return true;
-		}
-
-		/**
-		 * NFe receipt downloading actoin.
+		 * NFe receipt downloading action.
 		 *
 		 * @param  WC_Order $order Order object.
 		 * @return void
@@ -434,6 +388,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return void
 		 */
 		public function order_status_column_content( $column ) {
+
 			// Get information.
 			$order      = nfe_wc_get_order( get_the_ID() );
 			$order_id   = $order->get_id();
@@ -526,7 +481,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		public function display_order_data_preview_in_admin( $order ) {
 			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
-
 			?>
 			<h4>
 				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?></strong>
@@ -566,37 +520,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				</p>
 			</div>
 		<?php
-		}
-
-		/**
-		 * Inserts a new key/value after the key in the array.
-		 *
-		 * @param string $needle    The array key to insert the element after.
-		 * @param array  $haystack  An array to insert the element into.
-		 * @param string $new_key   The key to insert.
-		 * @param string $new_value An value to insert.
-		 *
-		 * @return The new array if the $needle key exists, otherwise an unmodified $haystack
-		 */
-		protected function array_insert_after( $needle, $haystack, $new_key, $new_value ) {
-
-			if ( array_key_exists( $needle, $haystack ) ) {
-
-				$new_array = array();
-
-				foreach ( $haystack as $key => $value ) {
-
-					$new_array[ $key ] = $value;
-
-					if ( $key === $needle ) {
-						$new_array[ $new_key ] = $new_value;
-					}
-				}
-
-				return $new_array;
-			}
-
-			return $haystack;
 		}
 
 		/**
@@ -676,6 +599,70 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		public function register_enqueue_css() {
 			wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
 			wp_enqueue_style( 'nfe-woo-admin-css' );
+		}
+
+		/**
+		 * Inserts a new key/value after the key in the array.
+		 *
+		 * @param string $needle    The array key to insert the element after.
+		 * @param array  $haystack  An array to insert the element into.
+		 * @param string $new_key   The key to insert.
+		 * @param string $new_value An value to insert.
+		 *
+		 * @return The new array if the $needle key exists, otherwise an unmodified $haystack
+		 */
+		protected function array_insert_after( $needle, $haystack, $new_key, $new_value ) {
+
+			if ( array_key_exists( $needle, $haystack ) ) {
+
+				$new_array = array();
+
+				foreach ( $haystack as $key => $value ) {
+
+					$new_array[ $key ] = $value;
+
+					if ( $key === $needle ) {
+						$new_array[ $new_key ] = $new_value;
+					}
+				}
+
+				return $new_array;
+			}
+
+			return $haystack;
+		}
+
+		/**
+		 * Issue Helper Method.
+		 *
+		 * @param  array    $download NFe info.
+		 * @param  WC_Order $order    Order.
+		 *
+		 * @return bool
+		 */
+		protected function should_we_issue( $download, $order ) {
+
+			// Bail if there is an ID.
+			if ( ! empty( $download['id'] ) ) {
+				return false;
+			}
+
+			// Bail for zeroed order.
+			if ( '0.00' === $order->get_total() ) {
+				return false;
+			}
+
+			// Bail for these stati.
+			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
+				return false;
+			}
+
+			// Bail if there is no address.
+			if ( ! nfe_order_address_filled( $order->get_id() ) ) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 

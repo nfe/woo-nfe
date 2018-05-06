@@ -26,7 +26,7 @@ class WC_NFe_Ajax {
 	 * @return void
 	 */
 	public static function front_issue() {
-		// Nothing to do
+		// Nothing to do.
 		if ( ! isset( $_GET['nfe_issue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
 			return;
 		}
@@ -135,7 +135,7 @@ class WC_NFe_Ajax {
 		header( 'Content-Disposition: attachment; filename="' . $name . '"' );
 		header( 'Content-Transfer-Encoding: binary' );
 		header( 'Accept-Ranges: bytes' );
-		header( 'Content-Length: '. $size );
+		header( 'Content-Length: ' . $size );
 
 		// The three lines below basically make the	download_pdf non-cacheable.
 		header( 'Cache-control: private' );
@@ -166,13 +166,15 @@ class WC_NFe_Ajax {
 		// output the file itself.
 		$chunksize  = 1 * ( 1024 * 1024 );
 		$bytes_send = 0;
-		if ( $file = fopen( $file, 'r' ) ) {
+		$file       = fopen( $file, 'r' );
+
+		if ( $file ) {
 			if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
 				fseek( $file, $range );
 			}
 
-			while ( ! feof($file) && ! connection_aborted() && ( $bytes_send < $new_length ) ) {
-				$buffer = fread($file, $chunksize);
+			while ( ! feof( $file ) && ! connection_aborted() && ( $bytes_send < $new_length ) ) {
+				$buffer = fread( $file, $chunksize );
 				echo($buffer);
 				flush();
 				$bytes_send += strlen( $buffer );

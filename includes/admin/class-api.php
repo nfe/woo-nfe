@@ -52,7 +52,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 */
 		public function issue_invoice( $order_ids = array() ) {
 			$key               = $this->get_key();
-			$company_id        = nfe_get_field( 'choose_company' );
+			$company_id        = $this->get_company();
 			$issue_when_status = nfe_get_field( 'issue_when_status' );
 
 			NFe::setApiKey( $key );
@@ -76,7 +76,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 				$datainvoice = $this->order_info( $order_id );
 
-				// Check if there was a problem on fetch the city code from IBGE using the postal code.
+				// Check if there was a problem while fetching the city code from IBGE.
 				if ( empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
@@ -112,7 +112,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Downloads the invoice(s).
+		 * Download the invoice(s).
 		 *
 		 * @throws Exception Exception.
 		 *
@@ -121,7 +121,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 */
 		public function download_pdf_invoice( $order_ids = array() ) {
 			$key        = $this->get_key();
-			$company_id = nfe_get_field( 'choose_company' );
+			$company_id = $this->get_company();
 
 			NFe::setApiKey( $key );
 
@@ -156,9 +156,10 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 */
 		public function order_info( $order_id ) {
 
+			// Get order object.
 			$order = nfe_wc_get_order( $order_id );
 
-			$address = array(
+			$address = [
 				'postalCode' => $this->check_customer_info( 'cep', $order_id ),
 				'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
 				'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
@@ -170,7 +171,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					'code' => $this->ibge_code( $order_id ),
 					'name' => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
 				],
-			);
+			];
 
 			$borrower = array(
 				'name'             => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
@@ -194,9 +195,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Hack to bring support to Brazilian ISO code (Ex.: BRA instead of BR)
 		 *
-		 * @param int $order_id Product ID.
-		 *
-		 * @return string
+		 * @param int $order_id Order ID.
+		 * @return string|null
 		 */
 		protected function billing_country( $order_id ) {
 			$country = get_post_meta( $order_id, '_billing_country', true );
@@ -207,9 +207,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 			$countries = $this->country_iso_codes();
 
+			$c = null;
 			foreach ( $countries as $iso3 => $iso2 ) {
 				if ( $country === $iso2 ) {
 					$c = $iso3;
+					break;
 				}
 			}
 
@@ -217,25 +219,19 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Fetches the IBGE Code
+		 * Fetche the IBGE Code.
 		 *
 		 * @param  int $order_id Order ID.
 		 * @return string
 		 */
 		protected function ibge_code( $order_id ) {
-			if ( empty( $order_id ) ) {
-				return;
-			}
-
-			$key = $this->get_key();
+			$key       = $this->get_key();
 			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
 
 			if ( empty( $post_code ) ) {
 
 				if ( false === nfe_require_address() ) {
-					$city = $this->get_company_info( 'code' );
-
-					return $city['code'];
+					return $this->get_company_info( 'code' );
 				}
 
 				return null;
@@ -256,17 +252,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * City Service Information (City and Federal Code, and Description).
 		 *
-		 * @param string $field   The field info being fetched.
-		 * @param int    $post_id Post ID.
+		 * @param string $field    The field info being fetched.
+		 * @param int    $order_id Order ID.
 		 *
 		 * @return string
 		 */
-		protected function city_service_info( $field = '', $post_id ) {
+		protected function city_service_info( $field = '', $order_id ) {
 			if ( empty( $field ) ) {
 				return;
 			}
 
-			$order = nfe_wc_get_order( $post_id );
+			$order = nfe_wc_get_order( $order_id );
 
 			if ( 0 < count( $order->get_items() ) ) {
 				// Variations or Simple Product Info.
@@ -308,7 +304,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Fetching customer info depending on the person type.
+		 * Fetch customer info depending on the person type.
 		 *
 		 * @param string $field Field to fetch info from.
 		 * @param int    $order The order ID.
@@ -322,31 +318,43 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			}
 
 			// Customer Person Type.
-			$type = get_post_meta( $order, '_billing_persontype', true );
-			$type = absint( $type );
+			$type = absint( get_post_meta( $order, '_billing_persontype', true ) );
 
 			switch ( $field ) {
 				case 'number': // Customer ID Number.
-					if ( empty( $type ) || 1 === $type ) {
-						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-					} elseif ( empty( $type ) || 2 === $type || empty( $output ) ) {
-						$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+					if ( empty( $type ) ) {
+						$output = null;
+					} else {
+						if ( 1 === $type ) {
+							$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+						} elseif ( 2 === $type ) {
+							$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+						}
 					}
 					break;
 
 				case 'name': // Customer Name/Razão Social.
-					if ( 1 === $type || empty( $type ) ) {
-						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
-						$output = get_post_meta( $order, '_billing_company', true );
+					if ( empty( $type ) ) {
+						$output = null;
+					} else {
+
+						if ( 1 === $type ) {
+							$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+						} elseif ( 2 === $type ) {
+							$output = get_post_meta( $order, '_billing_company', true );
+						}
 					}
 					break;
 
 				case 'type': // Customer Type.
-					if ( 1 === $type || empty( $type ) ) {
-						$output = __( 'Customers', 'woo-nfe' );
-					} elseif ( 2 === $type ) {
-						$output = __( 'Company', 'woo-nfe' );
+					if ( empty( $type ) ) {
+						$output = null;
+					} else {
+						if ( 1 === $type ) {
+							$output = __( 'Customers', 'woo-nfe' );
+						} elseif ( 2 === $type ) {
+							$output = __( 'Company', 'woo-nfe' );
+						}
 					}
 					break;
 
@@ -387,7 +395,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					break;
 
 				case 'street':
-					$output = get_post_meta( $order, '_billing_address_1', true );;
+					$output = get_post_meta( $order, '_billing_address_1', true );
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -423,7 +431,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 			// Get info.
 			$key        = $this->get_key();
-			$company_id = nfe_get_field( 'choose_company' );
+			$company_id = $this->get_company();
 
 			$url        = 'https://api.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
 			$response   = wp_remote_get( esc_url_raw( $url ) );
@@ -540,8 +548,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 */
 		public function mask( $val, $mask ) {
 			$maskared = '';
-			$k = 0;
-			$mark = strlen( $mask );
+			$k        = 0;
+			$mark     = strlen( $mask );
 
 			for ( $i = 0; $i <= $mark - 1; $i++ ) {
 				if ( '#' === $mask[ $i ] ) {
@@ -566,141 +574,148 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Country 2 and 3 ISO Codes
+		 * Get Company.
+		 *
+		 * @return string
+		 */
+		protected function get_company() {
+			return nfe_get_field( 'choose_company' );
+		}
+
+		/**
+		 * Convertion of country 2 and 3 ISO Codes.
 		 *
 		 * @return array
 		 */
-		private function country_iso_codes() {
-			$iso_codes = array(
-			   'AFG' => 'AF',     // Afghanistan
-			   'ALB' => 'AL',     // Albania
-			   'ARE' => 'AE',     // U.A.E.
-			   'ARG' => 'AR',     // Argentina
-			   'ARM' => 'AM',     // Armenia
-			   'AUS' => 'AU',     // Australia
-			   'AUT' => 'AT',     // Austria
-			   'AZE' => 'AZ',     // Azerbaijan
-			   'BEL' => 'BE',     // Belgium
-			   'BGD' => 'BD',     // Bangladesh
-			   'BGR' => 'BG',     // Bulgaria
-			   'BHR' => 'BH',     // Bahrain
-			   'BIH' => 'BA',     // Bosnia and Herzegovina
-			   'BLR' => 'BY',     // Belarus
-			   'BLZ' => 'BZ',     // Belize
-			   'BOL' => 'BO',     // Bolivia
-			   'BRA' => 'BR',     // Brazil
-			   'BRN' => 'BN',     // Brunei Darussalam
-			   'CAN' => 'CA',     // Canada
-			   'CHE' => 'CH',     // Switzerland
-			   'CHL' => 'CL',     // Chile
-			   'CHN' => 'CN',     // People's Republic of China
-			   'COL' => 'CO',     // Colombia
-			   'CRI' => 'CR',     // Costa Rica
-			   'CZE' => 'CZ',     // Czech Republic
-			   'DEU' => 'DE',     // Germany
-			   'DNK' => 'DK',     // Denmark
-			   'DOM' => 'DO',     // Dominican Republic
-			   'DZA' => 'DZ',     // Algeria
-			   'ECU' => 'EC',     // Ecuador
-			   'EGY' => 'EG',     // Egypt
-			   'ESP' => 'ES',     // Spain
-			   'EST' => 'EE',     // Estonia
-			   'ETH' => 'ET',     // Ethiopia
-			   'FIN' => 'FI',     // Finland
-			   'FRA' => 'FR',     // France
-			   'FRO' => 'FO',     // Faroe Islands
-			   'GBR' => 'GB',     // United Kingdom
-			   'GEO' => 'GE',     // Georgia
-			   'GRC' => 'GR',     // Greece
-			   'GRL' => 'GL',     // Greenland
-			   'GTM' => 'GT',     // Guatemala
-			   'HKG' => 'HK',     // Hong Kong S.A.R.
-			   'HND' => 'HN',     // Honduras
-			   'HRV' => 'HR',     // Croatia
-			   'HUN' => 'HU',     // Hungary
-			   'IDN' => 'ID',     // Indonesia
-			   'IND' => 'IN',     // India
-			   'IRL' => 'IE',     // Ireland
-			   'IRN' => 'IR',     // Iran
-			   'IRQ' => 'IQ',     // Iraq
-			   'ISL' => 'IS',     // Iceland
-			   'ISR' => 'IL',     // Israel
-			   'ITA' => 'IT',     // Italy
-			   'JAM' => 'JM',     // Jamaica
-			   'JOR' => 'JO',     // Jordan
-			   'JPN' => 'JP',     // Japan
-			   'KAZ' => 'KZ',     // Kazakhstan
-			   'KEN' => 'KE',     // Kenya
-			   'KGZ' => 'KG',     // Kyrgyzstan
-			   'KHM' => 'KH',     // Cambodia
-			   'KOR' => 'KR',     // Korea
-			   'KWT' => 'KW',     // Kuwait
-			   'LAO' => 'LA',     // Lao P.D.R.
-			   'LBN' => 'LB',     // Lebanon
-			   'LBY' => 'LY',     // Libya
-			   'LIE' => 'LI',     // Liechtenstein
-			   'LKA' => 'LK',     // Sri Lanka
-			   'LTU' => 'LT',     // Lithuania
-			   'LUX' => 'LU',     // Luxembourg
-			   'LVA' => 'LV',     // Latvia
-			   'MAC' => 'MO',     // Macao S.A.R.
-			   'MAR' => 'MA',     // Morocco
-			   'MCO' => 'MC',     // Principality of Monaco
-			   'MDV' => 'MV',     // Maldives
-			   'MEX' => 'MX',     // Mexico
-			   'MKD' => 'MK',     // Macedonia (FYROM)
-			   'MLT' => 'MT',     // Malta
-			   'MNE' => 'ME',     // Montenegro
-			   'MNG' => 'MN',     // Mongolia
-			   'MYS' => 'MY',     // Malaysia
-			   'NGA' => 'NG',     // Nigeria
-			   'NIC' => 'NI',     // Nicaragua
-			   'NLD' => 'NL',     // Netherlands
-			   'NOR' => 'NO',     // Norway
-			   'NPL' => 'NP',     // Nepal
-			   'NZL' => 'NZ',     // New Zealand
-			   'OMN' => 'OM',     // Oman
-			   'PAK' => 'PK',     // Islamic Republic of Pakistan
-			   'PAN' => 'PA',     // Panama
-			   'PER' => 'PE',     // Peru
-			   'PHL' => 'PH',     // Republic of the Philippines
-			   'POL' => 'PL',     // Poland
-			   'PRI' => 'PR',     // Puerto Rico
-			   'PRT' => 'PT',     // Portugal
-			   'PRY' => 'PY',     // Paraguay
-			   'QAT' => 'QA',     // Qatar
-			   'ROU' => 'RO',     // Romania
-			   'RUS' => 'RU',     // Russia
-			   'RWA' => 'RW',     // Rwanda
-			   'SAU' => 'SA',     // Saudi Arabia
-			   'SCG' => 'CS',     // Serbia and Montenegro (Former)
-			   'SEN' => 'SN',     // Senegal
-			   'SGP' => 'SG',     // Singapore
-			   'SLV' => 'SV',     // El Salvador
-			   'SRB' => 'RS',     // Serbia
-			   'SVK' => 'SK',     // Slovakia
-			   'SVN' => 'SI',     // Slovenia
-			   'SWE' => 'SE',     // Sweden
-			   'SYR' => 'SY',     // Syria
-			   'TAJ' => 'TJ',     // Tajikistan
-			   'THA' => 'TH',     // Thailand
-			   'TKM' => 'TM',     // Turkmenistan
-			   'TTO' => 'TT',     // Trinidad and Tobago
-			   'TUN' => 'TN',     // Tunisia
-			   'TUR' => 'TR',     // Turkey
-			   'TWN' => 'TW',     // Taiwan
-			   'UKR' => 'UA',     // Ukraine
-			   'URY' => 'UY',     // Uruguay
-			   'USA' => 'US',     // United States
-			   'UZB' => 'UZ',     // Uzbekistan
-			   'VEN' => 'VE',     // Bolivarian Republic of Venezuela
-			   'VNM' => 'VN',     // Vietnam
-			   'YEM' => 'YE',     // Yemen
-			   'ZAF' => 'ZA',     // South Africa
-			   'ZWE' => 'ZW',     // Zimbabwe
+		protected function country_iso_codes() {
+			return array(
+				'AFG' => 'AF',     // Afghanistan
+				'ALB' => 'AL',     // Albania
+				'ARE' => 'AE',     // U.A.E.
+				'ARG' => 'AR',     // Argentina
+				'ARM' => 'AM',     // Armenia
+				'AUS' => 'AU',     // Australia
+				'AUT' => 'AT',     // Austria
+				'AZE' => 'AZ',     // Azerbaijan
+				'BEL' => 'BE',     // Belgium
+				'BGD' => 'BD',     // Bangladesh
+				'BGR' => 'BG',     // Bulgaria
+				'BHR' => 'BH',     // Bahrain
+				'BIH' => 'BA',     // Bosnia and Herzegovina
+				'BLR' => 'BY',     // Belarus
+				'BLZ' => 'BZ',     // Belize
+				'BOL' => 'BO',     // Bolivia
+				'BRA' => 'BR',     // Brazil
+				'BRN' => 'BN',     // Brunei Darussalam
+				'CAN' => 'CA',     // Canada
+				'CHE' => 'CH',     // Switzerland
+				'CHL' => 'CL',     // Chile
+				'CHN' => 'CN',     // People's Republic of China
+				'COL' => 'CO',     // Colombia
+				'CRI' => 'CR',     // Costa Rica
+				'CZE' => 'CZ',     // Czech Republic
+				'DEU' => 'DE',     // Germany
+				'DNK' => 'DK',     // Denmark
+				'DOM' => 'DO',     // Dominican Republic
+				'DZA' => 'DZ',     // Algeria
+				'ECU' => 'EC',     // Ecuador
+				'EGY' => 'EG',     // Egypt
+				'ESP' => 'ES',     // Spain
+				'EST' => 'EE',     // Estonia
+				'ETH' => 'ET',     // Ethiopia
+				'FIN' => 'FI',     // Finland
+				'FRA' => 'FR',     // France
+				'FRO' => 'FO',     // Faroe Islands
+				'GBR' => 'GB',     // United Kingdom
+				'GEO' => 'GE',     // Georgia
+				'GRC' => 'GR',     // Greece
+				'GRL' => 'GL',     // Greenland
+				'GTM' => 'GT',     // Guatemala
+				'HKG' => 'HK',     // Hong Kong S.A.R.
+				'HND' => 'HN',     // Honduras
+				'HRV' => 'HR',     // Croatia
+				'HUN' => 'HU',     // Hungary
+				'IDN' => 'ID',     // Indonesia
+				'IND' => 'IN',     // India
+				'IRL' => 'IE',     // Ireland
+				'IRN' => 'IR',     // Iran
+				'IRQ' => 'IQ',     // Iraq
+				'ISL' => 'IS',     // Iceland
+				'ISR' => 'IL',     // Israel
+				'ITA' => 'IT',     // Italy
+				'JAM' => 'JM',     // Jamaica
+				'JOR' => 'JO',     // Jordan
+				'JPN' => 'JP',     // Japan
+				'KAZ' => 'KZ',     // Kazakhstan
+				'KEN' => 'KE',     // Kenya
+				'KGZ' => 'KG',     // Kyrgyzstan
+				'KHM' => 'KH',     // Cambodia
+				'KOR' => 'KR',     // Korea
+				'KWT' => 'KW',     // Kuwait
+				'LAO' => 'LA',     // Lao P.D.R.
+				'LBN' => 'LB',     // Lebanon
+				'LBY' => 'LY',     // Libya
+				'LIE' => 'LI',     // Liechtenstein
+				'LKA' => 'LK',     // Sri Lanka
+				'LTU' => 'LT',     // Lithuania
+				'LUX' => 'LU',     // Luxembourg
+				'LVA' => 'LV',     // Latvia
+				'MAC' => 'MO',     // Macao S.A.R.
+				'MAR' => 'MA',     // Morocco
+				'MCO' => 'MC',     // Principality of Monaco
+				'MDV' => 'MV',     // Maldives
+				'MEX' => 'MX',     // Mexico
+				'MKD' => 'MK',     // Macedonia (FYROM)
+				'MLT' => 'MT',     // Malta
+				'MNE' => 'ME',     // Montenegro
+				'MNG' => 'MN',     // Mongolia
+				'MYS' => 'MY',     // Malaysia
+				'NGA' => 'NG',     // Nigeria
+				'NIC' => 'NI',     // Nicaragua
+				'NLD' => 'NL',     // Netherlands
+				'NOR' => 'NO',     // Norway
+				'NPL' => 'NP',     // Nepal
+				'NZL' => 'NZ',     // New Zealand
+				'OMN' => 'OM',     // Oman
+				'PAK' => 'PK',     // Islamic Republic of Pakistan
+				'PAN' => 'PA',     // Panama
+				'PER' => 'PE',     // Peru
+				'PHL' => 'PH',     // Republic of the Philippines
+				'POL' => 'PL',     // Poland
+				'PRI' => 'PR',     // Puerto Rico
+				'PRT' => 'PT',     // Portugal
+				'PRY' => 'PY',     // Paraguay
+				'QAT' => 'QA',     // Qatar
+				'ROU' => 'RO',     // Romania
+				'RUS' => 'RU',     // Russia
+				'RWA' => 'RW',     // Rwanda
+				'SAU' => 'SA',     // Saudi Arabia
+				'SCG' => 'CS',     // Serbia and Montenegro (Former)
+				'SEN' => 'SN',     // Senegal
+				'SGP' => 'SG',     // Singapore
+				'SLV' => 'SV',     // El Salvador
+				'SRB' => 'RS',     // Serbia
+				'SVK' => 'SK',     // Slovakia
+				'SVN' => 'SI',     // Slovenia
+				'SWE' => 'SE',     // Sweden
+				'SYR' => 'SY',     // Syria
+				'TAJ' => 'TJ',     // Tajikistan
+				'THA' => 'TH',     // Thailand
+				'TKM' => 'TM',     // Turkmenistan
+				'TTO' => 'TT',     // Trinidad and Tobago
+				'TUN' => 'TN',     // Tunisia
+				'TUR' => 'TR',     // Turkey
+				'TWN' => 'TW',     // Taiwan
+				'UKR' => 'UA',     // Ukraine
+				'URY' => 'UY',     // Uruguay
+				'USA' => 'US',     // United States
+				'UZB' => 'UZ',     // Uzbekistan
+				'VEN' => 'VE',     // Bolivarian Republic of Venezuela
+				'VNM' => 'VN',     // Vietnam
+				'YEM' => 'YE',     // Yemen
+				'ZAF' => 'ZA',     // South Africa
+				'ZWE' => 'ZW',     // Zimbabwe
 			);
-
-			return $iso_codes;
 		}
 
 		/**

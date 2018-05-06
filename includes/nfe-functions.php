@@ -29,7 +29,7 @@ function nfe_get_field( $value = '' ) {
 }
 
 /**
- * MAke sure address is required and if all the fields are available.
+ * Make sure address is required and if all the fields are available.
  *
  * @param  int $order_id Order ID.
  * @return bool
@@ -59,6 +59,7 @@ function nfe_order_address_filled( $order_id ) {
 		}
 	}
 
+	// If there is one or more fields missing, flag it.
 	if ( $count >= 1 ) {
 		return false;
 	}
@@ -112,11 +113,10 @@ function nfe_wc_get_order( $order_id ) {
  */
 function nfe_get_order_by_nota_value( $value ) {
 	$query_args = array(
-		'post_type' => 'shop_order',
+		'post_type'              => 'shop_order',
 		'cache_results'          => true,
-		'update_post_meta_cache' => false,
 		'update_post_term_cache' => false,
-		'post_status' => 'any',
+		'post_status'            => 'any',
 		'meta_query'             => array( // WPCS: slow query ok.
 			array(
 				'key' => 'nfe_issued',

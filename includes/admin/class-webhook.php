@@ -105,7 +105,7 @@ class WC_NFe_Webhook_Handler {
 	protected function get_order_by_nota_id( $id ) {
 		$query = nfe_get_order_by_nota_value( $id );
 
-		if ( ! $query->have_posts() ) {
+		if ( ! $query->have_posts() || is_wp_error( $query ) ) {
 			// translators: Order with receipt number.
 			$this->logger( sprintf( __( 'Order with receipt number #%d not found.', 'woo-nfe' ), $id ) );
 
