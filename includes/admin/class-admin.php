@@ -642,18 +642,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		protected function should_we_issue( $download, $order ) {
 
-			// Bail if there is an ID.
-			if ( ! empty( $download['id'] ) ) {
+			// Bail for these stati.
+			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
 				return false;
 			}
 
 			// Bail for zeroed order.
 			if ( '0.00' === $order->get_total() ) {
-				return false;
-			}
-
-			// Bail for these stati.
-			if ( ! empty( $download['status'] ) && ( 'Issued' === $download['status'] || 'Cancelled' === $download['status'] ) ) {
 				return false;
 			}
 
