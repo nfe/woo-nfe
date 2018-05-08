@@ -58,3 +58,5 @@ Thanks in advance for your help on any translation efforts!
 * Added option to require an address when issuing an invoice.
 * Fixed a bug where zero orders could be issued.
 * Added notice in the order list when a order is zeroed.
+* Fix - load_textdomain first from WP_LANG_DIR before load_plugin_textdomain
+* Tweak - Tweak load_plugin_textdomain to be relative - this falls back to WP_LANG_DIR automatically. Can prevent "open_basedir restriction in effect".
