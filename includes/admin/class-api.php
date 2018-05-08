@@ -55,7 +55,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$company_id        = $this->get_company();
 			$issue_when_status = nfe_get_field( 'issue_when_status' );
 
-			NFe::setApiKey( $key );
+			NFe_io::setApiKey( $key );
 
 			foreach ( $order_ids as $order_id ) {
 
@@ -123,7 +123,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$key        = $this->get_key();
 			$company_id = $this->get_company();
 
-			NFe::setApiKey( $key );
+			NFe_io::setApiKey( $key );
 
 			foreach ( $order_ids as $order_id ) {
 				$nfe   = get_post_meta( $order_id, 'nfe_issued', true );

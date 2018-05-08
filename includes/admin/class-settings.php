@@ -206,7 +206,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 				return $company_list;
 			}
 
-			NFe::setApiKey( $key );
+			NFe_io::setApiKey( $key );
 
 			$companies = NFe_Company::search();
 
