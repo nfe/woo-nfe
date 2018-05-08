@@ -154,7 +154,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @since 1.0.0
 		 */
 		private function setup_hooks() {
-			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+
+			// Set up localisation.
+			$this->load_plugin_textdomain();
 
 			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=woo-nfe' );
 			if ( $this->version_check( '2.1' ) ) {
@@ -172,6 +174,24 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			// Filters.
 			add_filter( 'woocommerce_integrations',                array( $this, 'nfe_integration' ) );
 			add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
+		}
+
+		/**
+		 * Load Localisation files.
+		 *
+		 * Note: the first-loaded translation file overrides any following ones if the same translation is present.
+		 *
+		 * Locales found in:
+		 *      - WP_LANG_DIR/woo-nfe/woo-nfe-LOCALE.mo
+		 *      - WP_LANG_DIR/plugins/woo-nfe-LOCALE.mo
+		 */
+		public function load_plugin_textdomain() {
+			$locale = is_admin() && function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
+			$locale = apply_filters( 'plugin_locale', $locale, 'woo-nfe' );
+
+			unload_textdomain( 'woo-nfe' );
+			load_textdomain( 'woo-nfe', WP_LANG_DIR . '/woo-nfe/woo-nfe-' . $locale . '.mo' );
+			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		}
 
 		/**

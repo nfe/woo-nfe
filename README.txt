@@ -62,3 +62,5 @@ Thanks in advance for your help on any translation efforts!
 * Added notice in the order list when a order is zeroed.
 * Added php require header on the readme.txt
 * Fixed a bug that gave fatal error when on before PHP 5.5 versions.
+* Fix - load_textdomain first from WP_LANG_DIR before load_plugin_textdomain
+* Tweak - Tweak load_plugin_textdomain to be relative - this falls back to WP_LANG_DIR automatically. Can prevent "open_basedir restriction in effect".

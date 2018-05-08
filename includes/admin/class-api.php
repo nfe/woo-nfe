@@ -318,43 +318,30 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			}
 
 			// Customer Person Type.
-			$type = absint( get_post_meta( $order, '_billing_persontype', true ) );
+			(int) $type = get_post_meta( $order, '_billing_persontype', true );
 
 			switch ( $field ) {
 				case 'number': // Customer ID Number.
-					if ( empty( $type ) ) {
-						$output = null;
-					} else {
-						if ( 1 === $type ) {
-							$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-						} elseif ( 2 === $type ) {
-							$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
-						}
+					if ( 1 === $type || empty( $type ) ) {
+						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
+						$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
 					}
 					break;
 
 				case 'name': // Customer Name/Razão Social.
-					if ( empty( $type ) ) {
-						$output = null;
-					} else {
-
-						if ( 1 === $type ) {
-							$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-						} elseif ( 2 === $type ) {
-							$output = get_post_meta( $order, '_billing_company', true );
-						}
+					if ( 1 === $type || empty( $type ) ) {
+						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
+						$output = get_post_meta( $order, '_billing_company', true );
 					}
 					break;
 
 				case 'type': // Customer Type.
-					if ( empty( $type ) ) {
-						$output = null;
-					} else {
-						if ( 1 === $type ) {
-							$output = __( 'Customers', 'woo-nfe' );
-						} elseif ( 2 === $type ) {
-							$output = __( 'Company', 'woo-nfe' );
-						}
+					if ( 1 === $type || empty( $type ) ) {
+						$output = __( 'Customers', 'woo-nfe' );
+					} elseif ( 2 === $type ) {
+						$output = __( 'Company', 'woo-nfe' );
 					}
 					break;
 
