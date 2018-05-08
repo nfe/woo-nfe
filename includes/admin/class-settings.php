@@ -44,12 +44,18 @@ if ( class_exists( 'WC_Integration' ) ) {
 				$lists = $this->get_companies();
 
 				if ( empty( $lists ) ) {
-					$company_list = array_merge( array( '' => __( 'No company found in account', 'woo-nfe' ) ), $lists );
+					$company_list = array_merge(array(
+						'' => __( 'No company found', 'woo-nfe' ),
+					), $lists );
 				} else {
-					$company_list = array_merge( array( '' => __( 'Select a company...', 'woo-nfe' ) ), $lists );
+					$company_list = array_merge(array(
+						'' => __( 'Select a company...', 'woo-nfe' ),
+					), $lists );
 				}
 			} else {
-				$company_list = array( 'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ) );
+				$company_list = array(
+					'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ),
+				);
 			}
 
 			$this->form_fields = array(
@@ -187,6 +193,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'description' 		=> sprintf( __( 'Log events such as API requests, you can check this log in %s.', 'woo-nfe' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status - Logs', 'woo-nfe' ) . '</a>' ),
 				),
 			);
+
 			return apply_filters( 'woo_nfe_settings_' . $this->id, $this->form_fields );
 		}
 
@@ -195,10 +202,9 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 *
 		 * @return bool|array Bail with error message | An array of companies.
 		 */
-		private function get_companies() {
+		protected function get_companies() {
 			$key          = nfe_get_field( 'api_key' );
-			$api_key      = md5( $key );
-			$cache_key    = 'woo_nfecompanylist_' . $api_key;
+			$cache_key    = 'woo_nfecompanylist_' . md5( $key );
 			$company_list = get_transient( $cache_key );
 
 			// If there is a list from cache, load it.
@@ -223,18 +229,10 @@ if ( class_exists( 'WC_Integration' ) ) {
 				$company_list[ $company->id ] = ucwords( strtolower( $company->name ) );
 			}
 
+			// Save it for 30 days.
 			set_transient( $cache_key, $company_list, 30 * DAY_IN_SECONDS );
 
 			return $company_list;
-		}
-
-		/**
-		 * URL that will receive the webhooks.
-		 *
-		 * @return string
-		 */
-		private function get_events_url() {
-			return sprintf( '%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
 		}
 
 		/**
@@ -243,14 +241,20 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * @return void
 		 */
 		public function display_errors() {
-			if ( $this->is_active() ) {
-				if ( empty( nfe_get_field( 'api_key' ) ) ) {
-					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key was provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) );
-				}
 
-				if ( nfe_get_field( 'issue_past_notes' ) === 'yes' && $this->issue_past_days() ) {
-					echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woo-nfe' ) . '</a>' ) );
-				}
+			// Bail early.
+			if ( ! $this->is_active() ) {
+				return;
+			}
+
+			$api_key = nfe_get_field( 'api_key' );
+			if ( empty( $api_key ) ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key was provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) ); // WPCS: XSS ok.
+			}
+
+			$issue_past_notes = nfe_get_field( 'issue_past_notes' );
+			if ( 'yes' === $issue_past_notes && $this->issue_past_days() ) {
+				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Enable Retroactive Issue is enabled, but no days was added. %s.', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Add a date to calculate or disable it.', 'woo-nfe' ) . '</a>' ) ); // WPCS: XSS ok.
 			}
 		}
 
@@ -260,7 +264,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * @return void
 		 */
 		public function nfe_api_error_msg() {
-			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woo-nfe' ) ) );
+			echo $this->get_message( '<strong>' . __( 'WooCommerce NFe.io', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Unable to load the companies list from NFe.io.', 'woo-nfe' ) ) ); // WPCS: XSS ok.
 		}
 
 		/**
@@ -282,11 +286,20 @@ if ( class_exists( 'WC_Integration' ) ) {
 		}
 
 		/**
+		 * URL that will receive the webhooks.
+		 *
+		 * @return string
+		 */
+		protected function get_events_url() {
+			return sprintf( '%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
+		}
+
+		/**
 		 * Issue past date check.
 		 *
 		 * @return bool
 		 */
-		public function issue_past_days() {
+		protected function issue_past_days() {
 			$days = nfe_get_field( 'issue_past_days' );
 
 			if ( empty( $days ) ) {
@@ -301,7 +314,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function has_api_key() {
+		protected function has_api_key() {
 			$key = nfe_get_field( 'api_key' );
 
 			if ( empty( $key ) ) {
@@ -316,7 +329,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 *
 		 * @return bool
 		 */
-		public function is_active() {
+		protected function is_active() {
 			$enabled = nfe_get_field( 'nfe_enable' );
 
 			if ( empty( $enabled ) ) {
