@@ -247,7 +247,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 				return;
 			}
 
-			if ( $this->has_api_key() ) {
+			if ( ! $this->has_api_key() ) {
 				echo $this->get_message( '<strong>' . __( 'WooCommerce NFe', 'woo-nfe' ) . '</strong>: ' . sprintf( __( 'Plugin is enabled but no API key was provided. You should inform your API Key. %s', 'woo-nfe' ), '<a href="' . WOOCOMMERCE_NFE_SETTINGS_URL . '">' . __( 'Click here to configure!', 'woo-nfe' ) . '</a>' ) ); // WPCS: XSS ok.
 			}
 
