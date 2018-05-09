@@ -50,9 +50,9 @@
 
 ### Criar empresa
 ```php
-NFe::setApiKey("c73d49f9649046eeba36dcf69f6334fd"); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
+NFe_io::setApiKey("c73d49f9649046eeba36dcf69f6334fd"); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
 
-NFe_Company::create(
+$companyCreated = NFe_Company::create(
   array(
     'federalTaxNumber' => 87502637000164, // Use esse gerador para testar: http://www.geradordecnpj.org/
     'name'             => 'BANCO DO BRASIL SA',
@@ -84,13 +84,15 @@ NFe_Company::create(
     )
   )
 );
+
+echo($companyCreated->id);
 ```
 
 ### Emitir nota fiscal
 ```php
-NFe::setApiKey('c73d49f9649046eeba36dcf69f6334fd'); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
+NFe_io::setApiKey('c73d49f9649046eeba36dcf69f6334fd'); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
 
-NFe_ServiceInvoice::create(
+$invoiceCreated = NFe_ServiceInvoice::create(
   // ID da empresa, você deve copiar exatamente como está no painel
   '64555e0ee340420fdc94ad09',
   // Dados da nota fiscal de serviço
@@ -136,11 +138,13 @@ NFe_ServiceInvoice::create(
     )
   )
 );
+
+echo($invoiceCreated->id);
 ```
 
 ### Cancelar nota fiscal
 ```php
-NFe::setApiKey("c73d49f9649046eeba36dcf69f6334fd"); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
+NFe_io::setApiKey("c73d49f9649046eeba36dcf69f6334fd"); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
 
 $invoice = NFe_ServiceInvoice::fetch(
   '64555e0ee340420fdc94ad09', // ID da empresa, você deve copiar exatamente como está no painel
@@ -154,7 +158,7 @@ if ( $invoice->status == 'Issued' ) {
 
 ### Download do PDF da nota fiscal
 ```php
-NFe::setApiKey('c73d49f9649046eeba36dcf69f6334fd'); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
+NFe_io::setApiKey('c73d49f9649046eeba36dcf69f6334fd'); // Ache sua chave API no painel (https://app.nfe.io/account/apikeys)
 
 $url = NFe_ServiceInvoice::pdf(
   '64555e0ee340420fdc94ad09', // ID da empresa, você deve copiar exatamente como está no painel
