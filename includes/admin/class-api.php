@@ -65,7 +65,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
-				// If value is 0, don't issue it.
+				// If value is 0.00, don't issue it.
 				if ( '0.00' === $order->get_total() ) {
 					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
@@ -701,7 +701,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				'VNM' => 'VN',     // Vietnam
 				'YEM' => 'YE',     // Yemen
 				'ZAF' => 'ZA',     // South Africa
-				'ZWE' => 'ZW',     // Zimbabwe
+				'ZWE' => 'ZW',     // Zimbabwe.
 			);
 		}
 

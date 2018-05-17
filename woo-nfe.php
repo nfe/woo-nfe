@@ -20,8 +20,8 @@
  * Domain Path:       /languages
  * Network:           false
  *
- * WC requires at least: 3.3.3
- * WC tested up to: 3.3.3
+ * WC requires at least: 3.3.5
+ * WC tested up to: 3.3.5
  *
  * Copyright: © 2018 NFe.io
  * License: GNU General Public License v3.0
