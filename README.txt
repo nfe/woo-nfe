@@ -22,22 +22,18 @@ WooCommerce NFe is a WooCommerce extension for issuing invoices using the NFe.io
 
 Thanks in advance for your help on any translation efforts!
 
-== Frequently Asked Questions ==
-
 == Installation ==
 
-1. Upload woo-nfe.zip to wp-content/plugins
+1. Go the *Plugins* menu and click *Add New*.
+2. Search for *WooCommerce NFe*.
+3. Click *Install Now*.
+
+or
+
+1. Upload woo-nfe.zip to wp-content/plugins folder
 2. Click "Activate" in the WordPress plugins menu
 
 == Changelog ==
-
-= 1.0.0 =
-* Initial commit
-
-= 1.0.1 =
-* Fix issue #6
-
-== Upgrade Notice ==
 
 = 1.0.0 =
 * Initial release
@@ -64,3 +60,5 @@ Thanks in advance for your help on any translation efforts!
 * Fixed a bug that gave fatal error when on before PHP 5.5 versions.
 * Fix - load_textdomain first from WP_LANG_DIR before load_plugin_textdomain
 * Tweak - Tweak load_plugin_textdomain to be relative - this falls back to WP_LANG_DIR automatically. Can prevent "open_basedir restriction in effect".
+
+== Upgrade Notice ==
