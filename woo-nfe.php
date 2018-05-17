@@ -105,7 +105,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			$composer_path = $this->plugin_dir . 'vendor/autoload.php';
 
 			if ( ! file_exists( $composer_path ) ) {
-				require( $this->plugin_dir . 'lib/client-php/lib/init.php' );
+				require( $this->plugin_dir . 'li/client-php/lib/init.php' );
 			} else {
 				require( $composer_path );
 			}
