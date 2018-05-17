@@ -3,7 +3,7 @@ Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
 Requires at least: 4.7
 Tested up to: 4.9.4
-Stable tag: 1.2.5
+Stable tag: 1.2.6
 Requires PHP: 5.5
 WC tested up to: 3.3.5
 License: GPLv2 or later
@@ -61,4 +61,5 @@ or
 * Fix - load_textdomain first from WP_LANG_DIR before load_plugin_textdomain
 * Tweak - Tweak load_plugin_textdomain to be relative - this falls back to WP_LANG_DIR automatically. Can prevent "open_basedir restriction in effect".
 
-== Upgrade Notice ==
+= 1.2.6 =
+* Fixing client-php folder conflict.
