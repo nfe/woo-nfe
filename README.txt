@@ -3,9 +3,9 @@ Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
 Requires at least: 4.7
 Tested up to: 4.9.4
-Stable tag: 1.2.6
+Stable tag: 1.2.7
 Requires PHP: 5.5
-WC tested up to: 3.3.5
+WC tested up to: 3.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,3 +63,6 @@ or
 
 = 1.2.6 =
 * Fixing client-php folder conflict.
+
+= 1.2.7 =
+* Fixing how we verify the type of customer to output its information on the NFe receipt.
