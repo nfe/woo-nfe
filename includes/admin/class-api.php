@@ -160,33 +160,33 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 			$order = nfe_wc_get_order( $order_id );
 
 			$address = [
-				'postalCode' => $this->check_customer_info( 'cep', $order_id ),
-				'street' => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
-				'number' => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
+				'postalCode'            => $this->check_customer_info( 'cep', $order_id ),
+				'street'                => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
+				'number'                => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
 				'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
-				'district' => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
-				'country' => $this->remover_caracter( $this->billing_country( $order_id ) ),
-				'state' => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
-				'city' => [
-					'code' => $this->ibge_code( $order_id ),
-					'name' => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
+				'district'              => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
+				'country'               => $this->remover_caracter( $this->billing_country( $order_id ) ),
+				'state'                 => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
+				'city'                  => [
+					'code'                  => $this->ibge_code( $order_id ),
+					'name'                  => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
 				],
 			];
 
-			$borrower = array(
-				'name'             => $this->remover_caracter( $this->check_customer_info( 'name', $order_id ) ),
-				'email'            => get_post_meta( $order_id, '_billing_email', true ),
-				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
-				'address'          => $address,
-			);
+			$borrower = [
+				'name'                  => $this->check_customer_info( 'name', $order_id ),
+				'email'                 => get_post_meta( $order_id, '_billing_email', true ),
+				'federalTaxNumber'      => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
+				'address'               => $address,
+			];
 
-			$data = array(
-				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
-				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
-				'description'        => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
-				'servicesAmount'     => $order->get_total(),
-				'borrower'           => $borrower,
-			);
+			$data = [
+				'cityServiceCode'       => $this->city_service_info( 'code', $order_id ),
+				'federalServiceCode'    => $this->city_service_info( 'fed_code', $order_id ),
+				'description'           => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
+				'servicesAmount'        => $order->get_total(),
+				'borrower'              => $borrower,
+			];
 
 			// Removes empty, false and null fields from the array.
 			return array_filter( $data );
@@ -222,7 +222,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * Fetche the IBGE Code.
 		 *
 		 * @param  int $order_id Order ID.
-		 * @return string
+		 * @return string|null
 		 */
 		protected function ibge_code( $order_id ) {
 			$key       = $this->get_key();
@@ -317,31 +317,37 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				return;
 			}
 
-			// Customer Person Type.
-			(int) $type = get_post_meta( $order, '_billing_persontype', true );
+			// Person Type.
+			$type = get_post_meta( $order, '_billing_persontype', true );
 
 			switch ( $field ) {
-				case 'number': // Customer ID Number.
-					if ( 1 === $type || empty( $type ) ) {
-						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
-						$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+				case 'number':
+					if ( ! empty( $type ) ) {
+						if ( '1' === $type ) {
+							$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+						} else {
+							$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
+						}
 					}
 					break;
 
-				case 'name': // Customer Name/Razão Social.
-					if ( 1 === $type || empty( $type ) ) {
-						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-					} elseif ( 2 === $type || empty( $type ) || empty( $output ) ) {
-						$output = get_post_meta( $order, '_billing_company', true );
+				case 'name':
+					if ( ! empty( $type ) ) {
+						if ( '1' === $type ) {
+							$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+						} else {
+							$output = get_post_meta( $order, '_billing_company', true );
+						}
 					}
 					break;
 
-				case 'type': // Customer Type.
-					if ( 1 === $type || empty( $type ) ) {
-						$output = __( 'Customers', 'woo-nfe' );
-					} elseif ( 2 === $type ) {
-						$output = __( 'Company', 'woo-nfe' );
+				case 'type':
+					if ( ! empty( $type ) ) {
+						if ( '1' === $type ) {
+							$output = __( 'Customers', 'woo-nfe' );
+						} else {
+							$output = __( 'Company', 'woo-nfe' );
+						}
 					}
 					break;
 
