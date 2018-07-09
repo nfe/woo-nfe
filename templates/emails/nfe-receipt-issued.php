@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The Template for displaying NFe issued
  *
@@ -11,7 +10,7 @@
  * @version     1.0.1
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -19,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  */
 do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 
-<p><?php _e( 'NFe issued successfully. Here follows an email for your backing.', 'woo-nfe' ); ?></p>
+<p><?php esc_html_e( 'NFe issued successfully. Here follows an email for your backing.', 'woo-nfe' ); ?></p>
 
 <?php
 /**

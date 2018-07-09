@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The Template for displaying NFe issued (plain text)
  *
@@ -11,7 +10,7 @@
  * @version		1.0.0
  */
 
-// Exit if accessed directly
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 echo "= " . $email_heading . " =\n\n";

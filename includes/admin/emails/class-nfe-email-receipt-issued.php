@@ -1,6 +1,6 @@
 <?php
 
-// Exit if accessed directly.
+// Exit if accessed directly..
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -35,10 +35,10 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		$this->customer_email = true;
 
 		// Triggers.
-		add_action( 'woocommerce_order_status_pending_to_processing_notification',  array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_pending_to_completed_notification', 	array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_completed_notification', 				array( $this, 'trigger' ) );
-		add_action( 'woocommerce_renewal_order_payment_complete', 					array( $this, 'trigger') );
+		add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'trigger' ) );
+		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'trigger' ) );
+		add_action( 'woocommerce_renewal_order_payment_complete', array( $this, 'trigger') );
 
 		parent::__construct();
 	}

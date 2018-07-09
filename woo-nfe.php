@@ -11,7 +11,7 @@
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.2.6
+ * Version:           1.2.7
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -20,8 +20,8 @@
  * Domain Path:       /languages
  * Network:           false
  *
- * WC requires at least: 3.3.3
- * WC tested up to: 3.3.3
+ * WC requires at least: 3.3.5
+ * WC tested up to: 3.4.3
  *
  * Copyright: © 2018 NFe.io
  * License: GNU General Public License v3.0
