@@ -317,31 +317,27 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				return;
 			}
 
-			// Person Type.
-			$type = get_post_meta( $order, '_billing_persontype', true );
-
 			switch ( $field ) {
 				case 'number':
-					if ( ! empty( $type ) ) {
-						if ( '1' === $type ) {
-							$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
-						} else {
-							$output = $this->cnpj( get_post_meta( $order, '_billing_cnpj', true ) );
-						}
+					$cnpj = get_post_meta( $order, '_billing_cnpj', true );
+					if ( ! empty( $cnpj ) ) {
+						$output = $this->cnpj( $cnpj );
+					} else {
+						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
 					}
 					break;
 
 				case 'name':
-					if ( ! empty( $type ) ) {
-						if ( '1' === $type ) {
-							$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
-						} else {
-							$output = get_post_meta( $order, '_billing_company', true );
-						}
+					$cnpj = get_post_meta( $order, '_billing_company', true );
+					if ( ! empty( $cnpj ) ) {
+						$output = $cnpj;
+					} else {
+						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
 					}
 					break;
 
 				case 'type':
+					$type = get_post_meta( $order, '_billing_persontype', true );
 					if ( ! empty( $type ) ) {
 						if ( '1' === $type ) {
 							$output = __( 'Customers', 'woo-nfe' );
