@@ -317,34 +317,60 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				return;
 			}
 
+			// Only check those fields.
+			if ( in_array( $field, [ 'number', 'name', 'type' ], true ) ) {
+
+				// Person Type.
+				$type = get_post_meta( $order, '_billing_persontype', true );
+
+				// Customer info.
+				$cpf      = get_post_meta( $order, '_billing_cpf', true );
+				$customer = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+
+				// Company info.
+				$cnpj    = get_post_meta( $order, '_billing_cnpj', true );
+				$company = get_post_meta( $order, '_billing_company', true );
+
+				if ( ! empty( $type ) ) {
+					if ( '1' === $type ) {
+						$id   = $this->cpf( $cpf );
+						$name = $customer;
+						$type = __( 'Customers', 'woo-nfe' );
+					} else {
+						$id   = $this->cnpj( $cnpj );
+						$name = $company;
+						$type = __( 'Company', 'woo-nfe' );
+					}
+				}
+			}
+
 			switch ( $field ) {
 				case 'number':
-					$cnpj = get_post_meta( $order, '_billing_cnpj', true );
-					if ( ! empty( $cnpj ) ) {
-						$output = $this->cnpj( $cnpj );
+					if ( empty( $type ) ) {
+						if ( ! empty( $cpf ) ) {
+							$output = $this->cpf( $cpf );
+						} else {
+							$output = $this->cnpj( $cnpj );
+						}
 					} else {
-						$output = $this->cpf( get_post_meta( $order, '_billing_cpf', true ) );
+						$output = $id;
 					}
 					break;
 
 				case 'name':
-					$cnpj = get_post_meta( $order, '_billing_company', true );
-					if ( ! empty( $cnpj ) ) {
-						$output = $cnpj;
+					if ( empty( $type ) ) {
+						if ( ! empty( $customer ) ) {
+							$output = $customer;
+						} else {
+							$output = $company;
+						}
 					} else {
-						$output = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+						$output = $name;
 					}
 					break;
 
 				case 'type':
-					$type = get_post_meta( $order, '_billing_persontype', true );
-					if ( ! empty( $type ) ) {
-						if ( '1' === $type ) {
-							$output = __( 'Customers', 'woo-nfe' );
-						} else {
-							$output = __( 'Company', 'woo-nfe' );
-						}
-					}
+					$output = $type;
 					break;
 
 				case 'city':
