@@ -1,6 +1,6 @@
 <?php
 
-// Exit if accessed directly..
+// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -24,10 +24,10 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		$this->title       = __( 'NFe Receipt Issued', 'woo-nfe' );
 		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woo-nfe' );
 
-		$this->heading     = __( 'NFe Receipt Issued', 'woo-nfe' );
+		$this->heading = __( 'NFe Receipt Issued', 'woo-nfe' );
 
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out.
-		$this->subject     = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woo-nfe' ), '{blogname}' );
+		$this->subject = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'woo-nfe' ), '{blogname}' );
 
 		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
 		$this->template_html  = 'emails/nfe-receipt-issued.php';
@@ -38,7 +38,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'trigger' ) );
 		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'trigger' ) );
 		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_renewal_order_payment_complete', array( $this, 'trigger') );
+		add_action( 'woocommerce_renewal_order_payment_complete', array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
@@ -52,7 +52,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 */
 	public function trigger( $order_id ) {
 		// Check if order exists first.
-		$order = nfe_wc_get_order( $order_id );
+		$order    = nfe_wc_get_order( $order_id );
 		$order_id = $order->get_id();
 
 		if ( ! $order_id ) {
@@ -65,7 +65,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		}
 
 		$this->object    = $order;
-		$this->recipient = $this->object->billing_email;
+		$this->recipient = $this->object->get_billing_email();
 
 		if ( ! $this->is_enabled() || ! $this->get_recipient() ) {
 			return;
@@ -75,7 +75,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	}
 
 	/**
-	 * get_content_html
+	 * get_content_html.
 	 *
 	 * @return string
 	 */
