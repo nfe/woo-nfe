@@ -66,3 +66,13 @@ or
 
 = 1.2.7 =
 * Fixing how we verify the type of customer to output its information on the NFe receipt.
+
+= 1.2.8 =
+* Improved code documentation
+* Started to use [] instead of array()
+* Started to use the new logger implementation, wc_get_logger()
+* Updated WP Tested header to 3.5.1
+* Removed Extra Checkout plugin dependency
+* Removed Composer support for the client-php
+* Removed checks when on automatic issuing, as it was avoiding important log information to be saved.
+* Added better labeling for the flowStatus

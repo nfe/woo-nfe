@@ -235,7 +235,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 * @param  string $version Version to check against.
 		 * @return bool
 		 */
-		protected function version_check( $version = '3.3.3' ) {
+		protected function version_check( $version = '3.5.1' ) {
 			if ( class_exists( 'WooCommerce' ) ) {
 				global $woocommerce;
 				if ( version_compare( $woocommerce->version, $version, '>=' ) ) {
