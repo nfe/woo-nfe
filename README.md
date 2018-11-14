@@ -19,7 +19,7 @@ Ou você pode colocar este plugin no diretório wp-content/plugins e ativá-lo.
 
 ## Changelog ##
 
-### 1.0
+### 1.0.0
 * Initial release
 
 ### 1.0.1
@@ -52,11 +52,11 @@ Ou você pode colocar este plugin no diretório wp-content/plugins e ativá-lo.
 * Fixing how we verify the type of customer to output its information on the NFe receipt.
 
 ### 1.2.8
-* Improved code documentation
-* Started to use [] instead of array()
-* Started to use the new logger implementation, wc_get_logger()
-* Updated WP Tested header to 3.5.1
-* Removed Extra Checkout plugin dependency
-* Removed Composer support for the client-php
+* Improved code documentation, PHPDoc.
+* Started to use `[]` instead of `array()`.
+* Started to use the new logger implementation, `wc_get_logger()`.
+* Updated WordPress tested header to 3.5.1.
+* Removed Extra Checkout plugin dependency.
+* Removed Composer support for the client-php.
 * Removed checks when on automatic issuing, as it was avoiding important log information to be saved.
-* Added better labeling for the flowStatus
+* Added better labeling for the NFe.io `flowStatus`.
