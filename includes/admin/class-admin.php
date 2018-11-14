@@ -535,7 +535,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				}
 
 				$fields['nfe'] = [
-					'status'     => ! empty( $nfe['status'] ) ? $nfe['status'] : '',
+					'status'     => ! empty( $nfe['status'] ) ? nfe_status_label( $nfe['status'] ) : '',
 					'number'     => ! empty( $nfe['number'] ) ? $nfe['number'] : '',
 					'check_code' => ! empty( $nfe['checkCode'] ) ? $nfe['checkCode'] : '',
 					'issued'     => ! empty( $nfe['issuedOn'] ) ? date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) : '',
