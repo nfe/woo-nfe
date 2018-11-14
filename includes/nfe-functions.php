@@ -160,3 +160,33 @@ function nfe_require_address() {
 
 	return true;
 }
+
+/**
+ * Get NFe status label.
+ *
+ * @param  string $status Status.
+ *
+ * @return string
+ */
+function nfe_status_label( $status ) {
+
+	// Check processing status first.
+	if ( in_array( $status, nfe_processing_status(), true ) ) {
+		return __( 'Processing', 'woo-nfe' );
+	}
+
+	$valid_stati = [
+		'Issued'          => __( 'Issued', 'woo-nfe' ),
+		'Cancelled'       => __( 'Cancelled', 'woo-nfe' ),
+		'CancelledFailed' => __( 'Cancelling Failed', 'woo-nfe' ),
+		'IssueFailed'     => __( 'Issued Failed', 'woo-nfe' ),
+	];
+
+	foreach ( $valid_stati as $key => $title ) {
+		if ( $status === $key ) {
+			return $title;
+		}
+	}
+
+	return '';
+}

@@ -92,7 +92,7 @@ class WC_NFe_Webhook_Handler {
 		}
 
 		// translators: Order updated with its status.
-		$msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s .', 'woo-nfe' ), $order->get_id(), $body->flowStatus );
+		$msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s.', 'woo-nfe' ), $order->get_id(), nfe_status_label( $body->flowStatus ) );
 		$this->logger( $msg );
 		$order->add_order_note( $msg );
 	}

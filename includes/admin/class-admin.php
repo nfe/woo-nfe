@@ -65,6 +65,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return void
 		 */
 		public function issue_trigger( $order_id ) {
+
 			// Bail early.
 			if ( nfe_get_field( 'issue_when' ) === 'manual' ) {
 				return;
@@ -76,16 +77,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 			// Bail for no order.
 			if ( ! $order_id ) {
-				return;
-			}
-
-			// Bail for zeroed order.
-			if ( '0.00' === $order->get_total() ) {
-				return;
-			}
-
-			// Checking if the address is required and if the order address was filled.
-			if ( ! nfe_order_address_filled( $order_id ) ) {
 				return;
 			}
 
@@ -492,7 +483,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				<p>
 					<strong><?php esc_html_e( 'Status: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['status'] ) ) : ?>
-						<?php echo esc_html( $nfe['status'] ); ?>
+						<?php echo esc_html( nfe_status_label( $nfe['status'] ) ); ?>
 					<?php endif; ?>
 					<br />
 
@@ -637,7 +628,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * Issue Helper Method.
 		 *
 		 * @param  array    $download NFe info.
-		 * @param  WC_Order $order    Order.
+		 * @param  WC_Order $order    Order object.
 		 *
 		 * @return bool
 		 */
@@ -653,8 +644,8 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return false;
 			}
 
-			// Bail if there is no address.
-			if ( ! nfe_order_address_filled( $order->get_id() ) ) {
+			// Bail if there is no address and it is required.
+			if ( nfe_require_address() && ! nfe_order_address_filled( $order->get_id() ) ) {
 				return false;
 			}
 

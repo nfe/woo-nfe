@@ -21,13 +21,13 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 		 */
 		public function __construct() {
 			// Filters.
-			add_filter( 'woocommerce_my_account_my_orders_columns', 			 [ $this, 'nfe_column' ] );
-			add_filter( 'woocommerce_my_account_my_address_description', 		 [ $this, 'account_desc' ] );
+			add_filter( 'woocommerce_my_account_my_orders_columns', [ $this, 'nfe_column' ] );
+			add_filter( 'woocommerce_my_account_my_address_description', [ $this, 'account_desc' ] );
 
 			// Actions.
 			add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', [ $this, 'column_content' ] );
-			add_action( 'woocommerce_order_details_after_order_table', 			 [ $this, 'column_content' ] );
-			add_action( 'woocommerce_before_edit_address_form_billing', 		 [ $this, 'billing_notice' ] );
+			add_action( 'woocommerce_order_details_after_order_table', [ $this, 'column_content' ] );
+			add_action( 'woocommerce_before_edit_address_form_billing', [ $this, 'billing_notice' ] );
 		}
 
 		/**
