@@ -61,15 +61,17 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * Issue a NFe receipt when WooCommerce does its thing.
 		 *
 		 * @param  int $order_id Order ID.
+		 *
 		 * @return void
 		 */
 		public function issue_trigger( $order_id ) {
+			// Bail early.
 			if ( nfe_get_field( 'issue_when' ) === 'manual' ) {
 				return;
 			}
 
 			// Check if order exists first.
-			$order = nfe_wc_get_order( $order_id );
+			$order    = nfe_wc_get_order( $order_id );
 			$order_id = $order->get_id();
 
 			// Bail for no order.
@@ -87,9 +89,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 				return;
 			}
 
-			// We just can issue the invoice if the status is equal to the configured one.
+			// We just can issue the invoice automatically if the status is equal to the configured one.
 			if ( $order->has_status( nfe_get_field( 'issue_when_status' ) ) ) {
-				NFe_Woo()->issue_invoice( array( $order_id ) );
+				NFe_Woo()->issue_invoice( [ $order_id ] );
 			}
 		}
 
@@ -179,9 +181,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 */
 		public function product_data_tab( $product_data_tabs ) {
 			$product_data_tabs['nfe-product-info-tab'] = array(
-				'label'     => esc_html__( 'WooCommerce NFe', 'woo-nfe' ),
-				'target'    => 'nfe_product_info_data',
-				'class'     => array( 'hide_if_variable' ),
+				'label'  => esc_html__( 'WooCommerce NFe', 'woo-nfe' ),
+				'target' => 'nfe_product_info_data',
+				'class'  => array( 'hide_if_variable' ),
 			);
 			return $product_data_tabs;
 		}
@@ -307,7 +309,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * Adds the Download and Issue actions to the actions list in the order edit page.
 		 *
 		 * @param array $actions Order actions array to display.
-		 * @return array List of actions.
+		 * @return array|void List of actions.
 		 */
 		public function download_and_issue_actions( $actions ) {
 			global $theorder;
@@ -390,9 +392,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		public function order_status_column_content( $column ) {
 
 			// Get information.
-			$order      = nfe_wc_get_order( get_the_ID() );
-			$order_id   = $order->get_id();
-			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
+			$order    = nfe_wc_get_order( get_the_ID() );
+			$order_id = $order->get_id();
+			$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
 
 			// Bail early.
 			if ( 'nfe_receipts' !== $column ) {
@@ -597,8 +599,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		 * @return void
 		 */
 		public function register_enqueue_css() {
-			wp_register_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css' );
-			wp_enqueue_style( 'nfe-woo-admin-css' );
+			wp_enqueue_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css', [], '1.2.8', false );
 		}
 
 		/**

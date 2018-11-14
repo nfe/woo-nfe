@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit;
  * Function to fetch fields from the NFe WooCommerce Integration.
  *
  * @param  string $value Value to fetch.
+ *
  * @return string
  */
 function nfe_get_field( $value = '' ) {
@@ -32,6 +33,7 @@ function nfe_get_field( $value = '' ) {
  * Make sure address is required and if all the fields are available.
  *
  * @param  int $order_id Order ID.
+ *
  * @return bool
  */
 function nfe_order_address_filled( $order_id ) {
@@ -41,7 +43,7 @@ function nfe_order_address_filled( $order_id ) {
 		return true;
 	}
 
-	$fields = array(
+	$fields = [
 		'neighborhood' => get_post_meta( $order_id, '_billing_neighborhood', true ),
 		'address_1'    => get_post_meta( $order_id, '_billing_address_1', true ),
 		'number'       => get_post_meta( $order_id, '_billing_number', true ),
@@ -49,7 +51,7 @@ function nfe_order_address_filled( $order_id ) {
 		'state'        => get_post_meta( $order_id, '_billing_state', true ),
 		'city'         => get_post_meta( $order_id, '_billing_city', true ),
 		'country'      => get_post_meta( $order_id, '_billing_country', true ),
-	);
+	];
 
 	$count = 0;
 	foreach ( $fields as $field => $value ) {

@@ -11,7 +11,7 @@
  * Plugin Name:       WooCommerce NFe
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       WooCommerce extension for the NFe API
- * Version:           1.2.7
+ * Version:           1.2.8
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -21,7 +21,7 @@
  * Network:           false
  *
  * WC requires at least: 3.3.5
- * WC tested up to: 3.4.3
+ * WC tested up to: 3.5.1
  *
  * Copyright: © 2018 NFe.io
  * License: GNU General Public License v3.0
@@ -101,14 +101,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		private function includes() {
 
-			// NFe Client-PHP API - Composer Support.
-			$composer_path = $this->plugin_dir . 'vendor/autoload.php';
-
-			if ( ! file_exists( $composer_path ) ) {
-				require( $this->plugin_dir . 'li/client-php/lib/init.php' );
-			} else {
-				require( $composer_path );
-			}
+			// NFe Client-PHP API.
+			require( $this->plugin_dir . 'li/client-php/lib/init.php' );
 
 			// Admin.
 			require( $this->includes_dir . 'nfe-functions.php' );
@@ -140,12 +134,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 				add_action( 'admin_notices', [ $this, 'woocommerce_missing_notice' ] );
 				return;
 			}
-
-			// Checks if WooCommerce Extra Checkout Fields for Brazil is installed.
-			if ( ! class_exists( 'Extra_Checkout_Fields_For_Brazil' ) ) {
-				add_action( 'admin_notices', [ $this, 'extra_checkout_fields_missing_notice' ] );
-				return;
-			}
 		}
 
 		/**
@@ -172,8 +160,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			}
 
 			// Filters.
-			add_filter( 'woocommerce_integrations',                array( $this, 'nfe_integration' ) );
-			add_filter( 'plugin_action_links_' . $this->basename , array( $this, 'plugin_action_links' ) );
+			add_filter( 'woocommerce_integrations', array( $this, 'nfe_integration' ) );
+			add_filter( 'plugin_action_links_' . $this->basename, [ $this, 'plugin_action_links' ] );
 		}
 
 		/**
@@ -225,15 +213,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 */
 		public function woocommerce_missing_notice() {
 			include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce.php';
-		}
-
-		/**
-		 * WooCommerce Extra Checkout Fields for Brazil missing notice.
-		 *
-		 * @since 1.0.0
-		 */
-		public function extra_checkout_fields_missing_notice() {
-			include $this->includes_dir . 'admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php';
 		}
 
 		/**
