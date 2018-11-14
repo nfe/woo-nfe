@@ -15,7 +15,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 	class NFe_Woo {
 
 		/**
-		 * WC_Logger Instance
+		 * WC_Logger Logger instance.
 		 *
 		 * @var boolean
 		 */
@@ -106,7 +106,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				$order->add_order_note( $log );
 
 				// Update invoice information.
-				update_post_meta( $order_id, 'nfe_issued', [
+				$meta = update_post_meta( $order_id, 'nfe_issued', [
 					'id'        => $invoice->id,
 					'status'    => $invoice->flowStatus,
 					'issuedOn'  => $invoice->issuedOn,
@@ -114,6 +114,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					'checkCode' => $invoice->checkCode,
 					'number'    => $invoice->number,
 				] );
+
+				if ( ! $meta ) {
+					// translators: Log message.
+					$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order_id ) );
+				}
 			}
 
 			return $invoice;
@@ -779,7 +784,13 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @return void
 		 */
 		public static function logger( $message ) {
-			if ( nfe_get_field( 'debug' ) === 'yes' ) {
+			$debug = nfe_get_field( 'debug' );
+
+			if ( empty( $debug ) ) {
+				return;
+			}
+
+			if ( 'yes' === $debug ) {
 				if ( empty( self::$logger ) ) {
 					self::$logger = wc_get_logger();
 				}
