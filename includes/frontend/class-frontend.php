@@ -21,13 +21,13 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 		 */
 		public function __construct() {
 			// Filters.
-			add_filter( 'woocommerce_my_account_my_orders_columns', 			 [ $this, 'nfe_column' ] );
-			add_filter( 'woocommerce_my_account_my_address_description', 		 [ $this, 'account_desc' ] );
+			add_filter( 'woocommerce_my_account_my_orders_columns', [ $this, 'nfe_column' ] );
+			add_filter( 'woocommerce_my_account_my_address_description', [ $this, 'account_desc' ] );
 
 			// Actions.
 			add_action( 'woocommerce_my_account_my_orders_column_sales-receipt', [ $this, 'column_content' ] );
-			add_action( 'woocommerce_order_details_after_order_table', 			 [ $this, 'column_content' ] );
-			add_action( 'woocommerce_before_edit_address_form_billing', 		 [ $this, 'billing_notice' ] );
+			add_action( 'woocommerce_order_details_after_order_table', [ $this, 'column_content' ] );
+			add_action( 'woocommerce_before_edit_address_form_billing', [ $this, 'billing_notice' ] );
 		}
 
 		/**
@@ -36,7 +36,7 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 		 * @return void
 		 */
 		public function billing_notice() {
-			if ( nfe_get_field('nfe_enable') === 'yes' ) {
+			if ( nfe_get_field( 'nfe_enable' ) === 'yes' ) {
 				echo '<div class="woocommerce-message">' . esc_html__( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woo-nfe' ) . '</div>';
 			}
 		}
@@ -52,6 +52,8 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 
 		/**
 		 * NFe Column Header on Recent Orders
+		 *
+		 * @param array $columns Columns.
 		 *
 		 * @return array
 		 */
@@ -75,12 +77,13 @@ if ( ! class_exists('WC_NFe_FrontEnd') ) :
 		 * @since 1.0.9
 		 *
 		 * @param WC_Order $order Order object.
+		 *
 		 * @return void
 		 */
 		public function column_content( $order ) {
 			// Get order information.
-			$order_id   = $order->get_id();
-			$nfe        = get_post_meta( $order_id, 'nfe_issued', true );
+			$order_id = $order->get_id();
+			$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
 
 			if ( 'yes' !== nfe_get_field( 'nfe_enable' ) ) {
 				return;

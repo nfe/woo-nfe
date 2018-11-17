@@ -15,7 +15,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 	class NFe_Woo {
 
 		/**
-		 * WC_Logger Instance
+		 * WC_Logger Logger instance.
 		 *
 		 * @var boolean
 		 */
@@ -23,6 +23,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 		/**
 		 * NFe_Woo Instance.
+		 *
+		 * @return NFe_Woo
 		 */
 		public static function instance() {
 			// Store the instance locally to avoid private static replication.
@@ -48,12 +50,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 *
 		 * @param array $order_ids Orders to issue the NFe.
 		 *
-		 * @return bool|string
+		 * @return bool|NFe_ServiceInvoice
 		 */
-		public function issue_invoice( $order_ids = array() ) {
-			$key               = $this->get_key();
-			$company_id        = $this->get_company();
-			$issue_when_status = nfe_get_field( 'issue_when_status' );
+		public function issue_invoice( $order_ids = [] ) {
+			$key        = $this->get_key();
+			$company_id = $this->get_company();
 
 			NFe_io::setApiKey( $key );
 
@@ -61,12 +62,14 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 				$order = nfe_wc_get_order( $order_id );
 
+				// translators: Log message.
 				$log = sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
 				// If value is 0.00, don't issue it.
 				if ( '0.00' === $order->get_total() ) {
+					// translators: Log message.
 					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -76,16 +79,20 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 				$datainvoice = $this->order_info( $order_id );
 
-				// Check if there was a problem while fetching the city code from IBGE.
-				if ( empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
+				// Check if there was a problem while fetching the city code from IBGE. And if the adderss is required.
+				if ( nfe_require_address() && empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
+
+					// Bail early so that it doesn't create an invoice without address.
+					return false;
 				}
 
 				$invoice = NFe_ServiceInvoice::create( $company_id, $datainvoice );
 
 				if ( isset( $invoice->message ) ) {
+					// translators: Log message.
 					$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), print_r( $invoice->message, true ) );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -93,19 +100,25 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					return false;
 				}
 
+				// translators: Log message.
 				$log = sprintf( __( 'NFe sent sucessfully to issue! Order: #%d', 'woo-nfe' ), $order_id );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
-				$nfe = array(
+				// Update invoice information.
+				$meta = update_post_meta( $order_id, 'nfe_issued', [
 					'id'        => $invoice->id,
 					'status'    => $invoice->flowStatus,
 					'issuedOn'  => $invoice->issuedOn,
 					'amountNet' => $invoice->amountNet,
 					'checkCode' => $invoice->checkCode,
 					'number'    => $invoice->number,
-				);
-				update_post_meta( $order_id, 'nfe_issued', $nfe );
+				] );
+
+				if ( ! $meta ) {
+					// translators: Log message.
+					$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order_id ) );
+				}
 			}
 
 			return $invoice;
@@ -117,9 +130,10 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @throws Exception Exception.
 		 *
 		 * @param array $order_ids Array of order ids.
-		 * @return string            Pdf url from NFe.io
+		 *
+		 * @return Exception|NFe_ServiceInvoice
 		 */
-		public function download_pdf_invoice( $order_ids = array() ) {
+		public function download_pdf_invoice( $order_ids = [] ) {
 			$key        = $this->get_key();
 			$company_id = $this->get_company();
 
@@ -132,10 +146,12 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				try {
 					$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
 
+					// translators: Log message.
 					$log = sprintf( __( 'NFe PDF Donwload successfully. Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 				} catch ( Exception $e ) {
+					// translators: Log message.
 					$log = sprintf( __( 'There was a problem when trying to download NFe PDF! Error: %s', 'woo-nfe' ), print_r( $e->getMessage(), true ) );
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -168,24 +184,24 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				'country'               => $this->remover_caracter( $this->billing_country( $order_id ) ),
 				'state'                 => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
 				'city'                  => [
-					'code'                  => $this->ibge_code( $order_id ),
-					'name'                  => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
+					'code'              => $this->ibge_code( $order_id ),
+					'name'              => $this->remover_caracter( $this->check_customer_info( 'city', $order_id ) ),
 				],
 			];
 
 			$borrower = [
-				'name'                  => $this->check_customer_info( 'name', $order_id ),
-				'email'                 => get_post_meta( $order_id, '_billing_email', true ),
-				'federalTaxNumber'      => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
-				'address'               => $address,
+				'name'             => $this->check_customer_info( 'name', $order_id ),
+				'email'            => get_post_meta( $order_id, '_billing_email', true ),
+				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
+				'address'          => $address,
 			];
 
 			$data = [
-				'cityServiceCode'       => $this->city_service_info( 'code', $order_id ),
-				'federalServiceCode'    => $this->city_service_info( 'fed_code', $order_id ),
-				'description'           => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
-				'servicesAmount'        => $order->get_total(),
-				'borrower'              => $borrower,
+				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
+				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
+				'description'        => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
+				'servicesAmount'     => $order->get_total(),
+				'borrower'           => $borrower,
 			];
 
 			// Removes empty, false and null fields from the array.
@@ -196,6 +212,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * Hack to bring support to Brazilian ISO code (Ex.: BRA instead of BR)
 		 *
 		 * @param int $order_id Order ID.
+		 *
 		 * @return string|null
 		 */
 		protected function billing_country( $order_id ) {
@@ -221,32 +238,84 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		/**
 		 * Fetche the IBGE Code.
 		 *
-		 * @param  int $order_id Order ID.
+		 * @param int $order_id Order ID.
+		 *
 		 * @return string|null
 		 */
 		protected function ibge_code( $order_id ) {
-			$key       = $this->get_key();
 			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
 
 			if ( empty( $post_code ) ) {
-
-				if ( false === nfe_require_address() ) {
+				if ( ! nfe_require_address() ) {
 					return $this->get_company_info( 'code' );
 				}
 
 				return null;
 			}
 
-			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $key;
+			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $this->get_key();
 			$response = wp_remote_get( esc_url_raw( $url ) );
 
 			if ( is_wp_error( $response ) ) {
-				return;
+				return null;
 			}
 
 			$address = json_decode( wp_remote_retrieve_body( $response ), true );
+			$code    = $address['city']['code'];
 
-			return $address['city']['code'];
+			if ( empty( $code ) ) {
+				return null;
+			}
+
+			return $code;
+		}
+
+		/**
+		 * Get current company info.
+		 *
+		 * @param  string $field Field.
+		 *
+		 * @return string|null
+		 */
+		protected function get_company_info( $field ) {
+
+			// Get companies.
+			$url      = 'https://api.nfe.io/v1/companies/' . $this->get_company() . '?api_key=' . $this->get_key();
+			$response = wp_remote_get( esc_url_raw( $url ) );
+
+			if ( is_wp_error( $response ) ) {
+				return null;
+			}
+
+			$company = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( 'city' === $field ) {
+				$name = $company['companies']['address']['city']['name'];
+
+				if ( empty( $name ) ) {
+					return null;
+				}
+
+				return $name;
+			}
+
+			if ( 'code' === $field ) {
+				$code = $company['companies']['address']['city']['code'];
+
+				if ( empty( $code ) ) {
+					return null;
+				}
+
+				return $code;
+			}
+
+			$field_value = $company['companies']['address'][ $field ];
+
+			if ( empty( $field_value ) ) {
+				return null;
+			}
+
+			return $field_value;
 		}
 
 		/**
@@ -255,9 +324,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @param string $field    The field info being fetched.
 		 * @param int    $order_id Order ID.
 		 *
-		 * @return string
+		 * @return string|null
 		 */
 		protected function city_service_info( $field = '', $order_id ) {
+
+			// Bail early.
 			if ( empty( $field ) ) {
 				return;
 			}
@@ -309,7 +380,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @param string $field Field to fetch info from.
 		 * @param int    $order The order ID.
 		 *
-		 * @return string|empty Returns the customer info specific to the person type being fetched.
+		 * @return string|null Returns the customer info specific to the person type being fetched.
 		 */
 		protected function check_customer_info( $field = '', $order ) {
 
@@ -436,39 +507,6 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		}
 
 		/**
-		 * Get current company info.
-		 *
-		 * @param  string $field Field.
-		 *
-		 * @return string
-		 */
-		protected function get_company_info( $field ) {
-
-			// Get info.
-			$key        = $this->get_key();
-			$company_id = $this->get_company();
-
-			$url        = 'https://api.nfe.io/v1/companies/' . $company_id . '?api_key=' . $key;
-			$response   = wp_remote_get( esc_url_raw( $url ) );
-
-			if ( is_wp_error( $response ) ) {
-				return;
-			}
-
-			$company = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( 'city' === $field ) {
-				return  $company['companies']['address']['city']['name'];
-			}
-
-			if ( 'code' === $field ) {
-				return $company['companies']['address']['city']['code'];
-			}
-
-			return $company['companies']['address'][ $field ];
-		}
-
-		/**
 		 * Remove Ponto Traco.
 		 *
 		 * @param  string $string Content to remove.
@@ -495,7 +533,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * CPF Converter
 		 *
 		 * @param  string $cpf CPF.
-		 * @return void
+		 *
+		 * @return void|string
 		 */
 		public function cpf( $cpf ) {
 			if ( ! $cpf ) {
@@ -512,7 +551,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * CNPJ Converter
 		 *
 		 * @param  string $cnpj CNPJ.
-		 * @return string
+		 *
+		 * @return void|string
 		 */
 		public function cnpj( $cnpj ) {
 			if ( ! $cnpj ) {
@@ -529,7 +569,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * CEP Converter.
 		 *
 		 * @param  string $cep Content.
-		 * @return string
+		 *
+		 * @return void|string
 		 */
 		public function cep( $cep ) {
 			if ( ! $cep ) {
@@ -546,6 +587,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * Clears
 		 *
 		 * @param string $string Content.
+		 *
 		 * @return string
 		 */
 		public function clear( $string ) {
@@ -559,6 +601,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 *
 		 * @param string $val  Value that's gonna be masked.
 		 * @param string $mask Mask pattern.
+		 *
 		 * @return string
 		 */
 		public function mask( $val, $mask ) {
@@ -737,13 +780,22 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * Logging method.
 		 *
 		 * @param string $message Message.
+		 *
+		 * @return void
 		 */
 		public static function logger( $message ) {
-			if ( nfe_get_field( 'debug' ) === 'yes' ) {
+			$debug = nfe_get_field( 'debug' );
+
+			if ( empty( $debug ) ) {
+				return;
+			}
+
+			if ( 'yes' === $debug ) {
 				if ( empty( self::$logger ) ) {
-					self::$logger = new WC_Logger();
+					self::$logger = wc_get_logger();
 				}
-				self::$logger->add( 'nfe_api', $message );
+
+				self::$logger->info( $message, [ 'source' => 'nfe_api' ] );
 			}
 		}
 	}

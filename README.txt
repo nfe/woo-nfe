@@ -3,9 +3,9 @@ Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
 Requires at least: 4.7
 Tested up to: 4.9.4
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 Requires PHP: 5.5
-WC tested up to: 3.4.3
+WC tested up to: 3.5.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,3 +66,13 @@ or
 
 = 1.2.7 =
 * Fixing how we verify the type of customer to output its information on the NFe receipt.
+
+= 1.2.8 =
+* Improved code documentation, PHPDoc.
+* Started to use `[]` instead of `array()`.
+* Started to use the new logger implementation, `wc_get_logger()`.
+* Updated WordPress tested header to 3.5.1.
+* Removed Extra Checkout plugin dependency.
+* Removed Composer support for the client-php.
+* Removed checks when on automatic issuing, as it was avoiding important log information to be saved.
+* Added better labeling for the NFe.io `flowStatus`.
