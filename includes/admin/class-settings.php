@@ -44,18 +44,14 @@ if ( class_exists( 'WC_Integration' ) ) {
 				$lists = $this->get_companies();
 
 				if ( empty( $lists ) ) {
-					$company_list = array_merge(array(
-						'' => __( 'No company found', 'woo-nfe' ),
-					), $lists );
+					$company_list = array_merge( [ '' => __( 'No company found', 'woo-nfe' ), ], $lists );
 				} else {
-					$company_list = array_merge(array(
-						'' => __( 'Select a company...', 'woo-nfe' ),
-					), $lists );
+					$company_list = array_merge( [ '' => __( 'Select a company...', 'woo-nfe' ), ], $lists );
 				}
 			} else {
-				$company_list = array(
+				$company_list = [
 					'no-company' => __( 'Enter your API key to see your company(ies).', 'woo-nfe' ),
-				);
+				];
 			}
 
 			$this->form_fields = array(
@@ -218,13 +214,13 @@ if ( class_exists( 'WC_Integration' ) ) {
 
 			// Bail early with error message.
 			if ( ! empty( $companies->message ) || empty( $companies ) || empty( $companies['companies'] ) ) {
-				add_action( 'admin_notices',         array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'admin_notices',         [ $this, 'nfe_api_error_msg' ] );
+				add_action( 'network_admin_notices', [ $this, 'nfe_api_error_msg' ] );
 
 				return false;
 			}
 
-			$company_list = array();
+			$company_list = [];
 			foreach ( $companies['companies'] as $company ) {
 				$company_list[ $company->id ] = ucwords( strtolower( $company->name ) );
 			}

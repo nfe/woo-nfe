@@ -23,15 +23,19 @@ class WC_NFe_Webhook_Handler {
 	 * Base Construct.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_api_' . WC_API_CALLBACK, array( $this, 'handle' ) );
+		add_action( 'woocommerce_api_' . WC_API_CALLBACK, [ $this, 'handle' ] );
 	}
 
 	/**
 	 * Handling incoming webhooks.
+	 *
+	 * @throws Exception Exception.
+	 *
+	 * @return void
 	 */
 	public function handle() {
 		$raw_body = file_get_contents( 'php://input' );
-		$body = json_decode( $raw_body );
+		$body     = json_decode( $raw_body );
 
 		// translators: Fired when a new webhook is called.
 		$this->logger( sprintf( __( 'New webhook called. %s', 'woo-nfe' ), $raw_body ) );
@@ -71,25 +75,24 @@ class WC_NFe_Webhook_Handler {
 		$this->logger( __( 'Getting Order ID of the webhook.', 'woo-nfe' ) );
 		$order = $this->get_order_by_nota_id( $body->id );
 
-		$nfe = array(
+		$this->logger( __( 'Updating Order with NFe info.', 'woo-nfe' ) );
+
+		$meta = update_post_meta( $order->get_id(), 'nfe_issued', [
 			'id'        => $body->id,
 			'status'    => $body->flowStatus,
 			'issuedOn'  => $body->issuedOn,
 			'amountNet' => $body->amountNet,
 			'checkCode' => $body->checkCode,
 			'number'    => $body->number,
-		);
-
-		$this->logger( __( 'Updating Order with NFe info.', 'woo-nfe' ) );
-
-		$meta = update_post_meta( $order->get_id(), 'nfe_issued', $nfe );
+		] );
 
 		if ( ! $meta ) {
 			$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order->get_id() ) );
+			return;
 		}
 
 		// translators: Order updated with its status.
-		$msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s .', 'woo-nfe' ), $order->get_id(), $body->flowStatus );
+		$msg = sprintf( __( 'Order updated. Order: #%d NFe status: %s.', 'woo-nfe' ), $order->get_id(), nfe_status_label( $body->flowStatus ) );
 		$this->logger( $msg );
 		$order->add_order_note( $msg );
 	}
@@ -132,10 +135,10 @@ class WC_NFe_Webhook_Handler {
 
 		if ( 'yes' === $debug ) {
 			if ( empty( self::$logger ) ) {
-				self::$logger = new WC_Logger();
+				self::$logger = wc_get_logger();
 			}
 
-			self::$logger->add( 'nfe_webhook', $message );
+			self::$logger->debug( $message, [ 'source' => 'nfe_webhook' ] );
 		}
 	}
 }
