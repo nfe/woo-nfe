@@ -668,6 +668,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		}
 	}
 
-	return new WC_NFe_Admin::get_instance();
+	return WC_NFe_Admin::get_instance();
 
 endif;
