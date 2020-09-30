@@ -60,3 +60,5 @@ Ou você pode colocar este plugin no diretório wp-content/plugins e ativá-lo.
 * Removed Composer support for the client-php.
 * Removed checks when on automatic issuing, as it was avoiding important log information to be saved.
 * Added better labeling for the NFe.io `flowStatus`.
+
+### 1.2.9
