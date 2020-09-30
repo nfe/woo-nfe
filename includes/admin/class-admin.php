@@ -13,6 +13,21 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 	 * @version  1.0.6
 	 */
 	class WC_NFe_Admin {
+		
+		/**
+		 * The single instance
+		 */
+		protected static $_instance = null;
+		
+		/**
+		 * Singleton getter
+		 */
+		public static function get_instance() {
+			if ( is_null(self::$_instance) ) {
+				self::$_instance = new self();
+			}
+			return self::$_instance;
+		}
 
 		/**
 		 * Class Constructor
@@ -653,6 +668,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		}
 	}
 
-	return new WC_NFe_Admin();
+	return new WC_NFe_Admin::get_instance();
 
 endif;
