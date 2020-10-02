@@ -15,6 +15,21 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 	class WC_NFe_Admin {
 
 		/**
+		 * The single instance
+		 */
+		protected static $_instance = null;
+
+		/**
+		 * Singleton getter
+		 */
+		public static function get_instance() {
+			if ( is_null(self::$_instance) ) {
+				self::$_instance = new self();
+			}
+			return self::$_instance;
+		}
+
+		/**
 		 * Class Constructor
 		 *
 		 * @since 1.0.6
@@ -117,11 +132,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<li class="nfe-issued-orders">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
-						/* translators: %s: order count */
-						printf(
-							_n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ),
-							$nfe_issued_count
-						);
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ),
+						$nfe_issued_count
+					);
 					?>
 				</a>
 			</li>
@@ -129,11 +144,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<li class="nfe-processing-orders">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
-						/* translators: %s: order count */
-						printf(
-							_n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ),
-							$nfe_issuing_count
-						);
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ),
+						$nfe_issuing_count
+					);
 					?>
 				</a>
 			</li>
@@ -141,11 +156,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<li class="nfe-error-orders">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
-						/* translators: %s: order count */
-						printf(
-							_n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ),
-							$nfe_error_count
-						);
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ),
+						$nfe_error_count
+					);
 					?>
 				</a>
 			</li>
@@ -153,11 +168,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			<li class="nfe-cancelled-orders">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
 					<?php
-						/* translators: %s: order count */
-						printf(
-							_n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ),
-							$nfe_cancelled_count
-						);
+					/* translators: %s: order count */
+					printf(
+						_n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ),
+						$nfe_cancelled_count
+					);
 					?>
 				</a>
 			</li>
@@ -393,74 +408,74 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 			}
 			?>
 			<mark>
-			<?php
-			$actions = array();
+				<?php
+				$actions = array();
 
-			if ( ! empty( $nfe ) && 'Cancelled' === $nfe['status'] ) {
-				$actions['woo_nfe_cancelled'] = array(
-					'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
-					'action'    => 'woo_nfe_cancelled',
-				);
-			} elseif ( ! empty( $nfe ) && 'Issued' === $nfe['status'] ) {
-				$actions['woo_nfe_emitida'] = array(
-					'name'      => __( 'NFe Issued', 'woo-nfe' ),
-					'action'    => 'woo_nfe_emitida',
-				);
-			} elseif ( ! empty( $nfe ) && 'CancelledFailed' === $nfe['status'] ) {
-				$actions['woo_nfe_issue'] = array(
-					'name'      => __( 'NFe Cancelling Failed', 'woo-nfe' ),
-					'action'    => 'woo_nfe_issue',
-				);
-			} elseif ( ! empty( $nfe ) && 'IssueFailed' === $nfe['status'] ) {
-				$actions['woo_nfe_issue'] = array(
-					'name'      => __( 'NFe Issuing Failed', 'woo-nfe' ),
-					'action'    => 'woo_nfe_issue',
-				);
-			} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], nfe_processing_status(), true ) ) {
-				$actions['woo_nfe_issuing'] = array(
-					'name'      => __( 'Processing NFe', 'woo-nfe' ),
-					'action'    => 'woo_nfe_issuing',
-				);
-			} else {
-				if ( '0.00' === $order->get_total() ) {
-					$actions['woo_nfe_pending_address'] = array(
-						'name'      => __( 'Zero Order', 'woo-nfe' ),
-						'action'    => 'woo_nfe_pending_address',
+				if ( ! empty( $nfe ) && 'Cancelled' === $nfe['status'] ) {
+					$actions['woo_nfe_cancelled'] = array(
+						'name'      => __( 'NFe Cancelled', 'woo-nfe' ),
+						'action'    => 'woo_nfe_cancelled',
 					);
-				} elseif ( ! nfe_order_address_filled( $order_id ) ) {
-					$actions['woo_nfe_pending_address'] = array(
-						'name'      => __( 'Pending Address', 'woo-nfe' ),
-						'action'    => 'woo_nfe_pending_address',
+				} elseif ( ! empty( $nfe ) && 'Issued' === $nfe['status'] ) {
+					$actions['woo_nfe_emitida'] = array(
+						'name'      => __( 'NFe Issued', 'woo-nfe' ),
+						'action'    => 'woo_nfe_emitida',
+					);
+				} elseif ( ! empty( $nfe ) && 'CancelledFailed' === $nfe['status'] ) {
+					$actions['woo_nfe_issue'] = array(
+						'name'      => __( 'NFe Cancelling Failed', 'woo-nfe' ),
+						'action'    => 'woo_nfe_issue',
+					);
+				} elseif ( ! empty( $nfe ) && 'IssueFailed' === $nfe['status'] ) {
+					$actions['woo_nfe_issue'] = array(
+						'name'      => __( 'NFe Issuing Failed', 'woo-nfe' ),
+						'action'    => 'woo_nfe_issue',
+					);
+				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], nfe_processing_status(), true ) ) {
+					$actions['woo_nfe_issuing'] = array(
+						'name'      => __( 'Processing NFe', 'woo-nfe' ),
+						'action'    => 'woo_nfe_issuing',
 					);
 				} else {
-					if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
-						if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+					if ( '0.00' === $order->get_total() ) {
+						$actions['woo_nfe_pending_address'] = array(
+							'name'      => __( 'Zero Order', 'woo-nfe' ),
+							'action'    => 'woo_nfe_pending_address',
+						);
+					} elseif ( ! nfe_order_address_filled( $order_id ) ) {
+						$actions['woo_nfe_pending_address'] = array(
+							'name'      => __( 'Pending Address', 'woo-nfe' ),
+							'action'    => 'woo_nfe_pending_address',
+						);
+					} else {
+						if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
+							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+								$actions['woo_nfe_issue'] = array(
+									'name'      => __( 'Issue NFe', 'woo-nfe' ),
+									'action'    => 'woo_nfe_issue',
+								);
+							} else {
+								$actions['woo_nfe_expired'] = array(
+									'name'      => __( 'Issue Expired', 'woo-nfe' ),
+									'action'    => 'woo_nfe_expired',
+								);
+							}
+						} else {
 							$actions['woo_nfe_issue'] = array(
 								'name'      => __( 'Issue NFe', 'woo-nfe' ),
 								'action'    => 'woo_nfe_issue',
 							);
-						} else {
-							$actions['woo_nfe_expired'] = array(
-								'name'      => __( 'Issue Expired', 'woo-nfe' ),
-								'action'    => 'woo_nfe_expired',
-							);
 						}
-					} else {
-						$actions['woo_nfe_issue'] = array(
-							'name'      => __( 'Issue NFe', 'woo-nfe' ),
-							'action'    => 'woo_nfe_issue',
-						);
 					}
 				}
-			}
 
-			foreach ( $actions as $action ) {
-				printf( '<span class="woo_nfe_actions %s">%s</span>',
-					esc_attr( $action['action'] ),
-					esc_attr( $action['name'] )
-				);
-			}
-			?>
+				foreach ( $actions as $action ) {
+					printf( '<span class="woo_nfe_actions %s">%s</span>',
+						esc_attr( $action['action'] ),
+						esc_attr( $action['name'] )
+					);
+				}
+				?>
 			</mark>
 			<?php
 		}
@@ -510,9 +525,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 						<?php echo wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ); // WPCS: XSS ok. ?>
 					<?php endif; ?>
 					<br />
+
+					<strong><?php esc_html_e( 'Fatura: ', 'woo-nfe' );?></strong>
+						<?php echo sprintf( '<a href="https://app.nfe.io/companies/'.NFe_Woo()->get_company().'/service-invoices/'.$nfe['id'].'">Link</a>', 'woo-nfe' );?>
+					<br />
 				</p>
 			</div>
-		<?php
+			<?php
 		}
 
 		/**
@@ -560,23 +579,23 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					<h2><?php esc_html_e( 'NFe Details', 'woo-nfe' ); ?></h2>
 
 					<# if ( data.nfe.status ) { #>
-						<strong><?php esc_html_e( 'Status', 'woo-nfe' ); ?></strong>
-						{{{ data.nfe.status }}}
+					<strong><?php esc_html_e( 'Status', 'woo-nfe' ); ?></strong>
+					{{{ data.nfe.status }}}
 					<# } #>
 
 					<# if ( data.nfe.number ) { #>
-						<strong><?php esc_html_e( 'Number', 'woo-nfe' ); ?></strong>
-						{{{ data.nfe.number }}}
+					<strong><?php esc_html_e( 'Number', 'woo-nfe' ); ?></strong>
+					{{{ data.nfe.number }}}
 					<# } #>
 
 					<# if ( data.nfe.check_code ) { #>
-						<strong><?php esc_html_e( 'CheckCode', 'woo-nfe' ); ?></strong>
-						{{{ data.nfe.check_code }}}
+					<strong><?php esc_html_e( 'CheckCode', 'woo-nfe' ); ?></strong>
+					{{{ data.nfe.check_code }}}
 					<# } #>
 
 					<# if ( data.nfe.issued ) { #>
-						<strong><?php esc_html_e( 'Issued On', 'woo-nfe' ); ?></strong>
-						{{{ data.nfe.issued }}}
+					<strong><?php esc_html_e( 'Issued On', 'woo-nfe' ); ?></strong>
+					{{{ data.nfe.issued }}}
 					<# } #>
 				</div>
 			</div>
@@ -653,6 +672,6 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 		}
 	}
 
-	return new WC_NFe_Admin();
+	return WC_NFe_Admin::get_instance();
 
 endif;
