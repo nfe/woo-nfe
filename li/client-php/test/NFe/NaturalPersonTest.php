@@ -1,7 +1,7 @@
 <?php
 
 class NFe_NaturalPersonTest extends NFe_TestCase {
-  private static $company_id = '53f0d6b690c14737349bd29c';
+  private static $company_id = '5f74fd838e9d0929c843416e';
 
   public function testFetchPerson() {
     $result = NFe_NaturalPerson::fetch( self::$company_id, '5581c760146dc70d384da4b5' );

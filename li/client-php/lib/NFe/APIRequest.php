@@ -1,7 +1,15 @@
 <?php
 
-class NFe_APIRequest {
+class NFe_APIRequest extends NFe_Object {
+
   public function __construct() {}
+
+//	public static function convertClassToObjectType() {
+//		$object_type = str_replace('NFe_', '', get_called_class());
+//		$object_type = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $object_type));
+//
+//		return strtolower($object_type);
+//	}
 
   private function _defaultHeaders( $headers = array() ) {
     $headers[] = "Authorization: Basic " . NFe_io::getApiKey();
@@ -28,6 +36,7 @@ class NFe_APIRequest {
     $headers = $this->_defaultHeaders();
 
     list( $response_body, $response_code ) = $this->requestWithCURL( $method, $url, $headers, $data );
+
     if ( $response_code == 302 ) {
       $response = $response_body;
     }
@@ -35,9 +44,17 @@ class NFe_APIRequest {
       $response = json_decode($response_body);
     }
 
-    if ( json_last_error() != JSON_ERROR_NONE ) {
-      throw new NFeObjectNotFound($response_body);
-    }
+//	echo '<pre>';
+//	print_r($response);
+//	echo 'json: '.json_last_error();
+//	echo '</pre>';
+
+//    if (json_last_error() != JSON_ERROR_NONE ) {
+//		throw new NFeObjectNotFound($response_body);
+////		throw new ErrorException("nada", 10);
+////    	 return $response_body;
+////		throw new NFeObjectNotFound( self::convertClassToObjectType( get_called_class() ) . ':' . $response_body);
+//	}
 
     if ( $response_code == 404 ) {
       throw new NFeObjectNotFound($response_body);

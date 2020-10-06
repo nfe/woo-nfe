@@ -526,9 +526,24 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 					<?php endif; ?>
 					<br />
 
+					<?php if ( ! empty( $nfe['id'] ) ) : ?>
 					<strong><?php esc_html_e( 'Fatura: ', 'woo-nfe' );?></strong>
 						<?php echo sprintf( '<a href="https://app.nfe.io/companies/'.NFe_Woo()->get_company().'/service-invoices/'.$nfe['id'].'">Link</a>', 'woo-nfe' );?>
 					<br />
+					<?php endif; ?>
+
+
+					<?php
+					include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+					if ( is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
+						esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
+						echo sprintf( 'OK');
+					} else {esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
+						echo sprintf( 'NOT_OK');
+					}
+					?>
+
 				</p>
 			</div>
 			<?php
