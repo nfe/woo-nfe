@@ -4,13 +4,6 @@ class NFe_APIRequest extends NFe_Object {
 
   public function __construct() {}
 
-//	public static function convertClassToObjectType() {
-//		$object_type = str_replace('NFe_', '', get_called_class());
-//		$object_type = strtolower(preg_replace('/(?<=\\w)([A-Z])/', '_\\1', $object_type));
-//
-//		return strtolower($object_type);
-//	}
-
   private function _defaultHeaders( $headers = array() ) {
     $headers[] = "Authorization: Basic " . NFe_io::getApiKey();
     $headers[] = "Content-Type: application/json";
