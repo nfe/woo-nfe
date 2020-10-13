@@ -41,9 +41,9 @@ define( 'WP_DEBUG', true );
  * DO NOT use a production database or one that is shared with something else.
  */
 
-define( 'DB_NAME', 'nfe' );
-define( 'DB_USER', 'nfe' );
-define( 'DB_PASSWORD', 'q1w2e3r4@@' );
+define( 'DB_NAME', '' );
+define( 'DB_USER', '' );
+define( 'DB_PASSWORD', '' );
 define( 'DB_HOST', 'localhost' );
 
 //define( 'DB_NAME', 'criarsit_nfe' );
