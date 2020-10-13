@@ -637,7 +637,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 		 * @return string
 		 */
 		public function get_company() {
-			return nfe_get_field( 'choose_company' );
+			return nfe_get_field( 'choose_company');
 		}
 
 		/**

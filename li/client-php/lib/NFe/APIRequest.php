@@ -35,7 +35,7 @@ class NFe_APIRequest extends NFe_Object {
 
     $headers = $this->_defaultHeaders();
 
-    list( $response_body, $response_code ) = $this->requestWithCURL( $method, $url, $headers, $data );
+    list( $response_body, $response_code ) = $this->requestWithCURL( $method, $url, $headers, $data, NFe_io::getPdf());
 
     if ( $response_code == 302 ) {
       $response = $response_body;
@@ -49,12 +49,12 @@ class NFe_APIRequest extends NFe_Object {
 //	echo 'json: '.json_last_error();
 //	echo '</pre>';
 
-//    if (json_last_error() != JSON_ERROR_NONE ) {
-//		throw new NFeObjectNotFound($response_body);
-////		throw new ErrorException("nada", 10);
-////    	 return $response_body;
-////		throw new NFeObjectNotFound( self::convertClassToObjectType( get_called_class() ) . ':' . $response_body);
-//	}
+    if (json_last_error() != JSON_ERROR_NONE ) {
+		throw new NFeObjectNotFound($response_body);
+//		throw new ErrorException("nada", 10);
+//    	 return $response_body;
+//		throw new NFeObjectNotFound( self::convertClassToObjectType( get_called_class() ) . ':' . $response_body);
+	}
 
     if ( $response_code == 404 ) {
       throw new NFeObjectNotFound($response_body);
@@ -78,7 +78,7 @@ class NFe_APIRequest extends NFe_Object {
     return $response;
   }
 
-  private function requestWithCURL( $method, $url, $headers, $data = array() ) {
+  private function requestWithCURL( $method, $url, $headers, $data = array(), $pdf = false ) {
     $curl   = curl_init();
     $data   = NFe_Utilities::arrayToParams($data);
     $method = strtolower($method);

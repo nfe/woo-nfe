@@ -1,7 +1,7 @@
 <?php
 
 class NFe_LegalPersonTest extends NFe_TestCase {
-  private static $company_id = '5f74fd838e9d0929c843416e';
+  private static $company_id = '5f74fd838e9d0929c843416e'; // 5581c760146dc70d384da4b5
 
   public function testFetchPerson() {
     $result = NFe_LegalPerson::fetch( self::$company_id, '5775013f56c8e806dc72ad5e' );
