@@ -44,16 +44,8 @@ class NFe_APIRequest extends NFe_Object {
       $response = json_decode($response_body);
     }
 
-//	echo '<pre>';
-//	print_r($response);
-//	echo 'json: '.json_last_error();
-//	echo '</pre>';
-
     if (json_last_error() != JSON_ERROR_NONE ) {
 		throw new NFeObjectNotFound($response_body);
-//		throw new ErrorException("nada", 10);
-//    	 return $response_body;
-//		throw new NFeObjectNotFound( self::convertClassToObjectType( get_called_class() ) . ':' . $response_body);
 	}
 
     if ( $response_code == 404 ) {
