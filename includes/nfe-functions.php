@@ -18,44 +18,13 @@ defined( 'ABSPATH' ) || exit;
  * @return string
  */
 function nfe_get_field($value = '') {
+	if ( empty( $value ) ) {
+		$output = $nfe_fields;
+	} else {
+		$output = $nfe_fields[ $value ];
+	}
 
-	return $value;
-//	$apiKey = getenv( 'NFE_API_KEY' );
-//	$db = DB_NAME;
-
-//	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings' );
-//
-////	echo 'nfe_get_field :' ."\n";
-////	var_dump($nfe_fields) ."\n";
-////	echo $nfe_fields ."\n";
-////	echo '</pre>';
-////
-//////		echo '<pre>test_nfe_options_fields';
-////
-////	echo 'DB_NAME: '.$db ."\n";
-////	echo '$apiKey: :'.$apiKey ."\n";
-////	print_r($GLOBALS) ."\n";
-////		echo '</pre>';
-//
-//
-////	$db = defined( 'DB_NAME' );
-//
-////	$db = getenv( 'DB_NAME' );
-////	$nfe_fields = nfe_get_field();
-////
-////	echo '<pre>test_nfe_options_fields';
-////	echo 'db'.$db;
-////	echo 'db'.$db;
-//
-////	print_r(get_defined_constants(true));
-//
-//	if ( empty( $value ) ) {
-//		$output = $nfe_fields;
-//	} else {
-//		$output = $nfe_fields[ $value ];
-//	}
-//
-//	return $output;
+	return $output;
 }
 
 /**
