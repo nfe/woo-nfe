@@ -1,15 +1,21 @@
 <?php
-/**
- * PHPUnit bootstrap file
- *
- * @author NFe.io
- * @package Woocommerce_NFe\Tests
- * @since 1.0.0
- */
+require_once 'helpers.php';
+$wordpress_tests_lib =  dirname( dirname( __FILE__ ) );
+$apiKey = "";
+$companyId = "";
+putenv("WP_TESTS_DIR=$wordpress_tests_lib");
+putenv("NFE_API_KEY=$apiKey");
+define('COMPANY_ID', $companyId);
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+$_tests_dir = getenv('WP_TESTS_DIR');
+
 if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
+}
+
+if (!file_exists($_tests_dir . '/includes/functions.php')) {
+	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL;
+	exit(1);
 }
 
 // Give access to tests_add_filter() function.
@@ -18,27 +24,17 @@ require_once $_tests_dir . '/includes/functions.php';
 /**
  * Manually load the plugin being tested.
  */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/woocommerce-nfe.php';
-	require dirname( dirname( __FILE__ ) ) . '../../woocommerce/woocommerce.php';
-}
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+function _manually_load_plugin()
+{
+	$plugin_dir = dirname(dirname(__FILE__));
 
-function is_woocommerce_active() {
-	return true;
+	require $plugin_dir . '/woo-nfe.php';
+	require $plugin_dir . '../../woocommerce/woocommerce.php';
 }
 
-function woothemes_queue_update($file, $file_id, $product_id) {
-   return true;
-}
-
-$wc_tests_framework_base_dir = dirname( dirname( __FILE__ ) ) . '../../woocommerce/tests/framework/';
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-product.php'  );
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-coupon.php'  );
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-fee.php'  );
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-shipping.php'  );
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-customer.php'  );
-require_once( $wc_tests_framework_base_dir . 'helpers/class-wc-helper-order.php'  );
+tests_add_filter('muplugins_loaded', '_manually_load_plugin');
 
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
+
+require_once('TestCaseNew.php');

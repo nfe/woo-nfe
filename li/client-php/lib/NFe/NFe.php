@@ -16,6 +16,7 @@ abstract class NFe_io {
 
   // @var boolean Defaults to false
   public static $debug = false;
+  public static $pdf = false;
 
   const VERSION = '2.0.0';
 
@@ -59,4 +60,13 @@ abstract class NFe_io {
   public static function getVerifySslCerts() {
       return self::$verifySslCerts;
   }
+
+
+	public static function setPdf($bol) {
+		self::$pdf = $bol;
+	}
+
+	public static function getPdf() {
+	return self::$pdf;
+}
 }

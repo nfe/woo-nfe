@@ -40,6 +40,18 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * Initialize integration settings form fields.
 		 */
 		public function init_form_fields() {
+
+
+			if (is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
+				$custom_fields_plugin = 'yes';
+				$custom_fields_plugin_message = 'instalado';
+				$description = '';
+			} else {
+				$custom_fields_plugin = 'no';
+				$custom_fields_plugin_message = 'não instalado';
+				$description = __('<a href="plugin-install.php?tab=plugin-information&amp;plugin=woocommerce-extra-checkout-fields-for-brazil&" aria-label="Mais informações sobre Brazilian Market on WooCommerce" data-title="Brazilian Market on WooCommerce">Ver detalhes</a>', 'woo-nfe' );
+			}
+
 			if ( $this->has_api_key() ) {
 				$lists = $this->get_companies();
 
@@ -55,6 +67,14 @@ if ( class_exists( 'WC_Integration' ) ) {
 			}
 
 			$this->form_fields = array(
+				'custom_fields'		=> array(
+					'title'             => __( 'Custom Fields Plugin', 'woo-nfe' ),
+					'type'              => 'checkbox',
+					'label'             => __( $custom_fields_plugin_message, 'woo-nfe' ),
+					'default'           => $custom_fields_plugin,
+					'disabled'			=> true,
+					'description'       => $description,
+				),
 				'nfe_enable' 		=> array(
 					'title'             => __( 'Enable/Disable', 'woo-nfe' ),
 					'type'              => 'checkbox',

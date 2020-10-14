@@ -4,6 +4,7 @@ class NFe_CompanyTest extends NFe_TestCase {
   private static $id = null;
 
   public function testCreateAndDelete() {
+
     $attributes = array(
       'federalTaxNumber' => 48527553000123, // Generate CNPJ here: http://www.geradordecnpj.org/
       'name'             => 'TEST Company Name',
@@ -48,7 +49,7 @@ class NFe_CompanyTest extends NFe_TestCase {
     $object->companies->name = 'BB SA';
 
     // @todo Check it out why this is giving error
-    // $this->assertTrue( $object->save() ); 
+    // $this->assertTrue( $object->save() );
 
     $this->assertNotNull($object);
     $this->assertNotNull($object->companies->name);

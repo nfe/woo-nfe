@@ -17,9 +17,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return string
  */
-function nfe_get_field( $value = '' ) {
-	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings' );
-
+function nfe_get_field($value = '') {
 	if ( empty( $value ) ) {
 		$output = $nfe_fields;
 	} else {
