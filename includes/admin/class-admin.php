@@ -535,7 +535,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 
 					<?php
 					include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-
+					if (!function_exists('is_plugin_active')) { 
+						return;
+					 }
 					if ( is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
 						esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
 						echo sprintf( 'OK');

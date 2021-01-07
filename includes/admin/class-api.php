@@ -84,7 +84,6 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
-
 					// Bail early so that it doesn't create an invoice without address.
 					return false;
 				}
@@ -114,6 +113,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					'checkCode' => $invoice->checkCode,
 					'number'    => $invoice->number,
 				] );
+				$logger = wc_get_logger();
+				
+				
+				$logger->info( json_encode([
+					'id'        => $invoice->id,
+					'status'    => $invoice->flowStatus,
+					'issuedOn'  => $invoice->issuedOn,
+					'amountNet' => $invoice->amountNet,
+					'checkCode' => $invoice->checkCode,
+					'number'    => $invoice->number,
+				]) , array( 'source' => 'price-changes' ) );
 
 				if ( ! $meta ) {
 					// translators: Log message.
@@ -174,7 +184,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 
 			// Get order object.
 			$order = nfe_wc_get_order( $order_id );
-
+			
+			
 			$address = [
 				'postalCode'            => $this->check_customer_info( 'cep', $order_id ),
 				'street'                => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
@@ -203,6 +214,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				'servicesAmount'     => $order->get_total(),
 				'borrower'           => $borrower,
 			];
+			
 
 			// Removes empty, false and null fields from the array.
 			return array_filter( $data );

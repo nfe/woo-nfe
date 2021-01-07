@@ -154,6 +154,12 @@ class NFe_APIRequest extends NFe_Object {
     }
 
     curl_close($curl);
+
+    $logger = wc_get_logger();
+		$logger->info('$response_body ='.$response_body, array( 'source' => 'price-changes' ) );
+		$logger->info('$response_code ='.$response_code, array( 'source' => 'price-changes' ) );
+		$logger->info('$data ='.$data, array( 'source' => 'price-changes' ) );
+
     return array($response_body, $response_code);
   }
 
