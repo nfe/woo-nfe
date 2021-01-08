@@ -40,17 +40,17 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * Initialize integration settings form fields.
 		 */
 		public function init_form_fields() {
-//modificar depois ####
 			//depois ver uma opção melhor para isso
-			// if (is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
-				// $custom_fields_plugin = 'yes';
-				// $custom_fields_plugin_message = 'instalado';
-				// $description = '';
-			// } else {
-				// $custom_fields_plugin = 'no';
-				// $custom_fields_plugin_message = 'não instalado';
-				// $description = __('<a href="plugin-install.php?tab=plugin-information&amp;plugin=woocommerce-extra-checkout-fields-for-brazil&" aria-label="Mais informações sobre Brazilian Market on WooCommerce" data-title="Brazilian Market on WooCommerce">Ver detalhes</a>', 'woo-nfe' );
-			// }
+			
+			if (function_exists('is_plugin_active') && is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
+				$custom_fields_plugin = 'yes';
+				$custom_fields_plugin_message = 'instalado';
+				$description = '';
+			} else {
+				$custom_fields_plugin = 'no';
+				$custom_fields_plugin_message = 'não instalado';
+				$description = __('<a href="plugin-install.php?tab=plugin-information&amp;plugin=woocommerce-extra-checkout-fields-for-brazil&" aria-label="Mais informações sobre Brazilian Market on WooCommerce" data-title="Brazilian Market on WooCommerce">Ver detalhes</a>', 'woo-nfe' );
+			}
 
 			if ( $this->has_api_key() ) {
 				$lists = $this->get_companies();
