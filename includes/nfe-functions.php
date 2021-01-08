@@ -180,6 +180,7 @@ function nfe_status_label( $status ) {
 		'Cancelled'       => __( 'NFe Cancelled', 'woo-nfe' ),
 		'CancelledFailed' => __( 'NFe Cancelling Failed', 'woo-nfe' ),
 		'IssueFailed'     => __( 'NFe Issuing Failed', 'woo-nfe' ),
+		'sentToNFe'     => __( 'sent to the NFE system', 'woo-nfe' ),
 	];
 
 	foreach ( $valid_stati as $key => $title ) {

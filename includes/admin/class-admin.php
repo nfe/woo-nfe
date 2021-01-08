@@ -436,7 +436,13 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) :
 						'name'      => __( 'Processing NFe', 'woo-nfe' ),
 						'action'    => 'woo_nfe_issuing',
 					);
-				} else {
+				} elseif ( ! empty( $nfe ) && 'sentToNFe' === $nfe['status'] ) {
+					$actions['woo_nfe_issue'] = array(
+						'url'       => '#',
+						'name'      => __( 'sent to the NFE system', 'woo-nfe' ),
+						'action'    => 'woo_nfe_issue',
+					);
+				}else {
 					if ( '0.00' === $order->get_total() ) {
 						$actions['woo_nfe_pending_address'] = array(
 							'name'      => __( 'Zero Order', 'woo-nfe' ),

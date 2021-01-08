@@ -67,6 +67,25 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
+				// If second send.
+				$order_saved=get_post_meta($order_id);
+				if ($order_saved && ($order_saved['status'] == 'WaitingCalculateTaxes' || $order_saved['status'] == 'Issued' || $order_saved['status'] == 'sentToNFe') ) {
+					// translators: Log message.
+					$log = sprintf( __( 'second attempt to send the same NFE: #%d', 'woo-nfe' ), $order_id );
+					$this->logger( $log );
+					return false;
+				}
+
+				// If value is 0.00, don't issue it.
+				if ( '0.00' === $order->get_total() ) {
+					// translators: Log message.
+					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
+					$this->logger( $log );
+					$order->add_order_note( $log );
+
+					return false;
+				}
+
 				// If value is 0.00, don't issue it.
 				if ( '0.00' === $order->get_total() ) {
 					// translators: Log message.
@@ -88,6 +107,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					return false;
 				}
 
+				$meta = update_post_meta( $order_id, 'nfe_issued', [
+					'status'    => 'sentToNFe',
+				] );
 				$invoice = NFe_ServiceInvoice::create( $company_id, $datainvoice );
 
 				if ( isset( $invoice->message ) ) {
@@ -113,17 +135,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) :
 					'checkCode' => $invoice->checkCode,
 					'number'    => $invoice->number,
 				] );
-				$logger = wc_get_logger();
 				
+
 				
-				$logger->info( json_encode([
-					'id'        => $invoice->id,
-					'status'    => $invoice->flowStatus,
-					'issuedOn'  => $invoice->issuedOn,
-					'amountNet' => $invoice->amountNet,
-					'checkCode' => $invoice->checkCode,
-					'number'    => $invoice->number,
-				]) , array( 'source' => 'price-changes' ) );
 
 				if ( ! $meta ) {
 					// translators: Log message.
