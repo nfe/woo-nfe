@@ -135,18 +135,23 @@ class NFe_APIRequest extends NFe_Object
             curl_setopt($curl, CURLOPT_CAINFO, $cert);
             $response = curl_exec($curl);
         }
+        $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $response_header = substr($response, 0, $header_size);
+        $response_body = substr($response, $header_size);
 
         if (false === $response) {
             $errno = curl_errno($curl);
             $message = curl_error($curl);
             curl_close($curl);
             $this->handleCurlError($url, $errno, $message);
-        }
 
-        $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $response_header = substr($response, 0, $header_size);
-        $response_body = substr($response, $header_size);
+            //logs para monitoração
+            $logger = wc_get_logger();
+            $logger->debug('$response_body ='.$response_body, ['function' => 'requestWithCURL']);
+            $logger->debug('$response_code ='.$response_code, ['function' => 'requestWithCURL']);
+            $logger->debug('$data ='.$data, ['function' => 'requestWithCURL']);
+        }
 
         // if we have a redirect, we need to get the location header
         if (302 == $response_code) {
@@ -156,11 +161,6 @@ class NFe_APIRequest extends NFe_Object
         }
 
         curl_close($curl);
-
-        $logger = wc_get_logger();
-        $logger->info('$response_body ='.$response_body, ['source' => 'price-changes']);
-        $logger->info('$response_code ='.$response_code, ['source' => 'price-changes']);
-        $logger->info('$data ='.$data, ['source' => 'price-changes']);
 
         return [$response_body, $response_code];
     }
