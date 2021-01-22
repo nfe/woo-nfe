@@ -3,8 +3,6 @@
 // Exit if accessed directly.
 defined('ABSPATH') || exit;
 
-include_once ABSPATH.'wp-admin/includes/plugin.php';
-
 if (class_exists('WC_Integration')) {
     /**
      * WooCommerce NFe.io Integration.
@@ -43,7 +41,7 @@ if (class_exists('WC_Integration')) {
         public function init_form_fields()
         {
             //depois ver uma opção melhor para isso
-            is_plugin_active('woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php');
+
             if (function_exists('is_plugin_active') && is_plugin_active('woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php')) {
                 $custom_fields_plugin = 'yes';
                 $custom_fields_plugin_message = 'instalado';
@@ -73,7 +71,7 @@ if (class_exists('WC_Integration')) {
                     'title' => __('Custom Fields Plugin', 'woo-nfe'),
                     'type' => 'checkbox',
                     'label' => __($custom_fields_plugin_message, 'woo-nfe'),
-                    'default' => 'yes',
+                    'default' => $custom_fields_plugin,
                     'disabled' => true,
                     'description' => $description,
                 ],
@@ -281,68 +279,6 @@ if (class_exists('WC_Integration')) {
             set_transient($cache_key, $company_list, 30 * DAY_IN_SECONDS);
 
             return $company_list;
-        }
-
-        /**
-         * URL that will receive the webhooks.
-         *
-         * @return string
-         */
-        protected function get_events_url()
-        {
-            return sprintf('%s/wc-api/%s', get_site_url(), WC_API_CALLBACK);
-        }
-
-        /**
-         * Issue past date check.
-         *
-         * @return bool
-         */
-        protected function issue_past_days()
-        {
-            $days = nfe_get_field('issue_past_days');
-
-            if (empty($days)) {
-                return true;
-            }
-
-            return false;
-        }
-
-        /**
-         * The API key exists?
-         *
-         * @return bool
-         */
-        protected function has_api_key()
-        {
-            $key = nfe_get_field('api_key');
-
-            if (empty($key)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        /**
-         * Is the plugin active?
-         *
-         * @return bool
-         */
-        protected function is_active()
-        {
-            $enabled = nfe_get_field('nfe_enable');
-
-            if (empty($enabled)) {
-                return false;
-            }
-
-            if ('yes' === $enabled) {
-                return true;
-            }
-
-            return false;
         }
 
         /**

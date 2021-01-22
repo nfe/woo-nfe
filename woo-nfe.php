@@ -55,6 +55,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
 				$instance = new WooCommerce_NFe();
+//				$instance = new WooCommerce_NFe(__FILE__, '1.0.0');
 				$instance->setup_globals();
 				$instance->dependencies();
 				$instance->includes();
@@ -72,7 +73,59 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 		 *
 		 * @see WooCommerce_NFe::instance()
 		 */
-		private function __construct() { /* Do nothing here */ }
+		public function __construct() { /* Do nothing here */ }
+
+
+//		/**
+//		 * The full path and filename of the file of plugin's main file.
+//		 *
+//		 * @var string
+//		 */
+//		public $file;
+//
+//		/**
+//		 * The full path and filename of the file of plugin's main file.
+//		 *
+//		 * @var string
+//		 */
+//		public $version;
+//
+//		/**
+//		 * Flag to indicate whether this extension is running already.
+//		 *
+//		 * @var bool
+//		 */
+		protected $_is_running = false;
+//
+//		/**
+//		 * Constructor.
+//		 *
+//		 * @param string $file    The full path and filename of the file of plugin's
+//		 *                        main file.
+//		 * @param string $version The full path and filename of the file of plugin's
+//		 *                        main file.
+//		 */
+//		public function __construct( $file, $version ) {
+//			$this->file    = $file;
+//			$this->version = $version;
+//		}
+
+		/**
+		 * Run the extension.
+		 *
+		 * @return bool Returns true when it's running
+		 */
+		public function run() {
+			if ( $this->_is_running ) {
+				return false;
+			}
+//
+//			$this->includes();
+//			$this->wc_hooks();
+
+			$this->_is_running = true;
+			return $this->_is_running;
+		}
 
 		/**
 		 * Sets some globals for the plugin
@@ -245,6 +298,19 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 
 			return false;
 		}
+
+		protected function version_check1($version) {
+
+			if ( class_exists( 'WooCommerce' ) ) {
+				global $woocommerce;
+				if ( version_compare($version, $woocommerce->version, '>=') ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 	}
 
 	/**
@@ -257,6 +323,47 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) :
 	function woo_nfe() {
 		return WooCommerce_NFe::instance();
 	}
+
 	add_action( 'plugins_loaded', 'woo_nfe' );
 
+
+	/**
+	 * Plugin Name: WooCommerce example extension
+	 * Plugin URI: https://github.com/Automattic/wc-extensions-code-test-guide
+	 * Description: WooCommerce example extension as a guide to write tests.
+	 * Version: 1.0.0
+	 * Author: Akeda Bagus <admin@gedex.web.id>
+	 * Author URI: http://gedex.web.id
+	 */
+
+	/**
+	 * Run the plugin during `woocommerce_init`.
+	 *
+	 * @return bool
+	 */
+	function wc_ee_run()
+	{
+		return wc_ee_instance()->run();
+	}
+
+	add_action('woocommerce_init', 'wc_ee_run');
+
+//	/**
+//	 * Get instance of WC_Example_Extension.
+//	 *
+//	 * @return WC_Example_Extension Instance of WC_Example_Extension
+//	 */
+	function wc_ee_instance()
+	{
+		static $extension;
+
+		if (!isset($extension)) {
+//			require_once('includes/class-wc-example-extension.php');
+//			$extension = new WC_Example_Extension(__FILE__, '1.0.0');ILE__, '1.0.0');
+			$extension = WooCommerce_NFe::instance();
+//			$extension = new WooCommerce_NFe(__FILE__, '1.0.0');
+		}
+
+		return $extension;
+	}
 endif;

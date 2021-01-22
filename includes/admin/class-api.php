@@ -71,7 +71,7 @@ if (!class_exists('NFe_Woo')) {
 
                 // If second send.
                 $order_saved = get_post_meta($order_id);
-                if ($order_saved && ('WaitingCalculateTaxes' == $order_saved['status'] || 'Issued' == $order_saved['status'] || 'Processing' == $order_saved['status'])) {
+                if ($order_saved && ('WaitingCalculateTaxes' == $order_saved['status'] || 'Issued' == $order_saved['status'] || 'sentToNFe' == $order_saved['status'])) {
                     // translators: Log message.
                     $log = sprintf(__('second attempt to send the same NFE: #%d', 'woo-nfe'), $order_id);
                     $this->logger($log);
@@ -80,7 +80,17 @@ if (!class_exists('NFe_Woo')) {
                 }
 
                 // If value is 0.00, don't issue it.
-                if ($order->get_total() < 0.00) {
+                if ('0.00' === $order->get_total()) {
+                    // translators: Log message.
+                    $log = sprintf(__('Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe'), $order_id);
+                    $this->logger($log);
+                    $order->add_order_note($log);
+
+                    return false;
+                }
+
+                // If value is 0.00, don't issue it.
+                if ('0.00' === $order->get_total()) {
                     // translators: Log message.
                     $log = sprintf(__('Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe'), $order_id);
                     $this->logger($log);
@@ -101,7 +111,7 @@ if (!class_exists('NFe_Woo')) {
                 }
 
                 $meta = update_post_meta($order_id, 'nfe_issued', [
-                    'status' => 'Processing',
+                    'status' => 'sentToNFe',
                 ]);
                 $invoice = NFe_ServiceInvoice::create($company_id, $datainvoice);
 

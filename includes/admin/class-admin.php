@@ -409,10 +409,10 @@ if (!class_exists('WC_NFe_Admin')) {
                     'name' => __('Processing NFe', 'woo-nfe'),
                     'action' => 'woo_nfe_issuing',
                 ];
-            } elseif (!empty($nfe) && 'Processing' === $nfe['status']) {
+            } elseif (!empty($nfe) && 'sentToNFe' === $nfe['status']) {
                 $actions['woo_nfe_issue'] = [
                     'url' => '#',
-                    'name' => __('NFe Processing', 'woo-nfe'),
+                    'name' => __('sent to the NFE system', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
                 ];
             } else {
@@ -510,8 +510,8 @@ if (!class_exists('WC_NFe_Admin')) {
 					<?php } ?>
 
 
-			<?php
-            include_once ABSPATH.'wp-admin/includes/plugin.php';
+					<?php
+                    include_once ABSPATH.'wp-admin/includes/plugin.php';
             if (!function_exists('is_plugin_active')) {
                 return;
             }

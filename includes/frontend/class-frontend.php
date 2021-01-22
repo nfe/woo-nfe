@@ -116,10 +116,10 @@ if (!class_exists('WC_NFe_FrontEnd')) {
                     'name' => __('NFe Issuing Failed', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
                 ];
-            } elseif (!empty($nfe) && 'Processing' === $nfe['status']) {
+            } elseif (!empty($nfe) && 'sentToNFe' === $nfe['status']) {
                 $actions['woo_nfe_issue'] = [
                     'url' => '#',
-                    'name' => __('NFe Processing', 'woo-nfe'),
+                    'name' => __('sent to the NFE system', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
                 ];
             } elseif (!empty($nfe) && in_array($nfe['status'], nfe_processing_status(), true)) {
