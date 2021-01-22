@@ -17,8 +17,7 @@ defined('ABSPATH') || exit;
  *
  * @return string
  */
-function nfe_get_field($value = '')
-{
+function nfe_get_field($value = '') {
     $nfe_fields = get_option('woocommerce_woo-nfe_settings');
 
     if (empty($value)) {
@@ -37,10 +36,9 @@ function nfe_get_field($value = '')
  *
  * @return bool
  */
-function nfe_order_address_filled($order_id)
-{
+function nfe_order_address_filled($order_id) {
     // If address is not required, go along.
-    if (false === nfe_require_address()) {
+    if (nfe_require_address() === false) {
         return true;
     }
 
@@ -78,15 +76,14 @@ function nfe_order_address_filled($order_id)
  *
  * @return bool
  */
-function nfe_issue_past_orders($order)
-{
+function nfe_issue_past_orders($order) {
     $past_days = nfe_get_field('issue_past_days');
 
     if (empty($past_days)) {
         return false;
     }
 
-    $days = '-'.$past_days.' days';
+    $days = '-' . $past_days . ' days';
 
     if (strtotime($days) < strtotime($order->post->post_date)) {
         return true;
@@ -102,8 +99,7 @@ function nfe_issue_past_orders($order)
  *
  * @return WC_Order order object
  */
-function nfe_wc_get_order($order_id)
-{
+function nfe_wc_get_order($order_id) {
     return (function_exists('wc_get_order'))
         ? wc_get_order($order_id)
         : WC_Order($order_id);
@@ -118,8 +114,7 @@ function nfe_wc_get_order($order_id)
  *
  * @return WP_Query
  */
-function nfe_get_order_by_nota_value($value)
-{
+function nfe_get_order_by_nota_value($value) {
     $query_args = [
         'post_type' => 'shop_order',
         'cache_results' => true,
@@ -144,8 +139,7 @@ function nfe_get_order_by_nota_value($value)
  *
  * @return array
  */
-function nfe_processing_status()
-{
+function nfe_processing_status() {
     return ['WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload'];
 }
 
@@ -154,8 +148,7 @@ function nfe_processing_status()
  *
  * @return bool
  */
-function nfe_require_address()
-{
+function nfe_require_address() {
     $retval = nfe_get_field('require_address');
 
     if (empty($retval)) {
@@ -176,8 +169,7 @@ function nfe_require_address()
  *
  * @return string
  */
-function nfe_status_label($status)
-{
+function nfe_status_label($status) {
     // Check processing status first.
     if (in_array($status, nfe_processing_status(), true)) {
         return __('Processing NFe', 'woo-nfe');

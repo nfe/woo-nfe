@@ -1,20 +1,17 @@
 <?php
 
-class NFe_APIRequest extends NFe_Object
-{
-    public function __construct()
-    {
+class NFe_APIRequest extends NFe_Object {
+    public function __construct() {
     }
 
-    public function request($method, $url, $data = [])
-    {
+    public function request($method, $url, $data = []) {
         global $last_api_response_code;
 
-        if (null == NFe_io::getApiKey()) {
+        if (NFe_io::getApiKey() == null) {
             NFe_Utilities::authFromEnv();
         }
 
-        if (null == NFe_io::getApiKey()) {
+        if (NFe_io::getApiKey() == null) {
             return new NFeAuthenticationException('Chave de API não configurada. Utilize NFe_io::setApiKey(...) para configurar.');
         }
 
@@ -22,24 +19,24 @@ class NFe_APIRequest extends NFe_Object
 
         list($response_body, $response_code) = $this->requestWithCURL($method, $url, $headers, $data, NFe_io::getPdf());
 
-        if (302 == $response_code) {
+        if ($response_code == 320) {
             $response = $response_body;
         } else {
             $response = json_decode($response_body);
         }
 
-        if (JSON_ERROR_NONE != json_last_error()) {
+        if (json_last_error() != JSON_ERROR_NONE) {
             throw new NFeObjectNotFound($response_body);
         }
 
-        if (404 == $response_code) {
+        if ($response_code == 404) {
             throw new NFeObjectNotFound($response_body);
         }
 
         if (isset($response->errors)) {
-            if (('string' != gettype($response->errors)) && 0 == count(get_object_vars($response->errors))) {
+            if ((gettype($response->errors) != 'string') && 0 == count(get_object_vars($response->errors))) {
                 unset($response->errors);
-            } elseif (('string' != gettype($response->errors)) && count(get_object_vars($response->errors)) > 0) {
+            } elseif ((gettype($response->errors) != 'string') && count(get_object_vars($response->errors)) > 0) {
                 $response->errors = (array) $response->errors;
             }
 
@@ -53,9 +50,8 @@ class NFe_APIRequest extends NFe_Object
         return $response;
     }
 
-    private function _defaultHeaders($headers = [])
-    {
-        $headers[] = 'Authorization: Basic '.NFe_io::getApiKey();
+    private function _defaultHeaders($headers = []) {
+        $headers[] = 'Authorization: Basic ' . NFe_io::getApiKey();
         $headers[] = 'Content-Type: application/json';
         $headers[] = 'Accept: application/json';
         $headers[] = 'Accept-Charset: UTF-8';
@@ -65,19 +61,18 @@ class NFe_APIRequest extends NFe_Object
         return $headers;
     }
 
-    private function requestWithCURL($method, $url, $headers, $data = [], $pdf = false)
-    {
+    private function requestWithCURL($method, $url, $headers, $data = [], $pdf = false) {
         $curl = curl_init();
         $data = NFe_Utilities::arrayToParams($data);
         $method = strtolower($method);
         $opts = [];
 
-        if ('post' == $method) {
+        if ($method == 'post') {
             $opts[CURLOPT_POST] = 1;
             $opts[CURLOPT_POSTFIELDS] = $data;
-        } elseif ('delete' == $method) {
+        } elseif ($method == 'delete') {
             $opts[CURLOPT_CUSTOMREQUEST] = 'DELETE';
-        } elseif ('put' == $method) {
+        } elseif ($method == 'put') {
             $opts[CURLOPT_CUSTOMREQUEST] = 'PUT';
             $opts[CURLOPT_POSTFIELDS] = $data;
         }
@@ -89,7 +84,7 @@ class NFe_APIRequest extends NFe_Object
         $opts[CURLOPT_TIMEOUT] = 80;
         $opts[CURLOPT_CONNECTTIMEOUT] = 30;
         $opts[CURLOPT_HTTPHEADER] = $headers;
-        if (false == NFe_io::$verifySslCerts) {
+        if (NFe_io::$verifySslCerts == false) {
             $opts[CURLOPT_SSL_VERIFYPEER] = false;
         }
         $opts[CURLOPT_SSL_VERIFYHOST] = 2;
@@ -110,7 +105,7 @@ class NFe_APIRequest extends NFe_Object
         curl_setopt_array($curl, $opts);
 
         // For debugging
-        if (true == NFe_io::$debug) {
+        if (NFe_io::$debug == true) {
             curl_setopt($curl, CURLOPT_PROXY, '127.0.0.1:8888');
             curl_setopt($curl, CURLOPT_VERBOSE, 1);
         }
@@ -140,7 +135,7 @@ class NFe_APIRequest extends NFe_Object
         $response_header = substr($response, 0, $header_size);
         $response_body = substr($response, $header_size);
 
-        if (false === $response) {
+        if ($response === false) {
             $errno = curl_errno($curl);
             $message = curl_error($curl);
             curl_close($curl);
@@ -148,13 +143,13 @@ class NFe_APIRequest extends NFe_Object
 
             //logs para monitoração
             $logger = wc_get_logger();
-            $logger->debug('$response_body ='.$response_body, ['function' => 'requestWithCURL']);
-            $logger->debug('$response_code ='.$response_code, ['function' => 'requestWithCURL']);
-            $logger->debug('$data ='.$data, ['function' => 'requestWithCURL']);
+            $logger->debug('$response_body =' . $response_body, ['function' => 'requestWithCURL']);
+            $logger->debug('$response_code =' . $response_code, ['function' => 'requestWithCURL']);
+            $logger->debug('$data =' . $data, ['function' => 'requestWithCURL']);
         }
 
         // if we have a redirect, we need to get the location header
-        if (302 == $response_code) {
+        if ($response_code == 302) {
             preg_match_all('/^Location:\s?(.*)$/mi', $response, $matches);
 
             return [trim($matches[1][0]), $response_code];
@@ -172,28 +167,27 @@ class NFe_APIRequest extends NFe_Object
      *
      * @throws NFeAuthenticationException
      */
-    private function handleCurlError($url, $errno, $message)
-    {
+    private function handleCurlError($url, $errno, $message) {
         switch ($errno) {
       case CURLE_COULDNT_CONNECT:
       case CURLE_COULDNT_RESOLVE_HOST:
       case CURLE_OPERATION_TIMEOUTED:
         $msg = "Não foi possível conectar ao ({$url}). Por favor, cheque sua "
-         .'conexão com a internet e tente novamente. Se o problema persistir,';
+         . 'conexão com a internet e tente novamente. Se o problema persistir,';
 
         break;
 
       case CURLE_SSL_CACERT:
       case CURLE_SSL_PEER_CERTIFICATE:
         $msg = 'Não foi possível verificar o certificado SSL do NFe. Se certifique '
-         .'que sua rede não está interceptando certificados. '
-         ."(Tente ir {$url} em seu navegador.)  "
-         .'Se o problema persistir,';
+         . 'que sua rede não está interceptando certificados. '
+         . "(Tente ir {$url} em seu navegador.)  "
+         . 'Se o problema persistir,';
 
         break;
 
       default:
-        $msg = 'Error inesperado ao comunicar com a API do NFe.io. '.'Se o problema persistir,';
+        $msg = 'Error inesperado ao comunicar com a API do NFe.io. ' . 'Se o problema persistir,';
     }
         $msg .= ' entre em contato com NFe.io (https://nfe.io).';
         $msg .= "\n\n(Erro na rede [errno {$errno}]: {$message})";
@@ -204,8 +198,7 @@ class NFe_APIRequest extends NFe_Object
     /**
      * NFe.io Certification Bundle.
      */
-    private static function caBundle()
-    {
-        return dirname(__FILE__).'/../../data/ca-bundle.crt';
+    private static function caBundle() {
+        return dirname(__FILE__) . '/../../data/ca-bundle.crt';
     }
 }

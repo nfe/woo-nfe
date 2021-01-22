@@ -11,8 +11,7 @@ if (!class_exists('NFe_Woo')) {
      *
      * @version  1.0.7
      */
-    class NFe_Woo
-    {
+    class NFe_Woo {
         /**
          * WC_Logger Logger instance.
          *
@@ -25,8 +24,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @see $this->instance Class Instance
          */
-        private function __construct()
-        {
+        private function __construct() {
         }
 
         /**
@@ -34,13 +32,12 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return NFe_Woo
          */
-        public static function instance()
-        {
+        public static function instance() {
             // Store the instance locally to avoid private static replication.
             static $instance = null;
 
             // Only run these methods if they haven't been run previously.
-            if (null === $instance) {
+            if ($instance === null) {
                 $instance = new NFe_Woo();
             }
 
@@ -54,8 +51,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return bool|NFe_ServiceInvoice
          */
-        public function issue_invoice($order_ids = [])
-        {
+        public function issue_invoice($order_ids = []) {
             $key = $this->get_key();
             $company_id = $this->get_company();
 
@@ -147,8 +143,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return Exception|NFe_ServiceInvoice
          */
-        public function download_pdf_invoice($order_ids = [])
-        {
+        public function download_pdf_invoice($order_ids = []) {
             $key = $this->get_key();
             $company_id = $this->get_company();
 
@@ -185,8 +180,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return array information to issue the invoice
          */
-        public function order_info($order_id)
-        {
+        public function order_info($order_id) {
             // Get order object.
             $order = nfe_wc_get_order($order_id);
 
@@ -230,8 +224,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string|void
          */
-        public function cpf($cpf)
-        {
+        public function cpf($cpf) {
             if (!$cpf) {
                 return;
             }
@@ -248,8 +241,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string|void
          */
-        public function cnpj($cnpj)
-        {
+        public function cnpj($cnpj) {
             if (!$cnpj) {
                 return;
             }
@@ -266,8 +258,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string|void
          */
-        public function cep($cep)
-        {
+        public function cep($cep) {
             if (!$cep) {
                 return;
             }
@@ -284,8 +275,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        public function clear($string)
-        {
+        public function clear($string) {
             return str_replace([',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€'], '', $string);
         }
 
@@ -297,14 +287,13 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        public function mask($val, $mask)
-        {
+        public function mask($val, $mask) {
             $maskared = '';
             $k = 0;
             $mark = strlen($mask);
 
             for ($i = 0; $i <= $mark - 1; ++$i) {
-                if ('#' === $mask[$i]) {
+                if ($mask[$i] === '#') {
                     if (isset($val[$k])) {
                         $maskared .= $val[$k++];
                     }
@@ -321,8 +310,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        public function get_company()
-        {
+        public function get_company() {
             return nfe_get_field('choose_company');
         }
 
@@ -331,15 +319,14 @@ if (!class_exists('NFe_Woo')) {
          *
          * @param string $message message
          */
-        public static function logger($message)
-        {
+        public static function logger($message) {
             $debug = nfe_get_field('debug');
 
             if (empty($debug)) {
                 return;
             }
 
-            if ('yes' === $debug) {
+            if ($debug === 'yes') {
                 if (empty(self::$logger)) {
                     self::$logger = wc_get_logger();
                 }
@@ -355,8 +342,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return null|string
          */
-        protected function billing_country($order_id)
-        {
+        protected function billing_country($order_id) {
             $country = get_post_meta($order_id, '_billing_country', true);
 
             if (empty($country)) {
@@ -384,8 +370,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return null|string
          */
-        protected function ibge_code($order_id)
-        {
+        protected function ibge_code($order_id) {
             $post_code = get_post_meta($order_id, '_billing_postcode', true);
 
             if (empty($post_code)) {
@@ -396,7 +381,7 @@ if (!class_exists('NFe_Woo')) {
                 return null;
             }
 
-            $url = 'https://open.nfe.io/v1/addresses/'.$post_code.'?api_key='.$this->get_key();
+            $url = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $this->get_key();
             $response = wp_remote_get(esc_url_raw($url));
 
             if (is_wp_error($response)) {
@@ -420,10 +405,9 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return null|string
          */
-        protected function get_company_info($field)
-        {
+        protected function get_company_info($field) {
             // Get companies.
-            $url = 'https://api.nfe.io/v1/companies/'.$this->get_company().'?api_key='.$this->get_key();
+            $url = 'https://api.nfe.io/v1/companies/' . $this->get_company() . '?api_key=' . $this->get_key();
             $response = wp_remote_get(esc_url_raw($url));
 
             if (is_wp_error($response)) {
@@ -432,7 +416,7 @@ if (!class_exists('NFe_Woo')) {
 
             $company = json_decode(wp_remote_retrieve_body($response), true);
 
-            if ('city' === $field) {
+            if ($field === 'city') {
                 $name = $company['companies']['address']['city']['name'];
 
                 if (empty($name)) {
@@ -442,7 +426,7 @@ if (!class_exists('NFe_Woo')) {
                 return $name;
             }
 
-            if ('code' === $field) {
+            if ($field === 'code') {
                 $code = $company['companies']['address']['city']['code'];
 
                 if (empty($code)) {
@@ -469,8 +453,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return null|string
          */
-        protected function city_service_info($field = '', $order_id)
-        {
+        protected function city_service_info($field = '', $order_id) {
             // Bail early.
             if (empty($field)) {
                 return;
@@ -529,8 +512,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return null|string returns the customer info specific to the person type being fetched
          */
-        protected function check_customer_info($field = '', $order)
-        {
+        protected function check_customer_info($field = '', $order) {
             if (empty($field)) {
                 return;
             }
@@ -542,14 +524,14 @@ if (!class_exists('NFe_Woo')) {
 
                 // Customer info.
                 $cpf = get_post_meta($order, '_billing_cpf', true);
-                $customer = get_post_meta($order, '_billing_first_name', true).' '.get_post_meta($order, '_billing_last_name', true);
+                $customer = get_post_meta($order, '_billing_first_name', true) . ' ' . get_post_meta($order, '_billing_last_name', true);
 
                 // Company info.
                 $cnpj = get_post_meta($order, '_billing_cnpj', true);
                 $company = get_post_meta($order, '_billing_company', true);
 
                 if (!empty($type)) {
-                    if ('1' === $type) {
+                    if ($type === '1') {
                         $id = $this->cpf($cpf);
                         $name = $customer;
                         $type = __('Customers', 'woo-nfe');
@@ -669,8 +651,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        protected function removepontotraco($string)
-        {
+        protected function removepontotraco($string) {
             return ltrim(preg_replace('/[^0-9]/', '', $string), '0');
         }
 
@@ -681,8 +662,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        protected function remover_caracter($string)
-        {
+        protected function remover_caracter($string) {
             $string = preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities($string, ENT_COMPAT, 'UTF-8'));
 
             return preg_replace('/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/', '', $string);
@@ -693,8 +673,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return string
          */
-        protected function get_key()
-        {
+        protected function get_key() {
             return nfe_get_field('api_key');
         }
 
@@ -703,8 +682,7 @@ if (!class_exists('NFe_Woo')) {
          *
          * @return array
          */
-        protected function country_iso_codes()
-        {
+        protected function country_iso_codes() {
             return [
                 'AFG' => 'AF',     // Afghanistan
                 'ALB' => 'AL',     // Albania
@@ -843,8 +821,7 @@ if (!class_exists('NFe_Woo')) {
      *
      * @return NFe_Woo the one true NFe_Woo Instance
      */
-    function NFe_Woo()
-    {
+    function NFe_Woo() {
         return NFe_Woo::instance();
     }
 }

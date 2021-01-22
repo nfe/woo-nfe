@@ -11,8 +11,7 @@ if (!class_exists('WC_NFe_Admin')) {
      *
      * @version  1.0.6
      */
-    class WC_NFe_Admin
-    {
+    class WC_NFe_Admin {
         /**
          * The single instance.
          */
@@ -23,8 +22,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @since 1.0.6
          */
-        public function __construct()
-        {
+        public function __construct() {
             // Add column to show receipt status updated via NFe.io API.
             add_filter('manage_edit-shop_order_columns', [$this, 'order_status_column_header']);
             add_action('manage_shop_order_posts_custom_column', [$this, 'order_status_column_content'], 10, 1);
@@ -64,8 +62,7 @@ if (!class_exists('WC_NFe_Admin')) {
         /**
          * Singleton getter.
          */
-        public static function get_instance()
-        {
+        public static function get_instance() {
             if (is_null(self::$_instance)) {
                 self::$_instance = new self();
             }
@@ -78,10 +75,9 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param int $order_id order ID
          */
-        public function issue_trigger($order_id)
-        {
+        public function issue_trigger($order_id) {
             // Bail early.
-            if ('manual' === nfe_get_field('issue_when')) {
+            if (nfe_get_field('issue_when') === 'manual') {
                 return;
             }
 
@@ -103,8 +99,7 @@ if (!class_exists('WC_NFe_Admin')) {
         /**
          * Show NFe.io order data is status widget.
          */
-        public function nfe_status_widget_order_rows()
-        {
+        public function nfe_status_widget_order_rows() {
             if (!current_user_can('edit_shop_orders')) {
                 return;
             }
@@ -167,8 +162,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return array Array with product data tabs
          */
-        public function product_data_tab($product_data_tabs)
-        {
+        public function product_data_tab($product_data_tabs) {
             $product_data_tabs['nfe-product-info-tab'] = [
                 'label' => esc_html__('WooCommerce NFe', 'woo-nfe'),
                 'target' => 'nfe_product_info_data',
@@ -181,8 +175,7 @@ if (!class_exists('WC_NFe_Admin')) {
         /**
          * Adds NFe product fields (tab content).
          */
-        public function product_data_fields()
-        {
+        public function product_data_fields() {
             $post_id = get_the_ID(); ?>
 			<div id="nfe_product_info_data" class="panel woocommerce_options_panel">
 				<?php
@@ -221,8 +214,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param int $post_id product ID
          */
-        public function product_data_fields_save($post_id)
-        {
+        public function product_data_fields_save($post_id) {
             // Text Field - City Service Code.
             update_post_meta($post_id, '_simple_cityservicecode', esc_attr($_POST['_simple_cityservicecode']));
 
@@ -240,13 +232,12 @@ if (!class_exists('WC_NFe_Admin')) {
          * @param array  $variation_data product/variation data
          * @param string $variation      variation
          */
-        public function variation_fields($loop, $variation_data, $variation)
-        {
+        public function variation_fields($loop, $variation_data, $variation) {
             // Product ID.
             $product_id = $variation->ID;
 
             woocommerce_wp_text_input([
-                'id' => '_cityservicecode['.$product_id.']',
+                'id' => '_cityservicecode[' . $product_id . ']',
                 'label' => __('City Service Code (CityServiceCode)', 'woo-nfe'),
                 'desc_tip' => 'true',
                 'description' => __('City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe'),
@@ -254,7 +245,7 @@ if (!class_exists('WC_NFe_Admin')) {
             ]);
 
             woocommerce_wp_text_input([
-                'id' => '_federalservicecode['.$product_id.']',
+                'id' => '_federalservicecode[' . $product_id . ']',
                 'label' => __('Federal Service Code LC 116 (FederalServiceCode)', 'woo-nfe'),
                 'desc_tip' => 'true',
                 'description' => __('Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe'),
@@ -262,7 +253,7 @@ if (!class_exists('WC_NFe_Admin')) {
             ]);
 
             woocommerce_wp_textarea_input([
-                'id' => '_nfe_product_variation_desc['.$product_id.']',
+                'id' => '_nfe_product_variation_desc[' . $product_id . ']',
                 'label' => __('Service Description', 'woo-nfe'),
                 'desc_tip' => 'true',
                 'description' => __('Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'woo-nfe'),
@@ -275,8 +266,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param int $post_id product ID
          */
-        public function save_variations_fields($post_id)
-        {
+        public function save_variations_fields($post_id) {
             // Text Field - City Service Code.
             update_post_meta($post_id, '_cityservicecode', esc_attr($_POST['_cityservicecode'][intval($post_id)]));
 
@@ -294,8 +284,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return array|void list of actions
          */
-        public function download_and_issue_actions($actions)
-        {
+        public function download_and_issue_actions($actions) {
             global $theorder;
 
             if (!is_object($theorder)) {
@@ -327,8 +316,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param WC_Order $order order object
          */
-        public function download_issue_action($order)
-        {
+        public function download_issue_action($order) {
             // Order note.
             $order->add_order_note(esc_html__('NFe receipt downloaded.', 'woo-nfe'));
 
@@ -340,8 +328,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param WC_Order $order order object
          */
-        public function issue_order_action($order)
-        {
+        public function issue_order_action($order) {
             // Issue NFe receipt.
             $invoice = NFe_Woo()->issue_invoice([$order->get_id()]);
 
@@ -357,9 +344,8 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return array array of colunms with the NFe one
          */
-        public function order_status_column_header($columns)
-        {
-            $column_header = '<span class="tips" data-tip="'.esc_attr__('Sales Receipt updated via NFe.io API', 'woo-nfe').'">'.esc_attr__('Sales Receipt', 'woo-nfe').'</span>';
+        public function order_status_column_header($columns) {
+            $column_header = '<span class="tips" data-tip="' . esc_attr__('Sales Receipt updated via NFe.io API', 'woo-nfe') . '">' . esc_attr__('Sales Receipt', 'woo-nfe') . '</span>';
 
             return $this->array_insert_after('order_total', $columns, 'nfe_receipts', $column_header);
         }
@@ -369,37 +355,36 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param string $column column id
          */
-        public function order_status_column_content($column)
-        {
+        public function order_status_column_content($column) {
             // Get information.
             $order = nfe_wc_get_order(get_the_ID());
             $order_id = $order->get_id();
             $nfe = get_post_meta($order_id, 'nfe_issued', true);
 
             // Bail early.
-            if ('nfe_receipts' !== $column) {
+            if ($column !== 'nfe_receipts') {
                 return;
             } ?>
 			<mark>
 				<?php
                 $actions = [];
 
-            if (!empty($nfe) && 'Cancelled' === $nfe['status']) {
+            if (!empty($nfe) && $nfe['status'] === 'Cancelled') {
                 $actions['woo_nfe_cancelled'] = [
                     'name' => __('NFe Cancelled', 'woo-nfe'),
                     'action' => 'woo_nfe_cancelled',
                 ];
-            } elseif (!empty($nfe) && 'Issued' === $nfe['status']) {
+            } elseif (!empty($nfe) && $nfe['status'] === 'Issued') {
                 $actions['woo_nfe_emitida'] = [
                     'name' => __('NFe Issued', 'woo-nfe'),
                     'action' => 'woo_nfe_emitida',
                 ];
-            } elseif (!empty($nfe) && 'CancelledFailed' === $nfe['status']) {
+            } elseif (!empty($nfe) && $nfe['status'] === 'CancelledFailed') {
                 $actions['woo_nfe_issue'] = [
                     'name' => __('NFe Cancelling Failed', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
                 ];
-            } elseif (!empty($nfe) && 'IssueFailed' === $nfe['status']) {
+            } elseif (!empty($nfe) && $nfe['status'] === 'IssueFailed') {
                 $actions['woo_nfe_issue'] = [
                     'name' => __('NFe Issuing Failed', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
@@ -409,14 +394,14 @@ if (!class_exists('WC_NFe_Admin')) {
                     'name' => __('Processing NFe', 'woo-nfe'),
                     'action' => 'woo_nfe_issuing',
                 ];
-            } elseif (!empty($nfe) && 'Processing' === $nfe['status']) {
+            } elseif (!empty($nfe) && $nfe['status'] === 'Processing') {
                 $actions['woo_nfe_issue'] = [
                     'url' => '#',
                     'name' => __('NFe Processing', 'woo-nfe'),
                     'action' => 'woo_nfe_issue',
                 ];
             } else {
-                if ('0.00' === $order->get_total()) {
+                if ($order->get_total() === '0.00') {
                     $actions['woo_nfe_pending_address'] = [
                         'name' => __('Zero Order', 'woo-nfe'),
                         'action' => 'woo_nfe_pending_address',
@@ -427,7 +412,7 @@ if (!class_exists('WC_NFe_Admin')) {
                         'action' => 'woo_nfe_pending_address',
                     ];
                 } else {
-                    if ('yes' === nfe_get_field('issue_past_notes')) {
+                    if (nfe_get_field('issue_past_notes') == 'yes') {
                         if (nfe_issue_past_orders($order) && empty($nfe['id'])) {
                             $actions['woo_nfe_issue'] = [
                                 'name' => __('Issue NFe', 'woo-nfe'),
@@ -464,8 +449,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @param WC_Order $order order object
          */
-        public function display_order_data_preview_in_admin($order)
-        {
+        public function display_order_data_preview_in_admin($order) {
             $nfe = get_post_meta($order->get_id(), 'nfe_issued', true); ?>
 			<h4>
 				<strong><?php esc_html_e('Receipts Details (NFE.io)', 'woo-nfe'); ?></strong>
@@ -505,13 +489,13 @@ if (!class_exists('WC_NFe_Admin')) {
 
 					<?php if (!empty($nfe['id'])) { ?>
 					<strong><?php esc_html_e('Fatura: ', 'woo-nfe'); ?></strong>
-						<?php echo sprintf('<a href="https://app.nfe.io/companies/'.NFe_Woo()->get_company().'/service-invoices/'.$nfe['id'].'">Link</a>', 'woo-nfe'); ?>
+						<?php echo sprintf('<a href="https://app.nfe.io/companies/' . NFe_Woo()->get_company() . '/service-invoices/' . $nfe['id'] . '">Link</a>', 'woo-nfe'); ?>
 					<br />
 					<?php } ?>
 
 
 					<?php
-                    include_once ABSPATH.'wp-admin/includes/plugin.php';
+                    include_once ABSPATH . 'wp-admin/includes/plugin.php';
             if (!function_exists('is_plugin_active')) {
                 return;
             }
@@ -538,8 +522,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return array modified order details
          */
-        public function nfe_admin_order_preview_details($fields, $order)
-        {
+        public function nfe_admin_order_preview_details($fields, $order) {
             $nfe = get_post_meta($order->get_id(), 'nfe_issued', true);
 
             if (isset($fields)) {
@@ -563,8 +546,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @since 1.0.8
          */
-        public function nfe_admin_order_preview()
-        {
+        public function nfe_admin_order_preview() {
             ?>
 			<# if ( data.nfe ) { #>
 			<div class="wc-order-preview-addresses">
@@ -599,9 +581,8 @@ if (!class_exists('WC_NFe_Admin')) {
         /**
          * Adds the NFe Admin CSS.
          */
-        public function register_enqueue_css()
-        {
-            wp_enqueue_style('nfe-woo-admin-css', plugins_url('woo-nfe/assets/css/nfe').'.css', [], '1.2.8', false);
+        public function register_enqueue_css() {
+            wp_enqueue_style('nfe-woo-admin-css', plugins_url('woo-nfe/assets/css/nfe') . '.css', [], '1.2.8', false);
         }
 
         /**
@@ -611,8 +592,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return int
          */
-        protected function get_order_count($value)
-        {
+        protected function get_order_count($value) {
             $query = nfe_get_order_by_nota_value($value);
 
             return $query->found_posts;
@@ -628,8 +608,7 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return The new array if the $needle key exists, otherwise an unmodified $haystack
          */
-        protected function array_insert_after($needle, $haystack, $new_key, $new_value)
-        {
+        protected function array_insert_after($needle, $haystack, $new_key, $new_value) {
             if (array_key_exists($needle, $haystack)) {
                 $new_array = [];
 
@@ -655,15 +634,14 @@ if (!class_exists('WC_NFe_Admin')) {
          *
          * @return bool
          */
-        protected function should_we_issue($download, $order)
-        {
+        protected function should_we_issue($download, $order) {
             // Bail for these stati.
-            if (!empty($download['status']) && ('Issued' === $download['status'] || 'Cancelled' === $download['status'])) {
+            if (!empty($download['status']) && ($download['status'] === 'Issued' || $download['status'] === 'Cancelled')) {
                 return false;
             }
 
             // Bail for zeroed order.
-            if ('0.00' === $order->get_total()) {
+            if ($order->get_total() === '0.00') {
                 return false;
             }
 
