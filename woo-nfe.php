@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce NFe plugin.
+ * NFe for Woocommerce plugin.
  *
  * @author            NFe.io
  *
@@ -8,10 +8,10 @@
  * @since             1.0.8
  *
  * @wordpress-plugin
- * Plugin Name:       WooCommerce NFe
+ * Plugin Name:       NFe for Woocommerce
  * Plugin URI:        https://github.com/nfe/woo-nfe
- * Description:       WooCommerce extension for the NFe API
- * Version:           1.2.8
+ * Description:       Extension for connecting to NFe.io API
+ * Version:           1.3.1
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -20,10 +20,10 @@
  * Domain Path:       /languages
  * Network:           false
  *
- * WC requires at least: 3.3.5
- * WC tested up to: 3.5.1
+ * WC requires at least: 4.7.0
+ * WC tested up to: 6.1.0
  *
- * Copyright: © 2018 NFe.io
+ * Copyright: © 2022 NFe.io
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */

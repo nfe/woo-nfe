@@ -1,19 +1,19 @@
-=== WooCommerce NFe ===
+=== NFe for Woocommerce ===
 Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
 Requires at least: 4.7
-Tested up to: 4.9.4
-Stable tag: 1.2.8
-Requires PHP: 5.5
-WC tested up to: 3.5.1
+Tested up to: 5.9.3
+Stable tag: 1.3.1
+Requires PHP: 5.6
+WC tested up to: 6.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WooCommerce extension for issuing invoices using the NFe.io API
+Extension for issuing invoices using NFe.io API
 
 == Description ==
 
-WooCommerce NFe is a WooCommerce extension for issuing invoices using the NFe.io API.
+NFe for Woocommerce is an extension for issuing invoices using NFe.io API.
 
 **Included Translations:**
 
@@ -25,7 +25,7 @@ Thanks in advance for your help on any translation efforts!
 == Installation ==
 
 1. Go the *Plugins* menu and click *Add New*.
-2. Search for *WooCommerce NFe*.
+2. Search for *NFe for Woocommerce*.
 3. Click *Install Now*.
 
 or
@@ -76,3 +76,12 @@ or
 * Removed Composer support for the client-php.
 * Removed checks when on automatic issuing, as it was avoiding important log information to be saved.
 * Added better labeling for the NFe.io `flowStatus`.
+
+= 1.2.9 =
+* Refactoring classes
+
+= 1.3.0 =
+Testing support to newer wordpress versions
+
+= 1.3.1 =
+Adjusting trademarking issues
