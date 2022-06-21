@@ -380,6 +380,8 @@ if (!class_exists('NFe_Woo')) {
 
                 return null;
             }
+			// Sanitize ZIP Code to remove bad characters
+			$post_code = $this->removepontotraco($post_code);
 
             $url = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $this->get_key();
             $response = wp_remote_get(esc_url_raw($url));
