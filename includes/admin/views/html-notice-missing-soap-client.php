@@ -11,5 +11,5 @@
 defined( 'ABSPATH' ) || exit; ?>
 
 <div class="error">
-	<p><strong><?php esc_html_e( 'The WooCommerce NFe plugin', 'woo-nfe' ); ?></strong> <?php printf( __( 'needs the %s to work!', 'woo-nfe' ), '<a href="https://secure.php.net/manual/en/class.soapclient.php" target="_blank">' . __( 'SOAP module', 'woo-nfe' ) . '</a>' ); ?></p>
+	<p><strong><?php esc_html_e( 'The WooCommerce NFe plugin', 'woo-nfe' ); ?></strong> <?php printf( esc_html__( 'needs the %s to work!', 'woo-nfe' ), '<a href="https://secure.php.net/manual/en/class.soapclient.php" target="_blank">' . esc_html__( 'SOAP module', 'woo-nfe' ) . '</a>' ); ?></p>
 </div>

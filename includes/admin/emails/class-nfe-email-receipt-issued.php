@@ -1,6 +1,8 @@
 <?php
+/**
+ * Exit if accessed directly.
+ */
 
-// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -75,7 +77,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	}
 
 	/**
-	 * get_content_html.
+	 *  Function get_content_html.
 	 *
 	 * @return string
 	 */
@@ -88,7 +90,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 				'email_heading' => $this->get_heading(),
 				'sent_to_admin' => false,
 				'plain_text'    => false,
-				'email'			=> $this
+				'email'         => $this,
 			),
 			'',
 			$this->template_base
@@ -97,7 +99,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	}
 
 	/**
-	 * get_content_plain public function.
+	 * Function get_content_plain public function.
 	 *
 	 * @return string
 	 */
@@ -125,35 +127,35 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 */
 	public function init_form_fields() {
 		$this->form_fields = array(
-			'enabled' => array(
-				'title'         => _x( 'Enable/Disable', 'an email notification', 'woo-nfe' ),
-				'type'          => 'checkbox',
-				'label'         => __( 'Enable this email notification', 'woo-nfe' ),
-				'default'       => 'yes',
+			'enabled'    => array(
+				'title'   => _x( 'Enable/Disable', 'an email notification', 'woo-nfe' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Enable this email notification', 'woo-nfe' ),
+				'default' => 'yes',
 			),
-			'subject' => array(
-				'title'         => _x( 'Subject', 'of an email', 'woo-nfe' ),
-				'type'          => 'text',
-				'description'   => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'woo-nfe' ), $this->subject ),
-				'placeholder'   => '',
-				'default'       => '',
+			'subject'    => array(
+				'title'       => _x( 'Subject', 'of an email', 'woo-nfe' ),
+				'type'        => 'text',
+				'description' => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'woo-nfe' ), $this->subject ),
+				'placeholder' => '',
+				'default'     => '',
 			),
-			'heading' => array(
-				'title'         => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'woo-nfe' ),
-				'type'          => 'text',
-				'description'   => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'woo-nfe' ), $this->heading ),
-				'placeholder'   => '',
-				'default'       => '',
+			'heading'    => array(
+				'title'       => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'woo-nfe' ),
+				'type'        => 'text',
+				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'woo-nfe' ), $this->heading ),
+				'placeholder' => '',
+				'default'     => '',
 			),
 			'email_type' => array(
-				'title'         => _x( 'Email type', 'text, html or multipart', 'woo-nfe' ),
-				'type'          => 'select',
-				'description'   => __( 'Choose which format of email to send.', 'woo-nfe' ),
-				'default'       => 'html',
-				'class'         => 'email_type',
-				'options'       => array(
-					'plain'         => _x( 'Plain text', 'email type', 'woo-nfe' ),
-					'html'          => _x( 'HTML', 'email type', 'woo-nfe' ),
+				'title'       => _x( 'Email type', 'text, html or multipart', 'woo-nfe' ),
+				'type'        => 'select',
+				'description' => __( 'Choose which format of email to send.', 'woo-nfe' ),
+				'default'     => 'html',
+				'class'       => 'email_type',
+				'options'     => array(
+					'plain' => _x( 'Plain text', 'email type', 'woo-nfe' ),
+					'html'  => _x( 'HTML', 'email type', 'woo-nfe' ),
 				),
 			),
 		);

@@ -37,6 +37,15 @@
 	"require-dev": {
 		"phpunit/phpunit": "^7.5.20",
 		"phpunit/php-code-coverage": "^6.1.4",
-		"friends-of-phpspec/phpspec-code-coverage": "^4.3"
+		"friends-of-phpspec/phpspec-code-coverage": "^4.3",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+		"phpcompatibility/php-compatibility": "^9.3",
+		"wp-coding-standards/wpcs": "^2.3"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }

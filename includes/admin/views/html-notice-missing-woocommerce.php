@@ -27,7 +27,7 @@ if ( function_exists( 'get_plugins' ) ) {
 				<?php esc_html_e( 'Active WooCommerce', 'woo-nfe' ); ?>
 			</a>
 		</p>
-	<?php
+		<?php
 	else :
 		if ( current_user_can( 'install_plugins' ) ) {
 			$url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=woocommerce' ), 'install-plugin_woocommerce' );

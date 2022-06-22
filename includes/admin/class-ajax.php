@@ -1,6 +1,8 @@
 <?php
+/**
+ * Exit if accessed directly.
+ */
 
-// Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -26,12 +28,15 @@ class WC_NFe_Ajax {
 	 * @return void
 	 */
 	public static function front_issue() {
+		$get       = wp_unslash( $_GET );
+		$nfe_issue = sanitize_text_field( $get['nfe_issue'] );
+		$wp_nonce  = sanitize_text_field( $get['_wpnonce'] );
 		// Nothing to do.
-		if ( ! isset( $_GET['nfe_issue'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_issue' ) ) {
+		if ( ! isset( $nfe_issue ) || ! is_user_logged_in() || ! isset( $wp_nonce ) || ! wp_verify_nonce( $wp_nonce, 'woocommerce_nfe_issue' ) ) {
 			return;
 		}
 
-		$order = nfe_wc_get_order( absint( $_GET['nfe_issue'] ) );
+		$order = nfe_wc_get_order( absint( $nfe_issue ) );
 
 		// Bail if there is no order id or it is false.
 		if ( empty( $order->id ) || ! $order ) {
@@ -53,11 +58,14 @@ class WC_NFe_Ajax {
 	 * Download NFe from the Front-end
 	 */
 	public static function front_download_pdf() {
-		if ( ! isset( $_GET['nfe_download_pdf'] ) || ! is_user_logged_in() || ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'woocommerce_nfe_download_pdf' ) ) {
+		$get              = wp_unslash( $_GET );
+		$nfe_download_pdf = sanitize_text_field( $get['nfe_download_pdf'] );
+		$wp_nonce         = sanitize_text_field( $get['_wpnonce'] );
+		if ( ! isset( $nfe_download_pdf ) || ! is_user_logged_in() || ! isset( $wp_nonce ) || ! wp_verify_nonce( $wp_nonce, 'woocommerce_nfe_download_pdf' ) ) {
 			return;
 		}
 
-		$order = nfe_wc_get_order( absint( $_GET['nfe_download_pdf'] ) );
+		$order = nfe_wc_get_order( absint( $nfe_download_pdf ) );
 
 		// Bail if there is no order id or it is false.
 		if ( empty( $order->id ) || ! $order ) {
@@ -143,10 +151,11 @@ class WC_NFe_Ajax {
 		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
 
 		// multipart-download_pdf and download_pdf resuming support.
-		if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
-			list( $a, $range )         = explode( "=", $_SERVER['HTTP_RANGE'], 2 );
-			list( $range )             = explode( ",", $range, 2 );
-			list( $range, $range_end ) = explode( "-", $range );
+		$http_range_header = isset( $_SERVER['HTTP_RANGE'] ) ? wp_unslash( $_SERVER['HTTP_RANGE'] ) : ''; // phpcs:ignore
+		if ( ! empty( $http_range_header ) ) {
+			list( $a, $range )         = explode( '=', $http_range_header, 2 );
+			list( $range )             = explode( ',', $range, 2 );
+			list( $range, $range_end ) = explode( '-', $range );
 			$range                     = intval( $range );
 
 			if ( ! $range_end ) {
@@ -169,13 +178,13 @@ class WC_NFe_Ajax {
 		$file       = fopen( $file, 'r' );
 
 		if ( $file ) {
-			if ( isset( $_SERVER['HTTP_RANGE'] ) ) {
+			if ( ! empty( $http_range_header ) ) {
 				fseek( $file, $range );
 			}
 
 			while ( ! feof( $file ) && ! connection_aborted() && ( $bytes_send < $new_length ) ) {
 				$buffer = fread( $file, $chunksize );
-				echo($buffer);
+				echo( $buffer );
 				flush();
 				$bytes_send += strlen( $buffer );
 			}

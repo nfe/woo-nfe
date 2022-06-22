@@ -8,7 +8,7 @@
  */
 
 // Exit if accessed directly.
-defined('ABSPATH') || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Function to fetch fields from the NFe WooCommerce Integration.
@@ -17,16 +17,16 @@ defined('ABSPATH') || exit;
  *
  * @return string
  */
-function nfe_get_field($value = '') {
-    $nfe_fields = get_option('woocommerce_woo-nfe_settings');
+function nfe_get_field( $value = '' ) {
+	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings' );
 
-    if (empty($value)) {
-        $output = $nfe_fields;
-    } else {
-        $output = $nfe_fields[$value];
-    }
+	if ( empty( $value ) ) {
+		$output = $nfe_fields;
+	} else {
+		$output = $nfe_fields[ $value ];
+	}
 
-    return $output;
+	return $output;
 }
 
 /**
@@ -36,37 +36,37 @@ function nfe_get_field($value = '') {
  *
  * @return bool
  */
-function nfe_order_address_filled($order_id) {
-    // If address is not required, go along.
-    if (nfe_require_address() === false) {
-        return true;
-    }
+function nfe_order_address_filled( $order_id ) {
+	// If address is not required, go along.
+	if ( nfe_require_address() === false ) {
+		return true;
+	}
 
-    $fields = [
-        'neighborhood' => get_post_meta($order_id, '_billing_neighborhood', true),
-        'address_1' => get_post_meta($order_id, '_billing_address_1', true),
-        'number' => get_post_meta($order_id, '_billing_number', true),
-        'postcode' => get_post_meta($order_id, '_billing_postcode', true),
-        'state' => get_post_meta($order_id, '_billing_state', true),
-        'city' => get_post_meta($order_id, '_billing_city', true),
-        'country' => get_post_meta($order_id, '_billing_country', true),
-    ];
+	$fields = array(
+		'neighborhood' => get_post_meta( $order_id, '_billing_neighborhood', true ),
+		'address_1'    => get_post_meta( $order_id, '_billing_address_1', true ),
+		'number'       => get_post_meta( $order_id, '_billing_number', true ),
+		'postcode'     => get_post_meta( $order_id, '_billing_postcode', true ),
+		'state'        => get_post_meta( $order_id, '_billing_state', true ),
+		'city'         => get_post_meta( $order_id, '_billing_city', true ),
+		'country'      => get_post_meta( $order_id, '_billing_country', true ),
+	);
 
-    $count = 0;
-    foreach ($fields as $field => $value) {
-        if (empty($value)) {
-            $count = 1;
+	$count = 0;
+	foreach ( $fields as $field => $value ) {
+		if ( empty( $value ) ) {
+			$count = 1;
 
-            break;
-        }
-    }
+			break;
+		}
+	}
 
-    // If there is one or more fields missing, flag it.
-    if ($count >= 1) {
-        return false;
-    }
+	// If there is one or more fields missing, flag it.
+	if ( $count >= 1 ) {
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 /**
@@ -76,20 +76,20 @@ function nfe_order_address_filled($order_id) {
  *
  * @return bool
  */
-function nfe_issue_past_orders($order) {
-    $past_days = nfe_get_field('issue_past_days');
+function nfe_issue_past_orders( $order ) {
+	$past_days = nfe_get_field( 'issue_past_days' );
 
-    if (empty($past_days)) {
-        return false;
-    }
+	if ( empty( $past_days ) ) {
+		return false;
+	}
 
-    $days = '-' . $past_days . ' days';
+	$days = '-' . $past_days . ' days';
 
-    if (strtotime($days) < strtotime($order->post->post_date)) {
-        return true;
-    }
+	if ( strtotime( $days ) < strtotime( $order->post->post_date ) ) {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 /**
@@ -99,10 +99,10 @@ function nfe_issue_past_orders($order) {
  *
  * @return WC_Order order object
  */
-function nfe_wc_get_order($order_id) {
-    return (function_exists('wc_get_order'))
-        ? wc_get_order($order_id)
-        : WC_Order($order_id);
+function nfe_wc_get_order( $order_id ) {
+	return ( function_exists( 'wc_get_order' ) )
+		? wc_get_order( $order_id )
+		: WC_Order( $order_id );
 }
 
 /**
@@ -114,22 +114,22 @@ function nfe_wc_get_order($order_id) {
  *
  * @return WP_Query
  */
-function nfe_get_order_by_nota_value($value) {
-    $query_args = [
-        'post_type' => 'shop_order',
-        'cache_results' => true,
-        'update_post_term_cache' => false,
-        'post_status' => 'any',
-        'meta_query' => [ // WPCS: slow query ok.
-            [
-                'key' => 'nfe_issued',
-                'value' => sprintf(':"%s";', $value),
-                'compare' => 'LIKE',
-            ],
-        ],
-    ];
+function nfe_get_order_by_nota_value( $value ) {
+	$query_args = array(
+		'post_type'              => 'shop_order',
+		'cache_results'          => true,
+		'update_post_term_cache' => false,
+		'post_status'            => 'any',
+		'meta_query'             => array( // WPCS: slow query ok.
+			array(
+				'key'     => 'nfe_issued',
+				'value'   => sprintf( ':"%s";', $value ),
+				'compare' => 'LIKE',
+			),
+		),
+	);
 
-    return new WP_Query($query_args);
+	return new WP_Query( $query_args );
 }
 
 /**
@@ -140,7 +140,7 @@ function nfe_get_order_by_nota_value($value) {
  * @return array
  */
 function nfe_processing_status() {
-    return ['WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload'];
+	return array( 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload' );
 }
 
 /**
@@ -149,17 +149,17 @@ function nfe_processing_status() {
  * @return bool
  */
 function nfe_require_address() {
-    $retval = nfe_get_field('require_address');
+	$result = nfe_get_field( 'require_address' );
 
-    if (empty($retval)) {
-        return true;
-    }
+	if ( empty( $result ) ) {
+		return true;
+	}
 
-    if ('no' === $retval) {
-        return false;
-    }
+	if ( 'no' === $result ) {
+		return false;
+	}
 
-    return true;
+	return true;
 }
 
 /**
@@ -169,25 +169,25 @@ function nfe_require_address() {
  *
  * @return string
  */
-function nfe_status_label($status) {
-    // Check processing status first.
-    if (in_array($status, nfe_processing_status(), true)) {
-        return __('Processing NFe', 'woo-nfe');
-    }
+function nfe_status_label( $status ) {
+	// Check processing status first.
+	if ( in_array( $status, nfe_processing_status(), true ) ) {
+		return __( 'Processing NFe', 'woo-nfe' );
+	}
 
-    $valid_stati = [
-        'Issued' => __('NFe Issued', 'woo-nfe'),
-        'Cancelled' => __('NFe Cancelled', 'woo-nfe'),
-        'CancelledFailed' => __('NFe Cancelling Failed', 'woo-nfe'),
-        'IssueFailed' => __('NFe Issuing Failed', 'woo-nfe'),
-        'Processing' => __('NFe Processing', 'woo-nfe'),
-    ];
+	$valid_status = array(
+		'Issued'          => __( 'NFe Issued', 'woo-nfe' ),
+		'Cancelled'       => __( 'NFe Cancelled', 'woo-nfe' ),
+		'CancelledFailed' => __( 'NFe Cancelling Failed', 'woo-nfe' ),
+		'IssueFailed'     => __( 'NFe Issuing Failed', 'woo-nfe' ),
+		'Processing'      => __( 'NFe Processing', 'woo-nfe' ),
+	);
 
-    foreach ($valid_stati as $key => $title) {
-        if ($status === $key) {
-            return $title;
-        }
-    }
+	foreach ( $valid_status as $key => $title ) {
+		if ( $status === $key ) {
+			return $title;
+		}
+	}
 
-    return '';
+	return '';
 }
