@@ -82,7 +82,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			static $instance = null;
 
 			// Only run these methods if they haven't been run previously.
-			if ( $instance == null ) {
+			if ( null === $instance ) {
 				$instance = new WooCommerce_NFe();
 				// $instance = new WooCommerce_NFe(__FILE__, '1.0.0');
 				$instance->setup_globals();
