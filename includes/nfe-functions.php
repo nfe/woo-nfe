@@ -122,7 +122,7 @@ function nfe_get_order_by_nota_value( $value ) {
 		'cache_results'          => true,
 		'update_post_term_cache' => false,
 		'post_status'            => 'any',
-		'meta_query'             => array( // WPCS: slow query ok.
+		'meta_query'             => array( // phpcs:ignore Standard.Category.SniffName.ErrorCode
 			array(
 				'key'     => 'nfe_issued',
 				'value'   => sprintf( ':"%s";', $value ),
