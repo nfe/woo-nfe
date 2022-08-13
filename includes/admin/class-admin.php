@@ -1,24 +1,29 @@
 <?php
 /**
+ * WooCommerce NFe WC_NFe_Admin Class.
  *
- * Exit if accessed directly.
+ * @author   NFe.io
+ *
+ * @version  1.0.6
+ *
+ * @package Woo_Nfe
  */
 
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WC_NFe_Admin' ) ) {
+
 	/**
-	 * WooCommerce NFe WC_NFe_Admin Class.
-	 *
-	 * @author   NFe.io
-	 *
-	 * @version  1.0.6
+	 * WC_NFe_Admin.
 	 */
 	class WC_NFe_Admin {
+
 		/**
 		 * The single instance.
+		 *
+		 * @var null $instance instance.
 		 */
-		protected static $_instance = null;
+		protected static $instance = null;
 
 		/**
 		 * Class Constructor.
@@ -66,11 +71,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * Singleton getter.
 		 */
 		public static function get_instance() {
-			if ( is_null( self::$_instance ) ) {
-				self::$_instance = new self();
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self();
 			}
 
-			return self::$_instance;
+			return self::$instance;
 		}
 
 		/**
