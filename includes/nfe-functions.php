@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Function to fetch fields from the NFe WooCommerce Integration.
  *
- * @param string $value value to fetch
+ * @param string $value value to fetch.
  *
  * @return string
  */
@@ -34,7 +34,7 @@ function nfe_get_field( $value = '' ) {
 /**
  * Make sure address is required and if all the fields are available.
  *
- * @param int $order_id order ID
+ * @param int $order_id order ID.
  *
  * @return bool
  */
@@ -74,7 +74,7 @@ function nfe_order_address_filled( $order_id ) {
 /**
  * Past Issue Check (It answers the question: Can we issue a past order?).
  *
- * @param WC_Order $order order object
+ * @param WC_Order $order order object.
  *
  * @return bool
  */
@@ -97,9 +97,9 @@ function nfe_issue_past_orders( $order ) {
 /**
  * WooCommerce 2.2 support for wc_get_order.
  *
- * @param int $order_id order ID
+ * @param int $order_id order ID.
  *
- * @return WC_Order order object
+ * @return WC_Order order object.
  */
 function nfe_wc_get_order( $order_id ) {
 	return ( function_exists( 'wc_get_order' ) )
@@ -112,7 +112,7 @@ function nfe_wc_get_order( $order_id ) {
  *
  * @since 1.2.2
  *
- * @param string $value value to search against
+ * @param string $value value to search against.
  *
  * @return WP_Query
  */
@@ -167,7 +167,7 @@ function nfe_require_address() {
 /**
  * Get NFe status label.
  *
- * @param string $status status
+ * @param string $status status.
  *
  * @return string
  */
