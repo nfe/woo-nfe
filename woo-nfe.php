@@ -39,25 +39,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 	 * @since 1.0.0
 	 */
 	final class WooCommerce_NFe {
-		// **
-		// * The full path and filename of the file of plugin's main file.
-		// *
-		// * @var string
-		// */
-		// public $file;
-		//
-		// **
-		// * The full path and filename of the file of plugin's main file.
-		// *
-		// * @var string
-		// */
-		// public $version;
-		//
-		// **
-		// * Flag to indicate whether this extension is running already.
-		// *
-		// * @var bool
-		// */
+		/**
+		 * Flag to indicate whether this extension is running already.
+		 *
+		 * @var bool
+		 */
 		private $is_running = false;
 
 		/**
@@ -67,7 +53,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @see WooCommerce_NFe::instance()
 		 */
 		public function __construct() {
-			// Do nothing here
+			// Do nothing here.
 		}
 
 		/**
@@ -84,7 +70,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
 				$instance = new WooCommerce_NFe();
-				// $instance = new WooCommerce_NFe(__FILE__, '1.0.0');
 				$instance->setup_globals();
 				$instance->dependencies();
 				$instance->includes();
@@ -118,9 +103,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			if ( $this->is_running ) {
 				return false;
 			}
-			//
-			// $this->includes();
-			// $this->wc_hooks();
 
 			$this->is_running = true;
 
@@ -150,7 +132,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array $integrations wooCommerce Integrations
+		 * @param array $integrations wooCommerce Integrations.
 		 *
 		 * @return array
 		 */
@@ -183,7 +165,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array $links links
+		 * @param array $links links.
 		 *
 		 * @return array
 		 */
@@ -293,7 +275,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		/**
 		 * Version check.
 		 *
-		 * @param string $version version to check against
+		 * @param string $version version to check against.
 		 *
 		 * @return bool
 		 */
@@ -308,6 +290,13 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			return false;
 		}
 
+		/**
+		 * Version check 1.
+		 *
+		 * @param string $version version to check against.
+		 *
+		 * @return bool
+		 */
 		private function version_check1( $version ) {
 			if ( class_exists( 'WooCommerce' ) ) {
 				global $woocommerce;
@@ -353,19 +342,16 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 
 	add_action( 'woocommerce_init', 'wc_ee_run' );
 
-	// **
-	// * Get instance of WC_Example_Extension.
-	// *
-	// * @return WC_Example_Extension Instance of WC_Example_Extension
-	// */
+	/**
+	 * Get instance of WC_Example_Extension.
+	 *
+	 * @return WC_Example_Extension Instance of WC_Example_Extension
+	 */
 	function wc_ee_instance() {
 		static $extension;
 
 		if ( ! isset( $extension ) ) {
-			// require_once('includes/class-wc-example-extension.php');
-			// $extension = new WC_Example_Extension(__FILE__, '1.0.0');ILE__, '1.0.0');
 			$extension = WooCommerce_NFe::instance();
-			// $extension = new WooCommerce_NFe(__FILE__, '1.0.0');
 		}
 
 		return $extension;
