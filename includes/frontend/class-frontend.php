@@ -35,7 +35,7 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 		 */
 		public function billing_notice() {
 			if ( nfe_get_field( 'nfe_enable' ) === 'yes' ) {
-				echo '<div class="woocommerce-message">' . esc_html__( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woo-nfe' ) . '</div>';
+				echo wp_kses( '<div class="woocommerce-message">' . esc_html__( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woo-nfe' ) . '</div>' );
 			}
 		}
 

@@ -28,9 +28,9 @@ class WC_NFe_Ajax {
 	 * @return void
 	 */
 	public static function front_issue() {
-		$get       = wp_unslash( $_GET );
-		$nfe_issue = sanitize_text_field( $get['nfe_issue'] );
-		$wp_nonce  = sanitize_text_field( $get['_wpnonce'] );
+
+		$nfe_issue = sanitize_text_field( $_GET['nfe_issue'] );
+		$wp_nonce  = sanitize_text_field( $_GET['_wpnonce'] );
 		// Nothing to do.
 		if ( ! isset( $nfe_issue ) || ! is_user_logged_in() || ! isset( $wp_nonce ) || ! wp_verify_nonce( $wp_nonce, 'woocommerce_nfe_issue' ) ) {
 			return;
@@ -151,7 +151,7 @@ class WC_NFe_Ajax {
 		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
 
 		// multipart-download_pdf and download_pdf resuming support.
-		$http_range_header = isset( $_SERVER['HTTP_RANGE'] ) ? wp_unslash( $_SERVER['HTTP_RANGE'] ) : ''; // phpcs:ignore
+		$http_range_header = isset( $_SERVER['HTTP_RANGE'] ) ? sanitize_text_field( $_SERVER['HTTP_RANGE'] ) : ''; // phpcs:ignore
 		if ( ! empty( $http_range_header ) ) {
 			list( $a, $range )         = explode( '=', $http_range_header, 2 );
 			list( $range )             = explode( ',', $range, 2 );
@@ -184,7 +184,7 @@ class WC_NFe_Ajax {
 
 			while ( ! feof( $file ) && ! connection_aborted() && ( $bytes_send < $new_length ) ) {
 				$buffer = fread( $file, $chunksize );
-				echo( $buffer );
+				echo esc_html( $buffer );
 				flush();
 				$bytes_send += strlen( $buffer );
 			}
