@@ -58,7 +58,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		// *
 		// * @var bool
 		// */
-		private $_is_running = false;
+		private $is_running = false;
 
 		/**
 		 * A dummy constructor to prevent WooCommerce_NFe from being loaded more than once.
@@ -115,16 +115,16 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @return bool Returns true when it's running
 		 */
 		public function run() {
-			if ( $this->_is_running ) {
+			if ( $this->is_running ) {
 				return false;
 			}
 			//
 			// $this->includes();
 			// $this->wc_hooks();
 
-			$this->_is_running = true;
+			$this->is_running = true;
 
-			return $this->_is_running;
+			return $this->is_running;
 		}
 
 		/**
