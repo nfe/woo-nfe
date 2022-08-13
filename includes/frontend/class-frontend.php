@@ -1,19 +1,20 @@
 <?php
 /**
- * Exit if accessed directly
+ * WooCommerce NFe WC_NFe_FrontEnd Class.
+ *
+ * @author   NFe.io.
+ *
+ * @version  1.0.4
+ *
+ * @package Woo_Nfe
  */
 
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
+
 	/**
-	 * WooCommerce NFe WC_NFe_FrontEnd Class.
-	 *
-	 * @author   NFe.io.
-	 *
-	 * @version  1.0.4
-	 *
-	 * @package Woo_Nfe
+	 * WC_NFe_FrontEnd.
 	 */
 	class WC_NFe_FrontEnd {
 		/**
