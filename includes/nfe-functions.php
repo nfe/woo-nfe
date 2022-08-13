@@ -5,6 +5,8 @@
  * @author   NFe.io
  *
  * @version  1.0.4
+ *
+ * @package Woo_Nfe
  */
 
 // Exit if accessed directly.
