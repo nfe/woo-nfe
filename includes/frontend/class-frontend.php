@@ -12,6 +12,8 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 	 * @author   NFe.io.
 	 *
 	 * @version  1.0.4
+	 *
+	 * @package Woo_Nfe
 	 */
 	class WC_NFe_FrontEnd {
 		/**
