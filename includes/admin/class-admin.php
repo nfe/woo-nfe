@@ -224,9 +224,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 */
 		public function product_data_fields_save( $post_id ) {
 
-			$city_service_code       = isset( $_POST['_simple_cityservicecode'] ) ? sanitize_text_field( $_POST['_simple_cityservicecode'] ) : '';
-			$federal_service_code    = isset( $_POST['_simple_federalservicecode'] ) ? sanitize_text_field( $_POST['_simple_federalservicecode'] ) : '';
-			$nfe_product_description = isset( $_POST['_simple_nfe_product_desc'] ) ? sanitize_text_field( $_POST['_simple_nfe_product_desc'] ) : '';
+			$safe_post               = stripslashes_deep( $_POST );
+			$city_service_code       = isset( $safe_post['_simple_cityservicecode'] ) ? sanitize_text_field( $safe_post['_simple_cityservicecode'] ) : '';
+			$federal_service_code    = isset( $safe_post['_simple_federalservicecode'] ) ? sanitize_text_field( $safe_post['_simple_federalservicecode'] ) : '';
+			$nfe_product_description = isset( $safe_post['_simple_nfe_product_desc'] ) ? sanitize_text_field( $safe_post['_simple_nfe_product_desc'] ) : '';
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $city_service_code ) );
 
@@ -286,9 +287,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 */
 		public function save_variations_fields( $post_id ) {
 
-			$city_service_code          = isset( $_POST['_cityservicecode'] ) ? sanitize_text_field( $_POST['_cityservicecode'][ intval( $post_id ) ] ) : '';
-			$federal_service_code       = isset( $_POST['_federalservicecode'] ) ? sanitize_text_field( $_POST['_federalservicecode'][ intval( $post_id ) ] ) : '';
-			$nfe_product_variation_desc = isset( $_POST['_nfe_product_variation_desc'] ) ? sanitize_text_field( $_POST['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
+			$safe_post                  = stripslashes_deep( $_POST );
+			$city_service_code          = isset( $safe_post['_cityservicecode'] ) ? sanitize_text_field( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) : '';
+			$federal_service_code       = isset( $safe_post['_federalservicecode'] ) ? sanitize_text_field( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) : '';
+			$nfe_product_variation_desc = isset( $safe_post['_nfe_product_variation_desc'] ) ? sanitize_text_field( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
 
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_cityservicecode', esc_attr( $city_service_code ) );
