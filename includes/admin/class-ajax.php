@@ -1,16 +1,16 @@
 <?php
 /**
- * Exit if accessed directly.
+ * WooCommerce NFe Ajax Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Ajax
+ * @version  1.0.4
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * WooCommerce NFe Ajax Class
- *
- * @author   NFe.io
- * @package  WooCommerce_NFe/Class/WC_NFe_Ajax
- * @version  1.0.4
  */
 class WC_NFe_Ajax {
 
@@ -29,8 +29,9 @@ class WC_NFe_Ajax {
 	 */
 	public static function front_issue() {
 
-		$nfe_issue = sanitize_text_field( $_GET['nfe_issue'] );
-		$wp_nonce  = sanitize_text_field( $_GET['_wpnonce'] );
+		$safe_get  = stripslashes_deep( $_GET );
+		$nfe_issue = sanitize_text_field( $safe_get['nfe_issue'] );
+		$wp_nonce  = sanitize_text_field( $safe_get['_wpnonce'] );
 		// Nothing to do.
 		if ( ! isset( $nfe_issue ) || ! is_user_logged_in() || ! isset( $wp_nonce ) || ! wp_verify_nonce( $wp_nonce, 'woocommerce_nfe_issue' ) ) {
 			return;
@@ -112,7 +113,7 @@ class WC_NFe_Ajax {
 			$pdf = NFe_Woo()->download_pdf_invoice( array( $order_id ) );
 
 			// If it doesn't, put the content on this pdf.
-			file_put_contents( $file, file_get_contents( $pdf ) );
+			file_put_contents( $file, wp_remote_get( $pdf ) );
 		}
 
 		$size = filesize( $file );
