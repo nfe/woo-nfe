@@ -1,11 +1,5 @@
 <?php
 /**
- * Exit if accessed directly.
- */
-
-defined( 'ABSPATH' ) || exit;
-
-/**
  * NFe Receipt Issued Email
  *
  * @class   WC_NFe_Email_Receipt_Issued
@@ -13,6 +7,12 @@ defined( 'ABSPATH' ) || exit;
  * @package WooCommerce_NFe/Class/Emails
  * @version 1.0.1
  * @extends WC_Email
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * WC_NFe_Email_Receipt_Issued Class.
  */
 class WC_NFe_Email_Receipt_Issued extends WC_Email {
 
