@@ -6,7 +6,7 @@
  *
  * @version  1.0.6
  *
- * @package Woo_Nfe
+ * @package WooCommerce_NFe/Class/WC_NFe_Admin
  */
 
 defined( 'ABSPATH' ) || exit;
