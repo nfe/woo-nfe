@@ -1,6 +1,11 @@
 <?php
 /**
- * Exit if accessed directly.
+ * WooCommerce NFe.io Integration.
+ *
+ * @author   NFe.io
+ * @category Admin
+ * @package  WooCommerce_NFe/Class/WC_NFe_Integration
+ * @version  1.0.1
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -8,14 +13,9 @@ defined( 'ABSPATH' ) || exit;
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 if ( class_exists( 'WC_Integration' ) ) {
+
 	/**
-	 * WooCommerce NFe.io Integration.
-	 *
-	 * @author   NFe.io
-	 *
-	 * @category Admin
-	 *
-	 * @version  1.0.1
+	 * WC_NFe_Integration Class.
 	 */
 	class WC_NFe_Integration extends WC_Integration {
 		/**
