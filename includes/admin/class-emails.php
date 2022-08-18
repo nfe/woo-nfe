@@ -1,16 +1,16 @@
 <?php
 /**
- * Exit if accessed directly.
+ * WooCommerce NFe Email Class
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Emails
+ * @version  1.0.1
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * WooCommerce NFe Email Class
- *
- * @author   NFe.io
- * @package  WooCommerce_NFe/Class/WC_NFe_Emails
- * @version  1.0.1
  */
 class WC_NFe_Emails {
 
