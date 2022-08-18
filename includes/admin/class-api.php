@@ -1,17 +1,18 @@
 <?php
 /**
- * Exit if accessed directly.
+ * WooCommerce NFe NFe_Woo Class.
+ *
+ * @author   NFe.io
+ * @package  WooCommerce_NFe/Class/WC_NFe_Api
+ * @version  1.0.7
  */
 
 defined( 'ABSPATH' ) || exit;
 
 if ( ! class_exists( 'NFe_Woo' ) ) {
+
 	/**
 	 * WooCommerce NFe NFe_Woo Class.
-	 *
-	 * @author   NFe.io
-	 *
-	 * @version  1.0.7
 	 */
 	class NFe_Woo {
 		/**
@@ -147,9 +148,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		/**
 		 * Download the invoice(s).
 		 *
-		 * @param array $order_ids array of order ids
+		 * @param array $order_ids Array of order ids.
 		 *
-		 * @throws Exception exception
+		 * @throws Exception Exception.
 		 *
 		 * @return Exception|NFe_ServiceInvoice
 		 */
@@ -390,8 +391,6 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 				return null;
 			}
-			// Sanitize ZIP Code to remove bad characters
-			//$post_code = $this->removepontotraco( $post_code );
 
 			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $this->get_key();
 			$response = wp_remote_get( esc_url_raw( $url ) );
@@ -754,7 +753,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'JOR' => 'JO',     // Jordan.
 				'JPN' => 'JP',     // Japan.
 				'KAZ' => 'KZ',     // Kazakhstan.
-				'KEN' => 'KE',     // Kenya
+				'KEN' => 'KE',     // Kenya.
 				'KGZ' => 'KG',     // Kyrgyzstan.
 				'KHM' => 'KH',     // Cambodia.
 				'KOR' => 'KR',     // Korea.
