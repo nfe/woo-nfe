@@ -1,16 +1,16 @@
 <?php
 /**
- * Exit if accessed directly.
- */
-
-defined( 'ABSPATH' ) || exit;
-
-/**
  * WooCommerce NFe WC_NFe_Webhook_Handler Class.
  *
  * @author   NFe.io
  * @package  WooCommerce_NFe/Class/WC_NFe_Webhook_Handler
  * @version  1.0.4
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * WC_NFe_Webhook_Handler Class.
  */
 class WC_NFe_Webhook_Handler {
 	/**
