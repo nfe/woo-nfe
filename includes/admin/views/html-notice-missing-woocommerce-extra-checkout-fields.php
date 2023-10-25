@@ -27,7 +27,7 @@ if ( function_exists( 'get_plugins' ) ) {
 				<?php esc_html_e( 'Active WooCommerce Extra Checkout Fields for Brazil', 'woo-nfe' ); ?>
 			</a>
 		</p>
-	<?php
+		<?php
 	else :
 		if ( current_user_can( 'install_plugins' ) ) {
 			$url = wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=woocommerce-extra-checkout-fields-for-brazil' ), 'install-plugin_woocommerce_checkout_fields' );
