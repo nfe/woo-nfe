@@ -195,6 +195,25 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			// Get order object.
 			$order = nfe_wc_get_order( $order_id );
 
+			// if tax formation is exclude shipping, remove shipping from total.
+			if($this->highlight_shipping_tax() == 'exclude_shipping') {
+				// subtract shipping from total.
+				$servicesAmount = $order->get_total() - $order->get_shipping_total();
+				// get invoice info.
+				$invoiceInfo = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
+				// build shipping info line
+				$shippingInfo = __('Shipping', 'woo-nfe') . ": " . $order->get_shipping_method();
+				// build shipping value line
+				$shippingValueDescription = __('Shipping Value', 'woo-nfe') . ": " . $order->get_shipping_total() . $order->get_currency();
+				// final description
+				$servicesDescription = $this->remover_caracter("{$invoiceInfo} \n $shippingInfo \n $shippingValueDescription");
+			} else {
+				// if tax formation is include shipping, keep shipping in total.
+				$servicesAmount = $order->get_total();
+				// get invoice info.
+				$servicesDescription = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
+			}
+
 			$address = array(
 				'postalCode'            => $this->check_customer_info( 'cep', $order_id ),
 				'street'                => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
@@ -219,8 +238,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			$data = array(
 				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
 				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
-				'description'        => $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) ),
-				'servicesAmount'     => $order->get_total(),
+				'description'        => $servicesDescription,
+				'servicesAmount'     => $servicesAmount,
 				'borrower'           => $borrower,
 			);
 
@@ -323,6 +342,15 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 */
 		public function get_company() {
 			return nfe_get_field( 'choose_company' );
+		}
+
+		/**
+		 * Highlight Shipping fees from the order taxes.
+		 * @return string
+		 */
+		public function highlight_shipping_tax()
+		{
+			return nfe_get_field( 'highlight_shipping_tax' );
 		}
 
 		/**
