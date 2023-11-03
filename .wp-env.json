@@ -1,0 +1,11 @@
+{
+	"core": null,
+	"phpVersion": "8.1",
+	"plugins": [
+		"WordPress/woocommerce",
+		"WordPress/woocommerce-extra-checkout-fields-for-brazil"
+	],
+	"mappings": {
+		"wp-content/plugins/woo-nfe": "."
+	}
+}
