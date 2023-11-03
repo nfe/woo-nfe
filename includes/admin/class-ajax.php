@@ -40,14 +40,14 @@ class WC_NFe_Ajax {
 		$order = nfe_wc_get_order( absint( $nfe_issue ) );
 
 		// Bail if there is no order id or it is false.
-		if ( empty( $order->id ) || ! $order ) {
+		if ( empty( $order->get_id() ) ) {
 			return;
 		}
 
-		if ( ! nfe_order_address_filled( $order->id ) ) {
+		if ( ! nfe_order_address_filled( $order->get_id() ) ) {
 			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woo-nfe' ), 'error' );
 		} else {
-			NFe_Woo()->issue_invoice( array( $order->id ) );
+			NFe_Woo()->issue_invoice( array( $order->get_id() ) );
 
 			wc_add_notice( __( 'NFe was issued successfully.', 'woo-nfe' ) );
 		}
@@ -69,11 +69,11 @@ class WC_NFe_Ajax {
 		$order = nfe_wc_get_order( absint( $nfe_download_pdf ) );
 
 		// Bail if there is no order id or it is false.
-		if ( empty( $order->id ) || ! $order ) {
+		if ( empty( $order->get_id() ) ) {
 			return;
 		}
 
-		self::download_pdf( $order->id );
+		self::download_pdf( $order->get_id() );
 	}
 
 	/**
