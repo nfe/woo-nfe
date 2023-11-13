@@ -59,9 +59,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		/**
 		 * Main instance.
 		 *
+		 * @return instance
 		 * @since 1.0.0
 		 *
-		 * @return instance
 		 */
 		public static function instance() {
 			// Store the instance locally to avoid private static replication.
@@ -130,11 +130,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		/**
 		 * Adds our custom WC_NFe_Integration integration to WooCommerce.
 		 *
-		 * @since 1.0.0
-		 *
 		 * @param array $integrations wooCommerce Integrations.
 		 *
 		 * @return array
+		 * @since 1.0.0
+		 *
 		 */
 		public function nfe_integration( $integrations ) {
 			$integrations[] = 'WC_NFe_Integration';
@@ -163,11 +163,11 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		/**
 		 * Action links.
 		 *
-		 * @since 1.0.0
-		 *
 		 * @param array $links links.
 		 *
 		 * @return array
+		 * @since 1.0.0
+		 *
 		 */
 		public function plugin_action_links( $links ) {
 			return array_merge(
@@ -312,9 +312,9 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 	/**
 	 * The main function responsible for returning the one true WooCommerce_NFe Instance.
 	 *
+	 * @return WooCommerce_NFe
 	 * @since 1.0.0
 	 *
-	 * @return WooCommerce_NFe
 	 */
 	function woo_nfe() {
 		return WooCommerce_NFe::instance();
@@ -356,4 +356,13 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 
 		return $extension;
 	}
+
+
+	add_action( 'before_woocommerce_init', function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, false );
+		}
+	} );
+
+
 }

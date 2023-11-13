@@ -52,7 +52,9 @@ if ( class_exists( 'WC_Integration' ) ) {
 			}
 
 			if ( $this->has_api_key() ) {
-				$lists = $this->get_companies();
+				// Get companies. If no companies, return an empty array.
+				$lists = $this->get_companies() ? $this->get_companies() : array();
+//				$lists = $this->get_companies();
 
 				if ( empty( $lists ) ) {
 					$company_list = array_merge( array( '' => __( 'No company found', 'woo-nfe' ) ), $lists );
@@ -139,8 +141,21 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'css'      => 'min-width:300px;',
 					'desc_tip' => __( 'Does an address is required to issue a NFe?', 'woo-nfe' ),
 				),
+				'highlight_shipping_tax' => array(
+					'title' => __('Highlight shipping from taxes', 'woo-nfe'),
+					'type' => 'select',
+					'label' => __('Highlight shipping from taxes', 'woo-nfe'),
+					'default' => 'include_shipping',
+					'options' => array(
+						'include_shipping' => __('Include Shipping fees on tax calculation', 'woo-nfe'),
+						'exclude_shipping' => __('Exclude Shipping fees on tax calculation', 'woo-nfe'),
+					),
+					'class' => 'wc-enhanced-select',
+					'css' => 'min-width:300px;',
+					'desc_tip' => __('Tax Formation: total + shipping will considerate ship value on tax calculation. Total - shipping will not considerate ship value on tax calculation.', 'woo-nfe'),
+				),
 				'nfe_events_title'         => array(
-					'title' => __( 'NFe.io Webkook Setup', 'woo-nfe' ),
+					'title' => __( 'NFe.io Webhook Setup', 'woo-nfe' ),
 					'type'  => 'title',
 				),
 				'nfe_webhook_url'          => array(

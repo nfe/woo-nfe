@@ -1,6 +1,6 @@
 module.exports = grunt => {
 	require('load-grunt-tasks')(grunt);
-
+	grunt.loadNpmTasks( 'grunt-wp-i18n' );
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
@@ -32,6 +32,13 @@ module.exports = grunt => {
 					'!node_modules/**', // Exclude node_modules/
 				],
 				expand: true
+			}
+		},
+		makepot: {
+			target: {
+				options: {
+					type: 'wp-plugin'
+				}
 			}
 		}
 	});
