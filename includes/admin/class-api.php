@@ -241,7 +241,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'description'        => $servicesDescription,
 				'servicesAmount'     => $servicesAmount,
 				'borrower'           => $borrower,
-				'externalId'		 => $order_id,
+				'externalId'		 => 'WOO-NFE-' . $order_id,
 			);
 
 			// Removes empty, false and null fields from the array.
