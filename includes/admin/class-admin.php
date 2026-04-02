@@ -202,6 +202,39 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 					)
 				);
 
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_rtc_nbs_code',
+						'label'         => __( 'NBS code (nbsCode)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'RTC NBS code used in service invoice emission.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_nbs_code', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_rtc_operation_indicator',
+						'label'         => __( 'Operation indicator (ibsCbs.operationIndicator)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'RTC operation indicator used in ibsCbs payload.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_operation_indicator', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_rtc_class_code',
+						'label'         => __( 'Class code (ibsCbs.classCode)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'RTC class code used in ibsCbs payload.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_class_code', true ),
+					)
+				);
+
 				woocommerce_wp_textarea_input(
 					array(
 						'id'            => '_simple_nfe_product_desc',
@@ -227,12 +260,20 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			$safe_post               = stripslashes_deep( $_POST );
 			$city_service_code       = isset( $safe_post['_simple_cityservicecode'] ) ? sanitize_text_field( $safe_post['_simple_cityservicecode'] ) : '';
 			$federal_service_code    = isset( $safe_post['_simple_federalservicecode'] ) ? sanitize_text_field( $safe_post['_simple_federalservicecode'] ) : '';
+			$rtc_nbs_code            = isset( $safe_post['_simple_nfe_rtc_nbs_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_nbs_code'] ) : '';
+			$rtc_operation_indicator = isset( $safe_post['_simple_nfe_rtc_operation_indicator'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_operation_indicator'] ) : '';
+			$rtc_class_code          = isset( $safe_post['_simple_nfe_rtc_class_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_class_code'] ) : '';
 			$nfe_product_description = isset( $safe_post['_simple_nfe_product_desc'] ) ? sanitize_text_field( $safe_post['_simple_nfe_product_desc'] ) : '';
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $city_service_code ) );
 
 			// Text Field - Federal Service Code.
 			update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $federal_service_code ) );
+
+			// Text Fields - RTC fiscal data.
+			update_post_meta( $post_id, '_simple_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
+			update_post_meta( $post_id, '_simple_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
+			update_post_meta( $post_id, '_simple_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
 
 			// TextArea Field - Product Description.
 			update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $nfe_product_description ) );
@@ -269,6 +310,36 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				)
 			);
 
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_rtc_nbs_code[' . $product_id . ']',
+					'label'       => __( 'NBS code (nbsCode)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'RTC NBS code used in service invoice emission.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_rtc_nbs_code', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_rtc_operation_indicator[' . $product_id . ']',
+					'label'       => __( 'Operation indicator (ibsCbs.operationIndicator)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'RTC operation indicator used in ibsCbs payload.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_rtc_operation_indicator', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_rtc_class_code[' . $product_id . ']',
+					'label'       => __( 'Class code (ibsCbs.classCode)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'RTC class code used in ibsCbs payload.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_rtc_class_code', true ),
+				)
+			);
+
 			woocommerce_wp_textarea_input(
 				array(
 					'id'          => '_nfe_product_variation_desc[' . $product_id . ']',
@@ -288,15 +359,23 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		public function save_variations_fields( $post_id ) {
 
 			$safe_post                  = stripslashes_deep( $_POST );
-			$city_service_code          = isset( $safe_post['_cityservicecode'] ) ? sanitize_text_field( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) : '';
-			$federal_service_code       = isset( $safe_post['_federalservicecode'] ) ? sanitize_text_field( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) : '';
-			$nfe_product_variation_desc = isset( $safe_post['_nfe_product_variation_desc'] ) ? sanitize_text_field( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
+			$city_service_code          = ( isset( $safe_post['_cityservicecode'] ) && isset( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) : '';
+			$federal_service_code       = ( isset( $safe_post['_federalservicecode'] ) && isset( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) : '';
+			$rtc_nbs_code               = ( isset( $safe_post['_nfe_rtc_nbs_code'] ) && isset( $safe_post['_nfe_rtc_nbs_code'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_nbs_code'][ intval( $post_id ) ] ) : '';
+			$rtc_operation_indicator    = ( isset( $safe_post['_nfe_rtc_operation_indicator'] ) && isset( $safe_post['_nfe_rtc_operation_indicator'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_operation_indicator'][ intval( $post_id ) ] ) : '';
+			$rtc_class_code             = ( isset( $safe_post['_nfe_rtc_class_code'] ) && isset( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) : '';
+			$nfe_product_variation_desc = ( isset( $safe_post['_nfe_product_variation_desc'] ) && isset( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
 
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_cityservicecode', esc_attr( $city_service_code ) );
 
 			// Text Field - Federal Service Code.
 			update_post_meta( $post_id, '_federalservicecode', esc_attr( $federal_service_code ) );
+
+			// Text Fields - RTC fiscal data.
+			update_post_meta( $post_id, '_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
+			update_post_meta( $post_id, '_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
+			update_post_meta( $post_id, '_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
 
 			// TextArea Field - Product Variation Description.
 			update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $nfe_product_variation_desc ) );
