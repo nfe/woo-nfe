@@ -22,7 +22,7 @@
 		"npm": ">=1.1.0"
 	},
 	"scripts": {
-		"wp-env": "wp-env",
+		"wp-env": "PATH=\"$PWD/bin:$PATH\" wp-env",
 		"grunt": "grunt"
 	}
 }

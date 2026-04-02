@@ -20,15 +20,32 @@ defined( 'ABSPATH' ) || exit;
  * @return string
  */
 function nfe_get_field( $value = '' ) {
-	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings' );
+	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings', array() );
 
 	if ( empty( $value ) ) {
-		$output = $nfe_fields;
-	} else {
-		$output = $nfe_fields[ $value ];
+		return is_array( $nfe_fields ) ? $nfe_fields : array();
 	}
 
-	return $output;
+	if ( ! is_array( $nfe_fields ) || ! isset( $nfe_fields[ $value ] ) ) {
+		return '';
+	}
+
+	return $nfe_fields[ $value ];
+}
+
+/**
+ * Gets the active RTC validation profile.
+ *
+ * @return string
+ */
+function nfe_rtc_validation_profile() {
+	$profile = nfe_get_field( 'nfe_rtc_validation_profile' );
+
+	if ( ! in_array( $profile, array( 'compativel', 'equilibrado', 'estrito' ), true ) ) {
+		return 'equilibrado';
+	}
+
+	return $profile;
 }
 
 /**

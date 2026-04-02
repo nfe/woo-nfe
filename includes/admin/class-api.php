@@ -99,6 +99,24 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					return false;
 				}
 
+				$rtc_validation = $this->validate_rtc_payload( $order_id, $datainvoice );
+
+				if ( ! empty( $rtc_validation['warnings'] ) ) {
+					foreach ( $rtc_validation['warnings'] as $warning ) {
+						$this->logger( $warning );
+						$order->add_order_note( $warning );
+					}
+				}
+
+				if ( ! empty( $rtc_validation['errors'] ) ) {
+					foreach ( $rtc_validation['errors'] as $error ) {
+						$this->logger( $error );
+						$order->add_order_note( $error );
+					}
+
+					return false;
+				}
+
 				$meta    = update_post_meta(
 					$order_id,
 					'nfe_issued',
@@ -235,14 +253,20 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'address'          => $address,
 			);
 
+			$rtc_info = $this->rtc_fields_info( $order_id );
+
 			$data = array(
 				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
 				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
 				'description'        => $servicesDescription,
 				'servicesAmount'     => $servicesAmount,
 				'borrower'           => $borrower,
-				'externalId'		 => 'WOO-NFE-' . $order_id,
+				'externalId'         => 'WOO-NFE-' . $order_id,
+				'nbsCode'            => $rtc_info['nbsCode'],
+				'ibsCbs'             => $rtc_info['ibsCbs'],
 			);
+
+			$data = apply_filters( 'woo_nfe_rtc_payload', $data, $order_id, $order );
 
 			// Removes empty, false and null fields from the array.
 			return array_filter( $data );
@@ -483,6 +507,260 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			}
 
 			return $field_value;
+		}
+
+		/**
+		 * Gets RTC fiscal fields with precedence variation > product > global.
+		 *
+		 * @param int $order_id order ID.
+		 *
+		 * @return array
+		 */
+		protected function rtc_fields_info( $order_id ) {
+			$nbs_code            = '';
+			$operation_indicator = '';
+			$class_code          = '';
+			$fallback_item_rtc   = array();
+
+			$order = nfe_wc_get_order( $order_id );
+
+			if ( 0 < count( $order->get_items() ) ) {
+				foreach ( $order->get_items() as $item ) {
+					$product_id   = $item['product_id'];
+					$variation_id = $item['variation_id'];
+
+					if ( $variation_id ) {
+						$item_nbs_code            = get_post_meta( $variation_id, '_nfe_rtc_nbs_code', true );
+						$item_operation_indicator = get_post_meta( $variation_id, '_nfe_rtc_operation_indicator', true );
+						$item_class_code          = get_post_meta( $variation_id, '_nfe_rtc_class_code', true );
+
+						if ( empty( $item_nbs_code ) ) {
+							$item_nbs_code = get_post_meta( $product_id, '_simple_nfe_rtc_nbs_code', true );
+						}
+
+						if ( '' === (string) $item_operation_indicator ) {
+							$item_operation_indicator = get_post_meta( $product_id, '_simple_nfe_rtc_operation_indicator', true );
+						}
+
+						if ( empty( $item_class_code ) ) {
+							$item_class_code = get_post_meta( $product_id, '_simple_nfe_rtc_class_code', true );
+						}
+					} else {
+						$item_nbs_code            = get_post_meta( $product_id, '_simple_nfe_rtc_nbs_code', true );
+						$item_operation_indicator = get_post_meta( $product_id, '_simple_nfe_rtc_operation_indicator', true );
+						$item_class_code          = get_post_meta( $product_id, '_simple_nfe_rtc_class_code', true );
+					}
+
+					if ( '' !== (string) $item_nbs_code ) {
+						// Prefer tuple from an item that already has nbsCode.
+						$nbs_code            = $item_nbs_code;
+						$operation_indicator = $item_operation_indicator;
+						$class_code          = $item_class_code;
+
+						break;
+					}
+
+					if ( empty( $fallback_item_rtc ) && ( '' !== (string) $item_operation_indicator || '' !== (string) $item_class_code ) ) {
+						$fallback_item_rtc = array(
+							'nbsCode'            => $item_nbs_code,
+							'operationIndicator' => $item_operation_indicator,
+							'classCode'          => $item_class_code,
+						);
+					}
+				}
+			}
+
+			if ( empty( $nbs_code ) && ! empty( $fallback_item_rtc ) ) {
+				$nbs_code            = $fallback_item_rtc['nbsCode'];
+				$operation_indicator = $fallback_item_rtc['operationIndicator'];
+				$class_code          = $fallback_item_rtc['classCode'];
+			}
+
+			if ( empty( $nbs_code ) ) {
+				$nbs_code = nfe_get_field( 'nfe_rtc_nbs_code' );
+			}
+
+			if ( '' === (string) $operation_indicator ) {
+				$operation_indicator = nfe_get_field( 'nfe_rtc_operation_indicator' );
+			}
+
+			if ( empty( $class_code ) ) {
+				$class_code = nfe_get_field( 'nfe_rtc_class_code' );
+			}
+
+			$ibs_cbs = array_filter(
+				array(
+					'operationIndicator' => $operation_indicator,
+					'classCode'          => $class_code,
+				),
+				static function( $value ) {
+					return '' !== (string) $value;
+				}
+			);
+
+			return array(
+				'nbsCode' => $nbs_code,
+				'ibsCbs'  => $ibs_cbs,
+			);
+		}
+
+		/**
+		 * Validates RTC payload before sending to NFe.io.
+		 *
+		 * @param int   $order_id order ID.
+		 * @param array $payload  request payload.
+		 *
+		 * @return array
+		 */
+		protected function validate_rtc_payload( $order_id, $payload ) {
+			$errors   = array();
+			$warnings = array();
+
+			$profile             = nfe_rtc_validation_profile();
+			$nbs_code            = isset( $payload['nbsCode'] ) ? trim( (string) $payload['nbsCode'] ) : '';
+			$operation_indicator = isset( $payload['ibsCbs']['operationIndicator'] ) ? trim( (string) $payload['ibsCbs']['operationIndicator'] ) : '';
+			$class_code          = isset( $payload['ibsCbs']['classCode'] ) ? trim( (string) $payload['ibsCbs']['classCode'] ) : '';
+			$destination         = isset( $payload['destinationIndicator'] ) ? trim( (string) $payload['destinationIndicator'] ) : '';
+			$has_recipient       = ! empty( $payload['recipient'] ) && is_array( $payload['recipient'] );
+			$has_ibs_cbs_payload = ! empty( $payload['ibsCbs'] ) && is_array( $payload['ibsCbs'] );
+
+			$has_rtc_context = ! empty( $nbs_code ) || $has_ibs_cbs_payload || ! empty( $destination );
+
+			if ( $has_ibs_cbs_payload && ( '' === $operation_indicator || '' === $class_code ) ) {
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: operationIndicator and classCode are required when RTC payload is used.', 'woo-nfe' ), $order_id );
+			}
+
+			if ( ! empty( $destination ) && ! in_array( $destination, array( 'SameAsBuyer', 'DifferentFromBuyer' ), true ) ) {
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: destinationIndicator has an invalid value.', 'woo-nfe' ), $order_id );
+			}
+
+			if ( empty( $nbs_code ) ) {
+				$missing_nbs_message = sprintf( __( 'RTC validation warning for order #%d: nbsCode is missing.', 'woo-nfe' ), $order_id );
+				$observability_ctx   = array(
+					'missing_fields' => array( 'nbsCode' ),
+					'item_ids'       => $this->get_order_item_ids( $order_id ),
+				);
+
+				switch ( $profile ) {
+					case 'estrito':
+						$errors[] = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in Strict profile.', 'woo-nfe' ), $order_id );
+						$observability_ctx['scenario'] = 'strict';
+						$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
+						break;
+
+					case 'equilibrado':
+						if ( $has_rtc_context && $this->missing_nbs_in_critical_scenario( $payload ) ) {
+							$errors[] = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile.', 'woo-nfe' ), $order_id );
+							$observability_ctx['scenario'] = 'balanced_critical';
+							$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
+						} else {
+							$warnings[] = $missing_nbs_message;
+							$observability_ctx['scenario'] = 'balanced_warning';
+							$this->register_missing_nbs_observability( $order_id, $profile, false, $observability_ctx );
+						}
+						break;
+
+					case 'compativel':
+					default:
+						$warnings[] = $missing_nbs_message;
+						$observability_ctx['scenario'] = 'compatible_warning';
+						$this->register_missing_nbs_observability( $order_id, $profile, false, $observability_ctx );
+						break;
+				}
+			}
+
+			if ( 'DifferentFromBuyer' === $destination && ! $has_recipient ) {
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
+			}
+
+			if ( 'DifferentFromBuyer' === $destination && $has_recipient && ( ! isset( $payload['recipient']['name'] ) || '' === trim( (string) $payload['recipient']['name'] ) ) ) {
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient.name is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
+			}
+
+			if ( 'SameAsBuyer' === $destination && $has_recipient ) {
+				$warnings[] = sprintf( __( 'RTC validation warning for order #%d: recipient was provided even though destinationIndicator is SameAsBuyer.', 'woo-nfe' ), $order_id );
+			}
+
+			return array(
+				'errors'   => $errors,
+				'warnings' => $warnings,
+			);
+		}
+
+		/**
+		 * Checks if nbsCode is missing in a critical Balanced profile scenario.
+		 *
+		 * @param array $payload request payload.
+		 *
+		 * @return bool
+		 */
+		protected function missing_nbs_in_critical_scenario( $payload ) {
+			$has_ibs_cbs = ! empty( $payload['ibsCbs'] ) && is_array( $payload['ibsCbs'] );
+
+			if ( $has_ibs_cbs ) {
+				return true;
+			}
+
+			if ( isset( $payload['destinationIndicator'] ) && 'DifferentFromBuyer' === $payload['destinationIndicator'] ) {
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Records observability metadata for nbsCode missing events.
+		 *
+		 * @param int    $order_id order ID.
+		 * @param string $profile  active profile.
+		 * @param bool   $blocked  if the emission was blocked.
+		 * @param array  $context  observability context.
+		 */
+		protected function register_missing_nbs_observability( $order_id, $profile, $blocked, $context = array() ) {
+			$last_event = get_post_meta( $order_id, '_nfe_rtc_missing_nbs_last_event', true );
+
+			$signature_source = array(
+				'profile' => $profile,
+				'blocked' => (bool) $blocked,
+				'context' => $context,
+			);
+
+			$event_signature = md5( wp_json_encode( $signature_source ) );
+			$missing_count = absint( get_post_meta( $order_id, '_nfe_rtc_missing_nbs_count', true ) );
+
+			if ( empty( $last_event['signature'] ) || $last_event['signature'] !== $event_signature ) {
+				update_post_meta( $order_id, '_nfe_rtc_missing_nbs_count', $missing_count + 1 );
+			}
+
+			update_post_meta(
+				$order_id,
+				'_nfe_rtc_missing_nbs_last_event',
+				array(
+					'profile'   => $profile,
+					'blocked'   => (bool) $blocked,
+					'context'   => $context,
+					'signature' => $event_signature,
+					'timestamp' => current_time( 'mysql' ),
+				)
+			);
+		}
+
+		/**
+		 * Gets order item IDs for observability context.
+		 *
+		 * @param int $order_id order ID.
+		 *
+		 * @return array
+		 */
+		protected function get_order_item_ids( $order_id ) {
+			$order    = nfe_wc_get_order( $order_id );
+			$item_ids = array();
+
+			foreach ( $order->get_items() as $item_id => $item ) {
+				$item_ids[] = absint( $item_id );
+			}
+
+			return $item_ids;
 		}
 
 		/**

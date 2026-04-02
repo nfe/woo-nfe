@@ -2,8 +2,8 @@
 	"core": null,
 	"phpVersion": "8.1",
 	"plugins": [
-		"WordPress/woocommerce",
-		"WordPress/woocommerce-extra-checkout-fields-for-brazil"
+		"https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip",
+		"https://downloads.wordpress.org/plugin/woocommerce-extra-checkout-fields-for-brazil.latest-stable.zip"
 	],
 	"mappings": {
 		"wp-content/plugins/woo-nfe": "."
