@@ -14,7 +14,8 @@ Restrições relevantes:
 
 ## Tracking
 
-- Issue GitHub: https://github.com/nfe/woo-nfe/issues/84
+- Issue GitHub (RTC Fase 1): https://github.com/nfe/woo-nfe/issues/84
+- Issue GitHub (activityEvent): https://github.com/nfe/woo-nfe/issues/87
 
 ## Goals / Non-Goals
 
@@ -28,6 +29,7 @@ Restrições relevantes:
 - Implementar motor fiscal automático para inferir operationIndicator e classCode a partir de regras tributárias completas.
 - Cobrir todos os subgrupos avançados de ibsCbs na primeira entrega (ex.: creditTransfer, presumedCredits, governmentPurchase).
 - Alterar fluxos de webhook, cancelamento ou consulta além do necessário para emissão.
+- Implementar fallback global para activityEvent (dados do evento são intrinsecamente por produto/serviço, sem default corporativo aplicável).
 
 ## Decisions
 
@@ -108,6 +110,19 @@ Restrições relevantes:
 4. Definir data de corte para migração recomendada ao perfil Estrito, baseada em métricas de saneamento cadastral.
 5. Monitorar erros/alertas de emissão e ajustar regras condicionais em iterações curtas.
 6. Rollback: rebaixar perfil para Compatível em caso de incidente operacional relevante.
+
+9. Modelo de dados para activityEvent sem fallback global.
+- Decisão: coletar os campos de activityEvent (name, beginOn, endOn, Code, address.*) apenas em produto simples e variação, com precedência variação > produto. Sem nível de configuração global.
+- Racional: o endereço do evento e suas datas são específicos do produto/serviço comercializado (ex: ingresso de show). Não existe default corporativo de "endereço de evento" que faça sentido para todas as emissões. Segue o mesmo padrão de campos explícitos já usado para os demais campos fiscais.
+- Alternativas consideradas:
+  - Incluir configuração global de activityEvent: criaria false sense of security — um endereço global de evento seria aplicado a produtos sem relação com aquele evento.
+  - Coletar activityEvent por pedido no admin do pedido (WC order): válido para operação manual pontual, mas inconsistente com o ciclo de cadastro de produto e não escala para volumes maiores. Descartado em favor do padrão produto/variação já estabelecido.
+
+10. Campo name como gatilho de inclusão do bloco.
+- Decisão: incluir o bloco activityEvent no payload somente quando name estiver preenchido. Campos parciais de address são enviados só se não vazios (array_filter).
+- Racional: name identifica o evento de forma inequívoca. Bloco incompleto sem name não agrega semântica fiscal. Consistente com o comportamento dos demais grupos opcionais já implementados.
+- Alternativas consideradas:
+  - Exigir name + pelo menos um campo de address: mais restritivo, mas aumenta fricção para casos simples (evento sem endereço detalhado cadastrado).
 
 ## Open Questions
 

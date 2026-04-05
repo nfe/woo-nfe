@@ -253,7 +253,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'address'          => $address,
 			);
 
-			$rtc_info = $this->rtc_fields_info( $order_id );
+			$rtc_info       = $this->rtc_fields_info( $order_id );
+			$activity_event = $this->activity_event_info( $order_id );
 
 			$data = array(
 				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
@@ -264,6 +265,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'externalId'         => 'WOO-NFE-' . $order_id,
 				'nbsCode'            => $rtc_info['nbsCode'],
 				'ibsCbs'             => $rtc_info['ibsCbs'],
+				'activityEvent'      => ! empty( $activity_event ) ? $activity_event : null,
 			);
 
 			$data = apply_filters( 'woo_nfe_rtc_payload', $data, $order_id, $order );
@@ -602,6 +604,98 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				'nbsCode' => $nbs_code,
 				'ibsCbs'  => $ibs_cbs,
 			);
+		}
+
+		/**
+		 * Collects activityEvent fields from the first order item that has event name set.
+		 * Precedence: variation meta > product meta. No global fallback.
+		 *
+		 * @param int $order_id order ID.
+		 *
+		 * @return array activityEvent array ready for payload, or empty array.
+		 */
+		protected function activity_event_info( $order_id ) {
+			$order = nfe_wc_get_order( $order_id );
+
+			if ( 0 >= count( $order->get_items() ) ) {
+				return array();
+			}
+
+			foreach ( $order->get_items() as $item ) {
+				$product_id   = $item['product_id'];
+				$variation_id = $item['variation_id'];
+
+				if ( $variation_id ) {
+					$name     = get_post_meta( $variation_id, '_nfe_activity_event_name', true );
+					$begin_on = get_post_meta( $variation_id, '_nfe_activity_event_begin_on', true );
+					$end_on   = get_post_meta( $variation_id, '_nfe_activity_event_end_on', true );
+					$code     = get_post_meta( $variation_id, '_nfe_activity_event_code', true );
+					$country  = get_post_meta( $variation_id, '_nfe_activity_event_address_country', true );
+					$postal   = get_post_meta( $variation_id, '_nfe_activity_event_address_postal_code', true );
+					$street   = get_post_meta( $variation_id, '_nfe_activity_event_address_street', true );
+					$number   = get_post_meta( $variation_id, '_nfe_activity_event_address_number', true );
+					$district = get_post_meta( $variation_id, '_nfe_activity_event_address_district', true );
+					$state    = get_post_meta( $variation_id, '_nfe_activity_event_address_state', true );
+					$city     = get_post_meta( $variation_id, '_nfe_activity_event_address_city_code', true );
+
+					// Fall back to parent product when variation has no name.
+					if ( empty( $name ) ) {
+						$name     = get_post_meta( $product_id, '_simple_nfe_activity_event_name', true );
+						$begin_on = get_post_meta( $product_id, '_simple_nfe_activity_event_begin_on', true );
+						$end_on   = get_post_meta( $product_id, '_simple_nfe_activity_event_end_on', true );
+						$code     = get_post_meta( $product_id, '_simple_nfe_activity_event_code', true );
+						$country  = get_post_meta( $product_id, '_simple_nfe_activity_event_address_country', true );
+						$postal   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_postal_code', true );
+						$street   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_street', true );
+						$number   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_number', true );
+						$district = get_post_meta( $product_id, '_simple_nfe_activity_event_address_district', true );
+						$state    = get_post_meta( $product_id, '_simple_nfe_activity_event_address_state', true );
+						$city     = get_post_meta( $product_id, '_simple_nfe_activity_event_address_city_code', true );
+					}
+				} else {
+					$name     = get_post_meta( $product_id, '_simple_nfe_activity_event_name', true );
+					$begin_on = get_post_meta( $product_id, '_simple_nfe_activity_event_begin_on', true );
+					$end_on   = get_post_meta( $product_id, '_simple_nfe_activity_event_end_on', true );
+					$code     = get_post_meta( $product_id, '_simple_nfe_activity_event_code', true );
+					$country  = get_post_meta( $product_id, '_simple_nfe_activity_event_address_country', true );
+					$postal   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_postal_code', true );
+					$street   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_street', true );
+					$number   = get_post_meta( $product_id, '_simple_nfe_activity_event_address_number', true );
+					$district = get_post_meta( $product_id, '_simple_nfe_activity_event_address_district', true );
+					$state    = get_post_meta( $product_id, '_simple_nfe_activity_event_address_state', true );
+					$city     = get_post_meta( $product_id, '_simple_nfe_activity_event_address_city_code', true );
+				}
+
+				if ( empty( $name ) ) {
+					continue;
+				}
+
+				$address = array_filter(
+					array(
+						'country'    => $country,
+						'postalCode' => $postal,
+						'street'     => $street,
+						'number'     => $number,
+						'district'   => $district,
+						'state'      => $state,
+						'city'       => array_filter(
+							array( 'code' => $city )
+						),
+					)
+				);
+
+				return array_filter(
+					array(
+						'name'    => $name,
+						'beginOn' => $begin_on,
+						'endOn'   => $end_on,
+						'code'    => $code,
+						'address' => $address ?: null,
+					)
+				);
+			}
+
+			return array();
 		}
 
 		/**
