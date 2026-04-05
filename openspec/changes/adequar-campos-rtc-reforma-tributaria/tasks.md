@@ -1,6 +1,7 @@
 ## Tracking
 
-- Issue GitHub: https://github.com/nfe/woo-nfe/issues/84
+- Issue GitHub (RTC Fase 1): https://github.com/nfe/woo-nfe/issues/84
+- Issue GitHub (activityEvent): https://github.com/nfe/woo-nfe/issues/87
 
 ## 1. Preparação e mapeamento fiscal
 
@@ -40,3 +41,24 @@
 - [x] 6.3 Revisar textos de ajuda no admin para orientar preenchimento fiscal
 - [x] 6.4 Atualizar documentação de uso e checklist de ativação da reforma tributária
 - [x] 6.5 Documentar limitação de UI da fase 1 para recipient/destinationIndicator e instrução de uso via integração
+
+## 7. activityEvent — Campos administrativos e persistência
+
+- [x] 7.1 Adicionar campos de activityEvent (name, beginOn, endOn, Code, address.*) em produto simples na aba NFe do produto
+- [x] 7.2 Adicionar campos de activityEvent em variação com os mesmos subcampos
+- [x] 7.3 Implementar save de produto simples e variação com sanitização (sanitize_text_field para textos, sanitize_key para datetime)
+- [x] 7.4 Garantir precedência variação > produto na leitura dos campos de activityEvent por item do pedido
+
+## 8. activityEvent — Montagem de payload
+
+- [x] 8.1 Implementar método activity_event_info( $order_id ) que itera os itens e retorna o primeiro produto/variação com name preenchido
+- [x] 8.2 Incluir bloco activityEvent no array de dados do payload RTC, condicionado à presença de name
+- [x] 8.3 Garantir que subcampos vazios do address sejam removidos via array_filter antes do envio
+- [x] 8.4 Validar ausência de regressão nos campos nbsCode, ibsCbs e fluxo legado
+
+## 9. Verificação funcional — activityEvent
+
+- [x] 9.1 Validar cenário: produto com activityEvent completo — payload contém bloco com todos os campos
+- [x] 9.2 Validar cenário: produto com activityEvent parcial (só name) — payload contém bloco apenas com name
+- [x] 9.3 Validar cenário: pedido sem activityEvent — bloco ausente do payload sem regressão
+- [x] 9.4 Validar precedência: variação com activityEvent prevalece sobre produto com activityEvent diferente

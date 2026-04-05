@@ -235,6 +235,127 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 					)
 				);
 
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_name',
+						'label'         => __( 'Event name (activityEvent.name)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_name', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_begin_on',
+						'label'         => __( 'Event start (activityEvent.beginOn)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_begin_on', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_end_on',
+						'label'         => __( 'Event end (activityEvent.endOn)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_end_on', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_code',
+						'label'         => __( 'Event code (activityEvent.code)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Optional free-text code identifying the activity event.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_code', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_country',
+						'label'         => __( 'Event country (activityEvent.address.country)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Country where the event takes place (e.g. BRA).', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_country', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_postal_code',
+						'label'         => __( 'Event postal code (activityEvent.address.postalCode)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Postal/ZIP code of the event address.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_postal_code', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_street',
+						'label'         => __( 'Event street (activityEvent.address.street)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Street name of the event address.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_street', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_number',
+						'label'         => __( 'Event number (activityEvent.address.number)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'Street number of the event address.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_number', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_district',
+						'label'         => __( 'Event district (activityEvent.address.district)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'District/neighbourhood of the event address.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_district', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_state',
+						'label'         => __( 'Event state (activityEvent.address.state)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'State code of the event address (e.g. SP).', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_state', true ),
+					)
+				);
+
+				woocommerce_wp_text_input(
+					array(
+						'id'            => '_simple_nfe_activity_event_address_city_code',
+						'label'         => __( 'Event city code (activityEvent.address.city.code)', 'woo-nfe' ),
+						'wrapper_class' => 'hide_if_variable',
+						'desc_tip'      => 'true',
+						'description'   => __( 'IBGE city code of the event address.', 'woo-nfe' ),
+						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_city_code', true ),
+					)
+				);
+
 				woocommerce_wp_textarea_input(
 					array(
 						'id'            => '_simple_nfe_product_desc',
@@ -264,6 +385,20 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			$rtc_operation_indicator = isset( $safe_post['_simple_nfe_rtc_operation_indicator'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_operation_indicator'] ) : '';
 			$rtc_class_code          = isset( $safe_post['_simple_nfe_rtc_class_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_class_code'] ) : '';
 			$nfe_product_description = isset( $safe_post['_simple_nfe_product_desc'] ) ? sanitize_text_field( $safe_post['_simple_nfe_product_desc'] ) : '';
+
+			// activityEvent fields.
+			$activity_event_name          = isset( $safe_post['_simple_nfe_activity_event_name'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_name'] ) : '';
+			$activity_event_begin_on      = isset( $safe_post['_simple_nfe_activity_event_begin_on'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_begin_on'] ) : '';
+			$activity_event_end_on        = isset( $safe_post['_simple_nfe_activity_event_end_on'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_end_on'] ) : '';
+			$activity_event_code          = isset( $safe_post['_simple_nfe_activity_event_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_code'] ) : '';
+			$activity_event_addr_country  = isset( $safe_post['_simple_nfe_activity_event_address_country'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_country'] ) : '';
+			$activity_event_addr_postal   = isset( $safe_post['_simple_nfe_activity_event_address_postal_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_postal_code'] ) : '';
+			$activity_event_addr_street   = isset( $safe_post['_simple_nfe_activity_event_address_street'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_street'] ) : '';
+			$activity_event_addr_number   = isset( $safe_post['_simple_nfe_activity_event_address_number'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_number'] ) : '';
+			$activity_event_addr_district = isset( $safe_post['_simple_nfe_activity_event_address_district'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_district'] ) : '';
+			$activity_event_addr_state    = isset( $safe_post['_simple_nfe_activity_event_address_state'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_state'] ) : '';
+			$activity_event_addr_city     = isset( $safe_post['_simple_nfe_activity_event_address_city_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_city_code'] ) : '';
+
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $city_service_code ) );
 
@@ -274,6 +409,19 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			update_post_meta( $post_id, '_simple_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
 			update_post_meta( $post_id, '_simple_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
 			update_post_meta( $post_id, '_simple_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
+
+			// Text Fields - activityEvent.
+			update_post_meta( $post_id, '_simple_nfe_activity_event_name', esc_attr( $activity_event_name ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_begin_on', esc_attr( $activity_event_begin_on ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_end_on', esc_attr( $activity_event_end_on ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_code', esc_attr( $activity_event_code ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_country', esc_attr( $activity_event_addr_country ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_postal_code', esc_attr( $activity_event_addr_postal ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_street', esc_attr( $activity_event_addr_street ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_number', esc_attr( $activity_event_addr_number ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_district', esc_attr( $activity_event_addr_district ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_state', esc_attr( $activity_event_addr_state ) );
+			update_post_meta( $post_id, '_simple_nfe_activity_event_address_city_code', esc_attr( $activity_event_addr_city ) );
 
 			// TextArea Field - Product Description.
 			update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $nfe_product_description ) );
@@ -340,6 +488,116 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				)
 			);
 
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_name[' . $product_id . ']',
+					'label'       => __( 'Event name (activityEvent.name)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_name', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_begin_on[' . $product_id . ']',
+					'label'       => __( 'Event start (activityEvent.beginOn)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_begin_on', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_end_on[' . $product_id . ']',
+					'label'       => __( 'Event end (activityEvent.endOn)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_end_on', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_code[' . $product_id . ']',
+					'label'       => __( 'Event code (activityEvent.code)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Optional free-text code identifying the activity event.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_code', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_country[' . $product_id . ']',
+					'label'       => __( 'Event country (activityEvent.address.country)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Country where the event takes place (e.g. BRA).', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_country', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_postal_code[' . $product_id . ']',
+					'label'       => __( 'Event postal code (activityEvent.address.postalCode)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Postal/ZIP code of the event address.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_postal_code', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_street[' . $product_id . ']',
+					'label'       => __( 'Event street (activityEvent.address.street)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Street name of the event address.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_street', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_number[' . $product_id . ']',
+					'label'       => __( 'Event number (activityEvent.address.number)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'Street number of the event address.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_number', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_district[' . $product_id . ']',
+					'label'       => __( 'Event district (activityEvent.address.district)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'District/neighbourhood of the event address.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_district', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_state[' . $product_id . ']',
+					'label'       => __( 'Event state (activityEvent.address.state)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'State code of the event address (e.g. SP).', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_state', true ),
+				)
+			);
+
+			woocommerce_wp_text_input(
+				array(
+					'id'          => '_nfe_activity_event_address_city_code[' . $product_id . ']',
+					'label'       => __( 'Event city code (activityEvent.address.city.code)', 'woo-nfe' ),
+					'desc_tip'    => 'true',
+					'description' => __( 'IBGE city code of the event address.', 'woo-nfe' ),
+					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_city_code', true ),
+				)
+			);
+
 			woocommerce_wp_textarea_input(
 				array(
 					'id'          => '_nfe_product_variation_desc[' . $product_id . ']',
@@ -366,6 +624,21 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			$rtc_class_code             = ( isset( $safe_post['_nfe_rtc_class_code'] ) && isset( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) : '';
 			$nfe_product_variation_desc = ( isset( $safe_post['_nfe_product_variation_desc'] ) && isset( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
 
+			$pid = intval( $post_id );
+
+			// activityEvent variation fields.
+			$activity_event_name          = ( isset( $safe_post['_nfe_activity_event_name'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_name'][ $pid ] ) : '';
+			$activity_event_begin_on      = ( isset( $safe_post['_nfe_activity_event_begin_on'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_begin_on'][ $pid ] ) : '';
+			$activity_event_end_on        = ( isset( $safe_post['_nfe_activity_event_end_on'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_end_on'][ $pid ] ) : '';
+			$activity_event_code          = ( isset( $safe_post['_nfe_activity_event_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_code'][ $pid ] ) : '';
+			$activity_event_addr_country  = ( isset( $safe_post['_nfe_activity_event_address_country'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_country'][ $pid ] ) : '';
+			$activity_event_addr_postal   = ( isset( $safe_post['_nfe_activity_event_address_postal_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_postal_code'][ $pid ] ) : '';
+			$activity_event_addr_street   = ( isset( $safe_post['_nfe_activity_event_address_street'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_street'][ $pid ] ) : '';
+			$activity_event_addr_number   = ( isset( $safe_post['_nfe_activity_event_address_number'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_number'][ $pid ] ) : '';
+			$activity_event_addr_district = ( isset( $safe_post['_nfe_activity_event_address_district'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_district'][ $pid ] ) : '';
+			$activity_event_addr_state    = ( isset( $safe_post['_nfe_activity_event_address_state'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_state'][ $pid ] ) : '';
+			$activity_event_addr_city     = ( isset( $safe_post['_nfe_activity_event_address_city_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_city_code'][ $pid ] ) : '';
+
 			// Text Field - City Service Code.
 			update_post_meta( $post_id, '_cityservicecode', esc_attr( $city_service_code ) );
 
@@ -376,6 +649,19 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			update_post_meta( $post_id, '_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
 			update_post_meta( $post_id, '_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
 			update_post_meta( $post_id, '_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
+
+			// Text Fields - activityEvent.
+			update_post_meta( $post_id, '_nfe_activity_event_name', esc_attr( $activity_event_name ) );
+			update_post_meta( $post_id, '_nfe_activity_event_begin_on', esc_attr( $activity_event_begin_on ) );
+			update_post_meta( $post_id, '_nfe_activity_event_end_on', esc_attr( $activity_event_end_on ) );
+			update_post_meta( $post_id, '_nfe_activity_event_code', esc_attr( $activity_event_code ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_country', esc_attr( $activity_event_addr_country ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_postal_code', esc_attr( $activity_event_addr_postal ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_street', esc_attr( $activity_event_addr_street ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_number', esc_attr( $activity_event_addr_number ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_district', esc_attr( $activity_event_addr_district ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_state', esc_attr( $activity_event_addr_state ) );
+			update_post_meta( $post_id, '_nfe_activity_event_address_city_code', esc_attr( $activity_event_addr_city ) );
 
 			// TextArea Field - Product Variation Description.
 			update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $nfe_product_variation_desc ) );
