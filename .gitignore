@@ -1,3 +1,4 @@
+*.zip
 # Created by https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
 
@@ -383,3 +384,4 @@ wp-config.php
 rsync.sh
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
+bin/build-zip.sh
