@@ -1,4 +1,3 @@
-*.zip
 # Created by https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
 
@@ -29,6 +28,12 @@ Icon
 
 # Thumbnails
 ._*
+
+# Others
+*.zip
+openpgp-keys.txt
+openspec/
+
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
