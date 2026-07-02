@@ -33,7 +33,7 @@ Icon
 *.zip
 openpgp-keys.txt
 openspec/
-
+raw/
 
 # Files that might appear in the root of a volume
 .DocumentRevisions-V100
