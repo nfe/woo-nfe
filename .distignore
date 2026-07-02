@@ -1,0 +1,36 @@
+# Dev tooling & CI
+.git
+.github
+.gitignore
+.distignore
+.wp-env.json
+.vscode
+bin
+node_modules
+vendor
+openspec
+.zip
+*.log
+*.zip
+*.tar.gz
+
+# Build/config files (dev-only)
+Gruntfile.js
+package.json
+package-lock.json
+composer.json
+composer.lock
+phpunit.xml.dist
+phpspec.yml
+wp-tests-config.php
+
+# Docs (dev-only; README.txt is kept for WP.org)
+CLAUDE.md
+README.md
+
+# SDK dev artifacts (keep lib/ but strip meta files)
+li/client-php/composer.json
+li/client-php/CHANGELOG.MD
+li/client-php/README.md
+li/client-php/.travis.yml
+li/client-php/.gitignore
