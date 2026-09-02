@@ -31,12 +31,14 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * @since 1.0.6
 		 */
 		public function __construct() {
-			// Add column to show receipt status updated via NFe.io API.
+			// Add column to show receipt status updated via NFe.io API (legacy and HPOS order screens).
 			add_filter( 'manage_edit-shop_order_columns', array( $this, 'order_status_column_header' ) );
-			add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ), 10, 1 );
+			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'order_status_column_header' ) );
+			add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ), 10, 2 );
+			add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'order_status_column_content' ), 10, 2 );
 
 			// Addings NFe actions to the order edit screen.
-			add_action( 'woocommerce_order_actions', array( $this, 'download_and_issue_actions' ), 10, 1 );
+			add_filter( 'woocommerce_order_actions', array( $this, 'download_and_issue_actions' ), 10, 2 );
 			add_action( 'woocommerce_order_action_nfe_download_order_action', array( $this, 'download_issue_action' ) );
 			add_action( 'woocommerce_order_action_nfe_issue_order_action', array( $this, 'issue_order_action' ) );
 
@@ -61,8 +63,15 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			add_action( 'woocommerce_order_status_completed', array( $this, 'issue_trigger' ) );
 
 			// WooCommerce Subscriptions Support.
+			//
+			// The deprecated 'processed_subscription_payments_for_order' hook was
+			// dropped. It is NOT replaced by 'woocommerce_subscription_payment_complete':
+			// on a renewal both would reach issue_trigger() with the very same
+			// order - the subscription hook resolves get_last_order(), which is
+			// the renewal order already routed here - and issue two invoices for
+			// one payment. Renewals are covered by the renewal hook below and the
+			// first order of a subscription by the regular status triggers.
 			if ( class_exists( 'WC_Subscriptions' ) ) {
-				add_action( 'processed_subscription_payments_for_order', array( $this, 'issue_trigger' ) );
 				add_action( 'woocommerce_renewal_order_payment_complete', array( $this, 'issue_trigger' ) );
 			}
 		}
@@ -90,10 +99,16 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			}
 
 			// Check if order exists first.
-			$order    = nfe_wc_get_order( $order_id );
-			$order_id = $order->get_id();
+			$order = nfe_wc_get_order( $order_id );
 
 			// Bail for no order.
+			if ( ! is_a( $order, 'WC_Order' ) ) {
+				return;
+			}
+
+			$order_id = $order->get_id();
+
+			// Bail for no order ID.
 			if ( ! $order_id ) {
 				return;
 			}
@@ -115,10 +130,14 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			$nfe_issued_count    = $this->get_order_count( 'Issued' );
 			$nfe_issuing_count   = $this->get_order_count( 'WaitingCalculateTaxes' );
 			$nfe_error_count     = $this->get_order_count( 'Error' );
-			$nfe_cancelled_count = $this->get_order_count( 'Cancelled' ); ?>
+			$nfe_cancelled_count = $this->get_order_count( 'Cancelled' );
+
+			// The order list screen depends on the active order storage (HPOS or legacy posts).
+			$orders_url = $this->orders_list_url();
+			?>
 
 			<li class="nfe-issued-orders">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
 					printf( wp_kses_post( _n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ) ), esc_html( $nfe_issued_count ) );
@@ -127,7 +146,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			</li>
 
 			<li class="nfe-processing-orders">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
 					printf( wp_kses_post( _n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ) ), esc_html( $nfe_issuing_count ) );
@@ -136,7 +155,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			</li>
 
 			<li class="nfe-error-orders">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
 					printf( wp_kses_post( _n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ) ), esc_html( $nfe_error_count ) );
@@ -145,7 +164,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			</li>
 
 			<li class="nfe-cancelled-orders">
-				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>">
+				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
 					printf( wp_kses_post( _n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ) ), esc_html( $nfe_cancelled_count ) );
@@ -374,56 +393,63 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		/**
 		 * Saving product data information.
 		 *
+		 * The request is only read after the WooCommerce product meta box nonce checks
+		 * out and the current user is allowed to edit this product. Each field then
+		 * follows the presence -> sanitize -> store boundary.
+		 *
 		 * @param int $post_id product ID.
 		 */
 		public function product_data_fields_save( $post_id ) {
 
-			$safe_post               = stripslashes_deep( $_POST );
-			$city_service_code       = isset( $safe_post['_simple_cityservicecode'] ) ? sanitize_text_field( $safe_post['_simple_cityservicecode'] ) : '';
-			$federal_service_code    = isset( $safe_post['_simple_federalservicecode'] ) ? sanitize_text_field( $safe_post['_simple_federalservicecode'] ) : '';
-			$rtc_nbs_code            = isset( $safe_post['_simple_nfe_rtc_nbs_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_nbs_code'] ) : '';
-			$rtc_operation_indicator = isset( $safe_post['_simple_nfe_rtc_operation_indicator'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_operation_indicator'] ) : '';
-			$rtc_class_code          = isset( $safe_post['_simple_nfe_rtc_class_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_rtc_class_code'] ) : '';
-			$nfe_product_description = isset( $safe_post['_simple_nfe_product_desc'] ) ? sanitize_text_field( $safe_post['_simple_nfe_product_desc'] ) : '';
+			// Validate the request before reading anything out of it.
+			if ( ! isset( $_POST['woocommerce_meta_nonce'] )
+				|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' ) ) {
+				return;
+			}
 
-			// activityEvent fields.
-			$activity_event_name          = isset( $safe_post['_simple_nfe_activity_event_name'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_name'] ) : '';
-			$activity_event_begin_on      = isset( $safe_post['_simple_nfe_activity_event_begin_on'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_begin_on'] ) : '';
-			$activity_event_end_on        = isset( $safe_post['_simple_nfe_activity_event_end_on'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_end_on'] ) : '';
-			$activity_event_code          = isset( $safe_post['_simple_nfe_activity_event_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_code'] ) : '';
-			$activity_event_addr_country  = isset( $safe_post['_simple_nfe_activity_event_address_country'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_country'] ) : '';
-			$activity_event_addr_postal   = isset( $safe_post['_simple_nfe_activity_event_address_postal_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_postal_code'] ) : '';
-			$activity_event_addr_street   = isset( $safe_post['_simple_nfe_activity_event_address_street'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_street'] ) : '';
-			$activity_event_addr_number   = isset( $safe_post['_simple_nfe_activity_event_address_number'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_number'] ) : '';
-			$activity_event_addr_district = isset( $safe_post['_simple_nfe_activity_event_address_district'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_district'] ) : '';
-			$activity_event_addr_state    = isset( $safe_post['_simple_nfe_activity_event_address_state'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_state'] ) : '';
-			$activity_event_addr_city     = isset( $safe_post['_simple_nfe_activity_event_address_city_code'] ) ? sanitize_text_field( $safe_post['_simple_nfe_activity_event_address_city_code'] ) : '';
+			$post_id = absint( $post_id );
 
-			// Text Field - City Service Code.
-			update_post_meta( $post_id, '_simple_cityservicecode', esc_attr( $city_service_code ) );
+			if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+				return;
+			}
 
-			// Text Field - Federal Service Code.
-			update_post_meta( $post_id, '_simple_federalservicecode', esc_attr( $federal_service_code ) );
+			// Text fields: the request key and the meta key are the same.
+			$text_fields = array(
+				'_simple_cityservicecode',
+				'_simple_federalservicecode',
+				'_simple_nfe_rtc_nbs_code',
+				'_simple_nfe_rtc_operation_indicator',
+				'_simple_nfe_rtc_class_code',
+				'_simple_nfe_activity_event_name',
+				'_simple_nfe_activity_event_begin_on',
+				'_simple_nfe_activity_event_end_on',
+				'_simple_nfe_activity_event_code',
+				'_simple_nfe_activity_event_address_country',
+				'_simple_nfe_activity_event_address_postal_code',
+				'_simple_nfe_activity_event_address_street',
+				'_simple_nfe_activity_event_address_number',
+				'_simple_nfe_activity_event_address_district',
+				'_simple_nfe_activity_event_address_state',
+				'_simple_nfe_activity_event_address_city_code',
+			);
 
-			// Text Fields - RTC fiscal data.
-			update_post_meta( $post_id, '_simple_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
-			update_post_meta( $post_id, '_simple_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
-			update_post_meta( $post_id, '_simple_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
+			foreach ( $text_fields as $field ) {
+				$value = '';
 
-			// Text Fields - activityEvent.
-			update_post_meta( $post_id, '_simple_nfe_activity_event_name', esc_attr( $activity_event_name ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_begin_on', esc_attr( $activity_event_begin_on ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_end_on', esc_attr( $activity_event_end_on ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_code', esc_attr( $activity_event_code ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_country', esc_attr( $activity_event_addr_country ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_postal_code', esc_attr( $activity_event_addr_postal ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_street', esc_attr( $activity_event_addr_street ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_number', esc_attr( $activity_event_addr_number ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_district', esc_attr( $activity_event_addr_district ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_state', esc_attr( $activity_event_addr_state ) );
-			update_post_meta( $post_id, '_simple_nfe_activity_event_address_city_code', esc_attr( $activity_event_addr_city ) );
+				if ( isset( $_POST[ $field ] ) && ! is_array( $_POST[ $field ] ) ) {
+					$value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+				}
+
+				update_post_meta( $post_id, $field, esc_attr( $value ) );
+			}
 
 			// TextArea Field - Product Description.
+			$nfe_product_description = '';
+
+			if ( isset( $_POST['_simple_nfe_product_desc'] ) && ! is_array( $_POST['_simple_nfe_product_desc'] ) ) {
+				$nfe_product_description = sanitize_textarea_field( wp_unslash( $_POST['_simple_nfe_product_desc'] ) );
+			}
+
 			update_post_meta( $post_id, '_simple_nfe_product_desc', esc_html( $nfe_product_description ) );
 		}
 
@@ -612,89 +638,107 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		/**
 		 * Save the NFe fields for product variations.
 		 *
-		 * @param int $post_id product ID.
+		 * WooCommerce saves variations over AJAX (`save-variations` nonce) and, in the
+		 * meta box flow, together with the product data (`woocommerce_save_data` nonce).
+		 * Either one is accepted, but the capability is always checked before writing.
+		 *
+		 * @param int $post_id variation ID.
 		 */
 		public function save_variations_fields( $post_id ) {
 
-			$safe_post                  = stripslashes_deep( $_POST );
-			$city_service_code          = ( isset( $safe_post['_cityservicecode'] ) && isset( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_cityservicecode'][ intval( $post_id ) ] ) : '';
-			$federal_service_code       = ( isset( $safe_post['_federalservicecode'] ) && isset( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_federalservicecode'][ intval( $post_id ) ] ) : '';
-			$rtc_nbs_code               = ( isset( $safe_post['_nfe_rtc_nbs_code'] ) && isset( $safe_post['_nfe_rtc_nbs_code'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_nbs_code'][ intval( $post_id ) ] ) : '';
-			$rtc_operation_indicator    = ( isset( $safe_post['_nfe_rtc_operation_indicator'] ) && isset( $safe_post['_nfe_rtc_operation_indicator'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_operation_indicator'][ intval( $post_id ) ] ) : '';
-			$rtc_class_code             = ( isset( $safe_post['_nfe_rtc_class_code'] ) && isset( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_rtc_class_code'][ intval( $post_id ) ] ) : '';
-			$nfe_product_variation_desc = ( isset( $safe_post['_nfe_product_variation_desc'] ) && isset( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) ) ? sanitize_text_field( $safe_post['_nfe_product_variation_desc'][ intval( $post_id ) ] ) : '';
+			// Validate the request before reading anything out of it.
+			$nonce_is_valid = false;
 
-			$pid = intval( $post_id );
+			if ( isset( $_POST['security'] ) ) {
+				$nonce_is_valid = (bool) wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['security'] ) ), 'save-variations' );
+			}
 
-			// activityEvent variation fields.
-			$activity_event_name          = ( isset( $safe_post['_nfe_activity_event_name'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_name'][ $pid ] ) : '';
-			$activity_event_begin_on      = ( isset( $safe_post['_nfe_activity_event_begin_on'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_begin_on'][ $pid ] ) : '';
-			$activity_event_end_on        = ( isset( $safe_post['_nfe_activity_event_end_on'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_end_on'][ $pid ] ) : '';
-			$activity_event_code          = ( isset( $safe_post['_nfe_activity_event_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_code'][ $pid ] ) : '';
-			$activity_event_addr_country  = ( isset( $safe_post['_nfe_activity_event_address_country'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_country'][ $pid ] ) : '';
-			$activity_event_addr_postal   = ( isset( $safe_post['_nfe_activity_event_address_postal_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_postal_code'][ $pid ] ) : '';
-			$activity_event_addr_street   = ( isset( $safe_post['_nfe_activity_event_address_street'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_street'][ $pid ] ) : '';
-			$activity_event_addr_number   = ( isset( $safe_post['_nfe_activity_event_address_number'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_number'][ $pid ] ) : '';
-			$activity_event_addr_district = ( isset( $safe_post['_nfe_activity_event_address_district'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_district'][ $pid ] ) : '';
-			$activity_event_addr_state    = ( isset( $safe_post['_nfe_activity_event_address_state'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_state'][ $pid ] ) : '';
-			$activity_event_addr_city     = ( isset( $safe_post['_nfe_activity_event_address_city_code'][ $pid ] ) ) ? sanitize_text_field( $safe_post['_nfe_activity_event_address_city_code'][ $pid ] ) : '';
+			if ( ! $nonce_is_valid && isset( $_POST['woocommerce_meta_nonce'] ) ) {
+				$nonce_is_valid = (bool) wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woocommerce_meta_nonce'] ) ), 'woocommerce_save_data' );
+			}
 
-			// Text Field - City Service Code.
-			update_post_meta( $post_id, '_cityservicecode', esc_attr( $city_service_code ) );
+			if ( ! $nonce_is_valid ) {
+				return;
+			}
 
-			// Text Field - Federal Service Code.
-			update_post_meta( $post_id, '_federalservicecode', esc_attr( $federal_service_code ) );
+			$post_id = absint( $post_id );
 
-			// Text Fields - RTC fiscal data.
-			update_post_meta( $post_id, '_nfe_rtc_nbs_code', esc_attr( $rtc_nbs_code ) );
-			update_post_meta( $post_id, '_nfe_rtc_operation_indicator', esc_attr( $rtc_operation_indicator ) );
-			update_post_meta( $post_id, '_nfe_rtc_class_code', esc_attr( $rtc_class_code ) );
+			if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+				return;
+			}
 
-			// Text Fields - activityEvent.
-			update_post_meta( $post_id, '_nfe_activity_event_name', esc_attr( $activity_event_name ) );
-			update_post_meta( $post_id, '_nfe_activity_event_begin_on', esc_attr( $activity_event_begin_on ) );
-			update_post_meta( $post_id, '_nfe_activity_event_end_on', esc_attr( $activity_event_end_on ) );
-			update_post_meta( $post_id, '_nfe_activity_event_code', esc_attr( $activity_event_code ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_country', esc_attr( $activity_event_addr_country ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_postal_code', esc_attr( $activity_event_addr_postal ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_street', esc_attr( $activity_event_addr_street ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_number', esc_attr( $activity_event_addr_number ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_district', esc_attr( $activity_event_addr_district ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_state', esc_attr( $activity_event_addr_state ) );
-			update_post_meta( $post_id, '_nfe_activity_event_address_city_code', esc_attr( $activity_event_addr_city ) );
+			// Variation fields are posted as arrays indexed by the variation ID.
+			$text_fields = array(
+				'_cityservicecode',
+				'_federalservicecode',
+				'_nfe_rtc_nbs_code',
+				'_nfe_rtc_operation_indicator',
+				'_nfe_rtc_class_code',
+				'_nfe_activity_event_name',
+				'_nfe_activity_event_begin_on',
+				'_nfe_activity_event_end_on',
+				'_nfe_activity_event_code',
+				'_nfe_activity_event_address_country',
+				'_nfe_activity_event_address_postal_code',
+				'_nfe_activity_event_address_street',
+				'_nfe_activity_event_address_number',
+				'_nfe_activity_event_address_district',
+				'_nfe_activity_event_address_state',
+				'_nfe_activity_event_address_city_code',
+			);
+
+			foreach ( $text_fields as $field ) {
+				$value = '';
+
+				if ( isset( $_POST[ $field ] ) && is_array( $_POST[ $field ] )
+					&& isset( $_POST[ $field ][ $post_id ] ) && ! is_array( $_POST[ $field ][ $post_id ] ) ) {
+					$value = sanitize_text_field( wp_unslash( $_POST[ $field ][ $post_id ] ) );
+				}
+
+				update_post_meta( $post_id, $field, esc_attr( $value ) );
+			}
 
 			// TextArea Field - Product Variation Description.
+			$nfe_product_variation_desc = '';
+
+			if ( isset( $_POST['_nfe_product_variation_desc'] ) && is_array( $_POST['_nfe_product_variation_desc'] )
+				&& isset( $_POST['_nfe_product_variation_desc'][ $post_id ] ) && ! is_array( $_POST['_nfe_product_variation_desc'][ $post_id ] ) ) {
+				$nfe_product_variation_desc = sanitize_textarea_field( wp_unslash( $_POST['_nfe_product_variation_desc'][ $post_id ] ) );
+			}
+
 			update_post_meta( $post_id, '_nfe_product_variation_desc', esc_html( $nfe_product_variation_desc ) );
 		}
 
 		/**
 		 * Adds the Download and Issue actions to the actions list in the order edit page.
 		 *
-		 * @param array $actions order actions array to display.
+		 * Since WooCommerce 6.7 the `woocommerce_order_actions` filter passes the order
+		 * as its second argument, which works on both the legacy and the HPOS screens.
 		 *
-		 * @return array|void list of actions.
+		 * @param array    $actions order actions array to display.
+		 * @param WC_Order $order   order being edited.
+		 *
+		 * @return array list of actions.
 		 */
-		public function download_and_issue_actions( $actions ) {
-			global $theorder;
+		public function download_and_issue_actions( $actions, $order = null ) {
+			if ( ! is_a( $order, 'WC_Order' ) ) {
+				global $theorder;
 
-			if ( ! is_object( $theorder ) ) {
-				$theorder = nfe_wc_get_order( get_the_ID() );
+				$order = is_a( $theorder, 'WC_Order' ) ? $theorder : null;
 			}
 
-			$order_id = $theorder->get_id();
-
-			if ( ! $order_id ) {
-				return;
+			if ( ! is_a( $order, 'WC_Order' ) || ! $order->get_id() ) {
+				return $actions;
 			}
 
-			$download = get_post_meta( $order_id, 'nfe_issued', true );
+			$download = nfe_get_order_meta( $order, 'nfe_issued' );
 
 			// Load the download action if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
 				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
 			}
 
-			if ( $this->should_we_issue( $download, $theorder ) ) {
+			if ( $this->should_we_issue( $download, $order ) ) {
 				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
 			}
 
@@ -743,18 +787,27 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		/**
 		 * Column Content on Order Status.
 		 *
-		 * @param string $column column id.
+		 * Serves both the legacy list table, which passes the order post ID, and the
+		 * HPOS order list screen, which passes the WC_Order object.
+		 *
+		 * @param string       $column column id.
+		 * @param int|WC_Order $order  order ID or order object, as given by the screen hook.
 		 */
-		public function order_status_column_content( $column ) {
-			// Get information.
-			$order    = nfe_wc_get_order( get_the_ID() );
-			$order_id = $order->get_id();
-			$nfe      = get_post_meta( $order_id, 'nfe_issued', true );
-
+		public function order_status_column_content( $column, $order = 0 ) {
 			// Bail early.
 			if ( 'nfe_receipts' !== $column ) {
 				return;
 			}
+
+			// Get information.
+			$order = is_a( $order, 'WC_Order' ) ? $order : nfe_wc_get_order( $order );
+
+			if ( ! is_a( $order, 'WC_Order' ) ) {
+				return;
+			}
+
+			$order_id = $order->get_id();
+			$nfe      = nfe_get_order_meta( $order, 'nfe_issued' );
 			?>
 			<mark>
 				<?php
@@ -770,7 +823,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 						'name'   => __( 'NFe Issued', 'woo-nfe' ),
 						'action' => 'woo_nfe_emitida',
 					);
-				} elseif ( ! empty( $nfe ) && 'CancelledFailed' === $nfe['status'] ) {
+				} elseif ( ! empty( $nfe ) && 'CancelFailed' === $nfe['status'] ) {
 					$actions['woo_nfe_issue'] = array(
 						'name'   => __( 'NFe Cancelling Failed', 'woo-nfe' ),
 						'action' => 'woo_nfe_issue',
@@ -791,37 +844,33 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 						'name'   => __( 'NFe Processing', 'woo-nfe' ),
 						'action' => 'woo_nfe_issue',
 					);
-				} else {
-					if ( $order->get_total() === '0.00' ) {
-						$actions['woo_nfe_pending_address'] = array(
-							'name'   => __( 'Zero Order', 'woo-nfe' ),
-							'action' => 'woo_nfe_pending_address',
-						);
-					} elseif ( ! nfe_order_address_filled( $order_id ) ) {
-						$actions['woo_nfe_pending_address'] = array(
-							'name'   => __( 'Pending Address', 'woo-nfe' ),
-							'action' => 'woo_nfe_pending_address',
+				} elseif ( $order->get_total() === '0.00' ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'name'   => __( 'Zero Order', 'woo-nfe' ),
+						'action' => 'woo_nfe_pending_address',
+					);
+				} elseif ( ! nfe_order_address_filled( $order_id ) ) {
+					$actions['woo_nfe_pending_address'] = array(
+						'name'   => __( 'Pending Address', 'woo-nfe' ),
+						'action' => 'woo_nfe_pending_address',
+					);
+				} elseif ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
+					if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
+						$actions['woo_nfe_issue'] = array(
+							'name'   => __( 'Issue NFe', 'woo-nfe' ),
+							'action' => 'woo_nfe_issue',
 						);
 					} else {
-						if ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
-							if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
-								$actions['woo_nfe_issue'] = array(
-									'name'   => __( 'Issue NFe', 'woo-nfe' ),
-									'action' => 'woo_nfe_issue',
-								);
-							} else {
-								$actions['woo_nfe_expired'] = array(
-									'name'   => __( 'Issue Expired', 'woo-nfe' ),
-									'action' => 'woo_nfe_expired',
-								);
-							}
-						} else {
-							$actions['woo_nfe_issue'] = array(
-								'name'   => __( 'Issue NFe', 'woo-nfe' ),
-								'action' => 'woo_nfe_issue',
-							);
-						}
+						$actions['woo_nfe_expired'] = array(
+							'name'   => __( 'Issue Expired', 'woo-nfe' ),
+							'action' => 'woo_nfe_expired',
+						);
 					}
+				} else {
+					$actions['woo_nfe_issue'] = array(
+						'name'   => __( 'Issue NFe', 'woo-nfe' ),
+						'action' => 'woo_nfe_issue',
+					);
 				}
 
 				foreach ( $actions as $action ) {
@@ -842,7 +891,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * @param WC_Order $order order object.
 		 */
 		public function display_order_data_preview_in_admin( $order ) {
-			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
+			$nfe = nfe_get_order_meta( $order, 'nfe_issued' );
 			?>
 			<h4>
 				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?></strong>
@@ -870,19 +919,22 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 
 					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['issuedOn'] ) ) { ?>
-						<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) ); // phpcs:ignoreStandard.Category.SniffName.ErrorCode ?>
+						<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) ); ?>
 					<?php } ?>
 					<br />
 
 					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) { ?>
-						<?php echo wp_kses_post( wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ) ); // phpcs:ignoreStandard.Category.SniffName.ErrorCode ?>
+						<?php echo wp_kses_post( wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ) ); ?>
 					<?php } ?>
 					<br />
 
 					<?php if ( ! empty( $nfe['id'] ) ) { ?>
 					<strong><?php esc_html_e( 'Fatura: ', 'woo-nfe' ); ?></strong>
-						<?php echo sprintf( wp_kses_post( '<a href="https://app.nfe.io/companies/' . NFe_Woo()->get_company() . '/service-invoices/' . $nfe['id'] . '">Link</a>' ), 'woo-nfe' ); ?>
+						<?php
+						$nfe_invoice_url = 'https://app.nfe.io/companies/' . rawurlencode( (string) NFe_Woo()->get_company() ) . '/service-invoices/' . rawurlencode( (string) $nfe['id'] );
+						?>
+						<a href="<?php echo esc_url( $nfe_invoice_url ); ?>"><?php esc_html_e( 'Link', 'woo-nfe' ); ?></a>
 					<br />
 					<?php } ?>
 
@@ -892,12 +944,12 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 					if ( ! function_exists( 'is_plugin_active' ) ) {
 						return;
 					}
+					esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
+
 					if ( is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
-						esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
-						echo sprintf( 'OK' );
+						echo 'OK';
 					} else {
-						esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
-						echo sprintf( 'NOT_OK' );
+						echo 'NOT_OK';
 					}
 					?>
 
@@ -917,7 +969,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * @return array modified order details.
 		 */
 		public function nfe_admin_order_preview_details( $fields, $order ) {
-			$nfe = get_post_meta( $order->get_id(), 'nfe_issued', true );
+			$nfe = nfe_get_order_meta( $order, 'nfe_issued' );
 
 			if ( isset( $fields ) ) {
 				if ( empty( $nfe ) ) {
@@ -949,22 +1001,22 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 
 					<# if ( data.nfe.status ) { #>
 					<strong><?php esc_html_e( 'Status', 'woo-nfe' ); ?></strong>
-					{{{ data.nfe.status }}}
+					{{ data.nfe.status }}
 					<# } #>
 
 					<# if ( data.nfe.number ) { #>
 					<strong><?php esc_html_e( 'Number', 'woo-nfe' ); ?></strong>
-					{{{ data.nfe.number }}}
+					{{ data.nfe.number }}
 					<# } #>
 
 					<# if ( data.nfe.check_code ) { #>
 					<strong><?php esc_html_e( 'CheckCode', 'woo-nfe' ); ?></strong>
-					{{{ data.nfe.check_code }}}
+					{{ data.nfe.check_code }}
 					<# } #>
 
 					<# if ( data.nfe.issued ) { #>
 					<strong><?php esc_html_e( 'Issued On', 'woo-nfe' ); ?></strong>
-					{{{ data.nfe.issued }}}
+					{{ data.nfe.issued }}
 					<# } #>
 				</div>
 			</div>
@@ -980,16 +1032,40 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		}
 
 		/**
+		 * URL of the order list screen for the active order storage.
+		 *
+		 * HPOS moves the order list to `admin.php?page=wc-orders`; the legacy post
+		 * storage keeps it on `edit.php?post_type=shop_order`.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @return string admin URL of the order list screen.
+		 */
+		protected function orders_list_url() {
+			if ( class_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil' )
+				&& method_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil', 'custom_orders_table_usage_is_enabled' )
+				&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+				return admin_url( 'admin.php?page=wc-orders' );
+			}
+
+			return admin_url( 'edit.php?post_type=shop_order' );
+		}
+
+		/**
 		 * Get orders count.
+		 *
+		 * Counting is delegated to nfe_count_orders_by_invoice_status(), which
+		 * asks the WooCommerce order query for a paginated total and therefore
+		 * returns the same number under HPOS and on the legacy post storage.
+		 *
+		 * @since 1.5.0 Counts through the WooCommerce order query instead of WP_Query.
 		 *
 		 * @param string $value NFe status.
 		 *
 		 * @return int
 		 */
 		protected function get_order_count( $value ) {
-			$query = nfe_get_order_by_nota_value( $value );
-
-			return $query->found_posts;
+			return nfe_count_orders_by_invoice_status( $value );
 		}
 
 		/**

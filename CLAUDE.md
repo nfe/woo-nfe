@@ -76,3 +76,45 @@ The plugin registers a WooCommerce API callback at `/?wc-api=nfe_webhook`. NFe.i
 - PHP 7+ is required; avoid PHP 8-only syntax for compatibility
 - Follow WooCommerce integration points already in the repo (order actions, email hooks, webhook callbacks) rather than creating new architectural layers
 - This repo uses the OpenSpec workflow (`.github/prompts/`, `.github/skills/`, `openspec/config.yaml`) — use it for spec-driven tasks
+
+### PHPCS baseline (gate de conformidade)
+
+O padrão é `WordPress` (WPCS 3.x). O `composer install` **funciona** — as dependências de desenvolvimento foram modernizadas na change `elevar-piso-php-e-sdk-nfe` (PHPUnit 9.6, PHPCS 3.11, WPCS 3.4, PHPCompatibilityWP 2.1) e `composer audit` não reporta advisories.
+
+```bash
+composer install
+composer run lint       # phpcs --standard=WordPress --runtime-set testVersion 8.2-
+composer run lint:fix   # phpcbf
+```
+
+Sem PHP no host, rode pelo container:
+
+```bash
+docker run --rm -v "$PWD":/app -w /app php:8.2-cli \
+  php vendor/bin/phpcs --standard=WordPress --runtime-set testVersion 8.2- \
+  includes/ templates/ woo-nfe.php
+```
+
+**Baseline vigente: 9 erros**, todos `WordPress.Files.FileName.InvalidClassFileName` — adiados por decisão para a change de renomeação do plugin (`submeter-nova-listagem-wporg`, task 2.5a), para não fazer churn estrutural em duas entregas. Qualquer erro **fora** dessa categoria é regressão e deve ser corrigido antes do merge.
+
+Toda supressão `phpcs:ignore` precisa de justificativa inline explicando por que a regra não se aplica naquele ponto.
+
+### Piso de runtime
+
+O plugin exige **PHP 8.2** (piso do SDK `nfe/nfe`). `woo-nfe.php` precisa continuar **parseável em PHP 7.x**: o gate de versão no topo só consegue mostrar o aviso se o arquivo inteiro fizer parse no runtime que ele está recusando. Verifique com:
+
+```bash
+for V in 7.0-cli 7.4-cli 8.2-cli; do
+  docker run --rm -v "$PWD":/app -w /app php:$V php -l woo-nfe.php
+done
+```
+
+Deprecations do PHP 8.2 (propriedade dinâmica, `null` em parâmetro `string`) são tratadas como erro nesta base: o plugin declara 8.2 e não deve poluir o log de quem roda 8.2.
+
+### Build do pacote
+
+```bash
+bash bin/build-zip.sh
+```
+
+O script faz staging em diretório limpo, roda `composer install --no-dev --optimize-autoloader --classmap-authoritative` lá dentro e falha se alguma dependência de desenvolvimento entrar no pacote. O `vendor/` do repo (com ferramentas de dev) **não** é copiado. O zip é removido antes de ser recriado — `zip -r` acrescenta a um arquivo existente, e sem isso cada build herdava o conteúdo do anterior.

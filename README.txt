@@ -1,11 +1,13 @@
 === NFe for Woocommerce ===
 Contributors: nfe, espellcaste
 Tags: woocommerce, shop, receipt, nfe, nota fiscal, nota, receita, sefaz, nfse, emitir nfse, emitir nfe
-Requires at least: 4.7
-Tested up to: 5.9.3
+Requires at least: 6.5
+Tested up to: 7.1
 Stable tag: 1.4.0-beta
-Requires PHP: 7.0
-WC tested up to: 6.1.0
+Requires PHP: 8.2
+Requires Plugins: woocommerce
+WC requires at least: 9.0
+WC tested up to: 11.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,15 +54,37 @@ After activation, go to WooCommerce > Settings > Integration > Receipts (NFE.io)
 
 = Where do I configure the NFe.io integration? =
 
-Open WooCommerce > Settings > Integration > Receipts (NFE.io). This is where you configure the API Key, issuing company, invoice issuance mode, fiscal defaults, and webhook URL.
+Open WooCommerce > Settings > Integration > Receipts (NFE.io). This is where you configure the API Key, issuing company, invoice issuance mode and fiscal defaults.
 
 = Do I need to configure a webhook? =
 
-Yes. The webhook keeps WooCommerce in sync with NFe.io invoice status changes, including issuance and cancellation events.
+No -- the plugin registers it for you. It generates a secret, registers the webhook with NFe.io and starts verifying signatures as soon as an API key is saved. The settings screen shows whether it is active, and offers a link to register it again if you ever need to.
+
+The webhook is what keeps WooCommerce in sync with invoice status changes, including issuance and cancellation. Every delivery is authenticated with an HMAC signature: anything unsigned, or signed with the wrong secret, is rejected without touching your orders.
 
 = Does the plugin support RTC tax reform fields? =
 
 Yes. The plugin supports `nbsCode`, `ibsCbs.operationIndicator`, and `ibsCbs.classCode`, with fallback priority across variation, simple product, and global integration settings.
+
+= How do I test the integration without issuing real invoices? =
+
+The plugin always talks to the production API, and that is deliberate: NFe.io has no separate sandbox host, so an "environment" switch in these settings would promise an isolation that does not exist -- and a fiscal document issued by mistake is not something you can take back.
+
+Isolation comes from the account instead. Use an API key from a development account and select a company configured outside the production environment. Invoices issued that way carry no fiscal validity, and the plugin refuses to record an invoice whose environment does not match the company you selected.
+
+= I am upgrading from an older version. Will I miss invoice updates? =
+
+The new, signed webhook is registered before the old one is retired, so there is no gap where nothing is listening. During the short window in between, deliveries from the old unsigned webhook are refused -- NFe.io retries them, and the new webhook picks them up.
+
+If the API key is not configured when you upgrade, registration waits until you save one. Until that happens the plugin tells you, in the admin area, that invoice status updates are not being applied.
+
+== Third-Party Licenses ==
+
+This plugin is distributed under the GNU General Public License version 2 or later (GPLv2 or later), the same license declared in `composer.json` (`GPL-2.0-or-later`).
+
+The plugin bundles the official NFe.io PHP SDK (`nfe/nfe`, version 3.5), which is distributed under the MIT License. The full license text ships with the plugin in `vendor/nfe/nfe/LICENSE`.
+
+The MIT License is a permissive license and is compatible with the GPL: MIT-licensed code may be combined with and redistributed as part of a GPL-licensed work. The bundled library keeps its own MIT terms, while the plugin as a whole is distributed under GPLv2 or later.
 
 == Changelog ==
 

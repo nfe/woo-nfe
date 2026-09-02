@@ -23,6 +23,47 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		public static $logger = false;
 
 		/**
+		 * Timeout, in seconds, for the issuing call.
+		 *
+		 * Issuing runs synchronously inside order-status and checkout hooks, so
+		 * the worst case has to stay well under the request budget. The API
+		 * answers 202 and the document arrives by webhook, so waiting longer
+		 * buys nothing.
+		 *
+		 * @var int
+		 */
+		const ISSUE_TIMEOUT = 15;
+
+		/**
+		 * Address API host used for postal-code lookups.
+		 *
+		 * Deliberately not the SDK default (address.api.nfe.io/v2): that host
+		 * requires a separate data key, while this one accepts the invoice API
+		 * key the store already has. See ibge_code().
+		 *
+		 * @var string
+		 */
+		const ADDRESS_BASE_URL = 'https://open.nfe.io/v1';
+
+		/**
+		 * Shared NFe.io SDK client, built on first use.
+		 *
+		 * @var \Nfe\Client|null
+		 */
+		private $client = null;
+
+		/**
+		 * Memoised company record for the current request.
+		 *
+		 * The getter is asked for one field at a time, six times over while
+		 * building a single payload. Without this it was six HTTP round trips
+		 * for one answer.
+		 *
+		 * @var array|null|false Null until fetched, false when the fetch failed.
+		 */
+		private $company_info = null;
+
+		/**
 		 * Construct.
 		 *
 		 * @see $this->instance Class Instance.
@@ -48,55 +89,418 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		}
 
 		/**
+		 * Returns the shared NFe.io API client, building it on first use.
+		 *
+		 * One client is enough. Since SDK 3.2.0 the retry policy is aware of both
+		 * method and idempotency, so a POST is only replayed on 429, on a
+		 * connection that provably never reached the server, or when an
+		 * Idempotency-Key is present -- exactly the cases where replaying is safe.
+		 *
+		 * The environment is always Production. The SDK deprecated Sandbox in
+		 * 3.4.0 because no sandbox host ever existed: selecting it changed
+		 * nothing but the caller's expectations, which is a dangerous thing to
+		 * offer when the side effect is a real fiscal document. Isolation for
+		 * testing comes from a development-account API key plus a company
+		 * configured outside production.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @throws \Nfe\Exception\InvalidRequestException When no API key is set.
+		 *
+		 * @return \Nfe\Client
+		 */
+		protected function client() {
+			if ( null === $this->client ) {
+				$this->client = new \Nfe\Client(
+					apiKey: (string) $this->get_key(),
+					environment: \Nfe\Environment::Production
+				);
+			}
+
+			return $this->client;
+		}
+
+		/**
+		 * Merges values into the 'nfe_issued' meta, preserving what is there.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order  order object.
+		 * @param array    $values values to merge in.
+		 * @param bool     $save   whether to persist immediately.
+		 *
+		 * @return void
+		 */
+		protected function merge_invoice_meta( $order, $values, $save = true ) {
+			$current = nfe_get_order_meta( $order, 'nfe_issued' );
+			$current = is_array( $current ) ? $current : array();
+
+			nfe_set_order_meta( $order, 'nfe_issued', array_merge( $current, $values ), $save );
+		}
+
+		/**
+		 * Marks the order as having an issuing attempt in flight.
+		 *
+		 * Merges rather than replaces. The previous code assigned
+		 * `array( 'status' => 'Processing' )` outright, which erased the id,
+		 * number and check code of an invoice issued earlier every time a later
+		 * attempt was made -- losing the record of a real fiscal document.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order order object.
+		 *
+		 * @return void
+		 */
+		protected function set_processing_marker( $order ) {
+			$this->merge_invoice_meta( $order, array( 'status' => 'Processing' ) );
+		}
+
+		/**
+		 * Releases the in-flight marker so the order can be issued again.
+		 *
+		 * Only ever called once it is established that no invoice was created.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order order object.
+		 *
+		 * @return void
+		 */
+		protected function release_processing_marker( $order ) {
+			$issued = nfe_get_order_meta( $order, 'nfe_issued' );
+			$issued = is_array( $issued ) ? $issued : array();
+
+			// Preserve an earlier invoice's data if there is one; only the
+			// status goes back to a re-issuable state.
+			$issued['status'] = empty( $issued['id'] ) ? '' : 'IssueFailed';
+
+			nfe_set_order_meta( $order, 'nfe_issued', $issued );
+		}
+
+		/**
+		 * Whether an order must not be issued again.
+		 *
+		 * The previous guard read `get_post_meta( $order_id )` with no key and
+		 * then indexed the result as if it were the invoice array, so it never
+		 * matched and never blocked anything.
+		 *
+		 * Making it work has a consequence worth stating plainly: 'Processing'
+		 * becomes a blocking state, so an attempt that failed and left the
+		 * marker behind would lock the order out of issuing for good. That is
+		 * why every failure path either resolves or releases the marker.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order order object.
+		 *
+		 * @return bool
+		 */
+		protected function is_blocked_for_issuing( $order ) {
+			$issued = nfe_get_order_meta( $order, 'nfe_issued' );
+
+			if ( ! is_array( $issued ) || empty( $issued['status'] ) ) {
+				return false;
+			}
+
+			$status  = (string) $issued['status'];
+			$blocked = array_merge( array( 'Processing', 'Issued' ), nfe_processing_status() );
+
+			if ( ! in_array( $status, $blocked, true ) ) {
+				return false;
+			}
+
+			// translators: 1: Order ID, 2: current NFe status.
+			$log = sprintf( __( 'Skipping a second issuing attempt for order #%1$d: an invoice is already %2$s.', 'woo-nfe' ), $order->get_id(), $status );
+
+			$this->logger( $log );
+
+			return true;
+		}
+
+		/**
+		 * Allocates and persists the externalId for a new issuing attempt.
+		 *
+		 * NFe.io treats externalId as an idempotency key with *replay*
+		 * semantics: a value already processed successfully makes the API return
+		 * the original invoice instead of creating a new one. The key therefore
+		 * identifies one emission, not one order.
+		 *
+		 * The plugin used to send a fixed 'WOO-NFE-{order_id}', so every
+		 * legitimate re-issue -- after a cancellation, say -- silently got the
+		 * old, possibly cancelled, invoice back and reported it as a success.
+		 * Numbering the attempts fixes that while keeping the first one on the
+		 * bare form, so invoices issued by earlier versions still resolve.
+		 *
+		 * The counter is derived, not migrated: an order carrying an invoice id
+		 * but no counter was issued by an older version, which consumed the bare
+		 * key, so its next attempt starts at 1. That covers the upgrade case
+		 * without touching a single existing order.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order order object.
+		 *
+		 * @return string
+		 */
+		protected function allocate_external_id( $order ) {
+			$stored = nfe_get_order_meta( $order, '_nfe_external_seq' );
+
+			if ( '' !== $stored && null !== $stored ) {
+				$sequence = (int) $stored + 1;
+			} else {
+				$issued   = nfe_get_order_meta( $order, 'nfe_issued' );
+				$sequence = ( is_array( $issued ) && ! empty( $issued['id'] ) ) ? 1 : 0;
+			}
+
+			$external_id = 0 === $sequence
+				? 'WOO-NFE-' . $order->get_id()
+				: 'WOO-NFE-' . $order->get_id() . '-' . $sequence;
+
+			nfe_set_order_meta( $order, '_nfe_external_seq', $sequence, false );
+			nfe_set_order_meta( $order, '_nfe_external_id', $external_id, false );
+			$order->save();
+
+			return $external_id;
+		}
+
+		/**
+		 * Writes a fully issued invoice onto the order.
+		 *
+		 * Reads the typed properties of the ServiceInvoice DTO, populated by the
+		 * SDK since 3.3.0. `totalAmount` is deliberately never read: it is
+		 * deprecated and the API does not return it, so the value comes from
+		 * amountNet with servicesAmount as the fallback.
+		 *
+		 * The meta shape is kept identical to the one the webhook writes, so the
+		 * two paths stay interchangeable for every consumer.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order $order   order object.
+		 * @param object   $invoice ServiceInvoice DTO.
+		 *
+		 * @return void
+		 */
+		protected function store_invoice( $order, $invoice ) {
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- SDK DTO properties mirror the NFe.io API field names.
+			$amount = null !== $invoice->amountNet ? $invoice->amountNet : $invoice->servicesAmount;
+
+			/*
+			 * Only fields the DTO actually carries are written, for the same
+			 * reason the webhook handler does it: an invoice recovered after a
+			 * failure may come back with fewer fields populated than the order
+			 * already holds, and merging nulls as '' or 0 would erase the record
+			 * of a document that really was issued.
+			 */
+			$update = array( 'status' => (string) $invoice->flowStatus );
+
+			if ( ! empty( $invoice->id ) ) {
+				$update['id'] = (string) $invoice->id;
+			}
+
+			if ( ! empty( $invoice->issuedOn ) ) {
+				$update['issuedOn'] = (string) $invoice->issuedOn;
+			}
+
+			if ( null !== $amount ) {
+				$update['amountNet'] = (float) $amount;
+			}
+
+			if ( ! empty( $invoice->checkCode ) ) {
+				$update['checkCode'] = (string) $invoice->checkCode;
+			}
+
+			// A failed issuing reports number 0, which is not an invoice number.
+			if ( is_int( $invoice->number ) && $invoice->number > 0 ) {
+				$update['number'] = $invoice->number;
+			}
+
+			$this->merge_invoice_meta( $order, $update, false );
+
+			// Flat meta so the order can be looked up by invoice id under both storages.
+			if ( ! empty( $invoice->id ) ) {
+				nfe_set_order_meta( $order, '_nfe_invoice_id', (string) $invoice->id, false );
+			}
+			// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+			$order->save();
+		}
+
+		/**
+		 * Looks an invoice up by externalId, allowing for indexing lag.
+		 *
+		 * Three outcomes, and the difference between the last two matters:
+		 * the DTO when an invoice exists, `null` when the API positively says
+		 * none does, and `false` when the lookup itself failed and the question
+		 * is simply unanswered.
+		 *
+		 * Right after a 202 the invoice can take a few seconds to appear on the
+		 * lookup route, hence the backoff before concluding it is absent.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param string $company_id  company id.
+		 * @param string $external_id externalId of the attempt.
+		 *
+		 * @return object|null|false DTO, null when confirmed absent, false when unknown.
+		 */
+		protected function find_invoice_by_external_id( $company_id, $external_id ) {
+			$delays = array( 0, 2, 3 );
+
+			foreach ( $delays as $delay ) {
+				if ( $delay > 0 ) {
+					sleep( $delay );
+				}
+
+				try {
+					$invoice = $this->client()->serviceInvoices->findByExternalId( $company_id, $external_id );
+				} catch ( \Nfe\Exception\ApiErrorException $e ) {
+					// translators: 1: externalId, 2: error message.
+					$this->logger( sprintf( __( 'Could not check whether externalId %1$s produced an invoice: %2$s', 'woo-nfe' ), $external_id, $e->getMessage() ) );
+
+					return false;
+				}
+
+				if ( $invoice ) {
+					return $invoice;
+				}
+			}
+
+			return null;
+		}
+
+		/**
+		 * Handles a failed issuing attempt, recovering the invoice if one exists.
+		 *
+		 * A failure here is ambiguous by nature: the request may never have
+		 * reached the API, or it may have created an invoice whose response was
+		 * lost on the way back. Releasing the order without checking would let
+		 * the next attempt issue a second, duplicate NFS-e for the same sale.
+		 *
+		 * So the order is only released once the API positively confirms that
+		 * nothing was created. When the check itself cannot be completed, the
+		 * order deliberately stays marked: a stuck order that says so in its
+		 * notes is recoverable, a duplicate fiscal document is not.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @param WC_Order                         $order       order object.
+		 * @param string                           $company_id  company id.
+		 * @param string                           $external_id externalId of this attempt.
+		 * @param \Nfe\Exception\ApiErrorException $exception   the failure.
+		 *
+		 * @return bool True when an invoice was recovered.
+		 */
+		protected function recover_from_failure( $order, $company_id, $external_id, $exception ) {
+			if ( $exception instanceof \Nfe\Exception\AuthenticationException ) {
+				// Nothing can have been created: the request never authenticated.
+				$log = __( 'NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings.', 'woo-nfe' );
+
+				$this->logger( $log );
+				$order->add_order_note( $log );
+				$this->release_processing_marker( $order );
+
+				return false;
+			}
+
+			$invoice = $this->find_invoice_by_external_id( $company_id, $external_id );
+
+			if ( false === $invoice ) {
+				// translators: %s: error message returned by the API.
+				$log = sprintf( __( 'The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists.', 'woo-nfe' ), $exception->getMessage() );
+
+				$this->logger( $log );
+				$order->add_order_note( $log );
+
+				return false;
+			}
+
+			if ( $invoice ) {
+				// The invoice existed all along; it was the response that went
+				// missing. Record it and let the webhook carry it the rest of
+				// the way.
+				$this->store_invoice( $order, $invoice );
+
+				// translators: %s: error message returned by the API.
+				$log = sprintf( __( 'The NFe issuing call failed (%s), but the invoice had already been created and was recovered. No second invoice was issued.', 'woo-nfe' ), $exception->getMessage() );
+
+				$this->logger( $log );
+				$order->add_order_note( $log );
+
+				return true;
+			}
+
+			// translators: %s: error message returned by the API.
+			$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), $exception->getMessage() );
+
+			$this->logger( $log );
+			$order->add_order_note( $log );
+			$this->release_processing_marker( $order );
+
+			return false;
+		}
+
+		/**
 		 * Issue a NFe invoice.
+		 *
+		 * Issuing is asynchronous on the NFe.io side: the API answers 202 with
+		 * an invoice id (Pending) and the finished document arrives later over
+		 * the webhook. A 201 (Issued) is possible and terminal, and is the one
+		 * case where this flow writes final invoice data itself.
+		 *
+		 * Each order is independent. A rejected order used to abort the whole
+		 * batch, which was harmless only because the re-send guard never fired;
+		 * with that guard fixed, one already-issued order would have silently
+		 * cancelled every remaining order in a bulk action.
+		 *
+		 * @since 1.5.0 Migrated to the nfe/nfe SDK.
 		 *
 		 * @param array $order_ids orders to issue the NFe.
 		 *
-		 * @return bool|NFe_ServiceInvoice
+		 * @return bool True when at least one order was accepted by the API.
 		 */
 		public function issue_invoice( $order_ids = array() ) {
-			$key        = $this->get_key();
-			$company_id = $this->get_company();
+			$company_id = (string) $this->get_company();
+			$issued_any = false;
 
-			NFe_io::setApiKey( $key );
-
-			foreach ( $order_ids as $order_id ) {
+			foreach ( (array) $order_ids as $order_id ) {
 				$order = nfe_wc_get_order( $order_id );
+
+				if ( ! is_a( $order, 'WC_Order' ) ) {
+					continue;
+				}
 
 				// translators: Log message.
 				$log = sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
-				// If second send.
-				$order_saved = get_post_meta( $order_id );
-				if ( $order_saved && ( 'WaitingCalculateTaxes' === $order_saved['status'] || 'Issued' === $order_saved['status'] || 'Processing' === $order_saved['status'] ) ) {
-					// translators: Log message.
-					$log = sprintf( __( 'second attempt to send the same NFE: #%d', 'woo-nfe' ), $order_id );
-					$this->logger( $log );
-
-					return false;
+				if ( $this->is_blocked_for_issuing( $order ) ) {
+					continue;
 				}
 
-				// If value is 0.00, don't issue it.
-				if ( $order->get_total() < 0 ) {
+				// A zero-total order has nothing to invoice. The old guard read
+				// `< 0`, which let 0.00 through against the documented behaviour.
+				if ( $order->get_total() <= 0 ) {
 					// translators: Log message.
 					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
-					return false;
+					continue;
 				}
 
 				$datainvoice = $this->order_info( $order_id );
 
-				// Check if there was a problem while fetching the city code from IBGE. And if the adderss is required.
+				// Check if there was a problem while fetching the city code from IBGE. And if the address is required.
 				if ( nfe_require_address() && empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
 					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
+
 					// Bail early so that it doesn't create an invoice without address.
-					return false;
+					continue;
 				}
 
 				$rtc_validation = $this->validate_rtc_payload( $order_id, $datainvoice );
@@ -114,92 +518,141 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 						$order->add_order_note( $error );
 					}
 
-					return false;
+					continue;
 				}
 
-				$meta    = update_post_meta(
-					$order_id,
-					'nfe_issued',
-					array(
-						'status' => 'Processing',
-					)
-				);
-				$invoice = NFe_ServiceInvoice::create( $company_id, $datainvoice );
+				// The client is built before anything is marked. A configuration
+				// problem -- no API key, most of all -- means no request was ever
+				// made, so it must not leave an in-flight marker behind: with the
+				// re-send guard working, that marker would lock the order out of
+				// issuing forever, and a store that enables the plugin before
+				// pasting its key would do that to every order it touched.
+				try {
+					$client = $this->client();
+				} catch ( \Nfe\Exception\ApiErrorException $e ) {
+					// translators: %s: error message.
+					$log = sprintf( __( 'NFe could not be issued because the NFe.io connection is not configured: %s', 'woo-nfe' ), $e->getMessage() );
 
-				if ( isset( $invoice->message ) ) {
-					// translators: Log message.
-					$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), print_r( $invoice->message, true ) ); // phpcs:ignore
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
-					return false;
+					continue;
 				}
 
-				// translators: Log message.
-				$log = sprintf( __( 'NFe sent sucessfully to issue! Order: #%d', 'woo-nfe' ), $order_id );
+				// Persisted before the POST on purpose: if the response is lost,
+				// this value is the only way back to whatever the API did with
+				// the request.
+				$external_id               = $this->allocate_external_id( $order );
+				$datainvoice['externalId'] = $external_id;
+
+				$this->set_processing_marker( $order );
+
+				try {
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Resource accessor defined by the nfe/nfe SDK; renaming it is not ours to do.
+					$invoice = $client->serviceInvoices->create(
+						$company_id,
+						$datainvoice,
+						new \Nfe\Http\RequestOptions( timeout: self::ISSUE_TIMEOUT )
+					);
+				} catch ( \Nfe\Exception\ApiErrorException $e ) {
+					// A duplicate rejection means the attempt already produced an
+					// invoice, so it is recovered rather than re-sent.
+					if ( $this->recover_from_failure( $order, $company_id, $external_id, $e ) ) {
+						$issued_any = true;
+					}
+
+					continue;
+				}
+
+				if ( $invoice instanceof \Nfe\Response\ServiceInvoicePending ) {
+					// 202: there is nothing to read from the body beyond the id.
+					// The document itself arrives over the webhook.
+					$this->merge_invoice_meta( $order, array( 'id' => $invoice->invoiceId() ), false );
+					nfe_set_order_meta( $order, '_nfe_invoice_id', $invoice->invoiceId(), false );
+					$order->save();
+
+					// translators: Log message.
+					$log = sprintf( __( 'NFe sent successfully to issue! Order: #%d', 'woo-nfe' ), $order_id );
+				} else {
+					// 201: terminal already, so the data is written here.
+					$this->store_invoice( $order, $invoice->resource() );
+
+					// translators: Log message.
+					$log = sprintf( __( 'NFe issued! Order: #%d', 'woo-nfe' ), $order_id );
+				}
+
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
-				// Update invoice information.
-				$meta = update_post_meta(
-					$order_id,
-					'nfe_issued',
-					array(
-						'id'        => $invoice->id,
-						'status'    => $invoice->flowStatus,
-						'issuedOn'  => $invoice->issuedOn,
-						'amountNet' => $invoice->amountNet,
-						'checkCode' => $invoice->checkCode,
-						'number'    => $invoice->number,
-					)
-				);
-
-				if ( ! $meta ) {
-					// translators: Log message.
-					$this->logger( sprintf( __( 'There was a problem while updating the Order #%d with the NFe information.', 'woo-nfe' ), $order_id ) );
-				}
+				$issued_any = true;
 			}
 
-			return $invoice;
+			return $issued_any;
 		}
 
 		/**
 		 * Download the invoice(s).
 		 *
-		 * @param array $order_ids Array of order ids.
+		 * Returns the raw PDF bytes straight from the API. The previous version
+		 * asked the API for a URL and fetched it separately, which was broken in
+		 * two independent ways: the vendored SDK never reached the call at all
+		 * (a stray `echo`/`exit` debug line sat in front of it), and the URLs
+		 * carried in webhook payloads are internal `r2://` references that are
+		 * not publicly fetchable in the first place.
 		 *
-		 * @throws Exception Exception.
+		 * It also no longer throws. The old code raised an Exception that no
+		 * caller caught, so a bad response from the API became a fatal error on
+		 * the storefront; and its error path fell through to `return $pdf` on a
+		 * variable that was never assigned.
 		 *
-		 * @return Exception|NFe_ServiceInvoice
+		 * @since 1.5.0 Returns bytes from the SDK, and reports failure instead of throwing.
+		 *
+		 * @param array $order_ids Array of order ids. The first one that has a
+		 *                         downloadable invoice wins.
+		 *
+		 * @return string|false Raw PDF bytes, or false when none could be fetched.
 		 */
 		public function download_pdf_invoice( $order_ids = array() ) {
-			$key        = $this->get_key();
-			$company_id = $this->get_company();
+			$company_id = (string) $this->get_company();
 
-			NFe_io::setApiKey( $key );
-
-			foreach ( $order_ids as $order_id ) {
-				$nfe   = get_post_meta( $order_id, 'nfe_issued', true );
+			foreach ( (array) $order_ids as $order_id ) {
 				$order = nfe_wc_get_order( $order_id );
 
-				try {
-					$pdf = NFe_ServiceInvoice::pdf( $company_id, $nfe['id'] );
-
-					// translators: Log message.
-					$log = sprintf( __( 'NFe PDF Donwload successfully. Order: #%d', 'woo-nfe' ), $order_id );
-					$this->logger( $log );
-					$order->add_order_note( $log );
-				} catch ( Exception $e ) {
-					// translators: Log message.
-					$log = sprintf( __( 'There was a problem when trying to download NFe PDF! Error: %s', 'woo-nfe' ), print_r( $e->getMessage(), true ) ); // phpcs:ignore
-					$this->logger( $log );
-					$order->add_order_note( $log );
-
-					throw new Exception( $log );
+				if ( ! is_a( $order, 'WC_Order' ) ) {
+					continue;
 				}
+
+				$nfe = nfe_get_order_meta( $order, 'nfe_issued' );
+
+				if ( ! is_array( $nfe ) || empty( $nfe['id'] ) ) {
+					// translators: Log message.
+					$this->logger( sprintf( __( 'There is no NFe invoice to download for order #%d.', 'woo-nfe' ), $order_id ) );
+
+					continue;
+				}
+
+				try {
+					$pdf = $this->client()->serviceInvoices->downloadPdf( $company_id, (string) $nfe['id'] );
+				} catch ( \Nfe\Exception\ApiErrorException $e ) {
+					// translators: 1: Order ID, 2: error message returned by the API.
+					$log = sprintf( __( 'There was a problem when trying to download NFe PDF for order #%1$d! Error: %2$s', 'woo-nfe' ), $order_id, $e->getMessage() );
+
+					$this->logger( $log );
+					$order->add_order_note( $log );
+
+					continue;
+				}
+
+				// translators: Log message.
+				$log = sprintf( __( 'NFe PDF download successful. Order: #%d', 'woo-nfe' ), $order_id );
+
+				$this->logger( $log );
+				$order->add_order_note( $log );
+
+				return $pdf;
 			}
 
-			return $pdf;
+			return false;
 		}
 
 		/**
@@ -214,29 +667,29 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			$order = nfe_wc_get_order( $order_id );
 
 			// if tax formation is exclude shipping, remove shipping from total.
-			if($this->highlight_shipping_tax() == 'exclude_shipping') {
+			if ( 'exclude_shipping' === $this->highlight_shipping_tax() ) {
 				// subtract shipping from total.
-				$servicesAmount = $order->get_total() - $order->get_shipping_total();
+				$services_amount = $order->get_total() - $order->get_shipping_total();
 				// get invoice info.
-				$invoiceInfo = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
-				// build shipping info line
-				$shippingInfo = __('Shipping', 'woo-nfe') . ": " . $order->get_shipping_method();
-				// build shipping value line
-				$shippingValueDescription = __('Shipping Value', 'woo-nfe') . ": " . $order->get_shipping_total() . $order->get_currency();
-				// final description
-				$servicesDescription = $this->remover_caracter("{$invoiceInfo} \n $shippingInfo \n $shippingValueDescription");
+				$invoice_info = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
+				// build shipping info line.
+				$shipping_info = __( 'Shipping', 'woo-nfe' ) . ': ' . $order->get_shipping_method();
+				// build shipping value line.
+				$shipping_value_description = __( 'Shipping Value', 'woo-nfe' ) . ': ' . $order->get_shipping_total() . $order->get_currency();
+				// final description.
+				$services_description = $this->remover_caracter( "{$invoice_info} \n $shipping_info \n $shipping_value_description" );
 			} else {
 				// if tax formation is include shipping, keep shipping in total.
-				$servicesAmount = $order->get_total();
+				$services_amount = $order->get_total();
 				// get invoice info.
-				$servicesDescription = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
+				$services_description = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
 			}
 
 			$address = array(
 				'postalCode'            => $this->check_customer_info( 'cep', $order_id ),
 				'street'                => $this->remover_caracter( $this->check_customer_info( 'street', $order_id ) ),
 				'number'                => $this->remover_caracter( $this->check_customer_info( 'address_number', $order_id ) ),
-				'additionalInformation' => $this->remover_caracter( get_post_meta( $order_id, '_billing_address_2', true ) ),
+				'additionalInformation' => $this->remover_caracter( $order->get_billing_address_2() ),
 				'district'              => $this->remover_caracter( $this->check_customer_info( 'district', $order_id ) ),
 				'country'               => $this->remover_caracter( $this->billing_country( $order_id ) ),
 				'state'                 => $this->remover_caracter( $this->check_customer_info( 'state', $order_id ) ),
@@ -248,7 +701,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 			$borrower = array(
 				'name'             => $this->check_customer_info( 'name', $order_id ),
-				'email'            => get_post_meta( $order_id, '_billing_email', true ),
+				'email'            => $order->get_billing_email(),
 				'federalTaxNumber' => $this->removepontotraco( $this->check_customer_info( 'number', $order_id ) ),
 				'address'          => $address,
 			);
@@ -259,10 +712,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			$data = array(
 				'cityServiceCode'    => $this->city_service_info( 'code', $order_id ),
 				'federalServiceCode' => $this->city_service_info( 'fed_code', $order_id ),
-				'description'        => $servicesDescription,
-				'servicesAmount'     => $servicesAmount,
+				'description'        => $services_description,
+				'servicesAmount'     => $services_amount,
 				'borrower'           => $borrower,
-				'externalId'         => 'WOO-NFE-' . $order_id,
 				'nbsCode'            => $rtc_info['nbsCode'],
 				'ibsCbs'             => $rtc_info['ibsCbs'],
 				'activityEvent'      => ! empty( $activity_event ) ? $activity_event : null,
@@ -373,10 +825,10 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 		/**
 		 * Highlight Shipping fees from the order taxes.
+		 *
 		 * @return string
 		 */
-		public function highlight_shipping_tax()
-		{
+		public function highlight_shipping_tax() {
 			return nfe_get_field( 'highlight_shipping_tax' );
 		}
 
@@ -409,7 +861,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @return null|string
 		 */
 		protected function billing_country( $order_id ) {
-			$country = get_post_meta( $order_id, '_billing_country', true );
+			$order   = nfe_wc_get_order( $order_id );
+			$country = $order ? $order->get_billing_country() : '';
 
 			if ( empty( $country ) ) {
 				$country = 'BR';
@@ -437,7 +890,8 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @return null|string
 		 */
 		protected function ibge_code( $order_id ) {
-			$post_code = get_post_meta( $order_id, '_billing_postcode', true );
+			$order     = nfe_wc_get_order( $order_id );
+			$post_code = $order ? $order->get_billing_postcode() : '';
 
 			if ( empty( $post_code ) ) {
 				if ( ! nfe_require_address() ) {
@@ -447,21 +901,44 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				return null;
 			}
 
-			$url      = 'https://open.nfe.io/v1/addresses/' . $post_code . '?api_key=' . $this->get_key();
-			$response = wp_remote_get( esc_url_raw( $url ) );
+			/*
+			 * Resolved through the SDK, but against the address host this plugin
+			 * has always used.
+			 *
+			 * The SDK defaults to address.api.nfe.io/v2, which answers 403 to the
+			 * invoice API key and wants a separate data key. open.nfe.io/v1
+			 * accepts the invoice key, so pointing the call there keeps the store
+			 * on the single credential it has always had -- while still going
+			 * through the SDK, which sends the key in an Authorization header
+			 * instead of the `?api_key=` query string the old code used, where it
+			 * landed in every access log and proxy on the way.
+			 *
+			 * The v1 body is a bare address object, which the SDK's parser (built
+			 * for the v2 `{address:{...}}` envelope) leaves out of ->addresses, so
+			 * the value is read from ->raw. ->addresses is tried first so this
+			 * keeps working if the shapes ever converge.
+			 */
+			try {
+				$lookup = $this->client()->addresses->lookupByPostalCode(
+					(string) $post_code,
+					new \Nfe\Http\RequestOptions( baseUrl: self::ADDRESS_BASE_URL )
+				);
+			} catch ( \Nfe\Exception\ApiErrorException $e ) {
+				// translators: 1: postal code, 2: error message returned by the API.
+				$this->logger( sprintf( __( 'Could not resolve the IBGE city code for postal code %1$s: %2$s', 'woo-nfe' ), $post_code, $e->getMessage() ) );
 
-			if ( is_wp_error( $response ) ) {
 				return null;
 			}
 
-			$address = json_decode( wp_remote_retrieve_body( $response ), true );
-			$code    = $address['city']['code'];
+			$address = isset( $lookup->addresses[0] ) && is_array( $lookup->addresses[0] )
+				? $lookup->addresses[0]
+				: (array) $lookup->raw;
 
-			if ( empty( $code ) ) {
+			if ( empty( $address['city']['code'] ) ) {
 				return null;
 			}
 
-			return $code;
+			return $address['city']['code'];
 		}
 
 		/**
@@ -472,43 +949,48 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @return null|string
 		 */
 		protected function get_company_info( $field ) {
-			// Get companies.
-			$url      = 'https://api.nfe.io/v1/companies/' . $this->get_company() . '?api_key=' . $this->get_key();
-			$response = wp_remote_get( esc_url_raw( $url ) );
-
-			if ( is_wp_error( $response ) ) {
-				return null;
-			}
-
-			$company = json_decode( wp_remote_retrieve_body( $response ), true );
+			$address = $this->company_address();
 
 			if ( 'city' === $field ) {
-				$name = $company['companies']['address']['city']['name'];
-
-				if ( empty( $name ) ) {
-					return null;
-				}
-
-				return $name;
+				return empty( $address['city']['name'] ) ? null : $address['city']['name'];
 			}
 
 			if ( 'code' === $field ) {
-				$code = $company['companies']['address']['city']['code'];
+				return empty( $address['city']['code'] ) ? null : $address['city']['code'];
+			}
 
-				if ( empty( $code ) ) {
-					return null;
+			return empty( $address[ $field ] ) ? null : $address[ $field ];
+		}
+
+		/**
+		 * The configured company's address, fetched once per request.
+		 *
+		 * Goes through the SDK's companies resource. The previous call built the
+		 * URL by hand with `?api_key=`, exposing the credential in a query
+		 * string, and indexed into the decoded body without guards, which raised
+		 * notices whenever the company had no address on file.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @return array Address array, empty when unavailable.
+		 */
+		protected function company_address() {
+			if ( null === $this->company_info ) {
+				try {
+					$company = $this->client()->companies->retrieve( (string) $this->get_company() );
+
+					$this->company_info = isset( $company->raw['address'] ) && is_array( $company->raw['address'] )
+						? $company->raw['address']
+						: array();
+				} catch ( \Nfe\Exception\ApiErrorException $e ) {
+					// translators: %s: error message returned by the API.
+					$this->logger( sprintf( __( 'Could not fetch the company data from NFe.io: %s', 'woo-nfe' ), $e->getMessage() ) );
+
+					$this->company_info = false;
 				}
-
-				return $code;
 			}
 
-			$field_value = $company['companies']['address'][ $field ];
-
-			if ( empty( $field_value ) ) {
-				return null;
-			}
-
-			return $field_value;
+			return is_array( $this->company_info ) ? $this->company_info : array();
 		}
 
 		/**
@@ -595,7 +1077,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					'operationIndicator' => $operation_indicator,
 					'classCode'          => $class_code,
 				),
-				static function( $value ) {
+				static function ( $value ) {
 					return '' !== (string) $value;
 				}
 			);
@@ -690,7 +1172,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 						'beginOn' => $begin_on,
 						'endOn'   => $end_on,
 						'code'    => $code,
-						'address' => $address ?: null,
+						'address' => empty( $address ) ? null : $address,
 					)
 				);
 			}
@@ -721,14 +1203,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			$has_rtc_context = ! empty( $nbs_code ) || $has_ibs_cbs_payload || ! empty( $destination );
 
 			if ( $has_ibs_cbs_payload && ( '' === $operation_indicator || '' === $class_code ) ) {
+				/* translators: %d: WooCommerce order number. */
 				$errors[] = sprintf( __( 'RTC validation failed for order #%d: operationIndicator and classCode are required when RTC payload is used.', 'woo-nfe' ), $order_id );
 			}
 
 			if ( ! empty( $destination ) && ! in_array( $destination, array( 'SameAsBuyer', 'DifferentFromBuyer' ), true ) ) {
+				/* translators: %d: WooCommerce order number. */
 				$errors[] = sprintf( __( 'RTC validation failed for order #%d: destinationIndicator has an invalid value.', 'woo-nfe' ), $order_id );
 			}
 
 			if ( empty( $nbs_code ) ) {
+				/* translators: %d: WooCommerce order number. */
 				$missing_nbs_message = sprintf( __( 'RTC validation warning for order #%d: nbsCode is missing.', 'woo-nfe' ), $order_id );
 				$observability_ctx   = array(
 					'missing_fields' => array( 'nbsCode' ),
@@ -737,18 +1222,20 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 				switch ( $profile ) {
 					case 'estrito':
-						$errors[] = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in Strict profile.', 'woo-nfe' ), $order_id );
+						/* translators: %d: WooCommerce order number. */
+						$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in Strict profile.', 'woo-nfe' ), $order_id );
 						$observability_ctx['scenario'] = 'strict';
 						$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
 						break;
 
 					case 'equilibrado':
 						if ( $has_rtc_context && $this->missing_nbs_in_critical_scenario( $payload ) ) {
-							$errors[] = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile.', 'woo-nfe' ), $order_id );
+							/* translators: %d: WooCommerce order number. */
+							$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile.', 'woo-nfe' ), $order_id );
 							$observability_ctx['scenario'] = 'balanced_critical';
 							$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
 						} else {
-							$warnings[] = $missing_nbs_message;
+							$warnings[]                    = $missing_nbs_message;
 							$observability_ctx['scenario'] = 'balanced_warning';
 							$this->register_missing_nbs_observability( $order_id, $profile, false, $observability_ctx );
 						}
@@ -756,7 +1243,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 					case 'compativel':
 					default:
-						$warnings[] = $missing_nbs_message;
+						$warnings[]                    = $missing_nbs_message;
 						$observability_ctx['scenario'] = 'compatible_warning';
 						$this->register_missing_nbs_observability( $order_id, $profile, false, $observability_ctx );
 						break;
@@ -764,14 +1251,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			}
 
 			if ( 'DifferentFromBuyer' === $destination && ! $has_recipient ) {
+				/* translators: %d: WooCommerce order number. */
 				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
 			}
 
 			if ( 'DifferentFromBuyer' === $destination && $has_recipient && ( ! isset( $payload['recipient']['name'] ) || '' === trim( (string) $payload['recipient']['name'] ) ) ) {
+				/* translators: %d: WooCommerce order number. */
 				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient.name is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
 			}
 
 			if ( 'SameAsBuyer' === $destination && $has_recipient ) {
+				/* translators: %d: WooCommerce order number. */
 				$warnings[] = sprintf( __( 'RTC validation warning for order #%d: recipient was provided even though destinationIndicator is SameAsBuyer.', 'woo-nfe' ), $order_id );
 			}
 
@@ -811,7 +1301,13 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @param array  $context  observability context.
 		 */
 		protected function register_missing_nbs_observability( $order_id, $profile, $blocked, $context = array() ) {
-			$last_event = get_post_meta( $order_id, '_nfe_rtc_missing_nbs_last_event', true );
+			$order = nfe_wc_get_order( $order_id );
+
+			if ( ! $order ) {
+				return;
+			}
+
+			$last_event = nfe_get_order_meta( $order, '_nfe_rtc_missing_nbs_last_event' );
 
 			$signature_source = array(
 				'profile' => $profile,
@@ -820,14 +1316,14 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			);
 
 			$event_signature = md5( wp_json_encode( $signature_source ) );
-			$missing_count = absint( get_post_meta( $order_id, '_nfe_rtc_missing_nbs_count', true ) );
+			$missing_count   = absint( nfe_get_order_meta( $order, '_nfe_rtc_missing_nbs_count', 0 ) );
 
 			if ( empty( $last_event['signature'] ) || $last_event['signature'] !== $event_signature ) {
-				update_post_meta( $order_id, '_nfe_rtc_missing_nbs_count', $missing_count + 1 );
+				nfe_set_order_meta( $order, '_nfe_rtc_missing_nbs_count', $missing_count + 1, false );
 			}
 
-			update_post_meta(
-				$order_id,
+			nfe_set_order_meta(
+				$order,
 				'_nfe_rtc_missing_nbs_last_event',
 				array(
 					'profile'   => $profile,
@@ -835,8 +1331,12 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					'context'   => $context,
 					'signature' => $event_signature,
 					'timestamp' => current_time( 'mysql' ),
-				)
+				),
+				false
 			);
+
+			// Single save() for every observability meta accumulated above.
+			$order->save();
 		}
 
 		/**
@@ -865,7 +1365,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 *
 		 * @return null|string
 		 */
-		protected function city_service_info( $field = '', $order_id ) {
+		protected function city_service_info( $field, $order_id ) {
 			// Bail early.
 			if ( empty( $field ) ) {
 				return;
@@ -924,23 +1424,26 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 *
 		 * @return null|string returns the customer info specific to the person type being fetched.
 		 */
-		protected function check_customer_info( $field = '', $order ) {
+		protected function check_customer_info( $field, $order ) {
 			if ( empty( $field ) ) {
 				return;
 			}
 
+			// Despite its name, $order holds an order ID: resolve it once and reuse it below.
+			$wc_order = is_a( $order, 'WC_Order' ) ? $order : nfe_wc_get_order( $order );
+
 			// Only check those fields.
 			if ( in_array( $field, array( 'number', 'name', 'type' ), true ) ) {
 				// Person Type.
-				$type = get_post_meta( $order, '_billing_persontype', true );
+				$type = nfe_get_order_meta( $wc_order, '_billing_persontype' );
 
 				// Customer info.
-				$cpf      = get_post_meta( $order, '_billing_cpf', true );
-				$customer = get_post_meta( $order, '_billing_first_name', true ) . ' ' . get_post_meta( $order, '_billing_last_name', true );
+				$cpf      = nfe_get_order_meta( $wc_order, '_billing_cpf' );
+				$customer = ( $wc_order ? $wc_order->get_billing_first_name() : '' ) . ' ' . ( $wc_order ? $wc_order->get_billing_last_name() : '' );
 
 				// Company info.
-				$cnpj    = get_post_meta( $order, '_billing_cnpj', true );
-				$company = get_post_meta( $order, '_billing_company', true );
+				$cnpj    = nfe_get_order_meta( $wc_order, '_billing_cnpj' );
+				$company = $wc_order ? $wc_order->get_billing_company() : '';
 
 				if ( ! empty( $type ) ) {
 					if ( '1' === $type ) {
@@ -988,7 +1491,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'city':
-					$output = get_post_meta( $order, '_billing_city', true );
+					$output = $wc_order ? $wc_order->get_billing_city() : '';
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -998,7 +1501,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'state':
-					$output = get_post_meta( $order, '_billing_state', true );
+					$output = $wc_order ? $wc_order->get_billing_state() : '';
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -1008,7 +1511,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'district':
-					$output = get_post_meta( $order, '_billing_neighborhood', true );
+					$output = nfe_get_order_meta( $wc_order, '_billing_neighborhood' );
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -1018,7 +1521,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'address_number':
-					$output = get_post_meta( $order, '_billing_number', true );
+					$output = nfe_get_order_meta( $wc_order, '_billing_number' );
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -1028,7 +1531,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'street':
-					$output = get_post_meta( $order, '_billing_address_1', true );
+					$output = $wc_order ? $wc_order->get_billing_address_1() : '';
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -1038,7 +1541,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					break;
 
 				case 'cep':
-					$output = get_post_meta( $order, '_billing_postcode', true );
+					$output = $wc_order ? $wc_order->get_billing_postcode() : '';
 					if ( ! empty( $output ) ) {
 						$output = $output;
 					} elseif ( false === nfe_require_address() ) {
@@ -1064,7 +1567,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @return string
 		 */
 		protected function removepontotraco( $string ) {
-			return ltrim( preg_replace( '/[^0-9]/', '', $string ), '0' );
+			// Coerced because the callers pass straight through from order meta,
+			// which is null whenever the field was never filled in. PHP 8.2 --
+			// the floor this plugin targets -- deprecates passing null here, and
+			// it happens on the payload-building path of every issuing attempt.
+			return ltrim( preg_replace( '/[^0-9]/', '', (string) $string ), '0' );
 		}
 
 		/**
@@ -1075,7 +1582,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		 * @return string
 		 */
 		protected function remover_caracter( $string ) {
-			$string = preg_replace( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities( $string, ENT_COMPAT, 'UTF-8' ) );
+			// See removepontotraco(): an unfilled address field arrives as null,
+			// which htmlentities() deprecates on PHP 8.2.
+			$string = preg_replace( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities( (string) $string, ENT_COMPAT, 'UTF-8' ) );
 
 			return preg_replace( '/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/', '', $string );
 		}
@@ -1233,7 +1742,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 	 *
 	 * @return NFe_Woo the one true NFe_Woo Instance.
 	 */
-	function NFe_Woo() {
+	function NFe_Woo() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed, WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- Public accessor kept for backward compatibility.
 		return NFe_Woo::instance();
 	}
 }

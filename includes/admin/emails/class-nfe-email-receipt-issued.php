@@ -24,7 +24,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	public function __construct() {
 		$this->id          = 'receipt_issued';
 		$this->title       = __( 'NFe Receipt Issued', 'woo-nfe' );
-		$this->description = __( 'Safe copy emails are sent when a customer issues an receipt. The e-mail is sent to the admin as a saving measure.', 'woo-nfe' );
+		$this->description = __( 'Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it.', 'woo-nfe' );
 
 		$this->heading = __( 'NFe Receipt Issued', 'woo-nfe' );
 
@@ -36,11 +36,15 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		$this->template_plain = 'emails/plain/nfe-receipt-issued.php';
 		$this->customer_email = true;
 
-		// Triggers.
-		add_action( 'woocommerce_order_status_pending_to_processing_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_pending_to_completed_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_order_status_completed_notification', array( $this, 'trigger' ) );
-		add_action( 'woocommerce_renewal_order_payment_complete', array( $this, 'trigger' ) );
+		/*
+		 * Triggered by the webhook, once NFe.io confirms the invoice was issued.
+		 *
+		 * It used to hang off the same order-status transitions that *start* the
+		 * issuing, so the customer was told their receipt had been issued before
+		 * the API had even answered -- and again if issuing then failed, which
+		 * announced a document that would never exist.
+		 */
+		add_action( 'woo_nfe_receipt_issued_notification', array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
@@ -53,18 +57,15 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 * @return void
 	 */
 	public function trigger( $order_id ) {
-		// Check if order exists first.
-		$order    = nfe_wc_get_order( $order_id );
-		$order_id = $order->get_id();
+		// Validate the order before using it: the hook may hand over an unknown ID.
+		$order = nfe_wc_get_order( $order_id );
 
-		if ( ! $order_id ) {
+		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
 
-		// Checking if the address of order is filled.
-		if ( ! nfe_order_address_filled( $order_id ) ) {
-			return;
-		}
+		// The invoice is already issued by the time this runs, so there is
+		// nothing left to validate about the address -- NFe.io accepted it.
 
 		$this->object    = $order;
 		$this->recipient = $this->object->get_billing_email();
@@ -136,6 +137,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 			'subject'    => array(
 				'title'       => _x( 'Subject', 'of an email', 'woo-nfe' ),
 				'type'        => 'text',
+				// translators: %s: default subject used when the field is left blank.
 				'description' => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'woo-nfe' ), $this->subject ),
 				'placeholder' => '',
 				'default'     => '',
@@ -143,6 +145,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 			'heading'    => array(
 				'title'       => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'woo-nfe' ),
 				'type'        => 'text',
+				// translators: %s: default heading used when the field is left blank.
 				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'woo-nfe' ), $this->heading ),
 				'placeholder' => '',
 				'default'     => '',

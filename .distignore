@@ -1,3 +1,9 @@
+# Credentials. Never packaged: .env is git-ignored, but rsync copies whatever is
+# in the working tree, so without this the API key ships inside the public zip.
+.env
+.env.local
+.env.*
+
 # Dev tooling & CI
 .git
 .github
@@ -10,8 +16,13 @@
 .svnignore
 bin
 node_modules
-vendor
 openspec
+
+# The repo's vendor/ holds dev dependencies (PHPUnit, PHPCS). It is excluded on
+# purpose: the build script installs a separate production-only tree
+# (composer install --no-dev) into the staging directory, so the SDK still ships
+# with the plugin -- just without the dev tooling.
+vendor
 raw
 .zip
 *.log
@@ -35,9 +46,7 @@ docs
 nfeio-docs
 
 
-# SDK dev artifacts (keep lib/ but strip meta files)
-li/client-php/composer.json
-li/client-php/CHANGELOG.MD
-li/client-php/README.md
-li/client-php/.travis.yml
-li/client-php/.gitignore
+# Local checkout of the NFe.io SDK repository, kept beside the plugin for
+# development. It is git-ignored but rsync would still copy it - along with the
+# symlinks it holds to other local repositories - straight into a public zip.
+client-php
