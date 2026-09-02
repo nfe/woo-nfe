@@ -5,10 +5,14 @@
 .distignore
 .wp-env.json
 .vscode
+.claude
+.editorconfig
+.svnignore
 bin
 node_modules
 vendor
 openspec
+raw
 .zip
 *.log
 *.zip
@@ -27,6 +31,9 @@ wp-tests-config.php
 # Docs (dev-only; README.txt is kept for WP.org)
 CLAUDE.md
 README.md
+docs
+nfeio-docs
+
 
 # SDK dev artifacts (keep lib/ but strip meta files)
 li/client-php/composer.json
