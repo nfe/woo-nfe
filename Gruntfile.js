@@ -7,7 +7,7 @@ module.exports = grunt => {
 		// Check textdomain errors.
 		checktextdomain: {
 			options:{
-				text_domain: 'woo-nfe',
+				text_domain: 'nota-fiscal-nfe-io-for-woocommerce',
 				keywords: [
 					'__:1,2d',
 					'_e:1,2d',

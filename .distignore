@@ -1,0 +1,57 @@
+# Credentials. Never packaged: .env is git-ignored, but rsync copies whatever is
+# in the working tree, so without this the API key ships inside the public zip.
+.env
+.env.local
+.env.*
+
+# Dev tooling & CI
+.git
+.github
+.gitignore
+.distignore
+.wp-env.json
+.vscode
+.claude
+.editorconfig
+.svnignore
+bin
+node_modules
+openspec
+
+# The repo's vendor/ holds dev dependencies (PHPUnit, PHPCS). It is excluded on
+# purpose: the build script installs a separate production-only tree
+# (composer install --no-dev) into the staging directory, so the SDK still ships
+# with the plugin -- just without the dev tooling.
+vendor
+raw
+.zip
+*.log
+*.zip
+*.tar.gz
+
+# Build/config files (dev-only)
+#
+# composer.json and composer.lock are NOT here: the package ships vendor/, and
+# Plugin Check flags a vendor/ tree with no manifest beside it
+# (missing_composer_json_file). Keeping both lets a reviewer see exactly which
+# dependency produced every file under vendor/. Neither is dev tooling -- the
+# require-dev entries are declared there but never installed into the package.
+Gruntfile.js
+package.json
+package-lock.json
+phpunit.xml.dist
+phpcs.xml.dist
+phpspec.yml
+wp-tests-config.php
+
+# Docs (dev-only; README.txt is kept for WP.org)
+CLAUDE.md
+README.md
+docs
+nfeio-docs
+
+
+# Local checkout of the NFe.io SDK repository, kept beside the plugin for
+# development. It is git-ignored but rsync would still copy it - along with the
+# symlinks it holds to other local repositories - straight into a public zip.
+client-php

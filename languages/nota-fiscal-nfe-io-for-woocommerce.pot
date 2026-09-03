@@ -1,0 +1,1133 @@
+# Copyright (C) 2026 NFe.io
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Nota Fiscal NFe.io for WooCommerce 1.5.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nota-fiscal-nfe-io-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-03T00:09:56+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: nota-fiscal-nfe-io-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: nota-fiscal-nfe-io-for-woocommerce.php
+#: includes/admin/views/html-notice-legacy-plugin.php:34
+msgid "Nota Fiscal NFe.io for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: nota-fiscal-nfe-io-for-woocommerce.php
+msgid "https://github.com/nfe/woo-nfe"
+msgstr ""
+
+#. Description of the plugin
+#: nota-fiscal-nfe-io-for-woocommerce.php
+msgid "Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFe.io API."
+msgstr ""
+
+#. Author of the plugin
+#: nota-fiscal-nfe-io-for-woocommerce.php
+msgid "NFe.io"
+msgstr ""
+
+#. Author URI of the plugin
+#: nota-fiscal-nfe-io-for-woocommerce.php
+msgid "https://nfe.io"
+msgstr ""
+
+#. translators: 1: Order ID, 2: current NFe status.
+#: includes/admin/class-nfe-woo.php:214
+#, php-format
+msgid "Skipping a second issuing attempt for order #%1$d: an invoice is already %2$s."
+msgstr ""
+
+#. translators: 1: externalId, 2: error message.
+#: includes/admin/class-nfe-woo.php:360
+#, php-format
+msgid "Could not check whether externalId %1$s produced an invoice: %2$s"
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:398
+msgid "NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings."
+msgstr ""
+
+#. translators: %s: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:411
+#, php-format
+msgid "The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists."
+msgstr ""
+
+#. translators: %s: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:426
+#, php-format
+msgid "The NFe issuing call failed (%s), but the invoice had already been created and was recovered. No second invoice was issued."
+msgstr ""
+
+#. translators: %s: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:435
+#, php-format
+msgid "An error occurred while issuing a NFe: %s"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:475
+#, php-format
+msgid "NFe issuing process started! Order: #%d"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:487
+#, php-format
+msgid "Not possible to issue NFe without an order value! Order: #%d"
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:498
+msgid "There was a problem fetching IBGE code! Check your CEP information."
+msgstr ""
+
+#. translators: %s: error message.
+#: includes/admin/class-nfe-woo.php:534
+#, php-format
+msgid "NFe could not be issued because the NFe.io connection is not configured: %s"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:575
+#, php-format
+msgid "NFe sent successfully to issue! Order: #%d"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:581
+#, php-format
+msgid "NFe issued! Order: #%d"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:629
+#, php-format
+msgid "There is no NFe invoice to download for order #%d."
+msgstr ""
+
+#. translators: 1: Order ID, 2: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:638
+#, php-format
+msgid "There was a problem when trying to download NFe PDF for order #%1$d! Error: %2$s"
+msgstr ""
+
+#. translators: Log message.
+#: includes/admin/class-nfe-woo.php:647
+#, php-format
+msgid "NFe PDF download successful. Order: #%d"
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:676
+msgid "Shipping"
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:678
+msgid "Shipping Value"
+msgstr ""
+
+#. translators: 1: postal code, 2: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:928
+#, php-format
+msgid "Could not resolve the IBGE city code for postal code %1$s: %2$s"
+msgstr ""
+
+#. translators: %s: error message returned by the API.
+#: includes/admin/class-nfe-woo.php:987
+#, php-format
+msgid "Could not fetch the company data from NFe.io: %s"
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1207
+#, php-format
+msgid "RTC validation failed for order #%d: operationIndicator and classCode are required when RTC payload is used."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1212
+#, php-format
+msgid "RTC validation failed for order #%d: destinationIndicator has an invalid value."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1217
+#, php-format
+msgid "RTC validation warning for order #%d: nbsCode is missing."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1226
+#, php-format
+msgid "RTC validation failed for order #%d: nbsCode is required in Strict profile."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1234
+#, php-format
+msgid "RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1255
+#, php-format
+msgid "RTC validation failed for order #%d: recipient is required when destinationIndicator is DifferentFromBuyer."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1260
+#, php-format
+msgid "RTC validation failed for order #%d: recipient.name is required when destinationIndicator is DifferentFromBuyer."
+msgstr ""
+
+#. translators: %d: WooCommerce order number.
+#: includes/admin/class-nfe-woo.php:1265
+#, php-format
+msgid "RTC validation warning for order #%d: recipient was provided even though destinationIndicator is SameAsBuyer."
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:1452
+msgid "Customers"
+msgstr ""
+
+#: includes/admin/class-nfe-woo.php:1456
+msgid "Company"
+msgstr ""
+
+#. translators: %s: order count.
+#: includes/admin/class-wc-nfe-admin.php:143
+#, php-format
+msgid "<strong>%s receipt</strong> issued"
+msgid_plural "<strong>%s receipts</strong> issued"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: order count.
+#: includes/admin/class-wc-nfe-admin.php:152
+#, php-format
+msgid "<strong>%s receipt</strong> processing"
+msgid_plural "<strong>%s receipts</strong> processing"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: order count.
+#: includes/admin/class-wc-nfe-admin.php:161
+#, php-format
+msgid "<strong>%s receipt</strong> with error"
+msgid_plural "<strong>%s receipts</strong> with error"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: order count.
+#: includes/admin/class-wc-nfe-admin.php:170
+#, php-format
+msgid "<strong>%s receipt</strong> cancelled"
+msgid_plural "<strong>%s receipts</strong> cancelled"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/admin/class-wc-nfe-admin.php:186
+#: includes/admin/class-wc-nfe-integration.php:307
+#: includes/admin/class-wc-nfe-integration.php:320
+msgid "WooCommerce NFe"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:205
+#: includes/admin/class-wc-nfe-admin.php:470
+#: includes/admin/class-wc-nfe-integration.php:215
+msgid "City Service Code (CityServiceCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:208
+#: includes/admin/class-wc-nfe-admin.php:472
+#: includes/admin/class-wc-nfe-integration.php:219
+msgid "City Service Code, this is the code that will identify to the cityhall which type of service you are delivering."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:216
+#: includes/admin/class-wc-nfe-admin.php:480
+#: includes/admin/class-wc-nfe-integration.php:222
+msgid "Federal Service Code LC 116 (FederalServiceCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:219
+#: includes/admin/class-wc-nfe-admin.php:482
+#: includes/admin/class-wc-nfe-integration.php:226
+msgid "Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:227
+#: includes/admin/class-wc-nfe-admin.php:490
+#: includes/admin/class-wc-nfe-integration.php:241
+msgid "NBS code (nbsCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:230
+#: includes/admin/class-wc-nfe-admin.php:492
+msgid "RTC NBS code used in service invoice emission."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:238
+#: includes/admin/class-wc-nfe-admin.php:500
+#: includes/admin/class-wc-nfe-integration.php:248
+msgid "Operation indicator (ibsCbs.operationIndicator)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:241
+#: includes/admin/class-wc-nfe-admin.php:502
+msgid "RTC operation indicator used in ibsCbs payload."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:249
+#: includes/admin/class-wc-nfe-admin.php:510
+#: includes/admin/class-wc-nfe-integration.php:255
+msgid "Class code (ibsCbs.classCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:252
+#: includes/admin/class-wc-nfe-admin.php:512
+msgid "RTC class code used in ibsCbs payload."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:260
+#: includes/admin/class-wc-nfe-admin.php:520
+msgid "Event name (activityEvent.name)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:263
+#: includes/admin/class-wc-nfe-admin.php:522
+msgid "Name of the activity event. When filled, the activityEvent block will be included in the invoice payload."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:271
+#: includes/admin/class-wc-nfe-admin.php:530
+msgid "Event start (activityEvent.beginOn)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:274
+#: includes/admin/class-wc-nfe-admin.php:532
+msgid "Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00)."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:282
+#: includes/admin/class-wc-nfe-admin.php:540
+msgid "Event end (activityEvent.endOn)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:285
+#: includes/admin/class-wc-nfe-admin.php:542
+msgid "End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00)."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:293
+#: includes/admin/class-wc-nfe-admin.php:550
+msgid "Event code (activityEvent.code)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:296
+#: includes/admin/class-wc-nfe-admin.php:552
+msgid "Optional free-text code identifying the activity event."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:304
+#: includes/admin/class-wc-nfe-admin.php:560
+msgid "Event country (activityEvent.address.country)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:307
+#: includes/admin/class-wc-nfe-admin.php:562
+msgid "Country where the event takes place (e.g. BRA)."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:315
+#: includes/admin/class-wc-nfe-admin.php:570
+msgid "Event postal code (activityEvent.address.postalCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:318
+#: includes/admin/class-wc-nfe-admin.php:572
+msgid "Postal/ZIP code of the event address."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:326
+#: includes/admin/class-wc-nfe-admin.php:580
+msgid "Event street (activityEvent.address.street)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:329
+#: includes/admin/class-wc-nfe-admin.php:582
+msgid "Street name of the event address."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:337
+#: includes/admin/class-wc-nfe-admin.php:590
+msgid "Event number (activityEvent.address.number)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:340
+#: includes/admin/class-wc-nfe-admin.php:592
+msgid "Street number of the event address."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:348
+#: includes/admin/class-wc-nfe-admin.php:600
+msgid "Event district (activityEvent.address.district)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:351
+#: includes/admin/class-wc-nfe-admin.php:602
+msgid "District/neighbourhood of the event address."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:359
+#: includes/admin/class-wc-nfe-admin.php:610
+msgid "Event state (activityEvent.address.state)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:362
+#: includes/admin/class-wc-nfe-admin.php:612
+msgid "State code of the event address (e.g. SP)."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:370
+#: includes/admin/class-wc-nfe-admin.php:620
+msgid "Event city code (activityEvent.address.city.code)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:373
+#: includes/admin/class-wc-nfe-admin.php:622
+msgid "IBGE city code of the event address."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:381
+#: includes/admin/class-wc-nfe-admin.php:630
+#: includes/admin/class-wc-nfe-integration.php:229
+#: includes/admin/class-wc-nfe-integration.php:231
+msgid "Service Description"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:384
+#: includes/admin/class-wc-nfe-admin.php:632
+#: includes/admin/class-wc-nfe-integration.php:233
+msgid "Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:738
+msgid "Download NFe receipt"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:742
+msgid "Issue NFe receipt"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:755
+msgid "NFe receipt downloaded."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:782
+msgid "Sales Receipt updated via NFe.io API"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:782
+#: includes/frontend/class-wc-nfe-frontend.php:68
+msgid "Sales Receipt"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:818
+#: includes/frontend/class-wc-nfe-frontend.php:106
+#: includes/nfe-functions.php:830
+msgid "NFe Cancelled"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:823
+#: includes/frontend/class-wc-nfe-frontend.php:122
+#: includes/nfe-functions.php:829
+msgid "NFe Issued"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:828
+#: includes/frontend/class-wc-nfe-frontend.php:128
+#: includes/nfe-functions.php:831
+msgid "NFe Cancelling Failed"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:833
+#: includes/frontend/class-wc-nfe-frontend.php:134
+#: includes/nfe-functions.php:832
+msgid "NFe Issuing Failed"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:838
+#: includes/frontend/class-wc-nfe-frontend.php:146
+#: includes/nfe-functions.php:825
+msgid "Processing NFe"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:844
+#: includes/frontend/class-wc-nfe-frontend.php:140
+#: includes/nfe-functions.php:834
+msgid "NFe Processing"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:849
+msgid "Zero Order"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:854
+#: includes/frontend/class-wc-nfe-frontend.php:152
+msgid "Pending Address"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:860
+#: includes/admin/class-wc-nfe-admin.php:871
+#: includes/frontend/class-wc-nfe-frontend.php:165
+#: includes/frontend/class-wc-nfe-frontend.php:178
+msgid "Issue NFe"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:865
+#: includes/frontend/class-wc-nfe-frontend.php:171
+msgid "Issue Expired"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:897
+msgid "Receipts Details (NFE.io)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:902
+msgid "Status: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:908
+msgid "Number: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:914
+msgid "CheckCode: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:920
+msgid "Issued On: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:926
+msgid "Price: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:933
+msgid "Fatura: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:937
+msgid "Link"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:947
+msgid "Plugin Custom Fields: "
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:1000
+msgid "NFe Details"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:1003
+msgid "Status"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:1008
+msgid "Number"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:1013
+msgid "CheckCode"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-admin.php:1018
+msgid "Issued On"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:103
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:327
+msgid "You are not allowed to perform this action."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:104
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:328
+msgid "Forbidden"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:125
+msgid "The order is missing important NFe information, update it before trying to issue it."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:131
+msgid "The NFe request was sent. You will be notified when the receipt is issued."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:136
+msgid "The NFe could not be requested for this order. Please check the order details or try again later."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:205
+msgid "The NFe receipt could not be downloaded right now. Please try again in a few minutes."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-ajax.php:206
+msgid "Download failed"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:26
+msgid "Receipts (NFE.io)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:27
+msgid "This is the NFe.io integration/settings page."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:46
+msgid "instalado"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:50
+msgid "não instalado"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:54
+msgid "Mais informações sobre Brazilian Market on WooCommerce"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:55
+msgid "Ver detalhes"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:64
+msgid "No company found"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:66
+msgid "Select a company..."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:70
+msgid "Enter your API key to see your company(ies)."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:76
+msgid "Custom Fields Plugin"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:84
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:86
+msgid "Enable NFe.io"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:90
+#: includes/admin/class-wc-nfe-integration.php:92
+msgid "API Key"
+msgstr ""
+
+#. translators: %s: link to the NFe.io API keys page.
+#: includes/admin/class-wc-nfe-integration.php:95
+#, php-format
+msgid "%s to look up API Key"
+msgstr ""
+
+#. translators: %s: link to the NFe.io API keys page.
+#: includes/admin/class-wc-nfe-integration.php:95
+msgctxt "link to the NFe.io API keys page"
+msgid "Click here"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:98
+#: includes/admin/class-wc-nfe-integration.php:100
+msgid "Choose the Company"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:105
+msgid "Choose one of your companies."
+msgstr ""
+
+#. translators: %s: link to the NFe.io companies page.
+#: includes/admin/class-wc-nfe-integration.php:107
+#, php-format
+msgid "%s to check the registered companies"
+msgstr ""
+
+#. translators: %s: link to the NFe.io companies page.
+#: includes/admin/class-wc-nfe-integration.php:107
+msgctxt "link to the NFe.io companies page"
+msgid "Click here"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:110
+#: includes/admin/class-wc-nfe-integration.php:112
+msgid "NFe Issuing"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:115
+msgid "Automattic (Default)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:116
+msgid "Manual"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:120
+#: includes/admin/class-wc-nfe-integration.php:135
+msgid "Option to issue a NFe."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:123
+#: includes/admin/class-wc-nfe-integration.php:125
+msgid "Issue on order status"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:128
+msgctxt "Order status"
+msgid "Pending Payment"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:129
+msgctxt "Order status"
+msgid "Processing"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:130
+msgctxt "Order status"
+msgid "On Hold"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:131
+msgctxt "Order status"
+msgid "Completed"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:138
+msgid "Require address to issue"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:140
+#: includes/admin/class-wc-nfe-integration.php:148
+msgid "Does an address is required to issue a NFe?"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:143
+msgid "Yes (Default)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:144
+msgid "No"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:151
+#: includes/admin/class-wc-nfe-integration.php:153
+msgid "Highlight shipping from taxes"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:156
+msgid "Include Shipping fees on tax calculation"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:157
+msgid "Exclude Shipping fees on tax calculation"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:161
+msgid "Tax Formation: total + shipping will considerate ship value on tax calculation. Total - shipping will not considerate ship value on tax calculation."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:164
+msgid "NFe.io Webhook Setup"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:168
+#: includes/admin/class-wc-nfe-integration.php:170
+msgid "Webhook URL"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:175
+msgid "The address NFe.io delivers invoice status updates to. The plugin registers it for you; it is shown here for reference."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:178
+msgid "Webhook status"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:187
+msgid "Manual Retroactive Issue of NFe"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:191
+msgid "Enable Retroactive Issue"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:193
+msgid "Enable to issue NFe.io in past products"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:195
+msgid "Enabling this allows users to issue nfe.io notes on bought products in the past."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:198
+msgid "Days in the past"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:202
+msgid "Days in the past to allow NFe manual issue."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:205
+msgid "Receipt Service Settings"
+msgstr ""
+
+#. translators: 1: support e-mail address used in the mailto link, 2: support e-mail address shown to the user.
+#: includes/admin/class-wc-nfe-integration.php:209
+#, php-format
+msgid "If you are in doubt on how to fill the fields below, ask for help from you accountant or get in contact with our team via <a href=\"mailto:%1$s\">%2$s</a>"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:217
+msgid "City Service Code"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:224
+msgid "Federal Service Code"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:236
+msgid "RTC tax reform settings"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:238
+msgid "Fallback values used in RTC emission when variation or product fields are not filled."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:243
+msgid "NBS code"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:245
+msgid "Default NBS code used as global fallback for RTC emissions."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:250
+msgid "Operation indicator"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:252
+msgid "Default operation indicator used as global fallback for RTC emissions."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:257
+msgid "Class code"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:259
+msgid "Default class code used as global fallback for RTC emissions."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:262
+#: includes/admin/class-wc-nfe-integration.php:264
+msgid "RTC validation profile"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:267
+msgid "Compatible (warn only for nbsCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:268
+msgid "Balanced (default)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:269
+msgid "Strict (always require nbsCode)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:273
+msgid "Controls nbsCode blocking behavior in RTC emissions."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:276
+msgid "Advanced RTC fields (integration)"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:278
+msgid "recipient and destinationIndicator are supported via payload integration filters in phase 1, without dedicated checkout/admin UI."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:281
+msgid "Debug Log"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:283
+msgid "Enable logging"
+msgstr ""
+
+#. translators: %s: link to the WooCommerce system status logs screen.
+#: includes/admin/class-wc-nfe-integration.php:286
+#, php-format
+msgid "Log events such as API requests, you can check this log in %s."
+msgstr ""
+
+#. translators: %s: link to the WooCommerce system status logs screen.
+#: includes/admin/class-wc-nfe-integration.php:286
+msgid "System Status - Logs"
+msgstr ""
+
+#. translators: %s: link to the plugin settings page.
+#: includes/admin/class-wc-nfe-integration.php:309
+#, php-format
+msgid "Plugin is enabled but no API key was provided. You should inform your API Key. %s"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:310
+msgid "Click here to configure!"
+msgstr ""
+
+#. translators: %s: link to the plugin settings page.
+#: includes/admin/class-wc-nfe-integration.php:322
+#, php-format
+msgid "Enable Retroactive Issue is enabled, but no days was added. %s."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:323
+msgid "Add a date to calculate or disable it."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:334
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
+#: includes/admin/views/html-notice-missing-woocommerce.php:22
+msgid "WooCommerce NFe.io"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:334
+msgid "Unable to load the companies list from NFe.io."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:404
+msgid "Not set up yet - invoice status updates are not being received."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:407
+msgid "Active and verifying signatures."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:425
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:368
+msgid "Set up the webhook"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-integration.php:426
+msgid "Regenerate the secret and re-register the webhook"
+msgstr ""
+
+#. translators: 1: Order ID, 2: NFe status received.
+#: includes/admin/class-wc-nfe-webhook-handler.php:244
+#, php-format
+msgid "NFe status received for order #%1$d: %2$s."
+msgstr ""
+
+#. translators: %s: webhook event type reported by NFe.io.
+#: includes/admin/class-wc-nfe-webhook-handler.php:253
+#, php-format
+msgid "(event: %s)"
+msgstr ""
+
+#. translators: %s: NFe.io receipt ID.
+#: includes/admin/class-wc-nfe-webhook-handler.php:351
+#, php-format
+msgid "Order with receipt number #%s not found."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:359
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:378
+#: includes/admin/views/html-notice-missing-autoload.php:20
+#: includes/admin/views/html-notice-missing-extensions.php:23
+#: nota-fiscal-nfe-io-for-woocommerce.php:68
+msgid "NFe for WooCommerce"
+msgstr ""
+
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:361
+msgid "has no signed webhook yet, so invoice status updates are not being applied."
+msgstr ""
+
+#: includes/admin/class-wc-nfe-webhook-provisioner.php:380
+msgid "is now receiving signed invoice status updates from NFe.io."
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:26
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:29
+msgid "NFe Receipt Issued"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:27
+msgid "Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it."
+msgstr ""
+
+#. translators: placeholder is {blogname}, a variable that will be substituted when email is sent out.
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:32
+#, php-format
+msgctxt "default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page"
+msgid "[%s] NFe Receipt Issued"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:132
+msgctxt "an email notification"
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:134
+msgid "Enable this email notification"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:138
+msgctxt "of an email"
+msgid "Subject"
+msgstr ""
+
+#. translators: %s: default subject used when the field is left blank.
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:141
+#, php-format
+msgid "This controls the email subject line. Leave blank to use the default subject: <code>%s</code>."
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:146
+msgctxt "Name the setting that controls the main heading contained within the email notification"
+msgid "Email Heading"
+msgstr ""
+
+#. translators: %s: default heading used when the field is left blank.
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:149
+#, php-format
+msgid "This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>."
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:154
+msgctxt "text, html or multipart"
+msgid "Email type"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:156
+msgid "Choose which format of email to send."
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:160
+msgctxt "email type"
+msgid "Plain text"
+msgstr ""
+
+#: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:161
+msgctxt "email type"
+msgid "HTML"
+msgstr ""
+
+#. translators: %s: name of the previously installed plugin.
+#: includes/admin/views/html-notice-legacy-plugin.php:38
+#, php-format
+msgid "did not start because an older version of it is still active: %s."
+msgstr ""
+
+#: includes/admin/views/html-notice-legacy-plugin.php:44
+msgid "This plugin was renamed, so WordPress sees the two installations as different plugins and would run both at once. Two copies issuing invoices means two NFS-e for the same order, which has to be cancelled by hand."
+msgstr ""
+
+#: includes/admin/views/html-notice-legacy-plugin.php:47
+msgid "Deactivate the older plugin and this one starts on its own. Your settings and the invoices already recorded on your orders are kept: both versions read the same data."
+msgstr ""
+
+#: includes/admin/views/html-notice-legacy-plugin.php:53
+msgid "Go to Plugins"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-autoload.php:21
+msgid "could not find its dependencies (vendor/autoload.php). The plugin stayed inactive. Reinstall it from the official package, or run \"composer install --no-dev\" in the plugin folder."
+msgstr ""
+
+#. translators: %s: comma-separated list of missing PHP extensions.
+#: includes/admin/views/html-notice-missing-extensions.php:27
+#, php-format
+msgid "needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your host to enable them."
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
+msgid "depends on the lastest version of WooCommerce Extra Checkout Fields for Brazil to work!"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:27
+msgid "Active WooCommerce Extra Checkout Fields for Brazil"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:39
+msgid "Install WooCommerce Extra Checkout Fields for Brazil"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:22
+msgid "depends on the last version of WooCommerce to work!"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:27
+msgid "Active WooCommerce"
+msgstr ""
+
+#: includes/admin/views/html-notice-missing-woocommerce.php:39
+msgid "Install WooCommerce"
+msgstr ""
+
+#: includes/frontend/class-wc-nfe-frontend.php:41
+msgid "The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt."
+msgstr ""
+
+#: includes/frontend/class-wc-nfe-frontend.php:51
+msgid "The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt."
+msgstr ""
+
+#: includes/frontend/class-wc-nfe-frontend.php:116
+#: includes/frontend/class-wc-nfe-frontend.php:158
+msgid "Download NFe"
+msgstr ""
+
+#: includes/nfe-functions.php:833
+msgid "NFe Retrieved from City Hall"
+msgstr ""
+
+#. translators: 1: required PHP version, 2: PHP version currently running.
+#: nota-fiscal-nfe-io-for-woocommerce.php:72
+#, php-format
+msgid "requires PHP %1$s or higher. This site runs PHP %2$s, so the plugin stayed inactive to avoid breaking it. Ask your host to upgrade PHP."
+msgstr ""
+
+#: nota-fiscal-nfe-io-for-woocommerce.php:307
+msgid "Settings"
+msgstr ""
+
+#: templates/emails/nfe-receipt-issued.php:28
+#: templates/emails/plain/nfe-receipt-issued.php:24
+msgid "The service receipt (NFS-e) for your order has been issued."
+msgstr ""
+
+#. translators: %s: invoice number.
+#: templates/emails/nfe-receipt-issued.php:47
+#: templates/emails/plain/nfe-receipt-issued.php:37
+#, php-format
+msgid "Receipt number: %s"
+msgstr ""
+
+#: templates/emails/nfe-receipt-issued.php:56
+msgid "View your order and download the receipt"
+msgstr ""
+
+#: templates/emails/plain/nfe-receipt-issued.php:40
+msgid "View your order and download the receipt:"
+msgstr ""
