@@ -392,7 +392,11 @@ wp-config.php
 rsync.sh
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
-bin/build-zip.sh
+
+# Shim pessoal de composer para host sem PHP (ver "Build do pacote" no
+# CLAUDE.md). bin/docker-compose e versionado porque todo mundo precisa dele
+# para o wp-env; este aqui depende de como cada maquina roda o PHP.
+bin/composer
 
 
 # Material interno. O repositorio e publico: rascunhos de submissao, notas e

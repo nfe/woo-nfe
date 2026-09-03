@@ -118,3 +118,17 @@ bash bin/build-zip.sh
 ```
 
 O script faz staging em diretório limpo, roda `composer install --no-dev --optimize-autoloader --classmap-authoritative` lá dentro e falha se alguma dependência de desenvolvimento entrar no pacote. O `vendor/` do repo (com ferramentas de dev) **não** é copiado. O zip é removido antes de ser recriado — `zip -r` acrescenta a um arquivo existente, e sem isso cada build herdava o conteúdo do anterior.
+
+O script exige `rsync`, `zip` e `composer` no PATH e checa isso antes de começar. Em host sem PHP, forneça um shim como o `bin/docker-compose` já versionado:
+
+```bash
+printf '#!/usr/bin/env bash\nexec docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/app -w /app composer:2 composer "$@"\n' > bin/composer
+chmod +x bin/composer
+PATH="$PWD/bin:$PATH" bash bin/build-zip.sh
+```
+
+`composer.json` e `composer.lock` **ficam** no pacote: o Plugin Check reporta `missing_composer_json_file` quando o `vendor/` viaja sem o manifesto, e é por ele que o revisor confere a procedência de cada arquivo empacotado.
+
+### Gate do Plugin Check
+
+O PCP roda sobre o **pacote extraído**, nunca sobre a árvore de desenvolvimento (que carrega `openspec/`, `docs/`, `node_modules/` e faria o `file_type` disparar). Baseline vigente: **0 erros, 1 aviso** — `load_plugin_textdomain()` discouraged, mantido de propósito enquanto não existir language pack para o slug novo, com justificativa no comentário acima da chamada.

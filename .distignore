@@ -30,11 +30,15 @@ raw
 *.tar.gz
 
 # Build/config files (dev-only)
+#
+# composer.json and composer.lock are NOT here: the package ships vendor/, and
+# Plugin Check flags a vendor/ tree with no manifest beside it
+# (missing_composer_json_file). Keeping both lets a reviewer see exactly which
+# dependency produced every file under vendor/. Neither is dev tooling -- the
+# require-dev entries are declared there but never installed into the package.
 Gruntfile.js
 package.json
 package-lock.json
-composer.json
-composer.lock
 phpunit.xml.dist
 phpcs.xml.dist
 phpspec.yml
