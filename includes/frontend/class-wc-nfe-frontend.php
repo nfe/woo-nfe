@@ -24,7 +24,11 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 		 */
 		public function __construct() {
 			// Filters.
-			add_filter( 'woocommerce_my_account_my_orders_columns', array( $this, 'nfe_column' ) );
+			// woocommerce_my_account_my_orders_columns esta depreciado desde a
+			// versao 2.6 do WooCommerce e imprimia um aviso de depreciacao na
+			// pagina Meus Pedidos do cliente. A acao por coluna logo abaixo
+			// NAO esta depreciada: e o que o template atual ainda dispara.
+			add_filter( 'woocommerce_account_orders_columns', array( $this, 'nfe_column' ) );
 			add_filter( 'woocommerce_my_account_my_address_description', array( $this, 'account_desc' ) );
 
 			// Actions.

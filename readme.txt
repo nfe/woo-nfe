@@ -107,6 +107,13 @@ The MIT License is a permissive license and is compatible with the GPL: MIT-lice
 
 WooCommerce and its associated designs are trademarks of Automattic Inc. This plugin is an independent integration and is not affiliated with, endorsed by, or sponsored by Automattic Inc.
 
+== Screenshots ==
+
+1. Integration settings: API key, issuing company, when to issue, the signed webhook, the service codes sent to the city hall and the RTC tax reform fallbacks.
+2. Order list with the receipt status of every order at a glance, and bulk actions to issue or cancel.
+3. Order screen showing the issued receipt: number, verification code, issue date and a link to the document.
+4. The customer's account page, where each order with a receipt offers the PDF for download.
+
 == Changelog ==
 
 = 1.5.0 =
@@ -122,6 +129,8 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 * Security: status notifications from NFe.io are now authenticated with a signature; unsigned deliveries are rejected. The endpoint is registered automatically.
 * Security: invoice PDFs are no longer cached in a publicly readable folder under uploads. Files left by earlier versions are removed on update.
 * Removed the local PDF cache; invoices are streamed straight from the API.
+* Fixed: automatic issuing never fired on a fresh install. The default order status was stored with a prefix the setting itself never uses, so it matched nothing -- and the dropdown fell back to "Pending payment", which would have invoiced orders before they were paid.
+* Fixed: the customer's account page emitted a WooCommerce deprecation notice, from a filter retired in WooCommerce 2.6.
 
 
 = 1.4.0-beta =

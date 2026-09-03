@@ -123,7 +123,13 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'title'    => __( 'Issue on order status', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'type'     => 'select',
 					'label'    => __( 'Issue on order status', 'nota-fiscal-nfe-io-for-woocommerce' ),
-					'default'  => 'wc-completed',
+					// Sem o prefixo 'wc-': as opcoes abaixo nao o usam, e o
+					// consumidor e WC_Order::has_status(), que compara com
+					// get_status() -- que devolve o status ja sem o prefixo.
+					// Com 'wc-completed' o padrao nao casava com nada: o select
+					// caia na primeira opcao (Pending Payment) e a emissao
+					// automatica nunca disparava em instalacao nova.
+					'default'  => 'completed',
 					'options'  => array(
 						'pending'    => _x( 'Pending Payment', 'Order status', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'processing' => _x( 'Processing', 'Order status', 'nota-fiscal-nfe-io-for-woocommerce' ),
