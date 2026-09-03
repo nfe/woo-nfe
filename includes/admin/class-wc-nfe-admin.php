@@ -140,7 +140,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
-					printf( wp_kses_post( _n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'woo-nfe' ) ), esc_html( $nfe_issued_count ) );
+					printf( wp_kses_post( _n( '<strong>%s receipt</strong> issued', '<strong>%s receipts</strong> issued', $nfe_issued_count, 'nota-fiscal-nfe-io-for-woocommerce' ) ), esc_html( $nfe_issued_count ) );
 					?>
 				</a>
 			</li>
@@ -149,7 +149,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
-					printf( wp_kses_post( _n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'woo-nfe' ) ), esc_html( $nfe_issuing_count ) );
+					printf( wp_kses_post( _n( '<strong>%s receipt</strong> processing', '<strong>%s receipts</strong> processing', $nfe_issuing_count, 'nota-fiscal-nfe-io-for-woocommerce' ) ), esc_html( $nfe_issuing_count ) );
 					?>
 				</a>
 			</li>
@@ -158,7 +158,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
-					printf( wp_kses_post( _n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'woo-nfe' ) ), esc_html( $nfe_error_count ) );
+					printf( wp_kses_post( _n( '<strong>%s receipt</strong> with error', '<strong>%s receipts</strong> with error', $nfe_error_count, 'nota-fiscal-nfe-io-for-woocommerce' ) ), esc_html( $nfe_error_count ) );
 					?>
 				</a>
 			</li>
@@ -167,7 +167,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
-					printf( wp_kses_post( _n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'woo-nfe' ) ), esc_html( $nfe_cancelled_count ) );
+					printf( wp_kses_post( _n( '<strong>%s receipt</strong> cancelled', '<strong>%s receipts</strong> cancelled', $nfe_cancelled_count, 'nota-fiscal-nfe-io-for-woocommerce' ) ), esc_html( $nfe_cancelled_count ) );
 					?>
 				</a>
 			</li>
@@ -183,7 +183,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 */
 		public function product_data_tab( $product_data_tabs ) {
 			$product_data_tabs['nfe-product-info-tab'] = array(
-				'label'  => esc_html__( 'WooCommerce NFe', 'woo-nfe' ),
+				'label'  => esc_html__( 'WooCommerce NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 				'target' => 'nfe_product_info_data',
 				'class'  => array( 'hide_if_variable' ),
 			);
@@ -202,10 +202,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_cityservicecode',
-						'label'         => __( 'City Service Code (CityServiceCode)', 'woo-nfe' ),
+						'label'         => __( 'City Service Code (CityServiceCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
+						'description'   => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_cityservicecode', true ),
 					)
 				);
@@ -213,10 +213,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_federalservicecode',
-						'label'         => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'woo-nfe' ),
+						'label'         => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
+						'description'   => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_federalservicecode', true ),
 					)
 				);
@@ -224,10 +224,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_rtc_nbs_code',
-						'label'         => __( 'NBS code (nbsCode)', 'woo-nfe' ),
+						'label'         => __( 'NBS code (nbsCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'RTC NBS code used in service invoice emission.', 'woo-nfe' ),
+						'description'   => __( 'RTC NBS code used in service invoice emission.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_nbs_code', true ),
 					)
 				);
@@ -235,10 +235,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_rtc_operation_indicator',
-						'label'         => __( 'Operation indicator (ibsCbs.operationIndicator)', 'woo-nfe' ),
+						'label'         => __( 'Operation indicator (ibsCbs.operationIndicator)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'RTC operation indicator used in ibsCbs payload.', 'woo-nfe' ),
+						'description'   => __( 'RTC operation indicator used in ibsCbs payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_operation_indicator', true ),
 					)
 				);
@@ -246,10 +246,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_rtc_class_code',
-						'label'         => __( 'Class code (ibsCbs.classCode)', 'woo-nfe' ),
+						'label'         => __( 'Class code (ibsCbs.classCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'RTC class code used in ibsCbs payload.', 'woo-nfe' ),
+						'description'   => __( 'RTC class code used in ibsCbs payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_rtc_class_code', true ),
 					)
 				);
@@ -257,10 +257,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_name',
-						'label'         => __( 'Event name (activityEvent.name)', 'woo-nfe' ),
+						'label'         => __( 'Event name (activityEvent.name)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'woo-nfe' ),
+						'description'   => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_name', true ),
 					)
 				);
@@ -268,10 +268,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_begin_on',
-						'label'         => __( 'Event start (activityEvent.beginOn)', 'woo-nfe' ),
+						'label'         => __( 'Event start (activityEvent.beginOn)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'woo-nfe' ),
+						'description'   => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_begin_on', true ),
 					)
 				);
@@ -279,10 +279,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_end_on',
-						'label'         => __( 'Event end (activityEvent.endOn)', 'woo-nfe' ),
+						'label'         => __( 'Event end (activityEvent.endOn)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'woo-nfe' ),
+						'description'   => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_end_on', true ),
 					)
 				);
@@ -290,10 +290,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_code',
-						'label'         => __( 'Event code (activityEvent.code)', 'woo-nfe' ),
+						'label'         => __( 'Event code (activityEvent.code)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Optional free-text code identifying the activity event.', 'woo-nfe' ),
+						'description'   => __( 'Optional free-text code identifying the activity event.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_code', true ),
 					)
 				);
@@ -301,10 +301,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_country',
-						'label'         => __( 'Event country (activityEvent.address.country)', 'woo-nfe' ),
+						'label'         => __( 'Event country (activityEvent.address.country)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Country where the event takes place (e.g. BRA).', 'woo-nfe' ),
+						'description'   => __( 'Country where the event takes place (e.g. BRA).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_country', true ),
 					)
 				);
@@ -312,10 +312,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_postal_code',
-						'label'         => __( 'Event postal code (activityEvent.address.postalCode)', 'woo-nfe' ),
+						'label'         => __( 'Event postal code (activityEvent.address.postalCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Postal/ZIP code of the event address.', 'woo-nfe' ),
+						'description'   => __( 'Postal/ZIP code of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_postal_code', true ),
 					)
 				);
@@ -323,10 +323,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_street',
-						'label'         => __( 'Event street (activityEvent.address.street)', 'woo-nfe' ),
+						'label'         => __( 'Event street (activityEvent.address.street)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Street name of the event address.', 'woo-nfe' ),
+						'description'   => __( 'Street name of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_street', true ),
 					)
 				);
@@ -334,10 +334,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_number',
-						'label'         => __( 'Event number (activityEvent.address.number)', 'woo-nfe' ),
+						'label'         => __( 'Event number (activityEvent.address.number)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Street number of the event address.', 'woo-nfe' ),
+						'description'   => __( 'Street number of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_number', true ),
 					)
 				);
@@ -345,10 +345,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_district',
-						'label'         => __( 'Event district (activityEvent.address.district)', 'woo-nfe' ),
+						'label'         => __( 'Event district (activityEvent.address.district)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'District/neighbourhood of the event address.', 'woo-nfe' ),
+						'description'   => __( 'District/neighbourhood of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_district', true ),
 					)
 				);
@@ -356,10 +356,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_state',
-						'label'         => __( 'Event state (activityEvent.address.state)', 'woo-nfe' ),
+						'label'         => __( 'Event state (activityEvent.address.state)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'State code of the event address (e.g. SP).', 'woo-nfe' ),
+						'description'   => __( 'State code of the event address (e.g. SP).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_state', true ),
 					)
 				);
@@ -367,10 +367,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_text_input(
 					array(
 						'id'            => '_simple_nfe_activity_event_address_city_code',
-						'label'         => __( 'Event city code (activityEvent.address.city.code)', 'woo-nfe' ),
+						'label'         => __( 'Event city code (activityEvent.address.city.code)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'IBGE city code of the event address.', 'woo-nfe' ),
+						'description'   => __( 'IBGE city code of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_activity_event_address_city_code', true ),
 					)
 				);
@@ -378,10 +378,10 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 				woocommerce_wp_textarea_input(
 					array(
 						'id'            => '_simple_nfe_product_desc',
-						'label'         => __( 'Service Description', 'woo-nfe' ),
+						'label'         => __( 'Service Description', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'wrapper_class' => 'hide_if_variable',
 						'desc_tip'      => 'true',
-						'description'   => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'woo-nfe' ),
+						'description'   => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'value'         => get_post_meta( $post_id, '_simple_nfe_product_desc', true ),
 					)
 				);
@@ -467,9 +467,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_cityservicecode[' . $product_id . ']',
-					'label'       => __( 'City Service Code (CityServiceCode)', 'woo-nfe' ),
+					'label'       => __( 'City Service Code (CityServiceCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
+					'description' => __( 'City Service Code, this is the code that will identify to the cityhall which type of service you are delivering.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $variation->ID, '_cityservicecode', true ),
 				)
 			);
@@ -477,9 +477,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_federalservicecode[' . $product_id . ']',
-					'label'       => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'woo-nfe' ),
+					'label'       => __( 'Federal Service Code LC 116 (FederalServiceCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'woo-nfe' ),
+					'description' => __( 'Service Code based on the Federal Law (LC 116), this is a federal code that will identify to the cityhall which type of service you are delivering.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_federalservicecode', true ),
 				)
 			);
@@ -487,9 +487,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_rtc_nbs_code[' . $product_id . ']',
-					'label'       => __( 'NBS code (nbsCode)', 'woo-nfe' ),
+					'label'       => __( 'NBS code (nbsCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'RTC NBS code used in service invoice emission.', 'woo-nfe' ),
+					'description' => __( 'RTC NBS code used in service invoice emission.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_rtc_nbs_code', true ),
 				)
 			);
@@ -497,9 +497,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_rtc_operation_indicator[' . $product_id . ']',
-					'label'       => __( 'Operation indicator (ibsCbs.operationIndicator)', 'woo-nfe' ),
+					'label'       => __( 'Operation indicator (ibsCbs.operationIndicator)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'RTC operation indicator used in ibsCbs payload.', 'woo-nfe' ),
+					'description' => __( 'RTC operation indicator used in ibsCbs payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_rtc_operation_indicator', true ),
 				)
 			);
@@ -507,9 +507,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_rtc_class_code[' . $product_id . ']',
-					'label'       => __( 'Class code (ibsCbs.classCode)', 'woo-nfe' ),
+					'label'       => __( 'Class code (ibsCbs.classCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'RTC class code used in ibsCbs payload.', 'woo-nfe' ),
+					'description' => __( 'RTC class code used in ibsCbs payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_rtc_class_code', true ),
 				)
 			);
@@ -517,9 +517,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_name[' . $product_id . ']',
-					'label'       => __( 'Event name (activityEvent.name)', 'woo-nfe' ),
+					'label'       => __( 'Event name (activityEvent.name)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'woo-nfe' ),
+					'description' => __( 'Name of the activity event. When filled, the activityEvent block will be included in the invoice payload.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_name', true ),
 				)
 			);
@@ -527,9 +527,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_begin_on[' . $product_id . ']',
-					'label'       => __( 'Event start (activityEvent.beginOn)', 'woo-nfe' ),
+					'label'       => __( 'Event start (activityEvent.beginOn)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'woo-nfe' ),
+					'description' => __( 'Start date/time of the activity event (ISO 8601, e.g. 2025-07-01T09:00:00).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_begin_on', true ),
 				)
 			);
@@ -537,9 +537,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_end_on[' . $product_id . ']',
-					'label'       => __( 'Event end (activityEvent.endOn)', 'woo-nfe' ),
+					'label'       => __( 'Event end (activityEvent.endOn)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'woo-nfe' ),
+					'description' => __( 'End date/time of the activity event (ISO 8601, e.g. 2025-07-01T18:00:00).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_end_on', true ),
 				)
 			);
@@ -547,9 +547,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_code[' . $product_id . ']',
-					'label'       => __( 'Event code (activityEvent.code)', 'woo-nfe' ),
+					'label'       => __( 'Event code (activityEvent.code)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Optional free-text code identifying the activity event.', 'woo-nfe' ),
+					'description' => __( 'Optional free-text code identifying the activity event.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_code', true ),
 				)
 			);
@@ -557,9 +557,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_country[' . $product_id . ']',
-					'label'       => __( 'Event country (activityEvent.address.country)', 'woo-nfe' ),
+					'label'       => __( 'Event country (activityEvent.address.country)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Country where the event takes place (e.g. BRA).', 'woo-nfe' ),
+					'description' => __( 'Country where the event takes place (e.g. BRA).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_country', true ),
 				)
 			);
@@ -567,9 +567,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_postal_code[' . $product_id . ']',
-					'label'       => __( 'Event postal code (activityEvent.address.postalCode)', 'woo-nfe' ),
+					'label'       => __( 'Event postal code (activityEvent.address.postalCode)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Postal/ZIP code of the event address.', 'woo-nfe' ),
+					'description' => __( 'Postal/ZIP code of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_postal_code', true ),
 				)
 			);
@@ -577,9 +577,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_street[' . $product_id . ']',
-					'label'       => __( 'Event street (activityEvent.address.street)', 'woo-nfe' ),
+					'label'       => __( 'Event street (activityEvent.address.street)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Street name of the event address.', 'woo-nfe' ),
+					'description' => __( 'Street name of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_street', true ),
 				)
 			);
@@ -587,9 +587,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_number[' . $product_id . ']',
-					'label'       => __( 'Event number (activityEvent.address.number)', 'woo-nfe' ),
+					'label'       => __( 'Event number (activityEvent.address.number)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Street number of the event address.', 'woo-nfe' ),
+					'description' => __( 'Street number of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_number', true ),
 				)
 			);
@@ -597,9 +597,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_district[' . $product_id . ']',
-					'label'       => __( 'Event district (activityEvent.address.district)', 'woo-nfe' ),
+					'label'       => __( 'Event district (activityEvent.address.district)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'District/neighbourhood of the event address.', 'woo-nfe' ),
+					'description' => __( 'District/neighbourhood of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_district', true ),
 				)
 			);
@@ -607,9 +607,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_state[' . $product_id . ']',
-					'label'       => __( 'Event state (activityEvent.address.state)', 'woo-nfe' ),
+					'label'       => __( 'Event state (activityEvent.address.state)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'State code of the event address (e.g. SP).', 'woo-nfe' ),
+					'description' => __( 'State code of the event address (e.g. SP).', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_state', true ),
 				)
 			);
@@ -617,9 +617,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_nfe_activity_event_address_city_code[' . $product_id . ']',
-					'label'       => __( 'Event city code (activityEvent.address.city.code)', 'woo-nfe' ),
+					'label'       => __( 'Event city code (activityEvent.address.city.code)', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'IBGE city code of the event address.', 'woo-nfe' ),
+					'description' => __( 'IBGE city code of the event address.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_activity_event_address_city_code', true ),
 				)
 			);
@@ -627,9 +627,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			woocommerce_wp_textarea_input(
 				array(
 					'id'          => '_nfe_product_variation_desc[' . $product_id . ']',
-					'label'       => __( 'Service Description', 'woo-nfe' ),
+					'label'       => __( 'Service Description', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'desc_tip'    => 'true',
-					'description' => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'woo-nfe' ),
+					'description' => __( 'Put the description that will appear in the receipt. This description must explain in detail what service was delivered. Ask your accountant, if in doubt.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'value'       => get_post_meta( $product_id, '_nfe_product_variation_desc', true ),
 				)
 			);
@@ -735,11 +735,11 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 
 			// Load the download action if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
-				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'woo-nfe' );
+				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'nota-fiscal-nfe-io-for-woocommerce' );
 			}
 
 			if ( $this->should_we_issue( $download, $order ) ) {
-				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'woo-nfe' );
+				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'nota-fiscal-nfe-io-for-woocommerce' );
 			}
 
 			return $actions;
@@ -752,7 +752,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 */
 		public function download_issue_action( $order ) {
 			// Order note.
-			$order->add_order_note( esc_html__( 'NFe receipt downloaded.', 'woo-nfe' ) );
+			$order->add_order_note( esc_html__( 'NFe receipt downloaded.', 'nota-fiscal-nfe-io-for-woocommerce' ) );
 
 			WC_NFe_Ajax::download_pdf( $order->get_id() );
 		}
@@ -779,7 +779,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * @return array array of colunms with the NFe one.
 		 */
 		public function order_status_column_header( $columns ) {
-			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFe.io API', 'woo-nfe' ) . '">' . esc_attr__( 'Sales Receipt', 'woo-nfe' ) . '</span>';
+			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFe.io API', 'nota-fiscal-nfe-io-for-woocommerce' ) . '">' . esc_attr__( 'Sales Receipt', 'nota-fiscal-nfe-io-for-woocommerce' ) . '</span>';
 
 			return $this->array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
 		}
@@ -815,60 +815,60 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 
 				if ( ! empty( $nfe ) && 'Cancelled' === $nfe['status'] ) {
 					$actions['woo_nfe_cancelled'] = array(
-						'name'   => __( 'NFe Cancelled', 'woo-nfe' ),
+						'name'   => __( 'NFe Cancelled', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_cancelled',
 					);
 				} elseif ( ! empty( $nfe ) && 'Issued' === $nfe['status'] ) {
 					$actions['woo_nfe_emitida'] = array(
-						'name'   => __( 'NFe Issued', 'woo-nfe' ),
+						'name'   => __( 'NFe Issued', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_emitida',
 					);
 				} elseif ( ! empty( $nfe ) && 'CancelFailed' === $nfe['status'] ) {
 					$actions['woo_nfe_issue'] = array(
-						'name'   => __( 'NFe Cancelling Failed', 'woo-nfe' ),
+						'name'   => __( 'NFe Cancelling Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issue',
 					);
 				} elseif ( ! empty( $nfe ) && 'IssueFailed' === $nfe['status'] ) {
 					$actions['woo_nfe_issue'] = array(
-						'name'   => __( 'NFe Issuing Failed', 'woo-nfe' ),
+						'name'   => __( 'NFe Issuing Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issue',
 					);
 				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], nfe_processing_status(), true ) ) {
 					$actions['woo_nfe_issuing'] = array(
-						'name'   => __( 'Processing NFe', 'woo-nfe' ),
+						'name'   => __( 'Processing NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issuing',
 					);
 				} elseif ( ! empty( $nfe ) && 'Processing' === $nfe['status'] ) {
 					$actions['woo_nfe_issue'] = array(
 						'url'    => '#',
-						'name'   => __( 'NFe Processing', 'woo-nfe' ),
+						'name'   => __( 'NFe Processing', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issue',
 					);
 				} elseif ( $order->get_total() === '0.00' ) {
 					$actions['woo_nfe_pending_address'] = array(
-						'name'   => __( 'Zero Order', 'woo-nfe' ),
+						'name'   => __( 'Zero Order', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_pending_address',
 					);
 				} elseif ( ! nfe_order_address_filled( $order_id ) ) {
 					$actions['woo_nfe_pending_address'] = array(
-						'name'   => __( 'Pending Address', 'woo-nfe' ),
+						'name'   => __( 'Pending Address', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_pending_address',
 					);
 				} elseif ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
 					if ( nfe_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
 						$actions['woo_nfe_issue'] = array(
-							'name'   => __( 'Issue NFe', 'woo-nfe' ),
+							'name'   => __( 'Issue NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 							'action' => 'woo_nfe_issue',
 						);
 					} else {
 						$actions['woo_nfe_expired'] = array(
-							'name'   => __( 'Issue Expired', 'woo-nfe' ),
+							'name'   => __( 'Issue Expired', 'nota-fiscal-nfe-io-for-woocommerce' ),
 							'action' => 'woo_nfe_expired',
 						);
 					}
 				} else {
 					$actions['woo_nfe_issue'] = array(
-						'name'   => __( 'Issue NFe', 'woo-nfe' ),
+						'name'   => __( 'Issue NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issue',
 					);
 				}
@@ -894,47 +894,47 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			$nfe = nfe_get_order_meta( $order, 'nfe_issued' );
 			?>
 			<h4>
-				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'woo-nfe' ); ?></strong>
+				<strong><?php esc_html_e( 'Receipts Details (NFE.io)', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 				<br />
 			</h4>
 			<div class="nfe-details">
 				<p>
-					<strong><?php esc_html_e( 'Status: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Status: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					<?php if ( ! empty( $nfe['status'] ) ) { ?>
 						<?php echo esc_html( nfe_status_label( $nfe['status'] ) ); ?>
 					<?php } ?>
 					<br />
 
-					<strong><?php esc_html_e( 'Number: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Number: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					<?php if ( ! empty( $nfe['number'] ) ) { ?>
 						<?php echo esc_html( $nfe['number'] ); ?>
 					<?php } ?>
 					<br />
 
-					<strong><?php esc_html_e( 'CheckCode: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'CheckCode: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					<?php if ( ! empty( $nfe['checkCode'] ) ) { ?>
 						<?php echo esc_html( $nfe['checkCode'] ); ?>
 					<?php } ?>
 					<br />
 
-					<strong><?php esc_html_e( 'Issued On: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Issued On: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					<?php if ( ! empty( $nfe['issuedOn'] ) ) { ?>
 						<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $nfe['issuedOn'] ) ) ); ?>
 					<?php } ?>
 					<br />
 
-					<strong><?php esc_html_e( 'Price: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Price: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					<?php if ( ! empty( $nfe['amountNet'] ) ) { ?>
 						<?php echo wp_kses_post( wc_price( $nfe['amountNet'], array( 'currency' => $order->get_currency() ) ) ); ?>
 					<?php } ?>
 					<br />
 
 					<?php if ( ! empty( $nfe['id'] ) ) { ?>
-					<strong><?php esc_html_e( 'Fatura: ', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Fatura: ', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 						<?php
 						$nfe_invoice_url = 'https://app.nfe.io/companies/' . rawurlencode( (string) NFe_Woo()->get_company() ) . '/service-invoices/' . rawurlencode( (string) $nfe['id'] );
 						?>
-						<a href="<?php echo esc_url( $nfe_invoice_url ); ?>"><?php esc_html_e( 'Link', 'woo-nfe' ); ?></a>
+						<a href="<?php echo esc_url( $nfe_invoice_url ); ?>"><?php esc_html_e( 'Link', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></a>
 					<br />
 					<?php } ?>
 
@@ -944,7 +944,7 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 					if ( ! function_exists( 'is_plugin_active' ) ) {
 						return;
 					}
-					esc_html_e( 'Plugin Custom Fields: ', 'woo-nfe' );
+					esc_html_e( 'Plugin Custom Fields: ', 'nota-fiscal-nfe-io-for-woocommerce' );
 
 					if ( is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
 						echo 'OK';
@@ -997,25 +997,25 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 			<# if ( data.nfe ) { #>
 			<div class="wc-order-preview-addresses">
 				<div class="wc-order-preview-address">
-					<h2><?php esc_html_e( 'NFe Details', 'woo-nfe' ); ?></h2>
+					<h2><?php esc_html_e( 'NFe Details', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></h2>
 
 					<# if ( data.nfe.status ) { #>
-					<strong><?php esc_html_e( 'Status', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Status', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					{{ data.nfe.status }}
 					<# } #>
 
 					<# if ( data.nfe.number ) { #>
-					<strong><?php esc_html_e( 'Number', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Number', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					{{ data.nfe.number }}
 					<# } #>
 
 					<# if ( data.nfe.check_code ) { #>
-					<strong><?php esc_html_e( 'CheckCode', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'CheckCode', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					{{ data.nfe.check_code }}
 					<# } #>
 
 					<# if ( data.nfe.issued ) { #>
-					<strong><?php esc_html_e( 'Issued On', 'woo-nfe' ); ?></strong>
+					<strong><?php esc_html_e( 'Issued On', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 					{{ data.nfe.issued }}
 					<# } #>
 				</div>
@@ -1028,7 +1028,9 @@ if ( ! class_exists( 'WC_NFe_Admin' ) ) {
 		 * Adds the NFe Admin CSS.
 		 */
 		public function register_enqueue_css() {
-			wp_enqueue_style( 'nfe-woo-admin-css', plugins_url( 'woo-nfe/assets/css/nfe' ) . '.css', array(), '1.2.8', false );
+			// Derived from the main plugin file, not from a hardcoded folder name --
+			// the folder was renamed once and this line broke silently with a 404.
+			wp_enqueue_style( 'nfe-woo-admin-css', plugins_url( 'assets/css/nfe.css', WOOCOMMERCE_NFE_FILE ), array(), '1.2.8', false );
 		}
 
 		/**

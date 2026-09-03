@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 
-<p><?php esc_html_e( 'The service receipt (NFS-e) for your order has been issued.', 'woo-nfe' ); ?></p>
+<p><?php esc_html_e( 'The service receipt (NFS-e) for your order has been issued.', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></p>
 
 <?php
 /*
@@ -44,7 +44,7 @@ if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) :
 			<?php
 			printf(
 				/* translators: %s: invoice number. */
-				esc_html__( 'Receipt number: %s', 'woo-nfe' ),
+				esc_html__( 'Receipt number: %s', 'nota-fiscal-nfe-io-for-woocommerce' ),
 				esc_html( $number )
 			);
 			?>
@@ -53,7 +53,7 @@ if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) :
 
 	<p>
 		<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>">
-			<?php esc_html_e( 'View your order and download the receipt', 'woo-nfe' ); ?>
+			<?php esc_html_e( 'View your order and download the receipt', 'nota-fiscal-nfe-io-for-woocommerce' ); ?>
 		</a>
 	</p>
 <?php endif; ?>

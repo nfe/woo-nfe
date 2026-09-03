@@ -6,6 +6,6 @@
 		"https://downloads.wordpress.org/plugin/woocommerce-extra-checkout-fields-for-brazil.latest-stable.zip"
 	],
 	"mappings": {
-		"wp-content/plugins/woo-nfe": "."
+		"wp-content/plugins/nota-fiscal-nfe-io-for-woocommerce": "."
 	}
 }

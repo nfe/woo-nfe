@@ -36,6 +36,7 @@ package-lock.json
 composer.json
 composer.lock
 phpunit.xml.dist
+phpcs.xml.dist
 phpspec.yml
 wp-tests-config.php
 

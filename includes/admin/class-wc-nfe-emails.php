@@ -54,7 +54,7 @@ class WC_NFe_Emails {
 	 * @return array
 	 */
 	public static function add_emails( $email_classes ) {
-		require_once __DIR__ . '/emails/class-nfe-email-receipt-issued.php';
+		require_once __DIR__ . '/emails/class-wc-nfe-email-receipt-issued.php';
 
 		$email_classes['WC_NFe_Email_Receipt_Issued'] = new WC_NFe_Email_Receipt_Issued();
 

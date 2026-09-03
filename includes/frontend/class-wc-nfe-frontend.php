@@ -38,7 +38,7 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 		 */
 		public function billing_notice() {
 			if ( nfe_get_field( 'nfe_enable' ) === 'yes' ) {
-				echo wp_kses_post( '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'woo-nfe' ) . '</div>' );
+				echo wp_kses_post( '<div class="woocommerce-message">' . __( 'The following address will <strong>also</strong> be used when issuing a NFe Sales Receipt.', 'nota-fiscal-nfe-io-for-woocommerce' ) . '</div>' );
 			}
 		}
 
@@ -48,7 +48,7 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 		 * @return string
 		 */
 		public function account_desc() {
-			return esc_html__( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'woo-nfe' );
+			return esc_html__( 'The following address(es) will be used on the checkout page by default and also when issuing a NFe sales receipt.', 'nota-fiscal-nfe-io-for-woocommerce' );
 		}
 
 		/**
@@ -65,7 +65,7 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 				$new_columns[ $column_name ] = $column_info;
 
 				if ( 'order-total' === $column_name ) {
-					$new_columns['sales-receipt'] = esc_html__( 'Sales Receipt', 'woo-nfe' );
+					$new_columns['sales-receipt'] = esc_html__( 'Sales Receipt', 'nota-fiscal-nfe-io-for-woocommerce' );
 				}
 			}
 
@@ -103,7 +103,7 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 			if ( 'Cancelled' === $nfe_status ) {
 				$actions['woo_nfe_cancelled'] = array(
 					'url'    => '#',
-					'name'   => __( 'NFe Cancelled', 'woo-nfe' ),
+					'name'   => __( 'NFe Cancelled', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_cancelled',
 				);
 			} elseif ( 'Issued' === $nfe_status && ! empty( $nfe_id ) ) {
@@ -113,69 +113,69 @@ if ( ! class_exists( 'WC_NFe_FrontEnd' ) ) {
 				// unreachable for every successfully issued invoice.
 				$actions['woo_nfe_download'] = array(
 					'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-					'name'   => __( 'Download NFe', 'woo-nfe' ),
+					'name'   => __( 'Download NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_download',
 				);
 			} elseif ( 'Issued' === $nfe_status ) {
 				$actions['woo_nfe_emitida'] = array(
 					'url'    => '#',
-					'name'   => __( 'NFe Issued', 'woo-nfe' ),
+					'name'   => __( 'NFe Issued', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_emitida',
 				);
 			} elseif ( 'CancelFailed' === $nfe_status ) {
 				$actions['woo_nfe_issue'] = array(
 					'url'    => '#',
-					'name'   => __( 'NFe Cancelling Failed', 'woo-nfe' ),
+					'name'   => __( 'NFe Cancelling Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_issue',
 				);
 			} elseif ( 'IssueFailed' === $nfe_status ) {
 				$actions['woo_nfe_issue'] = array(
 					'url'    => '#',
-					'name'   => __( 'NFe Issuing Failed', 'woo-nfe' ),
+					'name'   => __( 'NFe Issuing Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_issue',
 				);
 			} elseif ( 'Processing' === $nfe_status ) {
 				$actions['woo_nfe_issue'] = array(
 					'url'    => '#',
-					'name'   => __( 'NFe Processing', 'woo-nfe' ),
+					'name'   => __( 'NFe Processing', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_issue',
 				);
 			} elseif ( in_array( $nfe_status, nfe_processing_status(), true ) ) {
 				$actions['woo_nfe_issuing'] = array(
 					'url'    => '#',
-					'name'   => __( 'Processing NFe', 'woo-nfe' ),
+					'name'   => __( 'Processing NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_issuing',
 				);
 			} elseif ( ! nfe_order_address_filled( $order_id ) ) {
 				$actions['woo_nfe_pending_address'] = array(
 					'url'    => wc_get_endpoint_url( 'edit-address' ),
-					'name'   => __( 'Pending Address', 'woo-nfe' ),
+					'name'   => __( 'Pending Address', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_pending_address',
 				);
 			} elseif ( ! empty( $nfe_id ) ) {
 				$actions['woo_nfe_download'] = array(
 					'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_download&order_id=' . $order_id ), 'woo_nfe_download' ),
-					'name'   => __( 'Download NFe', 'woo-nfe' ),
+					'name'   => __( 'Download NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_download',
 				);
 			} elseif ( nfe_get_field( 'issue_past_notes' ) === 'yes' ) {
 				if ( nfe_issue_past_orders( $order ) && empty( $nfe_id ) ) {
 					$actions['woo_nfe_issue'] = array(
 						'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-						'name'   => __( 'Issue NFe', 'woo-nfe' ),
+						'name'   => __( 'Issue NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_issue',
 					);
 				} else {
 					$actions['woo_nfe_expired'] = array(
 						'url'    => '#',
-						'name'   => __( 'Issue Expired', 'woo-nfe' ),
+						'name'   => __( 'Issue Expired', 'nota-fiscal-nfe-io-for-woocommerce' ),
 						'action' => 'woo_nfe_expired',
 					);
 				}
 			} else {
 				$actions['woo_nfe_issue'] = array(
 					'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_nfe_issue&order_id=' . $order_id ), 'woo_nfe_issue' ),
-					'name'   => __( 'Issue NFe', 'woo-nfe' ),
+					'name'   => __( 'Issue NFe', 'nota-fiscal-nfe-io-for-woocommerce' ),
 					'action' => 'woo_nfe_issue',
 				);
 			}

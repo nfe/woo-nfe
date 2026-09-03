@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 // so wp_strip_all_tags() is the whole of the output boundary for this template.
 echo '= ' . wp_strip_all_tags( $email_heading ) . " =\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail; tags stripped, entities would be visible.
 
-echo wp_strip_all_tags( __( 'The service receipt (NFS-e) for your order has been issued.', 'woo-nfe' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+echo wp_strip_all_tags( __( 'The service receipt (NFS-e) for your order has been issued.', 'nota-fiscal-nfe-io-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
 
 /*
  * Points at the order page rather than the file: the download is nonce-guarded
@@ -34,10 +34,10 @@ if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) {
 
 	if ( '' !== $number ) {
 		// translators: %s: invoice number.
-		echo "\n\n" . wp_strip_all_tags( sprintf( __( 'Receipt number: %s', 'woo-nfe' ), $number ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+		echo "\n\n" . wp_strip_all_tags( sprintf( __( 'Receipt number: %s', 'nota-fiscal-nfe-io-for-woocommerce' ), $number ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
 	}
 
-	echo "\n\n" . wp_strip_all_tags( __( 'View your order and download the receipt:', 'woo-nfe' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+	echo "\n\n" . wp_strip_all_tags( __( 'View your order and download the receipt:', 'nota-fiscal-nfe-io-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
 	echo "\n" . esc_url_raw( $order->get_view_order_url() );
 }
 

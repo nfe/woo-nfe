@@ -241,7 +241,19 @@ class WC_NFe_Webhook_Handler {
 		// write succeeded: save() reports its own failures to the WooCommerce
 		// log and gives the caller no way to tell them apart from a success.
 		// translators: 1: Order ID, 2: NFe status received.
-		$msg = sprintf( __( 'NFe status received for order #%1$d: %2$s.', 'woo-nfe' ), $order->get_id(), nfe_status_label( $flow_status ) );
+		$msg = sprintf( __( 'NFe status received for order #%1$d: %2$s.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order->get_id(), nfe_status_label( $flow_status ) );
+
+		// A one-off rejection by the city hall and an exhausted retry budget
+		// share the same flowStatus, so the event type is the only thing that
+		// tells them apart. It goes in the note because the difference decides
+		// whether re-issuing is worth trying.
+		if ( '' !== $event_type ) {
+			$msg .= ' ' . sprintf(
+				/* translators: %s: webhook event type reported by NFe.io. */
+				__( '(event: %s)', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				$event_type
+			);
+		}
 
 		$this->logger( $msg );
 		$order->add_order_note( $msg );
@@ -336,7 +348,7 @@ class WC_NFe_Webhook_Handler {
 
 		if ( ! $order ) {
 			// translators: %s: NFe.io receipt ID.
-			$this->logger( sprintf( __( 'Order with receipt number #%s not found.', 'woo-nfe' ), $invoice_id ) );
+			$this->logger( sprintf( __( 'Order with receipt number #%s not found.', 'nota-fiscal-nfe-io-for-woocommerce' ), $invoice_id ) );
 
 			return false;
 		}

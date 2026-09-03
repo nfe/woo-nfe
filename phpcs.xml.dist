@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="Nota Fiscal NFe.io for WooCommerce">
+
+	<description>Coding standard for the plugin. Run with: composer run lint</description>
+
+	<!-- What to scan when no path is given. -->
+	<file>includes</file>
+	<file>templates</file>
+	<file>nota-fiscal-nfe-io-for-woocommerce.php</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="parallel" value="8"/>
+	<arg value="ps"/>
+
+	<!-- Matches the plugin's declared floor (Requires PHP: 8.2). -->
+	<config name="testVersion" value="8.2-"/>
+	<config name="minimum_wp_version" value="6.5"/>
+
+	<rule ref="WordPress"/>
+
+	<!--
+		The main plugin file is named after the plugin slug, which is what the
+		WordPress.org directory requires and what WordPress itself looks for
+		when loading a plugin. The sniff would want it called
+		class-woocommerce-nfe.php - a name WordPress would not recognise - so
+		the rule is excluded for that one file, and only that one.
+	-->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>*/nota-fiscal-nfe-io-for-woocommerce\.php$</exclude-pattern>
+	</rule>
+
+	<!--
+		Capability names that WPCS does not know because they are defined by
+		WooCommerce, not by WordPress core.
+	-->
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_woocommerce"/>
+				<element value="edit_shop_orders"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="nota-fiscal-nfe-io-for-woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+
+</ruleset>

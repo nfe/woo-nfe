@@ -373,8 +373,16 @@ function nfe_purge_pdf_cache() {
 		}
 	}
 
-	// Succeeds only when nothing else is left in there.
-	@rmdir( $dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- A non-empty directory is an expected outcome, not an error to report.
+	/*
+	 * Succeeds only when nothing else is left in there, which is the safety
+	 * property this relies on: anything unexpected in the folder survives.
+	 *
+	 * WP_Filesystem is deliberately not used. It has no directory removal that
+	 * works without initialising a filesystem context, and initialising one
+	 * during an upgrade can prompt the administrator for FTP credentials -- a
+	 * heavy, user-visible failure mode for removing one empty directory.
+	 */
+	@rmdir( $dir ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- A non-empty directory is an expected outcome, not an error; WP_Filesystem would risk a credentials prompt mid-upgrade.
 }
 
 /**
@@ -814,16 +822,16 @@ function nfe_require_address() {
 function nfe_status_label( $status ) {
 	// Check processing status first.
 	if ( in_array( $status, nfe_processing_status(), true ) ) {
-		return __( 'Processing NFe', 'woo-nfe' );
+		return __( 'Processing NFe', 'nota-fiscal-nfe-io-for-woocommerce' );
 	}
 
 	$valid_status = array(
-		'Issued'           => __( 'NFe Issued', 'woo-nfe' ),
-		'Cancelled'        => __( 'NFe Cancelled', 'woo-nfe' ),
-		'CancelFailed'     => __( 'NFe Cancelling Failed', 'woo-nfe' ),
-		'IssueFailed'      => __( 'NFe Issuing Failed', 'woo-nfe' ),
-		'PullFromCityHall' => __( 'NFe Retrieved from City Hall', 'woo-nfe' ),
-		'Processing'       => __( 'NFe Processing', 'woo-nfe' ),
+		'Issued'           => __( 'NFe Issued', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'Cancelled'        => __( 'NFe Cancelled', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'CancelFailed'     => __( 'NFe Cancelling Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'IssueFailed'      => __( 'NFe Issuing Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'PullFromCityHall' => __( 'NFe Retrieved from City Hall', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'Processing'       => __( 'NFe Processing', 'nota-fiscal-nfe-io-for-woocommerce' ),
 	);
 
 	if ( isset( $valid_status[ $status ] ) ) {

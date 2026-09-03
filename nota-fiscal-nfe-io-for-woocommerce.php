@@ -1,6 +1,6 @@
 <?php
 /**
- * NFe for Woocommerce plugin.
+ * Nota Fiscal NFe.io for WooCommerce.
  *
  * @author            NFe.io
  *
@@ -9,17 +9,16 @@
  * @package          Woo_Nfe
  *
  * @wordpress-plugin
- * Plugin Name:       NFe for Woocommerce
+ * Plugin Name:       Nota Fiscal NFe.io for WooCommerce
  * Plugin URI:        https://github.com/nfe/woo-nfe
- * Description:       WooCommerce integration for issuing NFS-e with NFe.io
- * Version:           1.4.0-beta
+ * Description:       Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFe.io API.
+ * Version:           1.5.0
  * Author:            NFe.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
  * Developer URI:     https://github.com/nfe/woo-nfe/graphs/contributors
- * Text Domain:       woo-nfe
+ * Text Domain:       nota-fiscal-nfe-io-for-woocommerce
  * Domain Path:       /languages
- * Network:           false
  * Requires at least: 6.5
  * Tested up to:      7.1
  * Requires PHP:      8.2
@@ -28,13 +27,21 @@
  * WC requires at least: 9.0
  * WC tested up to: 11.0.1
  *
- * Copyright: © 2022 NFe.io
+ * Copyright: © 2016-2026 NFe.io
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
+
+/*
+ * The main plugin file is named after the plugin slug, which is what the
+ * WordPress.org directory requires and what WordPress itself looks for. That
+ * convention wins over the class-file naming sniff, which would want this file
+ * called class-woocommerce-nfe.php -- a name WordPress would not recognise.
+ */
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName -- Main plugin file must be named after the slug.
 
 /**
  * Minimum PHP version the plugin runs on, dictated by the NFe.io SDK.
@@ -57,11 +64,11 @@ if ( version_compare( PHP_VERSION, WOO_NFE_MINIMUM_PHP, '<' ) ) {
 		'admin_notices',
 		function () {
 			echo '<div class="error"><p><strong>';
-			echo esc_html__( 'NFe for WooCommerce', 'woo-nfe' );
+			echo esc_html__( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' );
 			echo '</strong> ';
 			printf(
 				/* translators: 1: required PHP version, 2: PHP version currently running. */
-				esc_html__( 'requires PHP %1$s or higher. This site runs PHP %2$s, so the plugin stayed inactive to avoid breaking it. Ask your host to upgrade PHP.', 'woo-nfe' ),
+				esc_html__( 'requires PHP %1$s or higher. This site runs PHP %2$s, so the plugin stayed inactive to avoid breaking it. Ask your host to upgrade PHP.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 				esc_html( WOO_NFE_MINIMUM_PHP ),
 				esc_html( PHP_VERSION )
 			);
@@ -92,6 +99,13 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @var array
 		 */
 		private $missing_extensions = array();
+
+		/**
+		 * Basename of the previous release, when it is still active.
+		 *
+		 * @var string
+		 */
+		private $legacy_plugin = '';
 
 		/*
 		 * Everything setup_globals() assigns is declared here. PHP 8.2 -- the
@@ -217,22 +231,29 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			return $this->is_running;
 		}
 
+
 		/**
 		 * Load Localisation files.
 		 *
-		 * Note: the first-loaded translation file overrides any following ones if the same translation is present.
+		 * Plugin Check flags this call as unnecessary for WordPress.org-hosted
+		 * plugins, and for language packs that is true: those land in
+		 * WP_LANG_DIR and load on their own. It is not true for the pt_BR
+		 * translation shipped inside this plugin, which does not load without
+		 * this call -- verified on WordPress 7.1. Until language packs exist for
+		 * the new slug, removing this would hand Brazilian merchants an English
+		 * interface, so the warning is accepted deliberately.
 		 *
-		 * Locales found in:
-		 *      - WP_LANG_DIR/woo-nfe/woo-nfe-LOCALE.mo
-		 *      - WP_LANG_DIR/plugins/woo-nfe-LOCALE.mo
+		 * Hooked on `init` rather than `plugins_loaded`: since WordPress 6.7,
+		 * loading a text domain earlier than `init` raises a notice of its own.
+		 *
+		 * @return void
 		 */
 		public function load_plugin_textdomain() {
-			$locale = is_admin() && function_exists( 'get_user_locale' ) ? get_user_locale() : get_locale();
-			$locale = apply_filters( 'plugin_locale', $locale, 'woo-nfe' );
-
-			unload_textdomain( 'woo-nfe' );
-			load_textdomain( 'woo-nfe', WP_LANG_DIR . '/woo-nfe/woo-nfe-' . $locale . '.mo' );
-			load_plugin_textdomain( 'woo-nfe', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+			load_plugin_textdomain(
+				'nota-fiscal-nfe-io-for-woocommerce',
+				false,
+				dirname( plugin_basename( $this->file ) ) . '/languages'
+			);
 		}
 
 		/**
@@ -289,7 +310,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		public function plugin_action_links( $links ) {
 			return array_merge(
 				array(
-					'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'woo-nfe' ) . '</a>',
+					'<a href="' . esc_url( WOOCOMMERCE_NFE_SETTINGS_URL ) . '">' . __( 'Settings', 'nota-fiscal-nfe-io-for-woocommerce' ) . '</a>',
 				),
 				$links
 			);
@@ -301,8 +322,8 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @since 1.0.0
 		 */
 		private function setup_globals() {
-			$this->domain       = 'woo-nfe';
-			$this->name         = 'WooCommerce NFe';
+			$this->domain       = 'nota-fiscal-nfe-io-for-woocommerce';
+			$this->name         = 'Nota Fiscal NFe.io for WooCommerce';
 			$this->file         = __FILE__;
 			$this->basename     = plugin_basename( $this->file );
 			$this->plugin_dir   = plugin_dir_path( $this->file );
@@ -311,7 +332,7 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 
 			// Drives the upgrade routine. Keep in step with the Version header.
 			if ( ! defined( 'WOO_NFE_VERSION' ) ) {
-				define( 'WOO_NFE_VERSION', '1.4.0-beta' );
+				define( 'WOO_NFE_VERSION', '1.5.0' );
 			}
 
 			// WooCommerce Webhook Callback.
@@ -333,22 +354,79 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 			// Admin.
 			require $this->includes_dir . 'nfe-functions.php';
 
-			require $this->includes_dir . 'admin/class-settings.php';
+			require $this->includes_dir . 'admin/class-wc-nfe-integration.php';
 
-			require $this->includes_dir . 'admin/class-ajax.php';
+			require $this->includes_dir . 'admin/class-wc-nfe-ajax.php';
 
-			require $this->includes_dir . 'admin/class-admin.php';
+			require $this->includes_dir . 'admin/class-wc-nfe-admin.php';
 
-			require $this->includes_dir . 'admin/class-api.php';
+			require $this->includes_dir . 'admin/class-nfe-woo.php';
 
-			require $this->includes_dir . 'admin/class-emails.php';
+			require $this->includes_dir . 'admin/class-wc-nfe-emails.php';
 
 			require $this->includes_dir . 'admin/class-wc-nfe-webhook-provisioner.php';
 
-			require $this->includes_dir . 'admin/class-webhook.php';
+			require $this->includes_dir . 'admin/class-wc-nfe-webhook-handler.php';
 
 			// Front-end.
-			require $this->includes_dir . 'frontend/class-frontend.php';
+			require $this->includes_dir . 'frontend/class-wc-nfe-frontend.php';
+		}
+
+		/**
+		 * Finds the previous release of this plugin, if it is active.
+		 *
+		 * Identified by the file name of its entry point rather than by folder,
+		 * because the folder can be anything -- a manual install, a rename, a
+		 * copy left behind. Network-activated plugins are checked too.
+		 *
+		 * @since 1.5.0
+		 *
+		 * @return string|false Plugin basename of the old install, or false.
+		 */
+		private function legacy_plugin() {
+			$active = (array) get_option( 'active_plugins', array() );
+
+			if ( is_multisite() ) {
+				$active = array_merge( $active, array_keys( (array) get_site_option( 'active_sitewide_plugins', array() ) ) );
+			}
+
+			$self = plugin_basename( $this->file );
+
+			foreach ( $active as $plugin ) {
+				$plugin = (string) $plugin;
+
+				if ( $plugin === $self ) {
+					continue;
+				}
+
+				if ( 'woo-nfe.php' !== basename( $plugin ) ) {
+					continue;
+				}
+
+				// The option can name a plugin that is no longer on disk --
+				// WordPress leaves the entry behind when a folder is renamed or
+				// removed by hand, and it simply skips it at load time. Blocking
+				// on that phantom would keep this plugin off forever, on a store
+				// where nothing is actually running twice.
+				if ( ! file_exists( WP_PLUGIN_DIR . '/' . $plugin ) ) {
+					continue;
+				}
+
+				return $plugin;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Previous release still active notice.
+		 *
+		 * @since 1.5.0
+		 */
+		public function legacy_plugin_notice() {
+			$legacy_plugin = $this->legacy_plugin;
+
+			include $this->includes_dir . 'admin/views/html-notice-legacy-plugin.php';
 		}
 
 		/**
@@ -362,6 +440,23 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @return bool True when every dependency is satisfied.
 		 */
 		private function dependencies() {
+			// Two copies of this plugin must never run side by side. The slug
+			// changed, so WordPress treats the previous release as a different
+			// plugin: it is not replaced on update and can stay active in
+			// parallel, registering the issuing hooks a second time. The damage
+			// is a duplicate NFS-e -- a real fiscal document that has to be
+			// cancelled by hand -- so the safe answer is to load nothing and say
+			// why, rather than deactivate someone else's plugin unasked.
+			$legacy = $this->legacy_plugin();
+
+			if ( false !== $legacy ) {
+				$this->legacy_plugin = $legacy;
+
+				add_action( 'admin_notices', array( $this, 'legacy_plugin_notice' ) );
+
+				return false;
+			}
+
 			// The NFe.io SDK talks HTTP over cURL and speaks JSON. These
 			// replaced the old SoapClient check, which guarded a transport the
 			// plugin has not used since the legacy client was dropped.
@@ -408,9 +503,6 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 		 * @since 1.0.0
 		 */
 		private function setup_hooks() {
-			// Set up localisation.
-			$this->load_plugin_textdomain();
-
 			$settings_url = admin_url( 'admin.php?page=woocommerce_settings&tab=integration&section=woo-nfe' );
 			if ( $this->version_check( '2.1' ) ) {
 				$settings_url = admin_url( 'admin.php?page=wc-settings&tab=integration&section=woo-nfe' );
@@ -424,10 +516,17 @@ if ( ! class_exists( 'WooCommerce_NFe' ) ) {
 				define( 'WOOCOMMERCE_NFE_PATH', plugin_dir_path( $this->file ) );
 			}
 
+			// Anything that needs a URL into this plugin derives it from here,
+			// so a future rename of the folder cannot break asset paths again.
+			if ( ! defined( 'WOOCOMMERCE_NFE_FILE' ) ) {
+				define( 'WOOCOMMERCE_NFE_FILE', $this->file );
+			}
+
 			// Backfills '_nfe_invoice_id' on orders issued before the flat meta
 			// existed, so the webhook can still find them. Hooked on 'init' and
 			// not 'admin_init' so a store updated over WP-CLI, with nobody ever
 			// opening wp-admin, still gets the migration.
+			add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 			add_action( 'init', 'nfe_maybe_upgrade' );
 			add_action( 'init', 'nfe_maybe_schedule_backfill' );
 			add_action( NFE_BACKFILL_HOOK, 'nfe_run_invoice_id_backfill' );

@@ -100,8 +100,8 @@ class WC_NFe_Ajax {
 	 */
 	private static function deny_request() {
 		wp_die(
-			esc_html__( 'You are not allowed to perform this action.', 'woo-nfe' ),
-			esc_html__( 'Forbidden', 'woo-nfe' ),
+			esc_html__( 'You are not allowed to perform this action.', 'nota-fiscal-nfe-io-for-woocommerce' ),
+			esc_html__( 'Forbidden', 'nota-fiscal-nfe-io-for-woocommerce' ),
 			array( 'response' => 403 )
 		);
 	}
@@ -122,11 +122,18 @@ class WC_NFe_Ajax {
 		}
 
 		if ( ! nfe_order_address_filled( $order ) ) {
-			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'woo-nfe' ), 'error' );
+			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'nota-fiscal-nfe-io-for-woocommerce' ), 'error' );
+		} elseif ( NFe_Woo()->issue_invoice( array( $order->get_id() ) ) ) {
+			// Accepted by the API, not finished: the document is issued
+			// asynchronously and confirmed later by the webhook. Saying it is
+			// already issued would be the same mistake the receipt e-mail used
+			// to make.
+			wc_add_notice( __( 'The NFe request was sent. You will be notified when the receipt is issued.', 'nota-fiscal-nfe-io-for-woocommerce' ) );
 		} else {
-			NFe_Woo()->issue_invoice( array( $order->get_id() ) );
-
-			wc_add_notice( __( 'NFe was issued successfully.', 'woo-nfe' ) );
+			// The request was refused before reaching the API -- an invoice is
+			// already in flight, the order is worth nothing, or the API rejected
+			// it. The order notes carry the reason.
+			wc_add_notice( __( 'The NFe could not be requested for this order. Please check the order details or try again later.', 'nota-fiscal-nfe-io-for-woocommerce' ), 'error' );
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
@@ -195,8 +202,8 @@ class WC_NFe_Ajax {
 
 		if ( ! is_string( $pdf ) || '' === $pdf ) {
 			wp_die(
-				esc_html__( 'The NFe receipt could not be downloaded right now. Please try again in a few minutes.', 'woo-nfe' ),
-				esc_html__( 'Download failed', 'woo-nfe' ),
+				esc_html__( 'The NFe receipt could not be downloaded right now. Please try again in a few minutes.', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				esc_html__( 'Download failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
 				array( 'response' => 502 )
 			);
 		}

@@ -393,3 +393,8 @@ rsync.sh
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,phpcodesniffer,phpunit,wordpress,php-cs-fixer,phpstorm+all
 bin/build-zip.sh
+
+
+# Material interno. O repositorio e publico: rascunhos de submissao, notas e
+# correspondencia ficam fora dele, pela mesma razao que openspec/ fica.
+docs/

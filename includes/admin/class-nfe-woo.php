@@ -211,7 +211,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			}
 
 			// translators: 1: Order ID, 2: current NFe status.
-			$log = sprintf( __( 'Skipping a second issuing attempt for order #%1$d: an invoice is already %2$s.', 'woo-nfe' ), $order->get_id(), $status );
+			$log = sprintf( __( 'Skipping a second issuing attempt for order #%1$d: an invoice is already %2$s.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order->get_id(), $status );
 
 			$this->logger( $log );
 
@@ -357,7 +357,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					$invoice = $this->client()->serviceInvoices->findByExternalId( $company_id, $external_id );
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: 1: externalId, 2: error message.
-					$this->logger( sprintf( __( 'Could not check whether externalId %1$s produced an invoice: %2$s', 'woo-nfe' ), $external_id, $e->getMessage() ) );
+					$this->logger( sprintf( __( 'Could not check whether externalId %1$s produced an invoice: %2$s', 'nota-fiscal-nfe-io-for-woocommerce' ), $external_id, $e->getMessage() ) );
 
 					return false;
 				}
@@ -395,7 +395,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		protected function recover_from_failure( $order, $company_id, $external_id, $exception ) {
 			if ( $exception instanceof \Nfe\Exception\AuthenticationException ) {
 				// Nothing can have been created: the request never authenticated.
-				$log = __( 'NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings.', 'woo-nfe' );
+				$log = __( 'NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings.', 'nota-fiscal-nfe-io-for-woocommerce' );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -408,7 +408,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 			if ( false === $invoice ) {
 				// translators: %s: error message returned by the API.
-				$log = sprintf( __( 'The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists.', 'woo-nfe' ), $exception->getMessage() );
+				$log = sprintf( __( 'The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists.', 'nota-fiscal-nfe-io-for-woocommerce' ), $exception->getMessage() );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -423,7 +423,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				$this->store_invoice( $order, $invoice );
 
 				// translators: %s: error message returned by the API.
-				$log = sprintf( __( 'The NFe issuing call failed (%s), but the invoice had already been created and was recovered. No second invoice was issued.', 'woo-nfe' ), $exception->getMessage() );
+				$log = sprintf( __( 'The NFe issuing call failed (%s), but the invoice had already been created and was recovered. No second invoice was issued.', 'nota-fiscal-nfe-io-for-woocommerce' ), $exception->getMessage() );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -432,7 +432,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 			}
 
 			// translators: %s: error message returned by the API.
-			$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'woo-nfe' ), $exception->getMessage() );
+			$log = sprintf( __( 'An error occurred while issuing a NFe: %s', 'nota-fiscal-nfe-io-for-woocommerce' ), $exception->getMessage() );
 
 			$this->logger( $log );
 			$order->add_order_note( $log );
@@ -472,7 +472,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				}
 
 				// translators: Log message.
-				$log = sprintf( __( 'NFe issuing process started! Order: #%d', 'woo-nfe' ), $order_id );
+				$log = sprintf( __( 'NFe issuing process started! Order: #%d', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 				$this->logger( $log );
 				$order->add_order_note( $log );
 
@@ -484,7 +484,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				// `< 0`, which let 0.00 through against the documented behaviour.
 				if ( $order->get_total() <= 0 ) {
 					// translators: Log message.
-					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'woo-nfe' ), $order_id );
+					$log = sprintf( __( 'Not possible to issue NFe without an order value! Order: #%d', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
@@ -495,7 +495,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 				// Check if there was a problem while fetching the city code from IBGE. And if the address is required.
 				if ( nfe_require_address() && empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
-					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'woo-nfe' );
+					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'nota-fiscal-nfe-io-for-woocommerce' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
@@ -531,7 +531,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					$client = $this->client();
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: %s: error message.
-					$log = sprintf( __( 'NFe could not be issued because the NFe.io connection is not configured: %s', 'woo-nfe' ), $e->getMessage() );
+					$log = sprintf( __( 'NFe could not be issued because the NFe.io connection is not configured: %s', 'nota-fiscal-nfe-io-for-woocommerce' ), $e->getMessage() );
 
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -572,13 +572,13 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					$order->save();
 
 					// translators: Log message.
-					$log = sprintf( __( 'NFe sent successfully to issue! Order: #%d', 'woo-nfe' ), $order_id );
+					$log = sprintf( __( 'NFe sent successfully to issue! Order: #%d', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 				} else {
 					// 201: terminal already, so the data is written here.
 					$this->store_invoice( $order, $invoice->resource() );
 
 					// translators: Log message.
-					$log = sprintf( __( 'NFe issued! Order: #%d', 'woo-nfe' ), $order_id );
+					$log = sprintf( __( 'NFe issued! Order: #%d', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 				}
 
 				$this->logger( $log );
@@ -626,7 +626,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 				if ( ! is_array( $nfe ) || empty( $nfe['id'] ) ) {
 					// translators: Log message.
-					$this->logger( sprintf( __( 'There is no NFe invoice to download for order #%d.', 'woo-nfe' ), $order_id ) );
+					$this->logger( sprintf( __( 'There is no NFe invoice to download for order #%d.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id ) );
 
 					continue;
 				}
@@ -635,7 +635,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					$pdf = $this->client()->serviceInvoices->downloadPdf( $company_id, (string) $nfe['id'] );
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: 1: Order ID, 2: error message returned by the API.
-					$log = sprintf( __( 'There was a problem when trying to download NFe PDF for order #%1$d! Error: %2$s', 'woo-nfe' ), $order_id, $e->getMessage() );
+					$log = sprintf( __( 'There was a problem when trying to download NFe PDF for order #%1$d! Error: %2$s', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id, $e->getMessage() );
 
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -644,7 +644,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				}
 
 				// translators: Log message.
-				$log = sprintf( __( 'NFe PDF download successful. Order: #%d', 'woo-nfe' ), $order_id );
+				$log = sprintf( __( 'NFe PDF download successful. Order: #%d', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -673,9 +673,9 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				// get invoice info.
 				$invoice_info = $this->remover_caracter( $this->city_service_info( 'desc', $order_id ) );
 				// build shipping info line.
-				$shipping_info = __( 'Shipping', 'woo-nfe' ) . ': ' . $order->get_shipping_method();
+				$shipping_info = __( 'Shipping', 'nota-fiscal-nfe-io-for-woocommerce' ) . ': ' . $order->get_shipping_method();
 				// build shipping value line.
-				$shipping_value_description = __( 'Shipping Value', 'woo-nfe' ) . ': ' . $order->get_shipping_total() . $order->get_currency();
+				$shipping_value_description = __( 'Shipping Value', 'nota-fiscal-nfe-io-for-woocommerce' ) . ': ' . $order->get_shipping_total() . $order->get_currency();
 				// final description.
 				$services_description = $this->remover_caracter( "{$invoice_info} \n $shipping_info \n $shipping_value_description" );
 			} else {
@@ -780,12 +780,12 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		/**
 		 * Clears.
 		 *
-		 * @param string $string content.
+		 * @param string $value content.
 		 *
 		 * @return string
 		 */
-		public function clear( $string ) {
-			return str_replace( array( ',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€' ), '', $string );
+		public function clear( $value ) {
+			return str_replace( array( ',', '-', '!', '.', '/', '?', '(', ')', ' ', '$', 'R$', '€' ), '', $value );
 		}
 
 		/**
@@ -925,7 +925,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				);
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
 				// translators: 1: postal code, 2: error message returned by the API.
-				$this->logger( sprintf( __( 'Could not resolve the IBGE city code for postal code %1$s: %2$s', 'woo-nfe' ), $post_code, $e->getMessage() ) );
+				$this->logger( sprintf( __( 'Could not resolve the IBGE city code for postal code %1$s: %2$s', 'nota-fiscal-nfe-io-for-woocommerce' ), $post_code, $e->getMessage() ) );
 
 				return null;
 			}
@@ -984,7 +984,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 						: array();
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: %s: error message returned by the API.
-					$this->logger( sprintf( __( 'Could not fetch the company data from NFe.io: %s', 'woo-nfe' ), $e->getMessage() ) );
+					$this->logger( sprintf( __( 'Could not fetch the company data from NFe.io: %s', 'nota-fiscal-nfe-io-for-woocommerce' ), $e->getMessage() ) );
 
 					$this->company_info = false;
 				}
@@ -1204,17 +1204,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 			if ( $has_ibs_cbs_payload && ( '' === $operation_indicator || '' === $class_code ) ) {
 				/* translators: %d: WooCommerce order number. */
-				$errors[] = sprintf( __( 'RTC validation failed for order #%d: operationIndicator and classCode are required when RTC payload is used.', 'woo-nfe' ), $order_id );
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: operationIndicator and classCode are required when RTC payload is used.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 			}
 
 			if ( ! empty( $destination ) && ! in_array( $destination, array( 'SameAsBuyer', 'DifferentFromBuyer' ), true ) ) {
 				/* translators: %d: WooCommerce order number. */
-				$errors[] = sprintf( __( 'RTC validation failed for order #%d: destinationIndicator has an invalid value.', 'woo-nfe' ), $order_id );
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: destinationIndicator has an invalid value.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 			}
 
 			if ( empty( $nbs_code ) ) {
 				/* translators: %d: WooCommerce order number. */
-				$missing_nbs_message = sprintf( __( 'RTC validation warning for order #%d: nbsCode is missing.', 'woo-nfe' ), $order_id );
+				$missing_nbs_message = sprintf( __( 'RTC validation warning for order #%d: nbsCode is missing.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 				$observability_ctx   = array(
 					'missing_fields' => array( 'nbsCode' ),
 					'item_ids'       => $this->get_order_item_ids( $order_id ),
@@ -1223,7 +1223,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 				switch ( $profile ) {
 					case 'estrito':
 						/* translators: %d: WooCommerce order number. */
-						$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in Strict profile.', 'woo-nfe' ), $order_id );
+						$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in Strict profile.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 						$observability_ctx['scenario'] = 'strict';
 						$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
 						break;
@@ -1231,7 +1231,7 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					case 'equilibrado':
 						if ( $has_rtc_context && $this->missing_nbs_in_critical_scenario( $payload ) ) {
 							/* translators: %d: WooCommerce order number. */
-							$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile.', 'woo-nfe' ), $order_id );
+							$errors[]                      = sprintf( __( 'RTC validation failed for order #%d: nbsCode is required in this critical RTC scenario for Balanced profile.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 							$observability_ctx['scenario'] = 'balanced_critical';
 							$this->register_missing_nbs_observability( $order_id, $profile, true, $observability_ctx );
 						} else {
@@ -1252,17 +1252,17 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 
 			if ( 'DifferentFromBuyer' === $destination && ! $has_recipient ) {
 				/* translators: %d: WooCommerce order number. */
-				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient is required when destinationIndicator is DifferentFromBuyer.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 			}
 
 			if ( 'DifferentFromBuyer' === $destination && $has_recipient && ( ! isset( $payload['recipient']['name'] ) || '' === trim( (string) $payload['recipient']['name'] ) ) ) {
 				/* translators: %d: WooCommerce order number. */
-				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient.name is required when destinationIndicator is DifferentFromBuyer.', 'woo-nfe' ), $order_id );
+				$errors[] = sprintf( __( 'RTC validation failed for order #%d: recipient.name is required when destinationIndicator is DifferentFromBuyer.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 			}
 
 			if ( 'SameAsBuyer' === $destination && $has_recipient ) {
 				/* translators: %d: WooCommerce order number. */
-				$warnings[] = sprintf( __( 'RTC validation warning for order #%d: recipient was provided even though destinationIndicator is SameAsBuyer.', 'woo-nfe' ), $order_id );
+				$warnings[] = sprintf( __( 'RTC validation warning for order #%d: recipient was provided even though destinationIndicator is SameAsBuyer.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order_id );
 			}
 
 			return array(
@@ -1449,11 +1449,11 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 					if ( '1' === $type ) {
 						$id   = $this->cpf( $cpf );
 						$name = $customer;
-						$type = __( 'Customers', 'woo-nfe' );
+						$type = __( 'Customers', 'nota-fiscal-nfe-io-for-woocommerce' );
 					} else {
 						$id   = $this->cnpj( $cnpj );
 						$name = $company;
-						$type = __( 'Company', 'woo-nfe' );
+						$type = __( 'Company', 'nota-fiscal-nfe-io-for-woocommerce' );
 					}
 				}
 			}
@@ -1562,31 +1562,31 @@ if ( ! class_exists( 'NFe_Woo' ) ) {
 		/**
 		 * Remove Ponto Traco.
 		 *
-		 * @param string $string content to remove.
+		 * @param string $value content to remove.
 		 *
 		 * @return string
 		 */
-		protected function removepontotraco( $string ) {
+		protected function removepontotraco( $value ) {
 			// Coerced because the callers pass straight through from order meta,
 			// which is null whenever the field was never filled in. PHP 8.2 --
 			// the floor this plugin targets -- deprecates passing null here, and
 			// it happens on the payload-building path of every issuing attempt.
-			return ltrim( preg_replace( '/[^0-9]/', '', (string) $string ), '0' );
+			return ltrim( preg_replace( '/[^0-9]/', '', (string) $value ), '0' );
 		}
 
 		/**
 		 * Remove Caracter.
 		 *
-		 * @param string $string content to remove.
+		 * @param string $value content to remove.
 		 *
 		 * @return string
 		 */
-		protected function remover_caracter( $string ) {
+		protected function remover_caracter( $value ) {
 			// See removepontotraco(): an unfilled address field arrives as null,
 			// which htmlentities() deprecates on PHP 8.2.
-			$string = preg_replace( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities( (string) $string, ENT_COMPAT, 'UTF-8' ) );
+			$value = preg_replace( '~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml|caron);~i', '$1', htmlentities( (string) $value, ENT_COMPAT, 'UTF-8' ) );
 
-			return preg_replace( '/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/', '', $string );
+			return preg_replace( '/[][><}{)(:;,!?*%~^`´&#@ªº°$¨]/', '', $value );
 		}
 
 		/**

@@ -324,8 +324,8 @@ class WC_NFe_Webhook_Provisioner {
 	public static function handle_manual_request() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die(
-				esc_html__( 'You are not allowed to perform this action.', 'woo-nfe' ),
-				esc_html__( 'Forbidden', 'woo-nfe' ),
+				esc_html__( 'You are not allowed to perform this action.', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				esc_html__( 'Forbidden', 'nota-fiscal-nfe-io-for-woocommerce' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -356,16 +356,16 @@ class WC_NFe_Webhook_Provisioner {
 			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
 
 			echo '<div class="notice notice-warning"><p><strong>';
-			echo esc_html__( 'NFe for WooCommerce', 'woo-nfe' );
+			echo esc_html__( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'woo-nfe' );
+			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nota-fiscal-nfe-io-for-woocommerce' );
 
 			if ( is_array( $notice ) && ! empty( $notice['message'] ) ) {
 				echo ' <em>' . esc_html( $notice['message'] ) . '</em>';
 			}
 
 			echo ' <a class="button button-primary" href="' . esc_url( $action ) . '">';
-			echo esc_html__( 'Set up the webhook', 'woo-nfe' );
+			echo esc_html__( 'Set up the webhook', 'nota-fiscal-nfe-io-for-woocommerce' );
 			echo '</a></p></div>';
 
 			return;
@@ -375,9 +375,9 @@ class WC_NFe_Webhook_Provisioner {
 			delete_option( self::NOTICE_OPTION );
 
 			echo '<div class="notice notice-success is-dismissible"><p><strong>';
-			echo esc_html__( 'NFe for WooCommerce', 'woo-nfe' );
+			echo esc_html__( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'is now receiving signed invoice status updates from NFe.io.', 'woo-nfe' );
+			echo esc_html__( 'is now receiving signed invoice status updates from NFe.io.', 'nota-fiscal-nfe-io-for-woocommerce' );
 			echo '</p></div>';
 		}
 	}

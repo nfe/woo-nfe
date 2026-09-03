@@ -27,7 +27,7 @@
     ],
     "support": {
         "issues": "https://github.com/nfe/woo-nfe/issues",
-        "forum": "https://wordpress.org/support/plugin/woo-nfe",
+        "forum": "https://wordpress.org/support/plugin/nota-fiscal-nfe-io-for-woocommerce",
         "source": "https://github.com/nfe/woo-nfe/"
     },
     "require": {
@@ -53,7 +53,7 @@
         }
     },
     "scripts": {
-        "lint": "phpcs --standard=WordPress --runtime-set testVersion 8.2- includes/ templates/ woo-nfe.php",
-        "lint:fix": "phpcbf --standard=WordPress --runtime-set testVersion 8.2- includes/ templates/ woo-nfe.php"
+        "lint": "phpcs",
+        "lint:fix": "phpcbf"
     }
 }

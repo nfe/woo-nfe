@@ -20,11 +20,11 @@ $missing_extensions = isset( $missing_extensions ) && is_array( $missing_extensi
 
 <div class="error">
 	<p>
-		<strong><?php esc_html_e( 'NFe for WooCommerce', 'woo-nfe' ); ?></strong>
+		<strong><?php esc_html_e( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
 		<?php
 		printf(
 			/* translators: %s: comma-separated list of missing PHP extensions. */
-			esc_html__( 'needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your host to enable them.', 'woo-nfe' ),
+			esc_html__( 'needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your host to enable them.', 'nota-fiscal-nfe-io-for-woocommerce' ),
 			esc_html( implode( ', ', $missing_extensions ) )
 		);
 		?>
