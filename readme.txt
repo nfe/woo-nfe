@@ -1,5 +1,5 @@
 === Nota Fiscal NFe.io for WooCommerce ===
-Contributors: nfe, espellcaste
+Contributors: nfe
 Tags: nfse, nota fiscal, invoice, brazil, nfe
 Requires at least: 6.5
 Tested up to: 7.1
