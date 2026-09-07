@@ -20,8 +20,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
 #: includes/admin/views/html-notice-legacy-plugin.php:34
-msgid "Nota Fiscal NFe.io for WooCommerce"
-msgstr "Nota Fiscal NFe.io for WooCommerce"
+msgid "Nota Fiscal NFE.io for WooCommerce"
+msgstr "Nota Fiscal NFE.io for WooCommerce"
 
 #. Plugin URI of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
@@ -32,13 +32,13 @@ msgstr "https://github.com/nfe/woo-nfe"
 #: nota-fiscal-nfe-io-for-woocommerce.php
 msgid ""
 "Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the "
-"NFe.io API."
-msgstr "Emita notas fiscais de serviço (NFS-e) a partir dos pedidos do WooCommerce, pela API da NFe.io."
+"NFE.io API."
+msgstr "Emita notas fiscais de serviço (NFS-e) a partir dos pedidos do WooCommerce, pela API da NFE.io."
 
 #. Author of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
-msgid "NFe.io"
-msgstr "NFe.io"
+msgid "NFE.io"
+msgstr "NFE.io"
 
 #. Author URI of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
@@ -61,9 +61,9 @@ msgstr "Não foi possível verificar se o externalId %1$s gerou uma nota: %2$s"
 
 #: includes/admin/class-nfe-woo.php:398
 msgid ""
-"NFe could not be issued: the NFe.io API key was rejected. Check the API key "
+"NFe could not be issued: the NFE.io API key was rejected. Check the API key "
 "in the plugin settings."
-msgstr "A NFe não pôde ser emitida: a chave de API da NFe.io foi recusada. Confira a chave nas configurações do plugin."
+msgstr "A NFe não pôde ser emitida: a chave de API da NFE.io foi recusada. Confira a chave nas configurações do plugin."
 
 #. translators: %s: error message returned by the API.
 #: includes/admin/class-nfe-woo.php:411
@@ -71,9 +71,9 @@ msgstr "A NFe não pôde ser emitida: a chave de API da NFe.io foi recusada. Con
 msgid ""
 "The NFe issuing call failed (%s) and it could not be confirmed whether an "
 "invoice was created. This order was left marked as in progress on purpose, "
-"to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-"
+"to avoid issuing a duplicate. Check the invoice in the NFE.io panel, then re-"
 "issue only if none exists."
-msgstr "A chamada de emissão da NFe falhou (%s) e não foi possível confirmar se a nota chegou a ser criada. Este pedido foi mantido como em andamento de propósito, para evitar uma nota duplicada. Verifique no painel da NFe.io e só reemita se não existir nenhuma."
+msgstr "A chamada de emissão da NFe falhou (%s) e não foi possível confirmar se a nota chegou a ser criada. Este pedido foi mantido como em andamento de propósito, para evitar uma nota duplicada. Verifique no painel da NFE.io e só reemita se não existir nenhuma."
 
 #. translators: %s: error message returned by the API.
 #: includes/admin/class-nfe-woo.php:426
@@ -110,8 +110,8 @@ msgstr "Houve um problema ao tentar pegar o código do IBGE! Revise seu CEP."
 #: includes/admin/class-nfe-woo.php:534
 #, php-format
 msgid ""
-"NFe could not be issued because the NFe.io connection is not configured: %s"
-msgstr "A NFe não pôde ser emitida porque a conexão com a NFe.io não está configurada: %s"
+"NFe could not be issued because the NFE.io connection is not configured: %s"
+msgstr "A NFe não pôde ser emitida porque a conexão com a NFE.io não está configurada: %s"
 
 #. translators: Log message.
 #: includes/admin/class-nfe-woo.php:575
@@ -162,8 +162,8 @@ msgstr "Não foi possível obter o código IBGE do município para o CEP %1$s: %
 #. translators: %s: error message returned by the API.
 #: includes/admin/class-nfe-woo.php:987
 #, php-format
-msgid "Could not fetch the company data from NFe.io: %s"
-msgstr "Não foi possível obter os dados da empresa na NFe.io: %s"
+msgid "Could not fetch the company data from NFE.io: %s"
+msgstr "Não foi possível obter os dados da empresa na NFE.io: %s"
 
 #. translators: %d: WooCommerce order number.
 #: includes/admin/class-nfe-woo.php:1207
@@ -484,8 +484,8 @@ msgid "NFe receipt downloaded."
 msgstr "Nota fiscal baixada."
 
 #: includes/admin/class-wc-nfe-admin.php:782
-msgid "Sales Receipt updated via NFe.io API"
-msgstr "Nota fiscal de venda atualizado via API do NFe.io"
+msgid "Sales Receipt updated via NFE.io API"
+msgstr "Nota fiscal de venda atualizado via API do NFE.io"
 
 #: includes/admin/class-wc-nfe-admin.php:782
 #: includes/frontend/class-wc-nfe-frontend.php:68
@@ -551,7 +551,7 @@ msgstr "A emissão expirou"
 
 #: includes/admin/class-wc-nfe-admin.php:897
 msgid "Receipts Details (NFE.io)"
-msgstr "Detalhes das Notas Fiscais (NFe.io)"
+msgstr "Detalhes das Notas Fiscais (NFE.io)"
 
 #: includes/admin/class-wc-nfe-admin.php:902
 msgid "Status: "
@@ -647,11 +647,11 @@ msgstr "Falha no download"
 
 #: includes/admin/class-wc-nfe-integration.php:26
 msgid "Receipts (NFE.io)"
-msgstr "Notas Fiscais (NFe.io)"
+msgstr "Notas Fiscais (NFE.io)"
 
 #: includes/admin/class-wc-nfe-integration.php:27
-msgid "This is the NFe.io integration/settings page."
-msgstr "Esta é a página de integração/configuração do NFe.io."
+msgid "This is the NFE.io integration/settings page."
+msgstr "Esta é a página de integração/configuração do NFE.io."
 
 #: includes/admin/class-wc-nfe-integration.php:46
 msgid "instalado"
@@ -690,24 +690,24 @@ msgid "Enable/Disable"
 msgstr "Ativar/Desativar"
 
 #: includes/admin/class-wc-nfe-integration.php:86
-msgid "Enable NFe.io"
-msgstr "Ativar NFe.io"
+msgid "Enable NFE.io"
+msgstr "Ativar NFE.io"
 
 #: includes/admin/class-wc-nfe-integration.php:90
 #: includes/admin/class-wc-nfe-integration.php:92
 msgid "API Key"
 msgstr "Chave da API"
 
-#. translators: %s: link to the NFe.io API keys page.
+#. translators: %s: link to the NFE.io API keys page.
 #: includes/admin/class-wc-nfe-integration.php:95
 #, php-format
 msgid "%s to look up API Key"
 msgstr "%s para procurar a chave da API"
 
-#. translators: %s: link to the NFe.io API keys page.
+#. translators: %s: link to the NFE.io API keys page.
 #: includes/admin/class-wc-nfe-integration.php:95
 
-msgctxt "link to the NFe.io API keys page"
+msgctxt "link to the NFE.io API keys page"
 msgid "Click here"
 msgstr "Clique aqui"
 
@@ -720,16 +720,16 @@ msgstr "Escolha a empresa"
 msgid "Choose one of your companies."
 msgstr "Escolha uma de suas empresas."
 
-#. translators: %s: link to the NFe.io companies page.
+#. translators: %s: link to the NFE.io companies page.
 #: includes/admin/class-wc-nfe-integration.php:107
 #, php-format
 msgid "%s to check the registered companies"
 msgstr "%s para verificar as empresas cadastradas"
 
-#. translators: %s: link to the NFe.io companies page.
+#. translators: %s: link to the NFE.io companies page.
 #: includes/admin/class-wc-nfe-integration.php:107
 
-msgctxt "link to the NFe.io companies page"
+msgctxt "link to the NFE.io companies page"
 msgid "Click here"
 msgstr "Clique aqui"
 
@@ -817,7 +817,7 @@ msgstr ""
 "imposto."
 
 #: includes/admin/class-wc-nfe-integration.php:164
-msgid "NFe.io Webhook Setup"
+msgid "NFE.io Webhook Setup"
 msgstr "Configuração do Webhook"
 
 #: includes/admin/class-wc-nfe-integration.php:168
@@ -827,9 +827,9 @@ msgstr "URL do Webhook"
 
 #: includes/admin/class-wc-nfe-integration.php:175
 msgid ""
-"The address NFe.io delivers invoice status updates to. The plugin registers "
+"The address NFE.io delivers invoice status updates to. The plugin registers "
 "it for you; it is shown here for reference."
-msgstr "O endereço para onde a NFe.io envia as atualizações de status das notas. O plugin registra esse endereço sozinho; ele aparece aqui apenas para consulta."
+msgstr "O endereço para onde a NFE.io envia as atualizações de status das notas. O plugin registra esse endereço sozinho; ele aparece aqui apenas para consulta."
 
 #: includes/admin/class-wc-nfe-integration.php:178
 
@@ -845,7 +845,7 @@ msgid "Enable Retroactive Issue"
 msgstr "Habilitar Emissão Retroativa"
 
 #: includes/admin/class-wc-nfe-integration.php:193
-msgid "Enable to issue NFe.io in past products"
+msgid "Enable to issue NFE.io in past products"
 msgstr "Habilite a emissão de notas NFe em produtos antigos"
 
 #: includes/admin/class-wc-nfe-integration.php:195
@@ -998,12 +998,12 @@ msgstr "Adicione uma data para calcular ou desative esse recurso."
 #: includes/admin/class-wc-nfe-integration.php:334
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 #: includes/admin/views/html-notice-missing-woocommerce.php:22
-msgid "WooCommerce NFe.io"
-msgstr "NFe.io para Woocommerce"
+msgid "WooCommerce NFE.io"
+msgstr "NFE.io para Woocommerce"
 
 #: includes/admin/class-wc-nfe-integration.php:334
-msgid "Unable to load the companies list from NFe.io."
-msgstr "Não é possível carregar a lista de empresas do NFe.io."
+msgid "Unable to load the companies list from NFE.io."
+msgstr "Não é possível carregar a lista de empresas do NFE.io."
 
 #: includes/admin/class-wc-nfe-integration.php:404
 msgid "Not set up yet - invoice status updates are not being received."
@@ -1029,13 +1029,13 @@ msgstr "Gerar um novo segredo e registrar o webhook de novo"
 msgid "NFe status received for order #%1$d: %2$s."
 msgstr "Status da NFe recebido para o pedido #%1$d: %2$s."
 
-#. translators: %s: webhook event type reported by NFe.io.
+#. translators: %s: webhook event type reported by NFE.io.
 #: includes/admin/class-wc-nfe-webhook-handler.php:253
 #, php-format
 msgid "(event: %s)"
 msgstr "(evento: %s)"
 
-#. translators: %s: NFe.io receipt ID.
+#. translators: %s: NFE.io receipt ID.
 #: includes/admin/class-wc-nfe-webhook-handler.php:351
 #, php-format
 msgid "Order with receipt number #%s not found."
@@ -1048,7 +1048,7 @@ msgstr "Pedido com a nota número #%s não encontrado."
 #: nota-fiscal-nfe-io-for-woocommerce.php:68
 
 msgid "NFe for WooCommerce"
-msgstr "Nota Fiscal NFe.io for WooCommerce"
+msgstr "Nota Fiscal NFE.io for WooCommerce"
 
 #: includes/admin/class-wc-nfe-webhook-provisioner.php:361
 msgid ""
@@ -1056,8 +1056,8 @@ msgid ""
 msgstr "ainda não tem um webhook assinado, então as atualizações de status das notas não estão sendo aplicadas."
 
 #: includes/admin/class-wc-nfe-webhook-provisioner.php:380
-msgid "is now receiving signed invoice status updates from NFe.io."
-msgstr "já está recebendo da NFe.io as atualizações de status das notas, com assinatura."
+msgid "is now receiving signed invoice status updates from NFE.io."
+msgstr "já está recebendo da NFE.io as atualizações de status das notas, com assinatura."
 
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:26
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:29
@@ -1066,9 +1066,9 @@ msgstr "Nota Fiscal Emitida"
 
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:27
 msgid ""
-"Sent to the customer once NFe.io confirms the service receipt for their "
+"Sent to the customer once NFE.io confirms the service receipt for their "
 "order was issued, with a link to download it."
-msgstr "Enviado ao cliente quando a NFe.io confirma que a nota de serviço do pedido foi emitida, com um link para baixá-la."
+msgstr "Enviado ao cliente quando a NFE.io confirma que a nota de serviço do pedido foi emitida, com um link para baixá-la."
 
 #. translators: placeholder is {blogname}, a variable that will be substituted when email is sent out.
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:32
@@ -1174,9 +1174,9 @@ msgstr "não encontrou suas dependências (vendor/autoload.php). O plugin não f
 #: includes/admin/views/html-notice-missing-extensions.php:27
 #, php-format
 msgid ""
-"needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your "
+"needs the following PHP extension(s) to talk to the NFE.io API: %s. Ask your "
 "host to enable them."
-msgstr "precisa da(s) seguinte(s) extensão(ões) do PHP para falar com a API da NFe.io: %s. Peça à sua hospedagem para habilitá-la(s)."
+msgstr "precisa da(s) seguinte(s) extensão(ões) do PHP para falar com a API da NFE.io: %s. Peça à sua hospedagem para habilitá-la(s)."
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 msgid ""
@@ -1285,8 +1285,8 @@ msgstr "Ver o pedido e baixar a nota:"
 #~ msgid "Copy this link and use it to set up the %s"
 #~ msgstr "Copie este link e use para configurar o %s"
 
-#~ msgid "NFe.io Webhooks"
-#~ msgstr "Webhooks do NFe.io"
+#~ msgid "NFE.io Webhooks"
+#~ msgstr "Webhooks do NFE.io"
 
 #~ msgid "New webhook called. %s"
 #~ msgstr "Novo webhook chamado. %s"

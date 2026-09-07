@@ -2,24 +2,24 @@
 /**
  * WooCommerce NFe webhook provisioning.
  *
- * Creates the NFe.io account webhook that feeds this store, and owns the shared
+ * Creates the NFE.io account webhook that feeds this store, and owns the shared
  * secret its signatures are verified against. The store owner never types the
  * secret: it is generated here, sent on creation and kept in an option.
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Webhook_Provisioner
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Webhook_Provisioner
  * @version  1.5.0
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Provisions and maintains the NFe.io account webhook.
+ * Provisions and maintains the NFE.io account webhook.
  */
-class NFeIO_NF_Webhook_Provisioner {
+class NFEIO_NF_Webhook_Provisioner {
 
 	/**
-	 * Option holding the HMAC secret shared with NFe.io.
+	 * Option holding the HMAC secret shared with NFE.io.
 	 *
 	 * @var string
 	 */
@@ -65,7 +65,7 @@ class NFeIO_NF_Webhook_Provisioner {
 	}
 
 	/**
-	 * The HMAC secret shared with NFe.io.
+	 * The HMAC secret shared with NFE.io.
 	 *
 	 * @return string Empty when the webhook has not been provisioned yet.
 	 */
@@ -76,7 +76,7 @@ class NFeIO_NF_Webhook_Provisioner {
 	/**
 	 * Whether a creation call is in flight right now.
 	 *
-	 * NFe.io POSTs to the endpoint while creating a webhook and requires a 2xx
+	 * NFE.io POSTs to the endpoint while creating a webhook and requires a 2xx
 	 * answer, so a refusal at that moment would fail the very call that
 	 * installs the secret. The handler treats this window as "answer 200, do
 	 * nothing", and it closes on its own within minutes.
@@ -88,7 +88,7 @@ class NFeIO_NF_Webhook_Provisioner {
 	}
 
 	/**
-	 * The URL NFe.io posts events to.
+	 * The URL NFE.io posts events to.
 	 *
 	 * @return string
 	 */
@@ -145,12 +145,12 @@ class NFeIO_NF_Webhook_Provisioner {
 	/**
 	 * Creates the webhook and stores its secret.
 	 *
-	 * The secret is written to the option *before* the call, because NFe.io
+	 * The secret is written to the option *before* the call, because NFE.io
 	 * posts to the endpoint as part of creating the webhook and the handler has
 	 * to be able to verify that delivery. It is rolled back if the call fails,
 	 * so a failed attempt cannot leave a secret behind that matches nothing.
 	 *
-	 * @param string $api_key NFe.io API key.
+	 * @param string $api_key NFE.io API key.
 	 *
 	 * @return bool
 	 */
@@ -183,7 +183,7 @@ class NFeIO_NF_Webhook_Provisioner {
 				}
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
 				// Advisory only - fall through with the documented list.
-				NFeIO_NF_Webhook_Handler::logger( 'Could not read the event type catalogue; using the documented filters.' );
+				NFEIO_NF_Webhook_Handler::logger( 'Could not read the event type catalogue; using the documented filters.' );
 			}
 
 			$webhook = $client->webhooks->createAccountWebhook(
@@ -288,7 +288,7 @@ class NFeIO_NF_Webhook_Provisioner {
 			$existing = $client->webhooks->listAccountWebhooks();
 			$existing = is_object( $existing ) && isset( $existing->data ) ? $existing->data : array();
 		} catch ( \Nfe\Exception\ApiErrorException $e ) {
-			NFeIO_NF_Webhook_Handler::logger( 'Could not list account webhooks to retire the previous one.' );
+			NFEIO_NF_Webhook_Handler::logger( 'Could not list account webhooks to retire the previous one.' );
 
 			return;
 		}
@@ -311,7 +311,7 @@ class NFeIO_NF_Webhook_Provisioner {
 			try {
 				$client->webhooks->deleteAccountWebhook( $id );
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
-				NFeIO_NF_Webhook_Handler::logger( 'Could not delete a superseded webhook; it will keep being refused by signature.' );
+				NFEIO_NF_Webhook_Handler::logger( 'Could not delete a superseded webhook; it will keep being refused by signature.' );
 			}
 		}
 	}
@@ -392,7 +392,7 @@ class NFeIO_NF_Webhook_Provisioner {
 			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
 
 			echo '<div class="notice notice-warning"><p><strong>';
-			echo esc_html__( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
+			echo esc_html__( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
 			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
@@ -411,12 +411,12 @@ class NFeIO_NF_Webhook_Provisioner {
 			delete_option( self::NOTICE_OPTION );
 
 			echo '<div class="notice notice-success is-dismissible"><p><strong>';
-			echo esc_html__( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
+			echo esc_html__( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'is now receiving signed invoice status updates from NFe.io.', 'nfe-io-nota-fiscal-for-woocommerce' );
+			echo esc_html__( 'is now receiving signed invoice status updates from NFE.io.', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</p></div>';
 		}
 	}
 }
 
-NFeIO_NF_Webhook_Provisioner::init();
+NFEIO_NF_Webhook_Provisioner::init();

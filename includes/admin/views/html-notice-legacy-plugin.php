@@ -2,8 +2,8 @@
 /**
  * Previous release still active notice.
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Admin/Notices
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Admin/Notices
  * @version  1.5.0
  *
  * @var string $nfeio_nf_legacy_plugin Plugin basename of the old installation.
@@ -31,7 +31,7 @@ if ( '' === $nfeio_nf_legacy_name ) {
 
 <div class="notice notice-error">
 	<p>
-		<strong><?php esc_html_e( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong>
+		<strong><?php esc_html_e( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong>
 		<?php
 		printf(
 			/* translators: %s: name of the previously installed plugin. */

@@ -2,9 +2,9 @@
 /**
  * NFe Receipt Issued Email
  *
- * @class   NFeIO_NF_Email_Receipt_Issued
- * @author  NFe.io
- * @package NFeIO_NF_Plugin/Class/Emails
+ * @class   NFEIO_NF_Email_Receipt_Issued
+ * @author  NFE.io
+ * @package NFEIO_NF_Plugin/Class/Emails
  * @version 1.0.1
  * @extends WC_Email
  */
@@ -12,9 +12,9 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * NFeIO_NF_Email_Receipt_Issued Class.
+ * NFEIO_NF_Email_Receipt_Issued Class.
  */
-class NFeIO_NF_Email_Receipt_Issued extends WC_Email {
+class NFEIO_NF_Email_Receipt_Issued extends WC_Email {
 
 	/**
 	 * Create an instance of the class.
@@ -24,7 +24,7 @@ class NFeIO_NF_Email_Receipt_Issued extends WC_Email {
 	public function __construct() {
 		$this->id          = 'receipt_issued';
 		$this->title       = __( 'NFe Receipt Issued', 'nfe-io-nota-fiscal-for-woocommerce' );
-		$this->description = __( 'Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it.', 'nfe-io-nota-fiscal-for-woocommerce' );
+		$this->description = __( 'Sent to the customer once NFE.io confirms the service receipt for their order was issued, with a link to download it.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 		$this->heading = __( 'NFe Receipt Issued', 'nfe-io-nota-fiscal-for-woocommerce' );
 
@@ -37,7 +37,7 @@ class NFeIO_NF_Email_Receipt_Issued extends WC_Email {
 		$this->customer_email = true;
 
 		/*
-		 * Triggered by the webhook, once NFe.io confirms the invoice was issued.
+		 * Triggered by the webhook, once NFE.io confirms the invoice was issued.
 		 *
 		 * It used to hang off the same order-status transitions that *start* the
 		 * issuing, so the customer was told their receipt had been issued before
@@ -65,7 +65,7 @@ class NFeIO_NF_Email_Receipt_Issued extends WC_Email {
 		}
 
 		// The invoice is already issued by the time this runs, so there is
-		// nothing left to validate about the address -- NFe.io accepted it.
+		// nothing left to validate about the address -- NFE.io accepted it.
 
 		$this->object    = $order;
 		$this->recipient = $this->object->get_billing_email();

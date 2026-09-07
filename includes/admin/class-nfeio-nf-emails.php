@@ -2,8 +2,8 @@
 /**
  * WooCommerce NFe Email Class
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Emails
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Emails
  * @version  1.0.1
  */
 
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce NFe Email Class
  */
-class NFeIO_NF_Emails {
+class NFEIO_NF_Emails {
 
 	/**
 	 * Bootstraps the class and hooks required actions & filters.
@@ -56,10 +56,10 @@ class NFeIO_NF_Emails {
 	public static function add_emails( $email_classes ) {
 		require_once __DIR__ . '/emails/class-nfeio-nf-email-receipt-issued.php';
 
-		$email_classes['NFeIO_NF_Email_Receipt_Issued'] = new NFeIO_NF_Email_Receipt_Issued();
+		$email_classes['NFEIO_NF_Email_Receipt_Issued'] = new NFEIO_NF_Email_Receipt_Issued();
 
 		return $email_classes;
 	}
 }
 
-NFeIO_NF_Emails::init();
+NFEIO_NF_Emails::init();

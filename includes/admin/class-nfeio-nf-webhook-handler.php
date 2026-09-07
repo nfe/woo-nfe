@@ -1,16 +1,16 @@
 <?php
 /**
- * WooCommerce NFe NFeIO_NF_Webhook_Handler Class.
+ * WooCommerce NFe NFEIO_NF_Webhook_Handler Class.
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Webhook_Handler
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Webhook_Handler
  * @version  1.5.0
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Receives NFe.io invoice events.
+ * Receives NFE.io invoice events.
  *
  * The webhook is the single source of truth for what happens to an invoice
  * after it is sent: the issuing call gets an id, everything else arrives here.
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  *    non-2xx answer causes a redelivery, so events are deduplicated by
  *    X-Hook-Id before anything with a side effect happens.
  */
-class NFeIO_NF_Webhook_Handler {
+class NFEIO_NF_Webhook_Handler {
 	/**
 	 * WC_Logger Logger instance.
 	 *
@@ -51,18 +51,18 @@ class NFeIO_NF_Webhook_Handler {
 		// Read the body before anything else touches it.
 		$raw_body = file_get_contents( 'php://input' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- The signed request body; WP HTTP functions cannot read the input stream.
 
-		// NFe.io posts here while creating the webhook and needs a 2xx, so this
+		// NFE.io posts here while creating the webhook and needs a 2xx, so this
 		// window answers politely and does nothing. It lasts minutes.
-		if ( NFeIO_NF_Webhook_Provisioner::is_provisioning() ) {
+		if ( NFEIO_NF_Webhook_Provisioner::is_provisioning() ) {
 			$this->respond( 200, 'Provisioning.' );
 		}
 
-		$secret = NFeIO_NF_Webhook_Provisioner::secret();
+		$secret = NFEIO_NF_Webhook_Provisioner::secret();
 
 		if ( '' === $secret ) {
 			// Nothing can be trusted without a secret, so nothing is applied.
 			// The admin notice raised by the provisioner is what gets this
-			// fixed; answering 503 keeps NFe.io retrying meanwhile.
+			// fixed; answering 503 keeps NFE.io retrying meanwhile.
 			$this->logger( 'Refused a webhook delivery: no signing secret is configured yet.' );
 
 			$this->respond( 503, 'Webhook not provisioned.' );
@@ -249,7 +249,7 @@ class NFeIO_NF_Webhook_Handler {
 		// whether re-issuing is worth trying.
 		if ( '' !== $event_type ) {
 			$msg .= ' ' . sprintf(
-				/* translators: %s: webhook event type reported by NFe.io. */
+				/* translators: %s: webhook event type reported by NFE.io. */
 				__( '(event: %s)', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				$event_type
 			);
@@ -260,7 +260,7 @@ class NFeIO_NF_Webhook_Handler {
 
 		if ( 'Issued' === $flow_status ) {
 			/**
-			 * Fires when an invoice is confirmed issued by NFe.io.
+			 * Fires when an invoice is confirmed issued by NFE.io.
 			 *
 			 * This is the only point at which the invoice is known to exist, so
 			 * it is what the customer e-mail hangs off. It used to be sent from
@@ -304,7 +304,7 @@ class NFeIO_NF_Webhook_Handler {
 	 * Resolves the order an event refers to.
 	 *
 	 * Tries the external ID first: the plugin sends 'WOO-NFE-{order_id}' (or
-	 * '-{n}' for later attempts) when issuing, NFe.io echoes it back, and
+	 * '-{n}' for later attempts) when issuing, NFE.io echoes it back, and
 	 * parsing it costs no query at all and behaves the same under both
 	 * storages. Falls back to the invoice ID lookup when the event carries no
 	 * usable external ID, or when it does not check out against the order it
@@ -330,7 +330,7 @@ class NFeIO_NF_Webhook_Handler {
 	}
 
 	/**
-	 * Find the order that holds a given NFe.io invoice.
+	 * Find the order that holds a given NFE.io invoice.
 	 *
 	 * The lookup goes through nfeio_nf_find_order_by_invoice_id(), which queries the
 	 * flat '_nfe_invoice_id' meta by equality and returns the same order under
@@ -338,7 +338,7 @@ class NFeIO_NF_Webhook_Handler {
 	 *
 	 * @since 1.5.0 Reports a miss instead of throwing.
 	 *
-	 * @param string $id NFe.io receipt ID.
+	 * @param string $id NFE.io receipt ID.
 	 *
 	 * @return WC_Order|false
 	 */
@@ -347,7 +347,7 @@ class NFeIO_NF_Webhook_Handler {
 		$order      = nfeio_nf_find_order_by_invoice_id( $invoice_id );
 
 		if ( ! $order ) {
-			// translators: %s: NFe.io receipt ID.
+			// translators: %s: NFE.io receipt ID.
 			$this->logger( sprintf( __( 'Order with receipt number #%s not found.', 'nfe-io-nota-fiscal-for-woocommerce' ), $invoice_id ) );
 
 			return false;
@@ -381,4 +381,4 @@ class NFeIO_NF_Webhook_Handler {
 	}
 }
 
-return new NFeIO_NF_Webhook_Handler();
+return new NFEIO_NF_Webhook_Handler();

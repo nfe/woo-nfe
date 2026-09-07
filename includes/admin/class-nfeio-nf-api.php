@@ -1,20 +1,20 @@
 <?php
 /**
- * WooCommerce NFe NFeIO_NF_API Class.
+ * WooCommerce NFe NFEIO_NF_API Class.
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_API
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_API
  * @version  1.0.7
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'NFeIO_NF_API' ) ) {
+if ( ! class_exists( 'NFEIO_NF_API' ) ) {
 
 	/**
-	 * WooCommerce NFe NFeIO_NF_API Class.
+	 * WooCommerce NFe NFEIO_NF_API Class.
 	 */
-	class NFeIO_NF_API {
+	class NFEIO_NF_API {
 		/**
 		 * WC_Logger Logger instance.
 		 *
@@ -46,7 +46,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		const ADDRESS_BASE_URL = 'https://open.nfe.io/v1';
 
 		/**
-		 * Shared NFe.io SDK client, built on first use.
+		 * Shared NFE.io SDK client, built on first use.
 		 *
 		 * @var \Nfe\Client|null
 		 */
@@ -72,9 +72,9 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		}
 
 		/**
-		 * NFeIO_NF_API Instance.
+		 * NFEIO_NF_API Instance.
 		 *
-		 * @return NFeIO_NF_API
+		 * @return NFEIO_NF_API
 		 */
 		public static function instance() {
 			// Store the instance locally to avoid private static replication.
@@ -82,14 +82,14 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 
 			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
-				$instance = new NFeIO_NF_API();
+				$instance = new NFEIO_NF_API();
 			}
 
 			return $instance; // Always return the instance.
 		}
 
 		/**
-		 * Returns the shared NFe.io API client, building it on first use.
+		 * Returns the shared NFE.io API client, building it on first use.
 		 *
 		 * One client is enough. Since SDK 3.2.0 the retry policy is aware of both
 		 * method and idempotency, so a POST is only replayed on 429, on a
@@ -221,7 +221,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		/**
 		 * Allocates and persists the externalId for a new issuing attempt.
 		 *
-		 * NFe.io treats externalId as an idempotency key with *replay*
+		 * NFE.io treats externalId as an idempotency key with *replay*
 		 * semantics: a value already processed successfully makes the API return
 		 * the original invoice instead of creating a new one. The key therefore
 		 * identifies one emission, not one order.
@@ -283,7 +283,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		 * @return void
 		 */
 		protected function store_invoice( $order, $invoice ) {
-			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- SDK DTO properties mirror the NFe.io API field names.
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- SDK DTO properties mirror the NFE.io API field names.
 			$amount = null !== $invoice->amountNet ? $invoice->amountNet : $invoice->servicesAmount;
 
 			/*
@@ -395,7 +395,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		protected function recover_from_failure( $order, $company_id, $external_id, $exception ) {
 			if ( $exception instanceof \Nfe\Exception\AuthenticationException ) {
 				// Nothing can have been created: the request never authenticated.
-				$log = __( 'NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings.', 'nfe-io-nota-fiscal-for-woocommerce' );
+				$log = __( 'NFe could not be issued: the NFE.io API key was rejected. Check the API key in the plugin settings.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -408,7 +408,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 
 			if ( false === $invoice ) {
 				// translators: %s: error message returned by the API.
-				$log = sprintf( __( 'The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists.', 'nfe-io-nota-fiscal-for-woocommerce' ), $exception->getMessage() );
+				$log = sprintf( __( 'The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFE.io panel, then re-issue only if none exists.', 'nfe-io-nota-fiscal-for-woocommerce' ), $exception->getMessage() );
 
 				$this->logger( $log );
 				$order->add_order_note( $log );
@@ -444,7 +444,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		/**
 		 * Issue a NFe invoice.
 		 *
-		 * Issuing is asynchronous on the NFe.io side: the API answers 202 with
+		 * Issuing is asynchronous on the NFE.io side: the API answers 202 with
 		 * an invoice id (Pending) and the finished document arrives later over
 		 * the webhook. A 201 (Issued) is possible and terminal, and is the one
 		 * case where this flow writes final invoice data itself.
@@ -531,7 +531,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 					$client = $this->client();
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: %s: error message.
-					$log = sprintf( __( 'NFe could not be issued because the NFe.io connection is not configured: %s', 'nfe-io-nota-fiscal-for-woocommerce' ), $e->getMessage() );
+					$log = sprintf( __( 'NFe could not be issued because the NFE.io connection is not configured: %s', 'nfe-io-nota-fiscal-for-woocommerce' ), $e->getMessage() );
 
 					$this->logger( $log );
 					$order->add_order_note( $log );
@@ -656,7 +656,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		}
 
 		/**
-		 * Preparing data to send to NFe.io API.
+		 * Preparing data to send to NFE.io API.
 		 *
 		 * @param int $order_id order ID.
 		 *
@@ -984,7 +984,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 						: array();
 				} catch ( \Nfe\Exception\ApiErrorException $e ) {
 					// translators: %s: error message returned by the API.
-					$this->logger( sprintf( __( 'Could not fetch the company data from NFe.io: %s', 'nfe-io-nota-fiscal-for-woocommerce' ), $e->getMessage() ) );
+					$this->logger( sprintf( __( 'Could not fetch the company data from NFE.io: %s', 'nfe-io-nota-fiscal-for-woocommerce' ), $e->getMessage() ) );
 
 					$this->company_info = false;
 				}
@@ -1181,7 +1181,7 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 		}
 
 		/**
-		 * Validates RTC payload before sending to NFe.io.
+		 * Validates RTC payload before sending to NFE.io.
 		 *
 		 * @param int   $order_id order ID.
 		 * @param array $payload  request payload.
@@ -1736,13 +1736,13 @@ if ( ! class_exists( 'NFeIO_NF_API' ) ) {
 	}
 
 	/**
-	 * The main function responsible for returning the one true NFeIO_NF_API Instance.
+	 * The main function responsible for returning the one true NFEIO_NF_API Instance.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @return NFeIO_NF_API the one true NFeIO_NF_API Instance.
+	 * @return NFEIO_NF_API the one true NFEIO_NF_API Instance.
 	 */
-	function NFeIO_NF_API() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed, WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- Public accessor kept for backward compatibility.
-		return NFeIO_NF_API::instance();
+	function NFEIO_NF_API() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed, WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- Public accessor kept for backward compatibility.
+		return NFEIO_NF_API::instance();
 	}
 }

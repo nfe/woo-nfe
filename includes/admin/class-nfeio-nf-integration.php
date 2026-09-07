@@ -1,10 +1,10 @@
 <?php
 /**
- * WooCommerce NFe.io Integration.
+ * WooCommerce NFE.io Integration.
  *
- * @author   NFe.io
+ * @author   NFE.io
  * @category Admin
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Integration
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Integration
  * @version  1.0.1
  */
 
@@ -15,16 +15,16 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
 if ( class_exists( 'WC_Integration' ) ) {
 
 	/**
-	 * NFeIO_NF_Integration Class.
+	 * NFEIO_NF_Integration Class.
 	 */
-	class NFeIO_NF_Integration extends WC_Integration {
+	class NFEIO_NF_Integration extends WC_Integration {
 		/**
 		 * Init and hook in the integration.
 		 */
 		public function __construct() {
 			$this->id                 = 'woo-nfe';
 			$this->method_title       = __( 'Receipts (NFE.io)', 'nfe-io-nota-fiscal-for-woocommerce' );
-			$this->method_description = __( 'This is the NFe.io integration/settings page.', 'nfe-io-nota-fiscal-for-woocommerce' );
+			$this->method_description = __( 'This is the NFE.io integration/settings page.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 			// Load the settings.
 			$this->init_form_fields();
@@ -83,7 +83,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 				'nfe_enable'                  => array(
 					'title'   => __( 'Enable/Disable', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'type'    => 'checkbox',
-					'label'   => __( 'Enable NFe.io', 'nfe-io-nota-fiscal-for-woocommerce' ),
+					'label'   => __( 'Enable NFE.io', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'default' => 'yes',
 				),
 				'api_key'                     => array(
@@ -91,8 +91,8 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'type'        => 'password',
 					'label'       => __( 'API Key', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'default'     => '',
-					/* translators: %s: link to the NFe.io API keys page. */
-					'description' => sprintf( __( '%s to look up API Key', 'nfe-io-nota-fiscal-for-woocommerce' ), '<a href="' . esc_url( 'https://app.nfe.io/account/apikeys' ) . '">' . esc_html_x( 'Click here', 'link to the NFe.io API keys page', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</a>' ),
+					/* translators: %s: link to the NFE.io API keys page. */
+					'description' => sprintf( __( '%s to look up API Key', 'nfe-io-nota-fiscal-for-woocommerce' ), '<a href="' . esc_url( 'https://app.nfe.io/account/apikeys' ) . '">' . esc_html_x( 'Click here', 'link to the NFE.io API keys page', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</a>' ),
 				),
 				'choose_company'              => array(
 					'title'       => __( 'Choose the Company', 'nfe-io-nota-fiscal-for-woocommerce' ),
@@ -103,8 +103,8 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'class'       => 'wc-enhanced-select',
 					'css'         => 'min-width:300px;',
 					'desc_tip'    => __( 'Choose one of your companies.', 'nfe-io-nota-fiscal-for-woocommerce' ),
-					/* translators: %s: link to the NFe.io companies page. */
-					'description' => sprintf( __( '%s to check the registered companies', 'nfe-io-nota-fiscal-for-woocommerce' ), '<a href="' . esc_url( 'https://app.nfe.io/companies' ) . '">' . esc_html_x( 'Click here', 'link to the NFe.io companies page', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</a>' ),
+					/* translators: %s: link to the NFE.io companies page. */
+					'description' => sprintf( __( '%s to check the registered companies', 'nfe-io-nota-fiscal-for-woocommerce' ), '<a href="' . esc_url( 'https://app.nfe.io/companies' ) . '">' . esc_html_x( 'Click here', 'link to the NFE.io companies page', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</a>' ),
 				),
 				'issue_when'                  => array(
 					'title'    => __( 'NFe Issuing', 'nfe-io-nota-fiscal-for-woocommerce' ),
@@ -167,7 +167,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'desc_tip' => __( 'Tax Formation: total + shipping will considerate ship value on tax calculation. Total - shipping will not considerate ship value on tax calculation.', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				),
 				'nfe_events_title'            => array(
-					'title' => __( 'NFe.io Webhook Setup', 'nfe-io-nota-fiscal-for-woocommerce' ),
+					'title' => __( 'NFE.io Webhook Setup', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'type'  => 'title',
 				),
 				'nfe_webhook_url'             => array(
@@ -178,7 +178,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 					'custom_attributes' => array(
 						'readonly' => 'readonly',
 					),
-					'description'       => __( 'The address NFe.io delivers invoice status updates to. The plugin registers it for you; it is shown here for reference.', 'nfe-io-nota-fiscal-for-woocommerce' ),
+					'description'       => __( 'The address NFE.io delivers invoice status updates to. The plugin registers it for you; it is shown here for reference.', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				),
 				'nfe_webhook_status'          => array(
 					'title'             => __( 'Webhook status', 'nfe-io-nota-fiscal-for-woocommerce' ),
@@ -196,7 +196,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 				'issue_past_notes'            => array(
 					'title'       => __( 'Enable Retroactive Issue', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'type'        => 'checkbox',
-					'label'       => __( 'Enable to issue NFe.io in past products', 'nfe-io-nota-fiscal-for-woocommerce' ),
+					'label'       => __( 'Enable to issue NFE.io in past products', 'nfe-io-nota-fiscal-for-woocommerce' ),
 					'default'     => 'no',
 					'description' => __( 'Enabling this allows users to issue nfe.io notes on bought products in the past.', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				),
@@ -297,7 +297,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		}
 
 		/**
-		 * Displays notifications when the admin has something wrong with the NFe.io configuration.
+		 * Displays notifications when the admin has something wrong with the NFE.io configuration.
 		 */
 		public function display_errors() {
 			// Bail early.
@@ -337,7 +337,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * Display message to user if there is an issue when fetching the companies.
 		 */
 		public function nfe_api_error_msg() {
-			echo wp_kses_post( $this->get_message( '<strong>' . esc_html__( 'WooCommerce NFe.io', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</strong>: ' . esc_html__( 'Unable to load the companies list from NFe.io.', 'nfe-io-nota-fiscal-for-woocommerce' ) ) );
+			echo wp_kses_post( $this->get_message( '<strong>' . esc_html__( 'WooCommerce NFE.io', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</strong>: ' . esc_html__( 'Unable to load the companies list from NFE.io.', 'nfe-io-nota-fiscal-for-woocommerce' ) ) );
 		}
 
 		/**
@@ -406,7 +406,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * @return string
 		 */
 		protected function get_webhook_status() {
-			if ( '' === NFeIO_NF_Webhook_Provisioner::secret() ) {
+			if ( '' === NFEIO_NF_Webhook_Provisioner::secret() ) {
 				return __( 'Not set up yet - invoice status updates are not being received.', 'nfe-io-nota-fiscal-for-woocommerce' );
 			}
 
@@ -427,7 +427,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		protected function get_webhook_action_link() {
 			$url = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
 
-			$label = '' === NFeIO_NF_Webhook_Provisioner::secret()
+			$label = '' === NFEIO_NF_Webhook_Provisioner::secret()
 				? __( 'Set up the webhook', 'nfe-io-nota-fiscal-for-woocommerce' )
 				: __( 'Regenerate the secret and re-register the webhook', 'nfe-io-nota-fiscal-for-woocommerce' );
 

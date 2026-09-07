@@ -5,8 +5,8 @@
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/nfe-receipt-issued.php.
  *
  * @see     https://docs.woothemes.com/document/template-structure/
- * @author  NFe.io
- * @package NFeIO_NF_Plugin/Templates/Emails
+ * @author  NFE.io
+ * @package NFEIO_NF_Plugin/Templates/Emails
  * @version 1.5.0
  *
  * @var WC_Order $order         Order the receipt belongs to.

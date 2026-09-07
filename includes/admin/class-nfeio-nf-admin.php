@@ -1,22 +1,22 @@
 <?php
 /**
- * WooCommerce NFe NFeIO_NF_Admin Class.
+ * WooCommerce NFe NFEIO_NF_Admin Class.
  *
- * @author   NFe.io
+ * @author   NFE.io
  *
  * @version  1.0.6
  *
- * @package NFeIO_NF_Plugin/Class/NFeIO_NF_Admin
+ * @package NFEIO_NF_Plugin/Class/NFEIO_NF_Admin
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
+if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 
 	/**
-	 * NFeIO_NF_Admin.
+	 * NFEIO_NF_Admin.
 	 */
-	class NFeIO_NF_Admin {
+	class NFEIO_NF_Admin {
 
 		/**
 		 * The single instance.
@@ -31,7 +31,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		 * @since 1.0.6
 		 */
 		public function __construct() {
-			// Add column to show receipt status updated via NFe.io API (legacy and HPOS order screens).
+			// Add column to show receipt status updated via NFE.io API (legacy and HPOS order screens).
 			add_filter( 'manage_edit-shop_order_columns', array( $this, 'order_status_column_header' ) );
 			add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'order_status_column_header' ) );
 			add_action( 'manage_shop_order_posts_custom_column', array( $this, 'order_status_column_content' ), 10, 2 );
@@ -42,7 +42,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 			add_action( 'woocommerce_order_action_nfe_download_order_action', array( $this, 'download_issue_action' ) );
 			add_action( 'woocommerce_order_action_nfe_issue_order_action', array( $this, 'issue_order_action' ) );
 
-			// NFe.io Order Details Preview.
+			// NFE.io Order Details Preview.
 			add_action( 'woocommerce_admin_order_data_after_shipping_address', array( $this, 'display_order_data_preview_in_admin' ), 20 );
 			add_action( 'woocommerce_admin_order_preview_start', array( $this, 'nfe_admin_order_preview' ) );
 			add_filter( 'woocommerce_admin_order_preview_get_order_details', array( $this, 'nfe_admin_order_preview_details' ), 20, 2 );
@@ -115,12 +115,12 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 
 			// We just can issue the invoice automatically if the status is equal to the configured one.
 			if ( $order->has_status( nfeio_nf_get_field( 'issue_when_status' ) ) ) {
-				NFeIO_NF_API()->issue_invoice( array( $order_id ) );
+				NFEIO_NF_API()->issue_invoice( array( $order_id ) );
 			}
 		}
 
 		/**
-		 * Show NFe.io order data is status widget.
+		 * Show NFE.io order data is status widget.
 		 */
 		public function nfe_status_widget_order_rows() {
 			if ( ! current_user_can( 'edit_shop_orders' ) ) {
@@ -754,7 +754,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 			// Order note.
 			$order->add_order_note( esc_html__( 'NFe receipt downloaded.', 'nfe-io-nota-fiscal-for-woocommerce' ) );
 
-			NFeIO_NF_Ajax::download_pdf( $order->get_id() );
+			NFEIO_NF_Ajax::download_pdf( $order->get_id() );
 		}
 
 		/**
@@ -764,7 +764,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		 */
 		public function issue_order_action( $order ) {
 			// Issue NFe receipt.
-			$invoice = NFeIO_NF_API()->issue_invoice( array( $order->get_id() ) );
+			$invoice = NFEIO_NF_API()->issue_invoice( array( $order->get_id() ) );
 
 			if ( ! is_object( $invoice ) ) {
 				return;
@@ -772,14 +772,14 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		}
 
 		/**
-		 * Add column to show receipt status updated via NFe.io API.
+		 * Add column to show receipt status updated via NFE.io API.
 		 *
 		 * @param array $columns array of Columns.
 		 *
 		 * @return array array of colunms with the NFe one.
 		 */
 		public function order_status_column_header( $columns ) {
-			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFe.io API', 'nfe-io-nota-fiscal-for-woocommerce' ) . '">' . esc_attr__( 'Sales Receipt', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</span>';
+			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFE.io API', 'nfe-io-nota-fiscal-for-woocommerce' ) . '">' . esc_attr__( 'Sales Receipt', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</span>';
 
 			return $this->array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
 		}
@@ -932,7 +932,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 					<?php if ( ! empty( $nfe['id'] ) ) { ?>
 					<strong><?php esc_html_e( 'Fatura: ', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong>
 						<?php
-						$nfe_invoice_url = 'https://app.nfe.io/companies/' . rawurlencode( (string) NFeIO_NF_API()->get_company() ) . '/service-invoices/' . rawurlencode( (string) $nfe['id'] );
+						$nfe_invoice_url = 'https://app.nfe.io/companies/' . rawurlencode( (string) NFEIO_NF_API()->get_company() ) . '/service-invoices/' . rawurlencode( (string) $nfe['id'] );
 						?>
 						<a href="<?php echo esc_url( $nfe_invoice_url ); ?>"><?php esc_html_e( 'Link', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></a>
 					<br />
@@ -959,7 +959,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		}
 
 		/**
-		 * Outputs the NFe.io Order Preview Information.
+		 * Outputs the NFE.io Order Preview Information.
 		 *
 		 * @since 1.0.8
 		 *
@@ -988,7 +988,7 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		}
 
 		/**
-		 * NFe.io Order Preview HTML.
+		 * NFE.io Order Preview HTML.
 		 *
 		 * @since 1.0.8
 		 */
@@ -1126,5 +1126,5 @@ if ( ! class_exists( 'NFeIO_NF_Admin' ) ) {
 		}
 	}
 
-	return NFeIO_NF_Admin::get_instance();
+	return NFEIO_NF_Admin::get_instance();
 }

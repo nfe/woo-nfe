@@ -1,8 +1,8 @@
-# Copyright (C) 2026 NFe.io
+# Copyright (C) 2026 NFE.io
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Nota Fiscal NFe.io for WooCommerce 1.5.0\n"
+"Project-Id-Version: Nota Fiscal NFE.io for WooCommerce 1.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/nota-fiscal-nfe-io-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
 #: includes/admin/views/html-notice-legacy-plugin.php:34
-msgid "Nota Fiscal NFe.io for WooCommerce"
+msgid "Nota Fiscal NFE.io for WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -27,12 +27,12 @@ msgstr ""
 
 #. Description of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
-msgid "Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFe.io API."
+msgid "Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFE.io API."
 msgstr ""
 
 #. Author of the plugin
 #: nota-fiscal-nfe-io-for-woocommerce.php
-msgid "NFe.io"
+msgid "NFE.io"
 msgstr ""
 
 #. Author URI of the plugin
@@ -53,13 +53,13 @@ msgid "Could not check whether externalId %1$s produced an invoice: %2$s"
 msgstr ""
 
 #: includes/admin/class-nfe-woo.php:398
-msgid "NFe could not be issued: the NFe.io API key was rejected. Check the API key in the plugin settings."
+msgid "NFe could not be issued: the NFE.io API key was rejected. Check the API key in the plugin settings."
 msgstr ""
 
 #. translators: %s: error message returned by the API.
 #: includes/admin/class-nfe-woo.php:411
 #, php-format
-msgid "The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFe.io panel, then re-issue only if none exists."
+msgid "The NFe issuing call failed (%s) and it could not be confirmed whether an invoice was created. This order was left marked as in progress on purpose, to avoid issuing a duplicate. Check the invoice in the NFE.io panel, then re-issue only if none exists."
 msgstr ""
 
 #. translators: %s: error message returned by the API.
@@ -93,7 +93,7 @@ msgstr ""
 #. translators: %s: error message.
 #: includes/admin/class-nfe-woo.php:534
 #, php-format
-msgid "NFe could not be issued because the NFe.io connection is not configured: %s"
+msgid "NFe could not be issued because the NFE.io connection is not configured: %s"
 msgstr ""
 
 #. translators: Log message.
@@ -143,7 +143,7 @@ msgstr ""
 #. translators: %s: error message returned by the API.
 #: includes/admin/class-nfe-woo.php:987
 #, php-format
-msgid "Could not fetch the company data from NFe.io: %s"
+msgid "Could not fetch the company data from NFE.io: %s"
 msgstr ""
 
 #. translators: %d: WooCommerce order number.
@@ -433,7 +433,7 @@ msgid "NFe receipt downloaded."
 msgstr ""
 
 #: includes/admin/class-wc-nfe-admin.php:782
-msgid "Sales Receipt updated via NFe.io API"
+msgid "Sales Receipt updated via NFE.io API"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-admin.php:782
@@ -589,7 +589,7 @@ msgid "Receipts (NFE.io)"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:27
-msgid "This is the NFe.io integration/settings page."
+msgid "This is the NFE.io integration/settings page."
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:46
@@ -629,7 +629,7 @@ msgid "Enable/Disable"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:86
-msgid "Enable NFe.io"
+msgid "Enable NFE.io"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:90
@@ -637,15 +637,15 @@ msgstr ""
 msgid "API Key"
 msgstr ""
 
-#. translators: %s: link to the NFe.io API keys page.
+#. translators: %s: link to the NFE.io API keys page.
 #: includes/admin/class-wc-nfe-integration.php:95
 #, php-format
 msgid "%s to look up API Key"
 msgstr ""
 
-#. translators: %s: link to the NFe.io API keys page.
+#. translators: %s: link to the NFE.io API keys page.
 #: includes/admin/class-wc-nfe-integration.php:95
-msgctxt "link to the NFe.io API keys page"
+msgctxt "link to the NFE.io API keys page"
 msgid "Click here"
 msgstr ""
 
@@ -658,15 +658,15 @@ msgstr ""
 msgid "Choose one of your companies."
 msgstr ""
 
-#. translators: %s: link to the NFe.io companies page.
+#. translators: %s: link to the NFE.io companies page.
 #: includes/admin/class-wc-nfe-integration.php:107
 #, php-format
 msgid "%s to check the registered companies"
 msgstr ""
 
-#. translators: %s: link to the NFe.io companies page.
+#. translators: %s: link to the NFE.io companies page.
 #: includes/admin/class-wc-nfe-integration.php:107
-msgctxt "link to the NFe.io companies page"
+msgctxt "link to the NFE.io companies page"
 msgid "Click here"
 msgstr ""
 
@@ -748,7 +748,7 @@ msgid "Tax Formation: total + shipping will considerate ship value on tax calcul
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:164
-msgid "NFe.io Webhook Setup"
+msgid "NFE.io Webhook Setup"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:168
@@ -757,7 +757,7 @@ msgid "Webhook URL"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:175
-msgid "The address NFe.io delivers invoice status updates to. The plugin registers it for you; it is shown here for reference."
+msgid "The address NFE.io delivers invoice status updates to. The plugin registers it for you; it is shown here for reference."
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:178
@@ -773,7 +773,7 @@ msgid "Enable Retroactive Issue"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:193
-msgid "Enable to issue NFe.io in past products"
+msgid "Enable to issue NFE.io in past products"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:195
@@ -909,11 +909,11 @@ msgstr ""
 #: includes/admin/class-wc-nfe-integration.php:334
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22
 #: includes/admin/views/html-notice-missing-woocommerce.php:22
-msgid "WooCommerce NFe.io"
+msgid "WooCommerce NFE.io"
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:334
-msgid "Unable to load the companies list from NFe.io."
+msgid "Unable to load the companies list from NFE.io."
 msgstr ""
 
 #: includes/admin/class-wc-nfe-integration.php:404
@@ -939,13 +939,13 @@ msgstr ""
 msgid "NFe status received for order #%1$d: %2$s."
 msgstr ""
 
-#. translators: %s: webhook event type reported by NFe.io.
+#. translators: %s: webhook event type reported by NFE.io.
 #: includes/admin/class-wc-nfe-webhook-handler.php:253
 #, php-format
 msgid "(event: %s)"
 msgstr ""
 
-#. translators: %s: NFe.io receipt ID.
+#. translators: %s: NFE.io receipt ID.
 #: includes/admin/class-wc-nfe-webhook-handler.php:351
 #, php-format
 msgid "Order with receipt number #%s not found."
@@ -964,7 +964,7 @@ msgid "has no signed webhook yet, so invoice status updates are not being applie
 msgstr ""
 
 #: includes/admin/class-wc-nfe-webhook-provisioner.php:380
-msgid "is now receiving signed invoice status updates from NFe.io."
+msgid "is now receiving signed invoice status updates from NFE.io."
 msgstr ""
 
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:26
@@ -973,7 +973,7 @@ msgid "NFe Receipt Issued"
 msgstr ""
 
 #: includes/admin/emails/class-wc-nfe-email-receipt-issued.php:27
-msgid "Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it."
+msgid "Sent to the customer once NFE.io confirms the service receipt for their order was issued, with a link to download it."
 msgstr ""
 
 #. translators: placeholder is {blogname}, a variable that will be substituted when email is sent out.
@@ -1058,7 +1058,7 @@ msgstr ""
 #. translators: %s: comma-separated list of missing PHP extensions.
 #: includes/admin/views/html-notice-missing-extensions.php:27
 #, php-format
-msgid "needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your host to enable them."
+msgid "needs the following PHP extension(s) to talk to the NFE.io API: %s. Ask your host to enable them."
 msgstr ""
 
 #: includes/admin/views/html-notice-missing-woocommerce-extra-checkout-fields.php:22

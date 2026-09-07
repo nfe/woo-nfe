@@ -1,6 +1,6 @@
 {
     "name": "nfe/woo-nfe",
-    "description": "WooCommerce extension for the NFe.io API.",
+    "description": "WooCommerce extension for the NFE.io API.",
     "homepage": "https://github.com/nfe/woo-nfe",
     "type": "wordpress-plugin",
     "keywords": [
@@ -13,7 +13,7 @@
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "Team NFe.io",
+            "name": "Team NFE.io",
             "homepage": "https://nfe.io/"
         },
         {

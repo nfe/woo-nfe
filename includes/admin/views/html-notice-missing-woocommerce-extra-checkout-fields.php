@@ -2,8 +2,8 @@
 /**
  * Missing dependencies notice.
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Admin/Notices
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Admin/Notices
  * @version  1.0.1
  */
 
@@ -19,7 +19,7 @@ if ( function_exists( 'get_plugins' ) ) {
 ?>
 
 <div class="error">
-	<p><strong><?php esc_html_e( 'WooCommerce NFe.io', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong> <?php esc_html_e( 'depends on the lastest version of WooCommerce Extra Checkout Fields for Brazil to work!', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></p>
+	<p><strong><?php esc_html_e( 'WooCommerce NFE.io', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong> <?php esc_html_e( 'depends on the lastest version of WooCommerce Extra Checkout Fields for Brazil to work!', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></p>
 
 	<?php if ( $nfeio_nf_is_installed && current_user_can( 'activate_plugin' ) ) : ?>
 		<p>

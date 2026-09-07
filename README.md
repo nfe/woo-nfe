@@ -1,6 +1,6 @@
-# WooCommerce NFe (NFe.io)
+# WooCommerce NFe (NFE.io)
 
-WooCommerce NFe é um plugin para integrar sua loja WooCommerce com a NFe.io e emitir NFS-e a partir dos pedidos da loja.
+WooCommerce NFe é um plugin para integrar sua loja WooCommerce com a NFE.io e emitir NFS-e a partir dos pedidos da loja.
 
 O projeto cobre o fluxo operacional de emissão, acompanhamento de status via webhook, exibição do recibo para o cliente e configurações fiscais necessárias para a emissão, incluindo os campos mais recentes da Reforma Tributária no layout RTC.
 
@@ -8,11 +8,11 @@ O projeto cobre o fluxo operacional de emissão, acompanhamento de status via we
 
 Com este plugin você pode:
 
-- conectar a loja a uma conta da NFe.io usando API Key;
+- conectar a loja a uma conta da NFE.io usando API Key;
 - selecionar a empresa emissora dentro da integração do WooCommerce;
 - emitir notas automaticamente por status do pedido ou manualmente;
 - configurar códigos fiscais globais e sobrescritas por produto ou variação;
-- receber atualizações da NFe.io por webhook e refletir o status no pedido;
+- receber atualizações da NFE.io por webhook e refletir o status no pedido;
 - disponibilizar o recibo ao cliente na área Minha Conta e por e-mail;
 - trabalhar com campos RTC como `nbsCode`, `ibsCbs.operationIndicator` e `ibsCbs.classCode`.
 
@@ -22,8 +22,8 @@ Os requisitos abaixo refletem o estado atual do repositório:
 
 - PHP 7 ou superior;
 - WordPress com WooCommerce ativo;
-- acesso a uma conta da NFe.io com API Key e empresa cadastrada;
-- ambiente capaz de receber callbacks HTTP da NFe.io para o webhook de status.
+- acesso a uma conta da NFE.io com API Key e empresa cadastrada;
+- ambiente capaz de receber callbacks HTTP da NFE.io para o webhook de status.
 
 Observação: o cabeçalho do plugin informa compatibilidade histórica do WooCommerce, mas o desenvolvimento atual do repositório usa dependências de PHP 7+.
 
@@ -47,14 +47,14 @@ Depois de ativar o plugin, acesse WooCommerce > Settings > Integration > Receipt
 
 Fluxo recomendado de configuração:
 
-1. Ative a integração da NFe.io.
+1. Ative a integração da NFE.io.
 2. Informe a API Key da sua conta.
 3. Selecione a empresa emissora.
 4. Defina se a emissão será automática ou manual.
 5. Escolha o status do pedido que deve disparar a emissão automática.
 6. Configure se o endereço é obrigatório para emitir.
 7. Revise os campos fiscais padrão do serviço.
-8. Copie a URL de webhook exibida pela integração e cadastre-a na NFe.io.
+8. Copie a URL de webhook exibida pela integração e cadastre-a na NFE.io.
 
 ## Recursos principais
 
@@ -80,7 +80,7 @@ O plugin suporta configuração específica em produto simples e variação, per
 
 ### Webhook de status
 
-A NFe.io pode notificar o plugin sobre alterações de status da nota. O pedido é atualizado com os dados retornados pela plataforma, inclusive status, número e código de verificação.
+A NFE.io pode notificar o plugin sobre alterações de status da nota. O pedido é atualizado com os dados retornados pela plataforma, inclusive status, número e código de verificação.
 
 ### Experiência do cliente
 
@@ -138,7 +138,7 @@ Checklist operacional:
 
 ## Webhook e atualização de status
 
-O plugin gera uma URL de webhook na tela de integração. Essa URL deve ser cadastrada na NFe.io para que os eventos de emissão e cancelamento atualizem automaticamente o pedido no WooCommerce.
+O plugin gera uma URL de webhook na tela de integração. Essa URL deve ser cadastrada na NFE.io para que os eventos de emissão e cancelamento atualizem automaticamente o pedido no WooCommerce.
 
 Quando um evento chega, o plugin registra os dados da nota no pedido e atualiza informações como:
 
@@ -149,7 +149,7 @@ Quando um evento chega, o plugin registra os dados da nota no pedido e atualiza 
 - código de verificação;
 - número do documento.
 
-Sem webhook, a loja perde parte importante da sincronização automática entre WooCommerce e NFe.io.
+Sem webhook, a loja perde parte importante da sincronização automática entre WooCommerce e NFE.io.
 
 ## Uso avançado
 
@@ -236,14 +236,14 @@ Opcionalmente, você pode informar uma versão customizada:
 - `includes/frontend/`: comportamentos expostos ao cliente na loja.
 - `includes/nfe-functions.php`: funções compartilhadas.
 - `templates/emails/`: templates de e-mail do WooCommerce.
-- `li/client-php/`: SDK embarcado da NFe.io.
+- `li/client-php/`: SDK embarcado da NFE.io.
 - `openspec/`: artefatos de especificação usados nas mudanças recentes.
 
 ## Suporte
 
 - Issues do GitHub: https://github.com/nfe/woo-nfe/issues
 - Fórum no WordPress.org: https://wordpress.org/support/plugin/woo-nfe
-- Site da NFe.io: https://nfe.io
+- Site da NFE.io: https://nfe.io
 
 ## Releases
 

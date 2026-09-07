@@ -2,8 +2,8 @@
 /**
  * WooCommerce NFe Ajax Class
  *
- * @author   NFe.io
- * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Ajax
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Ajax
  * @version  1.0.4
  */
 
@@ -12,12 +12,12 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce NFe Ajax Class
  */
-class NFeIO_NF_Ajax {
+class NFEIO_NF_Ajax {
 
 	/**
 	 * Bootstraps the class and hooks required actions.
 	 *
-	 * The front-end links built in NFeIO_NF_Frontend point to admin-ajax.php with
+	 * The front-end links built in NFEIO_NF_Frontend point to admin-ajax.php with
 	 * the actions below, so the handlers only run when one of them is called,
 	 * instead of on every request.
 	 *
@@ -123,7 +123,7 @@ class NFeIO_NF_Ajax {
 
 		if ( ! nfeio_nf_order_address_filled( $order ) ) {
 			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'nfe-io-nota-fiscal-for-woocommerce' ), 'error' );
-		} elseif ( NFeIO_NF_API()->issue_invoice( array( $order->get_id() ) ) ) {
+		} elseif ( NFEIO_NF_API()->issue_invoice( array( $order->get_id() ) ) ) {
 			// Accepted by the API, not finished: the document is issued
 			// asynchronously and confirmed later by the webhook. Saying it is
 			// already issued would be the same mistake the receipt e-mail used
@@ -198,7 +198,7 @@ class NFeIO_NF_Ajax {
 			return;
 		}
 
-		$pdf = NFeIO_NF_API()->download_pdf_invoice( array( $order_id ) );
+		$pdf = NFEIO_NF_API()->download_pdf_invoice( array( $order_id ) );
 
 		if ( ! is_string( $pdf ) || '' === $pdf ) {
 			wp_die(
@@ -220,7 +220,7 @@ class NFeIO_NF_Ajax {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $invoice_id NFe.io invoice id.
+	 * @param string $invoice_id NFE.io invoice id.
 	 *
 	 * @return string
 	 */
@@ -266,4 +266,4 @@ class NFeIO_NF_Ajax {
 	}
 }
 
-NFeIO_NF_Ajax::init();
+NFEIO_NF_Ajax::init();

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-A WordPress/WooCommerce plugin that integrates with the NFe.io API to issue Brazilian service invoices (NFS-e) from WooCommerce orders. The plugin is loaded via `plugins_loaded` and follows the WordPress plugin singleton pattern.
+A WordPress/WooCommerce plugin that integrates with the NFE.io API to issue Brazilian service invoices (NFS-e) from WooCommerce orders. The plugin is loaded via `plugins_loaded` and follows the WordPress plugin singleton pattern.
 
 ## Commands
 
@@ -52,20 +52,20 @@ The `WooCommerce_NFe` singleton initializes via `plugins_loaded` in this order:
 | File | Class | Role |
 |---|---|---|
 | `includes/admin/class-settings.php` | `WC_NFe_Integration` | WooCommerce Integration settings page; stores API key, company ID, and all plugin options |
-| `includes/admin/class-api.php` | `NFe_Woo` | Singleton; wraps all NFe.io API calls (issue/cancel invoices, fetch companies). Uses `li/client-php` SDK |
+| `includes/admin/class-api.php` | `NFe_Woo` | Singleton; wraps all NFE.io API calls (issue/cancel invoices, fetch companies). Uses `li/client-php` SDK |
 | `includes/admin/class-admin.php` | `WC_NFe_Admin` | Admin UI: order metaboxes, order list columns, bulk actions for issuing/canceling invoices |
 | `includes/admin/class-ajax.php` | `WC_NFe_Ajax` | AJAX handlers for admin invoice actions |
-| `includes/admin/class-webhook.php` | `WC_NFe_Webhook_Handler` | Listens on `woocommerce_api_nfe_webhook`; processes NFe.io status callbacks and updates order meta/notes |
+| `includes/admin/class-webhook.php` | `WC_NFe_Webhook_Handler` | Listens on `woocommerce_api_nfe_webhook`; processes NFE.io status callbacks and updates order meta/notes |
 | `includes/admin/class-emails.php` | `WC_NFe_Emails` | Hooks into WooCommerce email system; adds NFe receipt PDF link to order emails |
 | `includes/admin/emails/class-nfe-email-receipt-issued.php` | `NFe_Email_Receipt_Issued` | Custom WooCommerce email class sent to customer when a receipt is issued |
 | `includes/frontend/class-frontend.php` | `WC_NFe_Frontend` | Frontend: adds CPF/CNPJ fields to checkout, stores them in order meta |
 | `includes/nfe-functions.php` | — | Shared helper functions used across admin and frontend classes |
 
 ### Bundled SDK
-`li/client-php/lib/` is the NFe.io PHP client SDK, loaded directly via `require`. It is treated as vendored code — do not modify it unless the task is specifically about the SDK.
+`li/client-php/lib/` is the NFE.io PHP client SDK, loaded directly via `require`. It is treated as vendored code — do not modify it unless the task is specifically about the SDK.
 
 ### Webhook endpoint
-The plugin registers a WooCommerce API callback at `/?wc-api=nfe_webhook`. NFe.io posts status updates (issued, cancelled, error) to this URL. `WC_NFe_Webhook_Handler` reads the JSON body and updates the corresponding WooCommerce order.
+The plugin registers a WooCommerce API callback at `/?wc-api=nfe_webhook`. NFE.io posts status updates (issued, cancelled, error) to this URL. `WC_NFe_Webhook_Handler` reads the JSON body and updates the corresponding WooCommerce order.
 
 ## Code Conventions
 

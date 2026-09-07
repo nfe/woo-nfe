@@ -1,19 +1,19 @@
 <?php
 /**
- * NFe.io Nota Fiscal for WooCommerce.
+ * NFE.io Nota Fiscal for WooCommerce.
  *
- * @author            NFe.io
+ * @author            NFE.io
  *
  * @see              https://github.com/nfe/woo-nfe
  * @since             1.0.8
- * @package          NFeIO_NF_Plugin
+ * @package          NFEIO_NF_Plugin
  *
  * @wordpress-plugin
- * Plugin Name:       NFe.io Nota Fiscal for WooCommerce
+ * Plugin Name:       NFE.io Nota Fiscal for WooCommerce
  * Plugin URI:        https://github.com/nfe/woo-nfe
- * Description:       Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFe.io API.
+ * Description:       Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFE.io API.
  * Version:           1.5.0
- * Author:            NFe.io
+ * Author:            NFE.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
  * Developer URI:     https://github.com/nfe/woo-nfe/graphs/contributors
@@ -25,7 +25,7 @@
  * WC requires at least: 9.0
  * WC tested up to: 11.0.1
  *
- * Copyright: © 2016-2026 NFe.io
+ * Copyright: © 2016-2026 NFE.io
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -42,7 +42,7 @@ defined( 'ABSPATH' ) || exit;
 // phpcs:disable WordPress.Files.FileName.InvalidClassFileName -- Main plugin file must be named after the slug.
 
 /**
- * Minimum PHP version the plugin runs on, dictated by the NFe.io SDK.
+ * Minimum PHP version the plugin runs on, dictated by the NFE.io SDK.
  *
  * Everything from here down to the early return is written in PHP 5-compatible
  * syntax on purpose: this file still has to *parse* on the very runtime it is
@@ -62,7 +62,7 @@ if ( version_compare( PHP_VERSION, NFEIO_NF_MINIMUM_PHP, '<' ) ) {
 		'admin_notices',
 		function () {
 			echo '<div class="error"><p><strong>';
-			echo esc_html__( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
+			echo esc_html__( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
 			printf(
 				/* translators: 1: required PHP version, 2: PHP version currently running. */
@@ -77,13 +77,13 @@ if ( version_compare( PHP_VERSION, NFEIO_NF_MINIMUM_PHP, '<' ) ) {
 	return;
 }
 
-if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
+if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 	/**
-	 * WooCommerce NFe.io Main Class.
+	 * WooCommerce NFE.io Main Class.
 	 *
 	 * @since 1.0.0
 	 */
-	final class NFeIO_NF_Plugin {
+	final class NFEIO_NF_Plugin {
 		/**
 		 * Flag to indicate whether this extension is running already.
 		 *
@@ -162,10 +162,10 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 		private $includes_dir = '';
 
 		/**
-		 * A dummy constructor to prevent NFeIO_NF_Plugin from being loaded more than once.
+		 * A dummy constructor to prevent NFEIO_NF_Plugin from being loaded more than once.
 		 *
 		 * @since 1.0.0
-		 * @see NFeIO_NF_Plugin::instance()
+		 * @see NFEIO_NF_Plugin::instance()
 		 */
 		public function __construct() {
 			// Do nothing here.
@@ -183,7 +183,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 
 			// Only run these methods if they haven't been run previously.
 			if ( null === $instance ) {
-				$instance = new NFeIO_NF_Plugin();
+				$instance = new NFEIO_NF_Plugin();
 				$instance->setup_globals();
 
 				// A dependency failure now actually stops the load. It used to
@@ -231,7 +231,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 
 
 		/**
-		 * Adds our custom NFeIO_NF_Integration integration to WooCommerce.
+		 * Adds our custom NFEIO_NF_Integration integration to WooCommerce.
 		 *
 		 * @param array $integrations wooCommerce Integrations.
 		 *
@@ -239,7 +239,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 		 * @since 1.0.0
 		 */
 		public function nfe_integration( $integrations ) {
-			$integrations[] = 'NFeIO_NF_Integration';
+			$integrations[] = 'NFEIO_NF_Integration';
 
 			return $integrations;
 		}
@@ -297,7 +297,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 		 */
 		private function setup_globals() {
 			$this->domain       = 'nfe-io-nota-fiscal-for-woocommerce';
-			$this->name         = 'NFe.io Nota Fiscal for WooCommerce';
+			$this->name         = 'NFE.io Nota Fiscal for WooCommerce';
 			$this->file         = __FILE__;
 			$this->basename     = plugin_basename( $this->file );
 			$this->plugin_dir   = plugin_dir_path( $this->file );
@@ -321,7 +321,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 		 * @since 1.0.0
 		 */
 		private function includes() {
-			// NFe.io SDK (nfe/nfe) plus anything else Composer manages.
+			// NFE.io SDK (nfe/nfe) plus anything else Composer manages.
 			// dependencies() already proved this file exists.
 			require $this->plugin_dir . 'vendor/autoload.php';
 
@@ -431,7 +431,7 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 				return false;
 			}
 
-			// The NFe.io SDK talks HTTP over cURL and speaks JSON. These
+			// The NFE.io SDK talks HTTP over cURL and speaks JSON. These
 			// replaced the old SoapClient check, which guarded a transport the
 			// plugin has not used since the legacy client was dropped.
 			$missing = array();
@@ -550,13 +550,13 @@ if ( ! class_exists( 'NFeIO_NF_Plugin' ) ) {
 	}
 
 	/**
-	 * The main function responsible for returning the one true NFeIO_NF_Plugin Instance.
+	 * The main function responsible for returning the one true NFEIO_NF_Plugin Instance.
 	 *
-	 * @return NFeIO_NF_Plugin
+	 * @return NFEIO_NF_Plugin
 	 * @since 1.0.0
 	 */
 	function nfeio_nota_fiscal() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed -- Public accessor lives beside the class it bootstraps.
-		return NFeIO_NF_Plugin::instance();
+		return NFEIO_NF_Plugin::instance();
 	}
 
 	add_action( 'plugins_loaded', 'nfeio_nota_fiscal' );

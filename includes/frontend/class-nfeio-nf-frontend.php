@@ -1,22 +1,22 @@
 <?php
 /**
- * WooCommerce NFe NFeIO_NF_Frontend Class.
+ * WooCommerce NFe NFEIO_NF_Frontend Class.
  *
- * @author   NFe.io.
+ * @author   NFE.io.
  *
  * @version  1.0.4
  *
- * @package NFeIO_NF_Plugin/Class/Frontend/NFeIO_NF_Frontend
+ * @package NFEIO_NF_Plugin/Class/Frontend/NFEIO_NF_Frontend
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists( 'NFeIO_NF_Frontend' ) ) {
+if ( ! class_exists( 'NFEIO_NF_Frontend' ) ) {
 
 	/**
-	 * NFeIO_NF_Frontend.
+	 * NFEIO_NF_Frontend.
 	 */
-	class NFeIO_NF_Frontend {
+	class NFEIO_NF_Frontend {
 		/**
 		 * Constructor.
 		 *
@@ -203,5 +203,5 @@ if ( ! class_exists( 'NFeIO_NF_Frontend' ) ) {
 		}
 	}
 
-	return new NFeIO_NF_Frontend();
+	return new NFEIO_NF_Frontend();
 }

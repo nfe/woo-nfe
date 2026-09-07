@@ -2,11 +2,11 @@
 /**
  * WooCommerce NFe Custom Functions.
  *
- * @author   NFe.io
+ * @author   NFE.io
  *
  * @version  1.0.4
  *
- * @package NFeIO_NF_Plugin/NFe_Functions
+ * @package NFEIO_NF_Plugin/NFe_Functions
  */
 
 // Exit if accessed directly.
@@ -484,9 +484,9 @@ function nfeio_nf_run_invoice_id_backfill() {
 }
 
 /**
- * Resolves the order straight from the external ID sent back by NFe.io.
+ * Resolves the order straight from the external ID sent back by NFE.io.
  *
- * The plugin sends 'WOO-NFE-{order_id}' as the invoice externalId, and NFe.io
+ * The plugin sends 'WOO-NFE-{order_id}' as the invoice externalId, and NFE.io
  * echoes it back on the webhook event, where it is documented as the best key
  * to match the event with the order. Parsing it resolves the order with no meta
  * query at all, works the same under HPOS and the legacy storage, and still
@@ -502,7 +502,7 @@ function nfeio_nf_run_invoice_id_backfill() {
  * @since 1.5.0
  *
  * @param string $external_id external ID as received in the event.
- * @param string $invoice_id  NFe.io invoice ID of the same event, used to confirm the match.
+ * @param string $invoice_id  NFE.io invoice ID of the same event, used to confirm the match.
  *
  * @return WC_Order|false the matching order, or false when it cannot be resolved with confidence.
  */
@@ -569,7 +569,7 @@ function nfeio_nf_find_order_by_external_id( $external_id, $invoice_id = '' ) {
 }
 
 /**
- * Finds the order that holds a given NFe.io invoice ID.
+ * Finds the order that holds a given NFE.io invoice ID.
  *
  * Queries the flat '_nfe_invoice_id' meta by exact match and works the same on
  * both storages. Orders issued before this meta existed are covered by
@@ -577,7 +577,7 @@ function nfeio_nf_find_order_by_external_id( $external_id, $invoice_id = '' ) {
  *
  * @since 1.5.0
  *
- * @param string $invoice_id NFe.io invoice ID.
+ * @param string $invoice_id NFE.io invoice ID.
  *
  * @return WC_Order|false the order, or false when there is no match.
  */
@@ -715,7 +715,7 @@ function nfeio_nf_backfill_invoice_ids( $limit = 50 ) {
 }
 
 /**
- * Counts the orders whose invoice is in a given NFe.io status.
+ * Counts the orders whose invoice is in a given NFE.io status.
  *
  * Used by the dashboard widget. Kept apart from the single order lookup: this
  * one only needs the total, so it asks wc_get_orders() for a paginated result
@@ -723,7 +723,7 @@ function nfeio_nf_backfill_invoice_ids( $limit = 50 ) {
  *
  * @since 1.5.0
  *
- * @param string $status NFe.io invoice status (ex.: 'Issued', 'Cancelled').
+ * @param string $status NFE.io invoice status (ex.: 'Issued', 'Cancelled').
  *
  * @return int
  */
@@ -800,7 +800,7 @@ function nfeio_nf_require_address() {
 /**
  * Get NFe status label.
  *
- * Covers the eleven `flowStatus` values the NFe.io API actually emits, per the
+ * Covers the eleven `flowStatus` values the NFE.io API actually emits, per the
  * authoritative enum in the NFS-e OpenAPI spec (`nf-servico-v1.yaml`):
  * CancelFailed (-2), IssueFailed (-1), Issued (1), Cancelled (2),
  * PullFromCityHall (3) and the six Waiting* values (10-15), plus the plugin's
