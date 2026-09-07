@@ -44,6 +44,15 @@ phpcs.xml.dist
 phpspec.yml
 wp-tests-config.php
 
+# Traducoes: nao viajam no pacote.
+#
+# Plugins hospedados no WordPress.org recebem traducao por
+# translate.wordpress.org, que gera e distribui os arquivos por locale. O
+# revisor pediu explicitamente para nao empacotar .po/.mo. Os arquivos ficam
+# versionados aqui para serem importados no translate.wordpress.org depois da
+# aprovacao -- e trabalho de traducao real que nao deve ser perdido.
+languages
+
 # Docs (dev-only; README.txt is kept for WP.org)
 CLAUDE.md
 README.md

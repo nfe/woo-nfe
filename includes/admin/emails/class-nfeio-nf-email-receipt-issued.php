@@ -2,9 +2,9 @@
 /**
  * NFe Receipt Issued Email
  *
- * @class   WC_NFe_Email_Receipt_Issued
+ * @class   NFeIO_NF_Email_Receipt_Issued
  * @author  NFe.io
- * @package WooCommerce_NFe/Class/Emails
+ * @package NFeIO_NF_Plugin/Class/Emails
  * @version 1.0.1
  * @extends WC_Email
  */
@@ -12,9 +12,9 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * WC_NFe_Email_Receipt_Issued Class.
+ * NFeIO_NF_Email_Receipt_Issued Class.
  */
-class WC_NFe_Email_Receipt_Issued extends WC_Email {
+class NFeIO_NF_Email_Receipt_Issued extends WC_Email {
 
 	/**
 	 * Create an instance of the class.
@@ -23,15 +23,15 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 */
 	public function __construct() {
 		$this->id          = 'receipt_issued';
-		$this->title       = __( 'NFe Receipt Issued', 'nota-fiscal-nfe-io-for-woocommerce' );
-		$this->description = __( 'Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it.', 'nota-fiscal-nfe-io-for-woocommerce' );
+		$this->title       = __( 'NFe Receipt Issued', 'nfe-io-nota-fiscal-for-woocommerce' );
+		$this->description = __( 'Sent to the customer once NFe.io confirms the service receipt for their order was issued, with a link to download it.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
-		$this->heading = __( 'NFe Receipt Issued', 'nota-fiscal-nfe-io-for-woocommerce' );
+		$this->heading = __( 'NFe Receipt Issued', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 		// translators: placeholder is {blogname}, a variable that will be substituted when email is sent out.
-		$this->subject = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'nota-fiscal-nfe-io-for-woocommerce' ), '{blogname}' );
+		$this->subject = sprintf( _x( '[%s] NFe Receipt Issued', 'default email subject for safe copy emails sent to the admin or a custom email chosen in the NFe settings page', 'nfe-io-nota-fiscal-for-woocommerce' ), '{blogname}' );
 
-		$this->template_base  = WOOCOMMERCE_NFE_PATH . 'templates/';
+		$this->template_base  = NFEIO_NF_PATH . 'templates/';
 		$this->template_html  = 'emails/nfe-receipt-issued.php';
 		$this->template_plain = 'emails/plain/nfe-receipt-issued.php';
 		$this->customer_email = true;
@@ -44,7 +44,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 		 * the API had even answered -- and again if issuing then failed, which
 		 * announced a document that would never exist.
 		 */
-		add_action( 'woo_nfe_receipt_issued_notification', array( $this, 'trigger' ) );
+		add_action( 'nfeio_nf_receipt_issued_notification', array( $this, 'trigger' ) );
 
 		parent::__construct();
 	}
@@ -58,7 +58,7 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	 */
 	public function trigger( $order_id ) {
 		// Validate the order before using it: the hook may hand over an unknown ID.
-		$order = nfe_wc_get_order( $order_id );
+		$order = nfeio_nf_wc_get_order( $order_id );
 
 		if ( ! $order instanceof WC_Order ) {
 			return;
@@ -129,36 +129,36 @@ class WC_NFe_Email_Receipt_Issued extends WC_Email {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'    => array(
-				'title'   => _x( 'Enable/Disable', 'an email notification', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'title'   => _x( 'Enable/Disable', 'an email notification', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Enable this email notification', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'label'   => __( 'Enable this email notification', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'default' => 'yes',
 			),
 			'subject'    => array(
-				'title'       => _x( 'Subject', 'of an email', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'title'       => _x( 'Subject', 'of an email', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'type'        => 'text',
 				// translators: %s: default subject used when the field is left blank.
-				'description' => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'nota-fiscal-nfe-io-for-woocommerce' ), $this->subject ),
+				'description' => sprintf( __( 'This controls the email subject line. Leave blank to use the default subject: <code>%s</code>.', 'nfe-io-nota-fiscal-for-woocommerce' ), $this->subject ),
 				'placeholder' => '',
 				'default'     => '',
 			),
 			'heading'    => array(
-				'title'       => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'title'       => _x( 'Email Heading', 'Name the setting that controls the main heading contained within the email notification', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'type'        => 'text',
 				// translators: %s: default heading used when the field is left blank.
-				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'nota-fiscal-nfe-io-for-woocommerce' ), $this->heading ),
+				'description' => sprintf( __( 'This controls the main heading contained within the email notification. Leave blank to use the default heading: <code>%s</code>.', 'nfe-io-nota-fiscal-for-woocommerce' ), $this->heading ),
 				'placeholder' => '',
 				'default'     => '',
 			),
 			'email_type' => array(
-				'title'       => _x( 'Email type', 'text, html or multipart', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'title'       => _x( 'Email type', 'text, html or multipart', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'type'        => 'select',
-				'description' => __( 'Choose which format of email to send.', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				'description' => __( 'Choose which format of email to send.', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				'default'     => 'html',
 				'class'       => 'email_type',
 				'options'     => array(
-					'plain' => _x( 'Plain text', 'email type', 'nota-fiscal-nfe-io-for-woocommerce' ),
-					'html'  => _x( 'HTML', 'email type', 'nota-fiscal-nfe-io-for-woocommerce' ),
+					'plain' => _x( 'Plain text', 'email type', 'nfe-io-nota-fiscal-for-woocommerce' ),
+					'html'  => _x( 'HTML', 'email type', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				),
 			),
 		);

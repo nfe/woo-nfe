@@ -1,4 +1,4 @@
-=== Nota Fiscal NFe.io for WooCommerce ===
+=== NFe.io Nota Fiscal for WooCommerce ===
 Contributors: nfe
 Tags: nfse, nota fiscal, invoice, brazil, nfe
 Requires at least: 6.5
@@ -117,7 +117,7 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 == Changelog ==
 
 = 1.5.0 =
-* Renamed: the plugin is now "Nota Fiscal NFe.io for WooCommerce". Deactivate the previous "NFe for Woocommerce" -- your settings and recorded invoices are kept.
+* Renamed: the plugin is now "NFe.io Nota Fiscal for WooCommerce". Deactivate the previous "NFe for Woocommerce" -- your settings and recorded invoices are kept.
 * Requires PHP 8.2. On older versions the plugin stays inactive and says so, instead of breaking the site.
 * Replaced the bundled API client with the official NFe.io SDK.
 * Fixed: downloading the invoice PDF never worked -- a leftover debug line in the old client short-circuited the call and exposed the API URL in the response.

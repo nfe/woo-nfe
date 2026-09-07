@@ -7,7 +7,7 @@
  * secret: it is generated here, sent on creation and kept in an option.
  *
  * @author   NFe.io
- * @package  WooCommerce_NFe/Class/WC_NFe_Webhook_Provisioner
+ * @package  NFeIO_NF_Plugin/Class/NFeIO_NF_Webhook_Provisioner
  * @version  1.5.0
  */
 
@@ -16,7 +16,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Provisions and maintains the NFe.io account webhook.
  */
-class WC_NFe_Webhook_Provisioner {
+class NFeIO_NF_Webhook_Provisioner {
 
 	/**
 	 * Option holding the HMAC secret shared with NFe.io.
@@ -54,7 +54,7 @@ class WC_NFe_Webhook_Provisioner {
 	public static function init() {
 		// Runs once per version bump, which is where an existing store picks up
 		// the signed webhook.
-		add_action( 'nfe_upgraded', array( __CLASS__, 'maybe_provision' ) );
+		add_action( 'nfeio_nf_upgraded', array( __CLASS__, 'maybe_provision' ) );
 
 		// A store upgraded before an API key was configured gets provisioned on
 		// the first save that supplies one.
@@ -93,7 +93,7 @@ class WC_NFe_Webhook_Provisioner {
 	 * @return string
 	 */
 	public static function endpoint_url() {
-		return sprintf( '%s/wc-api/%s', get_site_url(), WC_API_CALLBACK );
+		return sprintf( '%s/wc-api/%s', get_site_url(), NFEIO_NF_API_CALLBACK );
 	}
 
 	/**
@@ -131,7 +131,7 @@ class WC_NFe_Webhook_Provisioner {
 			return true;
 		}
 
-		$api_key = (string) nfe_get_field( 'api_key' );
+		$api_key = (string) nfeio_nf_get_field( 'api_key' );
 
 		if ( '' === $api_key ) {
 			// Nothing to do yet. The settings-save hook brings us back here the
@@ -183,7 +183,7 @@ class WC_NFe_Webhook_Provisioner {
 				}
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
 				// Advisory only - fall through with the documented list.
-				WC_NFe_Webhook_Handler::logger( 'Could not read the event type catalogue; using the documented filters.' );
+				NFeIO_NF_Webhook_Handler::logger( 'Could not read the event type catalogue; using the documented filters.' );
 			}
 
 			$webhook = $client->webhooks->createAccountWebhook(
@@ -251,7 +251,7 @@ class WC_NFe_Webhook_Provisioner {
 	 * @return void
 	 */
 	protected static function cache_company_environment( $client ) {
-		$company_id = (string) nfe_get_field( 'choose_company' );
+		$company_id = (string) nfeio_nf_get_field( 'choose_company' );
 
 		if ( '' === $company_id ) {
 			return;
@@ -288,7 +288,7 @@ class WC_NFe_Webhook_Provisioner {
 			$existing = $client->webhooks->listAccountWebhooks();
 			$existing = is_object( $existing ) && isset( $existing->data ) ? $existing->data : array();
 		} catch ( \Nfe\Exception\ApiErrorException $e ) {
-			WC_NFe_Webhook_Handler::logger( 'Could not list account webhooks to retire the previous one.' );
+			NFeIO_NF_Webhook_Handler::logger( 'Could not list account webhooks to retire the previous one.' );
 
 			return;
 		}
@@ -311,7 +311,7 @@ class WC_NFe_Webhook_Provisioner {
 			try {
 				$client->webhooks->deleteAccountWebhook( $id );
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
-				WC_NFe_Webhook_Handler::logger( 'Could not delete a superseded webhook; it will keep being refused by signature.' );
+				NFeIO_NF_Webhook_Handler::logger( 'Could not delete a superseded webhook; it will keep being refused by signature.' );
 			}
 		}
 	}
@@ -324,8 +324,8 @@ class WC_NFe_Webhook_Provisioner {
 	public static function handle_manual_request() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die(
-				esc_html__( 'You are not allowed to perform this action.', 'nota-fiscal-nfe-io-for-woocommerce' ),
-				esc_html__( 'Forbidden', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				esc_html__( 'You are not allowed to perform this action.', 'nfe-io-nota-fiscal-for-woocommerce' ),
+				esc_html__( 'Forbidden', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				array( 'response' => 403 )
 			);
 		}
@@ -334,8 +334,40 @@ class WC_NFe_Webhook_Provisioner {
 
 		self::maybe_provision( true );
 
-		wp_safe_redirect( WOOCOMMERCE_NFE_SETTINGS_URL );
+		wp_safe_redirect( NFEIO_NF_SETTINGS_URL );
 		exit;
+	}
+
+	/**
+	 * Screens where this plugin's notices are allowed to appear.
+	 *
+	 * Guideline 11 asks that notices be limited in scope. This one used to
+	 * render on every screen in wp-admin -- Posts, Users, Tools, everywhere --
+	 * for as long as the webhook was unprovisioned, which is precisely the
+	 * behaviour the guideline is about. It belongs where a shop manager can act
+	 * on it: the store's own screens and the plugin list.
+	 *
+	 * @return bool
+	 */
+	private static function is_relevant_screen() {
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return false;
+		}
+
+		$screen = get_current_screen();
+
+		if ( ! $screen instanceof WP_Screen ) {
+			return false;
+		}
+
+		if ( 'plugins' === $screen->id || 'plugins-network' === $screen->id ) {
+			return true;
+		}
+
+		// WooCommerce screens: settings, orders (both storages), products.
+		return false !== strpos( $screen->id, 'woocommerce' )
+			|| false !== strpos( $screen->id, 'wc-orders' )
+			|| 'shop_order' === $screen->post_type;
 	}
 
 	/**
@@ -348,24 +380,28 @@ class WC_NFe_Webhook_Provisioner {
 			return;
 		}
 
+		if ( ! self::is_relevant_screen() ) {
+			return;
+		}
+
 		$notice = get_option( self::NOTICE_OPTION, array() );
 
 		// A store with an API key but no secret cannot receive status updates
 		// at all, so that state is reported until it is resolved.
-		if ( '' === self::secret() && '' !== (string) nfe_get_field( 'api_key' ) ) {
+		if ( '' === self::secret() && '' !== (string) nfeio_nf_get_field( 'api_key' ) ) {
 			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
 
 			echo '<div class="notice notice-warning"><p><strong>';
-			echo esc_html__( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' );
+			echo esc_html__( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nota-fiscal-nfe-io-for-woocommerce' );
+			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 			if ( is_array( $notice ) && ! empty( $notice['message'] ) ) {
 				echo ' <em>' . esc_html( $notice['message'] ) . '</em>';
 			}
 
 			echo ' <a class="button button-primary" href="' . esc_url( $action ) . '">';
-			echo esc_html__( 'Set up the webhook', 'nota-fiscal-nfe-io-for-woocommerce' );
+			echo esc_html__( 'Set up the webhook', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</a></p></div>';
 
 			return;
@@ -375,12 +411,12 @@ class WC_NFe_Webhook_Provisioner {
 			delete_option( self::NOTICE_OPTION );
 
 			echo '<div class="notice notice-success is-dismissible"><p><strong>';
-			echo esc_html__( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' );
+			echo esc_html__( 'NFe.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'is now receiving signed invoice status updates from NFe.io.', 'nota-fiscal-nfe-io-for-woocommerce' );
+			echo esc_html__( 'is now receiving signed invoice status updates from NFe.io.', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</p></div>';
 		}
 	}
 }
 
-WC_NFe_Webhook_Provisioner::init();
+NFeIO_NF_Webhook_Provisioner::init();

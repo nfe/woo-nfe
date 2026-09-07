@@ -6,7 +6,7 @@
  *
  * @see     https://docs.woothemes.com/document/template-structure/
  * @author  NFe.io
- * @package WooCommerce_NFe/Templates/Emails/Plain
+ * @package NFeIO_NF_Plugin/Templates/Emails/Plain
  * @version 1.5.0
  *
  * @var WC_Order $order         Order the receipt belongs to.
@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 // so wp_strip_all_tags() is the whole of the output boundary for this template.
 echo '= ' . wp_strip_all_tags( $email_heading ) . " =\n\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail; tags stripped, entities would be visible.
 
-echo wp_strip_all_tags( __( 'The service receipt (NFS-e) for your order has been issued.', 'nota-fiscal-nfe-io-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+echo wp_strip_all_tags( __( 'The service receipt (NFS-e) for your order has been issued.', 'nfe-io-nota-fiscal-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
 
 /*
  * Points at the order page rather than the file: the download is nonce-guarded
@@ -29,16 +29,16 @@ echo wp_strip_all_tags( __( 'The service receipt (NFS-e) for your order has been
  * that has no session to build such a nonce from.
  */
 if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) {
-	$nfe    = nfe_get_order_meta( $order, 'nfe_issued' );
-	$number = ( is_array( $nfe ) && ! empty( $nfe['number'] ) ) ? $nfe['number'] : '';
+	$nfeio_nf_data   = nfeio_nf_get_order_meta( $order, 'nfe_issued' );
+	$nfeio_nf_number = ( is_array( $nfeio_nf_data ) && ! empty( $nfeio_nf_data['number'] ) ) ? $nfeio_nf_data['number'] : '';
 
-	if ( '' !== $number ) {
+	if ( '' !== $nfeio_nf_number ) {
 		// translators: %s: invoice number.
-		echo "\n\n" . wp_strip_all_tags( sprintf( __( 'Receipt number: %s', 'nota-fiscal-nfe-io-for-woocommerce' ), $number ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+		echo "\n\n" . wp_strip_all_tags( sprintf( __( 'Receipt number: %s', 'nfe-io-nota-fiscal-for-woocommerce' ), $nfeio_nf_number ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
 	}
 
-	echo "\n\n" . wp_strip_all_tags( __( 'View your order and download the receipt:', 'nota-fiscal-nfe-io-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
-	echo "\n" . esc_url_raw( $order->get_view_order_url() );
+	echo "\n\n" . wp_strip_all_tags( __( 'View your order and download the receipt:', 'nfe-io-nota-fiscal-for-woocommerce' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Plain text e-mail.
+	echo "\n" . esc_url( $order->get_view_order_url() );
 }
 
 echo "\n=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\n";

@@ -6,7 +6,7 @@
  *
  * @version  1.0.4
  *
- * @package WooCommerce_NFe/NFe_Functions
+ * @package NFeIO_NF_Plugin/NFe_Functions
  */
 
 // Exit if accessed directly.
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @return string
  */
-function nfe_get_field( $value = '' ) {
+function nfeio_nf_get_field( $value = '' ) {
 	$nfe_fields = get_option( 'woocommerce_woo-nfe_settings', array() );
 
 	if ( empty( $value ) ) {
@@ -38,8 +38,8 @@ function nfe_get_field( $value = '' ) {
  *
  * @return string
  */
-function nfe_rtc_validation_profile() {
-	$profile = nfe_get_field( 'nfe_rtc_validation_profile' );
+function nfeio_nf_rtc_validation_profile() {
+	$profile = nfeio_nf_get_field( 'nfe_rtc_validation_profile' );
 
 	if ( ! in_array( $profile, array( 'compativel', 'equilibrado', 'estrito' ), true ) ) {
 		return 'equilibrado';
@@ -59,13 +59,13 @@ function nfe_rtc_validation_profile() {
  *
  * @return bool
  */
-function nfe_order_address_filled( $order ) {
+function nfeio_nf_order_address_filled( $order ) {
 	// If address is not required, go along.
-	if ( nfe_require_address() === false ) {
+	if ( nfeio_nf_require_address() === false ) {
 		return true;
 	}
 
-	$order = is_a( $order, 'WC_Order' ) ? $order : nfe_wc_get_order( $order );
+	$order = is_a( $order, 'WC_Order' ) ? $order : nfeio_nf_wc_get_order( $order );
 
 	if ( ! $order ) {
 		return false;
@@ -73,8 +73,8 @@ function nfe_order_address_filled( $order ) {
 
 	$fields = array(
 		// Custom meta, added by the Brazilian checkout fields plugin.
-		'neighborhood' => nfe_get_order_meta( $order, '_billing_neighborhood' ),
-		'number'       => nfe_get_order_meta( $order, '_billing_number' ),
+		'neighborhood' => nfeio_nf_get_order_meta( $order, '_billing_neighborhood' ),
+		'number'       => nfeio_nf_get_order_meta( $order, '_billing_number' ),
 		// Native order fields: columns under HPOS, never meta.
 		'address_1'    => $order->get_billing_address_1(),
 		'postcode'     => $order->get_billing_postcode(),
@@ -107,8 +107,8 @@ function nfe_order_address_filled( $order ) {
  *
  * @return bool
  */
-function nfe_issue_past_orders( $order ) {
-	$past_days = nfe_get_field( 'issue_past_days' );
+function nfeio_nf_issue_past_orders( $order ) {
+	$past_days = nfeio_nf_get_field( 'issue_past_days' );
 
 	if ( empty( $past_days ) ) {
 		return false;
@@ -138,7 +138,7 @@ function nfe_issue_past_orders( $order ) {
  *
  * @return WC_Order order object.
  */
-function nfe_wc_get_order( $order_id ) {
+function nfeio_nf_wc_get_order( $order_id ) {
 	return ( function_exists( 'wc_get_order' ) )
 		? wc_get_order( $order_id )
 		: WC_Order( $order_id );
@@ -159,8 +159,8 @@ function nfe_wc_get_order( $order_id ) {
  *
  * @return mixed
  */
-function nfe_get_order_meta( $order, $key, $fallback = '' ) {
-	$order = is_a( $order, 'WC_Order' ) ? $order : nfe_wc_get_order( $order );
+function nfeio_nf_get_order_meta( $order, $key, $fallback = '' ) {
+	$order = is_a( $order, 'WC_Order' ) ? $order : nfeio_nf_wc_get_order( $order );
 
 	if ( ! $order ) {
 		return $fallback;
@@ -186,9 +186,9 @@ function nfe_get_order_meta( $order, $key, $fallback = '' ) {
  *
  * @return WC_Order|false the order object, so callers can group writes, or false when not found.
  */
-function nfe_set_order_meta( $order, $key, $value, $save = true ) {
+function nfeio_nf_set_order_meta( $order, $key, $value, $save = true ) {
 	$is_object = is_a( $order, 'WC_Order' );
-	$order     = $is_object ? $order : nfe_wc_get_order( $order );
+	$order     = $is_object ? $order : nfeio_nf_wc_get_order( $order );
 
 	if ( ! $order ) {
 		return false;
@@ -216,7 +216,7 @@ function nfe_set_order_meta( $order, $key, $value, $save = true ) {
  *
  * @return bool
  */
-function nfe_hpos_enabled() {
+function nfeio_nf_hpos_enabled() {
 	if ( ! class_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil' )
 		|| ! method_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil', 'custom_orders_table_usage_is_enabled' ) ) {
 		return false;
@@ -240,7 +240,7 @@ function nfe_hpos_enabled() {
  *
  * @return array
  */
-function nfe_cpt_get_orders_query( $wp_query_args, $query_vars ) {
+function nfeio_nf_cpt_get_orders_query( $wp_query_args, $query_vars ) {
 	if ( ! empty( $query_vars['nfe_invoice_id'] ) ) {
 		$wp_query_args['meta_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'key'     => '_nfe_invoice_id',
@@ -284,12 +284,12 @@ function nfe_cpt_get_orders_query( $wp_query_args, $query_vars ) {
 
 	return $wp_query_args;
 }
-add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'nfe_cpt_get_orders_query', 10, 2 );
+add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'nfeio_nf_cpt_get_orders_query', 10, 2 );
 
 /**
  * Cron hook that drives the '_nfe_invoice_id' backfill.
  */
-const NFE_BACKFILL_HOOK = 'nfe_backfill_invoice_ids_event';
+const NFEIO_NF_BACKFILL_HOOK = 'nfe_backfill_invoice_ids_event';
 
 /**
  * Runs one-off upgrade steps when the installed version changes.
@@ -303,15 +303,15 @@ const NFE_BACKFILL_HOOK = 'nfe_backfill_invoice_ids_event';
  *
  * @return void
  */
-function nfe_maybe_upgrade() {
+function nfeio_nf_maybe_upgrade() {
 	$installed = get_option( 'nfe_plugin_version', '' );
-	$current   = defined( 'WOO_NFE_VERSION' ) ? WOO_NFE_VERSION : '';
+	$current   = defined( 'NFEIO_NF_VERSION' ) ? NFEIO_NF_VERSION : '';
 
 	if ( '' === $current || $installed === $current ) {
 		return;
 	}
 
-	nfe_purge_pdf_cache();
+	nfeio_nf_purge_pdf_cache();
 
 	/**
 	 * Fires once after the plugin has been upgraded.
@@ -321,7 +321,7 @@ function nfe_maybe_upgrade() {
 	 * @param string $installed Previously installed version ('' on first run).
 	 * @param string $current   Version now running.
 	 */
-	do_action( 'nfe_upgraded', $installed, $current );
+	do_action( 'nfeio_nf_upgraded', $installed, $current );
 
 	update_option( 'nfe_plugin_version', $current, false );
 }
@@ -343,7 +343,7 @@ function nfe_maybe_upgrade() {
  *
  * @return void
  */
-function nfe_purge_pdf_cache() {
+function nfeio_nf_purge_pdf_cache() {
 	$upload_dir = wp_upload_dir();
 
 	if ( empty( $upload_dir['basedir'] ) ) {
@@ -398,16 +398,16 @@ function nfe_purge_pdf_cache() {
  *
  * @return void
  */
-function nfe_maybe_schedule_backfill() {
+function nfeio_nf_maybe_schedule_backfill() {
 	if ( 'yes' === get_option( 'nfe_invoice_id_backfill_done' ) ) {
 		return;
 	}
 
-	if ( wp_next_scheduled( NFE_BACKFILL_HOOK ) ) {
+	if ( wp_next_scheduled( NFEIO_NF_BACKFILL_HOOK ) ) {
 		return;
 	}
 
-	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFE_BACKFILL_HOOK );
+	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFEIO_NF_BACKFILL_HOOK );
 }
 
 /**
@@ -420,8 +420,8 @@ function nfe_maybe_schedule_backfill() {
  *
  * @return void
  */
-function nfe_clear_backfill_schedule() {
-	wp_clear_scheduled_hook( NFE_BACKFILL_HOOK );
+function nfeio_nf_clear_backfill_schedule() {
+	wp_clear_scheduled_hook( NFEIO_NF_BACKFILL_HOOK );
 }
 
 /**
@@ -437,18 +437,18 @@ function nfe_clear_backfill_schedule() {
  *
  * @return void
  */
-function nfe_run_invoice_id_backfill() {
+function nfeio_nf_run_invoice_id_backfill() {
 	if ( 'yes' === get_option( 'nfe_invoice_id_backfill_done' ) ) {
 		return;
 	}
 
 	$limit  = 50;
-	$result = nfe_backfill_invoice_ids( $limit );
+	$result = nfeio_nf_backfill_invoice_ids( $limit );
 
 	// The query could not run (WooCommerce missing or the order query failed).
 	// Retry later instead of declaring the migration finished.
 	if ( false === $result ) {
-		wp_schedule_single_event( time() + HOUR_IN_SECONDS, NFE_BACKFILL_HOOK );
+		wp_schedule_single_event( time() + HOUR_IN_SECONDS, NFEIO_NF_BACKFILL_HOOK );
 
 		return;
 	}
@@ -480,7 +480,7 @@ function nfe_run_invoice_id_backfill() {
 	}
 
 	update_option( 'nfe_invoice_id_backfill_runs', $runs, false );
-	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFE_BACKFILL_HOOK );
+	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFEIO_NF_BACKFILL_HOOK );
 }
 
 /**
@@ -506,7 +506,7 @@ function nfe_run_invoice_id_backfill() {
  *
  * @return WC_Order|false the matching order, or false when it cannot be resolved with confidence.
  */
-function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
+function nfeio_nf_find_order_by_external_id( $external_id, $invoice_id = '' ) {
 	$external_id = is_scalar( $external_id ) ? trim( (string) $external_id ) : '';
 
 	if ( '' === $external_id ) {
@@ -527,7 +527,7 @@ function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
 		return false;
 	}
 
-	$order = nfe_wc_get_order( (int) $matches[1] );
+	$order = nfeio_nf_wc_get_order( (int) $matches[1] );
 
 	// Order and refund IDs share one sequence, and wc_get_order() happily
 	// returns a WC_Order_Refund, which has no add_order_note().
@@ -535,7 +535,7 @@ function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
 		return false;
 	}
 
-	$issued = nfe_get_order_meta( $order, 'nfe_issued' );
+	$issued = nfeio_nf_get_order_meta( $order, 'nfe_issued' );
 
 	// An order that never started an issuing flow can never be the target of an
 	// invoice event, whatever the external ID claims.
@@ -543,7 +543,7 @@ function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
 		return false;
 	}
 
-	$known_id = nfe_get_order_meta( $order, '_nfe_invoice_id' );
+	$known_id = nfeio_nf_get_order_meta( $order, '_nfe_invoice_id' );
 
 	if ( empty( $known_id ) && is_array( $issued ) && ! empty( $issued['id'] ) && is_scalar( $issued['id'] ) ) {
 		$known_id = $issued['id'];
@@ -573,7 +573,7 @@ function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
  *
  * Queries the flat '_nfe_invoice_id' meta by exact match and works the same on
  * both storages. Orders issued before this meta existed are covered by
- * nfe_backfill_invoice_ids().
+ * nfeio_nf_backfill_invoice_ids().
  *
  * @since 1.5.0
  *
@@ -581,7 +581,7 @@ function nfe_find_order_by_external_id( $external_id, $invoice_id = '' ) {
  *
  * @return WC_Order|false the order, or false when there is no match.
  */
-function nfe_find_order_by_invoice_id( $invoice_id ) {
+function nfeio_nf_find_order_by_invoice_id( $invoice_id ) {
 	if ( ! function_exists( 'wc_get_orders' ) ) {
 		return false;
 	}
@@ -599,7 +599,7 @@ function nfe_find_order_by_invoice_id( $invoice_id ) {
 		'return' => 'objects',
 	);
 
-	if ( nfe_hpos_enabled() ) {
+	if ( nfeio_nf_hpos_enabled() ) {
 		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			array(
 				'key'     => '_nfe_invoice_id',
@@ -636,7 +636,7 @@ function nfe_find_order_by_invoice_id( $invoice_id ) {
  *
  * @return array|false counters ('scanned', 'updated'), or false when the query could not run.
  */
-function nfe_backfill_invoice_ids( $limit = 50 ) {
+function nfeio_nf_backfill_invoice_ids( $limit = 50 ) {
 	if ( ! function_exists( 'wc_get_orders' ) ) {
 		return false;
 	}
@@ -651,7 +651,7 @@ function nfe_backfill_invoice_ids( $limit = 50 ) {
 		'status'  => array_keys( wc_get_order_statuses() ),
 	);
 
-	if ( nfe_hpos_enabled() ) {
+	if ( nfeio_nf_hpos_enabled() ) {
 		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'relation' => 'AND',
 			array(
@@ -727,7 +727,7 @@ function nfe_backfill_invoice_ids( $limit = 50 ) {
  *
  * @return int
  */
-function nfe_count_orders_by_invoice_status( $status ) {
+function nfeio_nf_count_orders_by_invoice_status( $status ) {
 	if ( ! function_exists( 'wc_get_orders' ) ) {
 		return 0;
 	}
@@ -744,7 +744,7 @@ function nfe_count_orders_by_invoice_status( $status ) {
 		'return'   => 'ids',
 	);
 
-	if ( nfe_hpos_enabled() ) {
+	if ( nfeio_nf_hpos_enabled() ) {
 		// The status lives inside the serialized 'nfe_issued' array, so it is
 		// matched by the serialized fragment, as the previous WP_Query did.
 		$args['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
@@ -774,7 +774,7 @@ function nfe_count_orders_by_invoice_status( $status ) {
  *
  * @return array
  */
-function nfe_processing_status() {
+function nfeio_nf_processing_status() {
 	return array( 'WaitingCalculateTaxes', 'WaitingDefineRpsNumber', 'WaitingSend', 'WaitingSendCancel', 'WaitingReturn', 'WaitingDownload' );
 }
 
@@ -783,8 +783,8 @@ function nfe_processing_status() {
  *
  * @return bool
  */
-function nfe_require_address() {
-	$result = nfe_get_field( 'require_address' );
+function nfeio_nf_require_address() {
+	$result = nfeio_nf_get_field( 'require_address' );
 
 	if ( empty( $result ) ) {
 		return true;
@@ -819,19 +819,19 @@ function nfe_require_address() {
  *
  * @return string
  */
-function nfe_status_label( $status ) {
+function nfeio_nf_status_label( $status ) {
 	// Check processing status first.
-	if ( in_array( $status, nfe_processing_status(), true ) ) {
-		return __( 'Processing NFe', 'nota-fiscal-nfe-io-for-woocommerce' );
+	if ( in_array( $status, nfeio_nf_processing_status(), true ) ) {
+		return __( 'Processing NFe', 'nfe-io-nota-fiscal-for-woocommerce' );
 	}
 
 	$valid_status = array(
-		'Issued'           => __( 'NFe Issued', 'nota-fiscal-nfe-io-for-woocommerce' ),
-		'Cancelled'        => __( 'NFe Cancelled', 'nota-fiscal-nfe-io-for-woocommerce' ),
-		'CancelFailed'     => __( 'NFe Cancelling Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
-		'IssueFailed'      => __( 'NFe Issuing Failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
-		'PullFromCityHall' => __( 'NFe Retrieved from City Hall', 'nota-fiscal-nfe-io-for-woocommerce' ),
-		'Processing'       => __( 'NFe Processing', 'nota-fiscal-nfe-io-for-woocommerce' ),
+		'Issued'           => __( 'NFe Issued', 'nfe-io-nota-fiscal-for-woocommerce' ),
+		'Cancelled'        => __( 'NFe Cancelled', 'nfe-io-nota-fiscal-for-woocommerce' ),
+		'CancelFailed'     => __( 'NFe Cancelling Failed', 'nfe-io-nota-fiscal-for-woocommerce' ),
+		'IssueFailed'      => __( 'NFe Issuing Failed', 'nfe-io-nota-fiscal-for-woocommerce' ),
+		'PullFromCityHall' => __( 'NFe Retrieved from City Hall', 'nfe-io-nota-fiscal-for-woocommerce' ),
+		'Processing'       => __( 'NFe Processing', 'nfe-io-nota-fiscal-for-woocommerce' ),
 	);
 
 	if ( isset( $valid_status[ $status ] ) ) {

@@ -27,7 +27,7 @@
     ],
     "support": {
         "issues": "https://github.com/nfe/woo-nfe/issues",
-        "forum": "https://wordpress.org/support/plugin/nota-fiscal-nfe-io-for-woocommerce",
+        "forum": "https://wordpress.org/support/plugin/nfe-io-nota-fiscal-for-woocommerce",
         "source": "https://github.com/nfe/woo-nfe/"
     },
     "require": {
