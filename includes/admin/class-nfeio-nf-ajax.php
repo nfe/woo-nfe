@@ -2,8 +2,8 @@
 /**
  * WooCommerce NFe Ajax Class
  *
- * @author   NFe.io
- * @package  WooCommerce_NFe/Class/WC_NFe_Ajax
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Ajax
  * @version  1.0.4
  */
 
@@ -12,20 +12,20 @@ defined( 'ABSPATH' ) || exit;
 /**
  * WooCommerce NFe Ajax Class
  */
-class WC_NFe_Ajax {
+class NFEIO_NF_Ajax {
 
 	/**
 	 * Bootstraps the class and hooks required actions.
 	 *
-	 * The front-end links built in WC_NFe_FrontEnd point to admin-ajax.php with
+	 * The front-end links built in NFEIO_NF_Frontend point to admin-ajax.php with
 	 * the actions below, so the handlers only run when one of them is called,
 	 * instead of on every request.
 	 *
 	 * @return void
 	 */
 	public static function init() {
-		add_action( 'wp_ajax_woocommerce_nfe_issue', array( __CLASS__, 'front_issue' ) );
-		add_action( 'wp_ajax_woocommerce_nfe_download', array( __CLASS__, 'front_download_pdf' ) );
+		add_action( 'wp_ajax_nfeio_nf_issue', array( __CLASS__, 'front_issue' ) );
+		add_action( 'wp_ajax_nfeio_nf_download', array( __CLASS__, 'front_download_pdf' ) );
 	}
 
 	/**
@@ -57,7 +57,7 @@ class WC_NFe_Ajax {
 			return false;
 		}
 
-		$order = nfe_wc_get_order( $order_id );
+		$order = nfeio_nf_wc_get_order( $order_id );
 
 		if ( ! is_a( $order, 'WC_Order' ) || empty( $order->get_id() ) ) {
 			return false;
@@ -100,8 +100,8 @@ class WC_NFe_Ajax {
 	 */
 	private static function deny_request() {
 		wp_die(
-			esc_html__( 'You are not allowed to perform this action.', 'nota-fiscal-nfe-io-for-woocommerce' ),
-			esc_html__( 'Forbidden', 'nota-fiscal-nfe-io-for-woocommerce' ),
+			esc_html__( 'You are not allowed to perform this action.', 'nfe-io-nota-fiscal-for-woocommerce' ),
+			esc_html__( 'Forbidden', 'nfe-io-nota-fiscal-for-woocommerce' ),
 			array( 'response' => 403 )
 		);
 	}
@@ -109,7 +109,7 @@ class WC_NFe_Ajax {
 	/**
 	 * NFe issue from the front-end.
 	 *
-	 * Handles admin-ajax.php?action=woocommerce_nfe_issue&order_id=N, signed
+	 * Handles admin-ajax.php?action=nfeio_nf_issue&order_id=N, signed
 	 * with the woo_nfe_issue nonce.
 	 *
 	 * @return void
@@ -121,19 +121,19 @@ class WC_NFe_Ajax {
 			self::deny_request();
 		}
 
-		if ( ! nfe_order_address_filled( $order ) ) {
-			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'nota-fiscal-nfe-io-for-woocommerce' ), 'error' );
-		} elseif ( NFe_Woo()->issue_invoice( array( $order->get_id() ) ) ) {
+		if ( ! nfeio_nf_order_address_filled( $order ) ) {
+			wc_add_notice( __( 'The order is missing important NFe information, update it before trying to issue it.', 'nfe-io-nota-fiscal-for-woocommerce' ), 'error' );
+		} elseif ( NFEIO_NF_API()->issue_invoice( array( $order->get_id() ) ) ) {
 			// Accepted by the API, not finished: the document is issued
 			// asynchronously and confirmed later by the webhook. Saying it is
 			// already issued would be the same mistake the receipt e-mail used
 			// to make.
-			wc_add_notice( __( 'The NFe request was sent. You will be notified when the receipt is issued.', 'nota-fiscal-nfe-io-for-woocommerce' ) );
+			wc_add_notice( __( 'The NFe request was sent. You will be notified when the receipt is issued.', 'nfe-io-nota-fiscal-for-woocommerce' ) );
 		} else {
 			// The request was refused before reaching the API -- an invoice is
 			// already in flight, the order is worth nothing, or the API rejected
 			// it. The order notes carry the reason.
-			wc_add_notice( __( 'The NFe could not be requested for this order. Please check the order details or try again later.', 'nota-fiscal-nfe-io-for-woocommerce' ), 'error' );
+			wc_add_notice( __( 'The NFe could not be requested for this order. Please check the order details or try again later.', 'nfe-io-nota-fiscal-for-woocommerce' ), 'error' );
 		}
 
 		wp_safe_redirect( wp_get_referer() ? wp_get_referer() : wc_get_page_permalink( 'myaccount' ) );
@@ -143,7 +143,7 @@ class WC_NFe_Ajax {
 	/**
 	 * Download NFe from the Front-end.
 	 *
-	 * Handles admin-ajax.php?action=woocommerce_nfe_download&order_id=N, signed
+	 * Handles admin-ajax.php?action=nfeio_nf_download&order_id=N, signed
 	 * with the woo_nfe_download nonce.
 	 *
 	 * @return void
@@ -191,19 +191,19 @@ class WC_NFe_Ajax {
 			return;
 		}
 
-		$nfe = nfe_get_order_meta( $order_id, 'nfe_issued' );
+		$nfe = nfeio_nf_get_order_meta( $order_id, 'nfe_issued' );
 
 		// Bail if there is no receipt id.
 		if ( ! is_array( $nfe ) || empty( $nfe['id'] ) ) {
 			return;
 		}
 
-		$pdf = NFe_Woo()->download_pdf_invoice( array( $order_id ) );
+		$pdf = NFEIO_NF_API()->download_pdf_invoice( array( $order_id ) );
 
 		if ( ! is_string( $pdf ) || '' === $pdf ) {
 			wp_die(
-				esc_html__( 'The NFe receipt could not be downloaded right now. Please try again in a few minutes.', 'nota-fiscal-nfe-io-for-woocommerce' ),
-				esc_html__( 'Download failed', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				esc_html__( 'The NFe receipt could not be downloaded right now. Please try again in a few minutes.', 'nfe-io-nota-fiscal-for-woocommerce' ),
+				esc_html__( 'Download failed', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				array( 'response' => 502 )
 			);
 		}
@@ -220,7 +220,7 @@ class WC_NFe_Ajax {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $invoice_id NFe.io invoice id.
+	 * @param string $invoice_id NFE.io invoice id.
 	 *
 	 * @return string
 	 */
@@ -266,4 +266,4 @@ class WC_NFe_Ajax {
 	}
 }
 
-WC_NFe_Ajax::init();
+NFEIO_NF_Ajax::init();

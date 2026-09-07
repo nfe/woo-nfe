@@ -5,8 +5,8 @@
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/nfe-receipt-issued.php.
  *
  * @see     https://docs.woothemes.com/document/template-structure/
- * @author  NFe.io
- * @package WooCommerce_NFe/Templates/Emails
+ * @author  NFE.io
+ * @package NFEIO_NF_Plugin/Templates/Emails
  * @version 1.5.0
  *
  * @var WC_Order $order         Order the receipt belongs to.
@@ -25,7 +25,7 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_email_header', $email_heading, $email );
 ?>
 
-<p><?php esc_html_e( 'The service receipt (NFS-e) for your order has been issued.', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></p>
+<p><?php esc_html_e( 'The service receipt (NFS-e) for your order has been issued.', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></p>
 
 <?php
 /*
@@ -36,16 +36,16 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
  * webhook request that has no user session.
  */
 if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) :
-	$nfe    = nfe_get_order_meta( $order, 'nfe_issued' );
-	$number = ( is_array( $nfe ) && ! empty( $nfe['number'] ) ) ? $nfe['number'] : '';
+	$nfeio_nf_data   = nfeio_nf_get_order_meta( $order, 'nfe_issued' );
+	$nfeio_nf_number = ( is_array( $nfeio_nf_data ) && ! empty( $nfeio_nf_data['number'] ) ) ? $nfeio_nf_data['number'] : '';
 	?>
-	<?php if ( '' !== $number ) : ?>
+	<?php if ( '' !== $nfeio_nf_number ) : ?>
 		<p>
 			<?php
 			printf(
 				/* translators: %s: invoice number. */
-				esc_html__( 'Receipt number: %s', 'nota-fiscal-nfe-io-for-woocommerce' ),
-				esc_html( $number )
+				esc_html__( 'Receipt number: %s', 'nfe-io-nota-fiscal-for-woocommerce' ),
+				esc_html( $nfeio_nf_number )
 			);
 			?>
 		</p>
@@ -53,7 +53,7 @@ if ( isset( $order ) && is_a( $order, 'WC_Order' ) ) :
 
 	<p>
 		<a href="<?php echo esc_url( $order->get_view_order_url() ); ?>">
-			<?php esc_html_e( 'View your order and download the receipt', 'nota-fiscal-nfe-io-for-woocommerce' ); ?>
+			<?php esc_html_e( 'View your order and download the receipt', 'nfe-io-nota-fiscal-for-woocommerce' ); ?>
 		</a>
 	</p>
 <?php endif; ?>

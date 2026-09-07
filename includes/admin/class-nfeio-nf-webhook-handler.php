@@ -1,16 +1,16 @@
 <?php
 /**
- * WooCommerce NFe WC_NFe_Webhook_Handler Class.
+ * WooCommerce NFe NFEIO_NF_Webhook_Handler Class.
  *
- * @author   NFe.io
- * @package  WooCommerce_NFe/Class/WC_NFe_Webhook_Handler
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Class/NFEIO_NF_Webhook_Handler
  * @version  1.5.0
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Receives NFe.io invoice events.
+ * Receives NFE.io invoice events.
  *
  * The webhook is the single source of truth for what happens to an invoice
  * after it is sent: the issuing call gets an id, everything else arrives here.
@@ -27,7 +27,7 @@ defined( 'ABSPATH' ) || exit;
  *    non-2xx answer causes a redelivery, so events are deduplicated by
  *    X-Hook-Id before anything with a side effect happens.
  */
-class WC_NFe_Webhook_Handler {
+class NFEIO_NF_Webhook_Handler {
 	/**
 	 * WC_Logger Logger instance.
 	 *
@@ -39,7 +39,7 @@ class WC_NFe_Webhook_Handler {
 	 * Base Construct.
 	 */
 	public function __construct() {
-		add_action( 'woocommerce_api_' . WC_API_CALLBACK, array( $this, 'handle' ) );
+		add_action( 'woocommerce_api_' . NFEIO_NF_API_CALLBACK, array( $this, 'handle' ) );
 	}
 
 	/**
@@ -51,18 +51,18 @@ class WC_NFe_Webhook_Handler {
 		// Read the body before anything else touches it.
 		$raw_body = file_get_contents( 'php://input' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- The signed request body; WP HTTP functions cannot read the input stream.
 
-		// NFe.io posts here while creating the webhook and needs a 2xx, so this
+		// NFE.io posts here while creating the webhook and needs a 2xx, so this
 		// window answers politely and does nothing. It lasts minutes.
-		if ( WC_NFe_Webhook_Provisioner::is_provisioning() ) {
+		if ( NFEIO_NF_Webhook_Provisioner::is_provisioning() ) {
 			$this->respond( 200, 'Provisioning.' );
 		}
 
-		$secret = WC_NFe_Webhook_Provisioner::secret();
+		$secret = NFEIO_NF_Webhook_Provisioner::secret();
 
 		if ( '' === $secret ) {
 			// Nothing can be trusted without a secret, so nothing is applied.
 			// The admin notice raised by the provisioner is what gets this
-			// fixed; answering 503 keeps NFe.io retrying meanwhile.
+			// fixed; answering 503 keeps NFE.io retrying meanwhile.
 			$this->logger( 'Refused a webhook delivery: no signing secret is configured yet.' );
 
 			$this->respond( 503, 'Webhook not provisioned.' );
@@ -184,7 +184,7 @@ class WC_NFe_Webhook_Handler {
 
 		$flow_status = isset( $document['flowStatus'] ) && is_scalar( $document['flowStatus'] ) ? sanitize_text_field( (string) $document['flowStatus'] ) : '';
 
-		$current = nfe_get_order_meta( $order, 'nfe_issued' );
+		$current = nfeio_nf_get_order_meta( $order, 'nfe_issued' );
 		$current = is_array( $current ) ? $current : array();
 
 		/*
@@ -241,7 +241,7 @@ class WC_NFe_Webhook_Handler {
 		// write succeeded: save() reports its own failures to the WooCommerce
 		// log and gives the caller no way to tell them apart from a success.
 		// translators: 1: Order ID, 2: NFe status received.
-		$msg = sprintf( __( 'NFe status received for order #%1$d: %2$s.', 'nota-fiscal-nfe-io-for-woocommerce' ), $order->get_id(), nfe_status_label( $flow_status ) );
+		$msg = sprintf( __( 'NFe status received for order #%1$d: %2$s.', 'nfe-io-nota-fiscal-for-woocommerce' ), $order->get_id(), nfeio_nf_status_label( $flow_status ) );
 
 		// A one-off rejection by the city hall and an exhausted retry budget
 		// share the same flowStatus, so the event type is the only thing that
@@ -249,8 +249,8 @@ class WC_NFe_Webhook_Handler {
 		// whether re-issuing is worth trying.
 		if ( '' !== $event_type ) {
 			$msg .= ' ' . sprintf(
-				/* translators: %s: webhook event type reported by NFe.io. */
-				__( '(event: %s)', 'nota-fiscal-nfe-io-for-woocommerce' ),
+				/* translators: %s: webhook event type reported by NFE.io. */
+				__( '(event: %s)', 'nfe-io-nota-fiscal-for-woocommerce' ),
 				$event_type
 			);
 		}
@@ -260,7 +260,7 @@ class WC_NFe_Webhook_Handler {
 
 		if ( 'Issued' === $flow_status ) {
 			/**
-			 * Fires when an invoice is confirmed issued by NFe.io.
+			 * Fires when an invoice is confirmed issued by NFE.io.
 			 *
 			 * This is the only point at which the invoice is known to exist, so
 			 * it is what the customer e-mail hangs off. It used to be sent from
@@ -271,7 +271,7 @@ class WC_NFe_Webhook_Handler {
 			 *
 			 * @param int $order_id Order the invoice belongs to.
 			 */
-			do_action( 'woo_nfe_receipt_issued', $order->get_id() );
+			do_action( 'nfeio_nf_receipt_issued', $order->get_id() );
 		}
 	}
 
@@ -304,7 +304,7 @@ class WC_NFe_Webhook_Handler {
 	 * Resolves the order an event refers to.
 	 *
 	 * Tries the external ID first: the plugin sends 'WOO-NFE-{order_id}' (or
-	 * '-{n}' for later attempts) when issuing, NFe.io echoes it back, and
+	 * '-{n}' for later attempts) when issuing, NFE.io echoes it back, and
 	 * parsing it costs no query at all and behaves the same under both
 	 * storages. Falls back to the invoice ID lookup when the event carries no
 	 * usable external ID, or when it does not check out against the order it
@@ -320,7 +320,7 @@ class WC_NFe_Webhook_Handler {
 		$invoice_id  = isset( $document['id'] ) ? $document['id'] : '';
 		$external_id = isset( $document['externalId'] ) ? $document['externalId'] : '';
 
-		$order = nfe_find_order_by_external_id( $external_id, $invoice_id );
+		$order = nfeio_nf_find_order_by_external_id( $external_id, $invoice_id );
 
 		if ( $order ) {
 			return $order;
@@ -330,25 +330,25 @@ class WC_NFe_Webhook_Handler {
 	}
 
 	/**
-	 * Find the order that holds a given NFe.io invoice.
+	 * Find the order that holds a given NFE.io invoice.
 	 *
-	 * The lookup goes through nfe_find_order_by_invoice_id(), which queries the
+	 * The lookup goes through nfeio_nf_find_order_by_invoice_id(), which queries the
 	 * flat '_nfe_invoice_id' meta by equality and returns the same order under
 	 * HPOS and on the legacy post storage.
 	 *
 	 * @since 1.5.0 Reports a miss instead of throwing.
 	 *
-	 * @param string $id NFe.io receipt ID.
+	 * @param string $id NFE.io receipt ID.
 	 *
 	 * @return WC_Order|false
 	 */
 	protected function get_order_by_nota_id( $id ) {
 		$invoice_id = is_scalar( $id ) ? trim( (string) $id ) : '';
-		$order      = nfe_find_order_by_invoice_id( $invoice_id );
+		$order      = nfeio_nf_find_order_by_invoice_id( $invoice_id );
 
 		if ( ! $order ) {
-			// translators: %s: NFe.io receipt ID.
-			$this->logger( sprintf( __( 'Order with receipt number #%s not found.', 'nota-fiscal-nfe-io-for-woocommerce' ), $invoice_id ) );
+			// translators: %s: NFE.io receipt ID.
+			$this->logger( sprintf( __( 'Order with receipt number #%s not found.', 'nfe-io-nota-fiscal-for-woocommerce' ), $invoice_id ) );
 
 			return false;
 		}
@@ -367,7 +367,7 @@ class WC_NFe_Webhook_Handler {
 	 * @return void
 	 */
 	public static function logger( $message ) {
-		$debug = nfe_get_field( 'debug' );
+		$debug = nfeio_nf_get_field( 'debug' );
 
 		if ( empty( $debug ) || 'yes' !== $debug ) {
 			return;
@@ -381,4 +381,4 @@ class WC_NFe_Webhook_Handler {
 	}
 }
 
-return new WC_NFe_Webhook_Handler();
+return new NFEIO_NF_Webhook_Handler();

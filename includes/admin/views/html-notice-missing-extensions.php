@@ -2,30 +2,30 @@
 /**
  * Missing PHP extensions notice.
  *
- * Replaces the old SOAP notice: the NFe.io SDK talks HTTP over cURL and speaks
+ * Replaces the old SOAP notice: the NFE.io SDK talks HTTP over cURL and speaks
  * JSON, and uses no SOAP at all.
  *
- * @author   NFe.io
- * @package  WooCommerce_NFe/Admin/Notices
+ * @author   NFE.io
+ * @package  NFEIO_NF_Plugin/Admin/Notices
  * @version  1.5.0
  *
- * @var array $missing_extensions Names of the extensions that are missing.
+ * @var array $nfeio_nf_missing_extensions Names of the extensions that are missing.
  */
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
-$missing_extensions = isset( $missing_extensions ) && is_array( $missing_extensions ) ? $missing_extensions : array();
+$nfeio_nf_missing_extensions = isset( $nfeio_nf_missing_extensions ) && is_array( $nfeio_nf_missing_extensions ) ? $nfeio_nf_missing_extensions : array();
 ?>
 
 <div class="error">
 	<p>
-		<strong><?php esc_html_e( 'NFe for WooCommerce', 'nota-fiscal-nfe-io-for-woocommerce' ); ?></strong>
+		<strong><?php esc_html_e( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' ); ?></strong>
 		<?php
 		printf(
 			/* translators: %s: comma-separated list of missing PHP extensions. */
-			esc_html__( 'needs the following PHP extension(s) to talk to the NFe.io API: %s. Ask your host to enable them.', 'nota-fiscal-nfe-io-for-woocommerce' ),
-			esc_html( implode( ', ', $missing_extensions ) )
+			esc_html__( 'needs the following PHP extension(s) to talk to the NFE.io API: %s. Ask your host to enable them.', 'nfe-io-nota-fiscal-for-woocommerce' ),
+			esc_html( implode( ', ', $nfeio_nf_missing_extensions ) )
 		);
 		?>
 	</p>
