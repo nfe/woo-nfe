@@ -50,7 +50,7 @@ This plugin sends data to NFe.io, a third-party service, because that is what is
 
 **Notifications back to your site.** After an invoice is requested, NFe.io reports the outcome to your site over HTTPS. These deliveries are authenticated with a shared secret the plugin generates; anything unsigned is rejected. No personal data leaves your site in this exchange — your site only receives.
 
-Your use of NFe.io is governed by their [terms of use](https://nfe.io/termos-de-uso/) and [privacy policy](https://nfe.io/politica-de-privacidade/). NFe.io is a separate company; this plugin is published by NFe.io to integrate their own service with WooCommerce.
+Your use of the NFe.io service is governed by its [terms of service](https://p.nfe.io/pt-br/termos-de-servico) and [privacy policy](https://nfe.io/politica-de-privacidade/). This plugin is published by NFe.io, the owner of the NFe.io service and trademark, to connect that service to WooCommerce.
 
 == Installation ==
 
