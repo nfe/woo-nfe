@@ -131,6 +131,8 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 * Removed the local PDF cache; invoices are streamed straight from the API.
 * Fixed: automatic issuing never fired on a fresh install. The default order status was stored with a prefix the setting itself never uses, so it matched nothing -- and the dropdown fell back to "Pending payment", which would have invoiced orders before they were paid.
 * Fixed: the customer's account page emitted a WooCommerce deprecation notice, from a filter retired in WooCommerce 2.6.
+* Fixed: two status notifications for the same event arriving at the same moment could both be applied, recording the invoice twice on the order and sending the customer two e-mails. An event is now claimed atomically before anything is applied to the order.
+* Everything the plugin registers or stores -- options, scheduled events, admin actions, order actions, the notification endpoint -- now uses a single `nfeio_nf` prefix, so it cannot collide with another plugin. Values written by earlier builds are moved across automatically on update.
 
 
 = 1.4.0-beta =

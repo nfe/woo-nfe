@@ -241,23 +241,23 @@ function nfeio_nf_hpos_enabled() {
  * @return array
  */
 function nfeio_nf_cpt_get_orders_query( $wp_query_args, $query_vars ) {
-	if ( ! empty( $query_vars['nfe_invoice_id'] ) ) {
+	if ( ! empty( $query_vars['nfeio_nf_invoice_id'] ) ) {
 		$wp_query_args['meta_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'key'     => '_nfe_invoice_id',
-			'value'   => $query_vars['nfe_invoice_id'],
+			'value'   => $query_vars['nfeio_nf_invoice_id'],
 			'compare' => '=',
 		);
 	}
 
-	if ( ! empty( $query_vars['nfe_issued_status'] ) ) {
+	if ( ! empty( $query_vars['nfeio_nf_issued_status'] ) ) {
 		$wp_query_args['meta_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'key'     => 'nfe_issued',
-			'value'   => sprintf( ':"%s";', $query_vars['nfe_issued_status'] ),
+			'value'   => sprintf( ':"%s";', $query_vars['nfeio_nf_issued_status'] ),
 			'compare' => 'LIKE',
 		);
 	}
 
-	if ( ! empty( $query_vars['nfe_backfill_pending'] ) ) {
+	if ( ! empty( $query_vars['nfeio_nf_backfill_pending'] ) ) {
 		$wp_query_args['meta_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'relation' => 'AND',
 			array(
@@ -275,7 +275,7 @@ function nfeio_nf_cpt_get_orders_query( $wp_query_args, $query_vars ) {
 		);
 	}
 
-	if ( ! empty( $query_vars['nfe_issued_exists'] ) ) {
+	if ( ! empty( $query_vars['nfeio_nf_issued_exists'] ) ) {
 		$wp_query_args['meta_query'][] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'key'     => 'nfe_issued',
 			'compare' => 'EXISTS',
@@ -289,7 +289,168 @@ add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'nfeio_nf_cpt_g
 /**
  * Cron hook that drives the '_nfe_invoice_id' backfill.
  */
-const NFEIO_NF_BACKFILL_HOOK = 'nfe_backfill_invoice_ids_event';
+const NFEIO_NF_BACKFILL_HOOK = 'nfeio_nf_backfill_invoice_ids_event';
+
+/**
+ * Cron hook that sweeps the webhook event claims once they are past their window.
+ */
+const NFEIO_NF_CLAIM_PURGE_HOOK = 'nfeio_nf_purge_event_claims_event';
+
+/**
+ * Options this plugin used to write under a three-character prefix.
+ *
+ * Old name => new name. The whole set is '@since 1.5.0', a release the directory
+ * never published, so in any store in the wild this map matches nothing. It is
+ * here for installs running a pre-release build -- including the wp-env
+ * environments where the upgrade path is validated -- because losing the webhook
+ * secret there means deliveries start being refused with nothing on screen to
+ * say why.
+ *
+ * @since 1.5.0
+ *
+ * @return array<string,string>
+ */
+function nfeio_nf_legacy_option_names() {
+	return array(
+		'nfe_webhook_secret'           => 'nfeio_nf_webhook_secret',
+		'nfe_webhook_id'               => 'nfeio_nf_webhook_id',
+		'nfe_webhook_notice'           => 'nfeio_nf_webhook_notice',
+		'nfe_company_environment'      => 'nfeio_nf_company_environment',
+		'nfe_plugin_version'           => 'nfeio_nf_plugin_version',
+		'nfe_invoice_id_backfill_done' => 'nfeio_nf_invoice_id_backfill_done',
+		'nfe_invoice_id_backfill_runs' => 'nfeio_nf_invoice_id_backfill_runs',
+	);
+}
+
+/**
+ * Moves everything this plugin stored under its old prefix to the new one.
+ *
+ * The plugin published two prefixes: 'nfeio_nf_' on classes and functions, and a
+ * bare 'nfe_' on the keys it actually wrote. Three characters is below what the
+ * directory accepts, and the shorter of the two is what counts, so the written
+ * keys had to move too. Moving a name is only safe if the value moves with it.
+ *
+ * Guarded by an autoloaded flag: once it has run, the check costs a lookup in
+ * the alloptions array already in memory, not a query.
+ *
+ * @since 1.5.0
+ *
+ * @return void
+ */
+function nfeio_nf_migrate_legacy_names() {
+	if ( 'yes' === get_option( 'nfeio_nf_names_migrated', '' ) ) {
+		return;
+	}
+
+	$had_secret = false;
+
+	foreach ( nfeio_nf_legacy_option_names() as $old => $new ) {
+		$value = get_option( $old, null );
+
+		if ( null === $value ) {
+			continue;
+		}
+
+		// An interrupted run can leave both names present. The new one is the
+		// one in use, so it wins and the old row is simply dropped.
+		if ( null === get_option( $new, null ) ) {
+			update_option( $new, $value, false );
+
+			if ( 'nfe_webhook_secret' === $old ) {
+				$had_secret = true;
+			}
+		}
+
+		delete_option( $old );
+	}
+
+	/*
+	 * The three literals below are the only place in the plugin where a name
+	 * under the old prefix still appears. They are read, never written: this is
+	 * what cleaning them up looks like.
+	 */
+
+	// Cache of the company list, keyed by a hash of the API key. Recomputable,
+	// so it is dropped rather than moved.
+	$api_key = (string) nfeio_nf_get_field( 'api_key' );
+
+	if ( '' !== $api_key ) {
+		delete_transient( 'woo_nfecompanylist_' . md5( $api_key ) );
+	}
+
+	delete_transient( 'nfe_webhook_provisioning' );
+
+	// The backfill event is rescheduled under the new name by
+	// nfeio_nf_maybe_schedule_backfill(), which runs right after this on 'init'.
+	wp_clear_scheduled_hook( 'nfe_backfill_invoice_ids_event' );
+
+	update_option( 'nfeio_nf_names_migrated', 'yes' );
+
+	// The endpoint URL derives from the callback name, which changed with
+	// everything else, so the webhook registered at NFE.io now points nowhere.
+	// provision() reads the id migrated just above and retires that webhook by
+	// id -- matching by URI would not find it, since the URI is what moved.
+	if ( $had_secret && class_exists( 'NFEIO_NF_Webhook_Provisioner' ) ) {
+		NFEIO_NF_Webhook_Provisioner::maybe_provision( true );
+	}
+}
+
+/**
+ * Deletes webhook event claims that are past the deduplication window.
+ *
+ * The claims are option rows rather than transients -- see
+ * NFEIO_NF_Webhook_Handler::claim_event() for why -- so nothing expires them on
+ * its own. A busy store would otherwise keep every claim it ever made.
+ *
+ * @since 1.5.0
+ *
+ * @return void
+ */
+function nfeio_nf_purge_event_claims() {
+	global $wpdb;
+
+	$cutoff = time() - NFEIO_NF_Webhook_Handler::CLAIM_LIFETIME;
+	$prefix = $wpdb->esc_like( NFEIO_NF_Webhook_Handler::CLAIM_PREFIX ) . '%';
+
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Sweeping rows by name prefix; no WordPress API deletes a set of options, and one query beats reading the whole set to delete it row by row.
+	$wpdb->query(
+		$wpdb->prepare(
+			"DELETE FROM `$wpdb->options` WHERE `option_name` LIKE %s AND CAST( `option_value` AS UNSIGNED ) < %d",
+			$prefix,
+			$cutoff
+		)
+	);
+}
+
+/**
+ * Keeps the claim sweep scheduled.
+ *
+ * @since 1.5.0
+ *
+ * @return void
+ */
+function nfeio_nf_maybe_schedule_claim_purge() {
+	if ( wp_next_scheduled( NFEIO_NF_CLAIM_PURGE_HOOK ) ) {
+		return;
+	}
+
+	wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', NFEIO_NF_CLAIM_PURGE_HOOK );
+}
+
+/**
+ * Clears the plugin's own scheduled events when it is deactivated.
+ *
+ * They are this plugin's own, so they must not be left behind in the cron array
+ * once the plugin stops being loaded.
+ *
+ * @since 1.5.0
+ *
+ * @return void
+ */
+function nfeio_nf_clear_scheduled_events() {
+	wp_clear_scheduled_hook( NFEIO_NF_BACKFILL_HOOK );
+	wp_clear_scheduled_hook( NFEIO_NF_CLAIM_PURGE_HOOK );
+}
 
 /**
  * Runs one-off upgrade steps when the installed version changes.
@@ -304,7 +465,11 @@ const NFEIO_NF_BACKFILL_HOOK = 'nfe_backfill_invoice_ids_event';
  * @return void
  */
 function nfeio_nf_maybe_upgrade() {
-	$installed = get_option( 'nfe_plugin_version', '' );
+	// First, because the installed version is itself one of the values that
+	// moved to the new prefix.
+	nfeio_nf_migrate_legacy_names();
+
+	$installed = get_option( 'nfeio_nf_plugin_version', '' );
 	$current   = defined( 'NFEIO_NF_VERSION' ) ? NFEIO_NF_VERSION : '';
 
 	if ( '' === $current || $installed === $current ) {
@@ -323,7 +488,7 @@ function nfeio_nf_maybe_upgrade() {
 	 */
 	do_action( 'nfeio_nf_upgraded', $installed, $current );
 
-	update_option( 'nfe_plugin_version', $current, false );
+	update_option( 'nfeio_nf_plugin_version', $current, false );
 }
 
 /**
@@ -399,7 +564,7 @@ function nfeio_nf_purge_pdf_cache() {
  * @return void
  */
 function nfeio_nf_maybe_schedule_backfill() {
-	if ( 'yes' === get_option( 'nfe_invoice_id_backfill_done' ) ) {
+	if ( 'yes' === get_option( 'nfeio_nf_invoice_id_backfill_done' ) ) {
 		return;
 	}
 
@@ -408,20 +573,6 @@ function nfeio_nf_maybe_schedule_backfill() {
 	}
 
 	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFEIO_NF_BACKFILL_HOOK );
-}
-
-/**
- * Clears the backfill schedule when the plugin is deactivated.
- *
- * The event is this plugin's own, so it must not be left behind in the cron
- * array once the plugin stops being loaded.
- *
- * @since 1.5.0
- *
- * @return void
- */
-function nfeio_nf_clear_backfill_schedule() {
-	wp_clear_scheduled_hook( NFEIO_NF_BACKFILL_HOOK );
 }
 
 /**
@@ -438,7 +589,7 @@ function nfeio_nf_clear_backfill_schedule() {
  * @return void
  */
 function nfeio_nf_run_invoice_id_backfill() {
-	if ( 'yes' === get_option( 'nfe_invoice_id_backfill_done' ) ) {
+	if ( 'yes' === get_option( 'nfeio_nf_invoice_id_backfill_done' ) ) {
 		return;
 	}
 
@@ -460,8 +611,8 @@ function nfeio_nf_run_invoice_id_backfill() {
 	// batch that wrote nothing is NOT the end: the orders it skipped were
 	// marked, and the next batch moves on to the ones behind them.
 	if ( 0 === $scanned ) {
-		update_option( 'nfe_invoice_id_backfill_done', 'yes', false );
-		delete_option( 'nfe_invoice_id_backfill_runs' );
+		update_option( 'nfeio_nf_invoice_id_backfill_done', 'yes', false );
+		delete_option( 'nfeio_nf_invoice_id_backfill_runs' );
 
 		return;
 	}
@@ -470,16 +621,16 @@ function nfeio_nf_run_invoice_id_backfill() {
 	// and logs its own errors), so an order that never records its meta would
 	// come back in every batch. Bounding the number of runs turns that into a
 	// stop instead of a cron loop that never ends.
-	$runs = absint( get_option( 'nfe_invoice_id_backfill_runs', 0 ) ) + 1;
+	$runs = absint( get_option( 'nfeio_nf_invoice_id_backfill_runs', 0 ) ) + 1;
 
 	if ( $runs > 5000 ) {
-		update_option( 'nfe_invoice_id_backfill_done', 'yes', false );
-		delete_option( 'nfe_invoice_id_backfill_runs' );
+		update_option( 'nfeio_nf_invoice_id_backfill_done', 'yes', false );
+		delete_option( 'nfeio_nf_invoice_id_backfill_runs' );
 
 		return;
 	}
 
-	update_option( 'nfe_invoice_id_backfill_runs', $runs, false );
+	update_option( 'nfeio_nf_invoice_id_backfill_runs', $runs, false );
 	wp_schedule_single_event( time() + MINUTE_IN_SECONDS, NFEIO_NF_BACKFILL_HOOK );
 }
 
@@ -608,7 +759,7 @@ function nfeio_nf_find_order_by_invoice_id( $invoice_id ) {
 			),
 		);
 	} else {
-		$args['nfe_invoice_id'] = $invoice_id;
+		$args['nfeio_nf_invoice_id'] = $invoice_id;
 	}
 
 	$orders = wc_get_orders( $args );
@@ -668,7 +819,7 @@ function nfeio_nf_backfill_invoice_ids( $limit = 50 ) {
 			),
 		);
 	} else {
-		$args['nfe_backfill_pending'] = true;
+		$args['nfeio_nf_backfill_pending'] = true;
 	}
 
 	$orders = wc_get_orders( $args );
@@ -755,7 +906,7 @@ function nfeio_nf_count_orders_by_invoice_status( $status ) {
 			),
 		);
 	} else {
-		$args['nfe_issued_status'] = $status;
+		$args['nfeio_nf_issued_status'] = $status;
 	}
 
 	$results = wc_get_orders( $args );

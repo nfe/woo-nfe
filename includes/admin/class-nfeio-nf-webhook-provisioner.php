@@ -23,28 +23,28 @@ class NFEIO_NF_Webhook_Provisioner {
 	 *
 	 * @var string
 	 */
-	const SECRET_OPTION = 'nfe_webhook_secret';
+	const SECRET_OPTION = 'nfeio_nf_webhook_secret';
 
 	/**
 	 * Option holding the id of the webhook this store provisioned.
 	 *
 	 * @var string
 	 */
-	const WEBHOOK_OPTION = 'nfe_webhook_id';
+	const WEBHOOK_OPTION = 'nfeio_nf_webhook_id';
 
 	/**
 	 * Option holding the last provisioning outcome, for the admin notice.
 	 *
 	 * @var string
 	 */
-	const NOTICE_OPTION = 'nfe_webhook_notice';
+	const NOTICE_OPTION = 'nfeio_nf_webhook_notice';
 
 	/**
 	 * Transient set while a creation call is in flight.
 	 *
 	 * @var string
 	 */
-	const PROVISIONING_TRANSIENT = 'nfe_webhook_provisioning';
+	const PROVISIONING_TRANSIENT = 'nfeio_nf_webhook_provisioning';
 
 	/**
 	 * Bootstraps the class and hooks required actions.
@@ -61,7 +61,7 @@ class NFEIO_NF_Webhook_Provisioner {
 		add_action( 'update_option_woocommerce_woo-nfe_settings', array( __CLASS__, 'maybe_provision' ) );
 
 		add_action( 'admin_notices', array( __CLASS__, 'render_notice' ) );
-		add_action( 'admin_post_nfe_provision_webhook', array( __CLASS__, 'handle_manual_request' ) );
+		add_action( 'admin_post_nfeio_nf_provision_webhook', array( __CLASS__, 'handle_manual_request' ) );
 	}
 
 	/**
@@ -264,7 +264,7 @@ class NFEIO_NF_Webhook_Provisioner {
 		}
 
 		if ( ! empty( $company->environment ) ) {
-			update_option( 'nfe_company_environment', (string) $company->environment, false );
+			update_option( 'nfeio_nf_company_environment', (string) $company->environment, false );
 		}
 	}
 
@@ -330,7 +330,7 @@ class NFEIO_NF_Webhook_Provisioner {
 			);
 		}
 
-		check_admin_referer( 'nfe_provision_webhook' );
+		check_admin_referer( 'nfeio_nf_provision_webhook' );
 
 		self::maybe_provision( true );
 
@@ -389,11 +389,12 @@ class NFEIO_NF_Webhook_Provisioner {
 		// A store with an API key but no secret cannot receive status updates
 		// at all, so that state is reported until it is resolved.
 		if ( '' === self::secret() && '' !== (string) nfeio_nf_get_field( 'api_key' ) ) {
-			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
+			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfeio_nf_provision_webhook' ), 'nfeio_nf_provision_webhook' );
 
 			echo '<div class="notice notice-warning"><p><strong>';
 			echo esc_html__( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
+
 			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
 
 			if ( is_array( $notice ) && ! empty( $notice['message'] ) ) {

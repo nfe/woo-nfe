@@ -402,3 +402,7 @@ bin/composer
 # Material interno. O repositorio e publico: rascunhos de submissao, notas e
 # correspondencia ficam fora dele, pela mesma razao que openspec/ fica.
 docs/
+
+# Override local do wp-env: usado para rodar o Plugin Check sobre o pacote
+# extraido em dist/, e nao sobre a arvore de desenvolvimento.
+.wp-env.override.json

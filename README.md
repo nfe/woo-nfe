@@ -156,7 +156,7 @@ Sem webhook, a loja perde parte importante da sincronização automática entre 
 ### recipient e destinationIndicator
 
 Não existe UI dedicada no checkout ou no admin para `recipient` e `destinationIndicator` nesta fase.
-Esses campos podem ser ajustados via filtro de payload `woo_nfe_rtc_payload`.
+Esses campos podem ser ajustados via filtro de payload `nfeio_nf_rtc_payload`.
 
 Regras importantes:
 
@@ -168,7 +168,7 @@ Regras importantes:
 Exemplo:
 
 ```php
-add_filter( 'woo_nfe_rtc_payload', function( $payload, $order_id, $order ) {
+add_filter( 'nfeio_nf_rtc_payload', function( $payload, $order_id, $order ) {
 	$payload['destinationIndicator'] = 'DifferentFromBuyer';
 	$payload['recipient']            = array(
 		'name' => 'Nome do destinatário',

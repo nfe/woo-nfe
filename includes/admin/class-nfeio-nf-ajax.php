@@ -110,12 +110,12 @@ class NFEIO_NF_Ajax {
 	 * NFe issue from the front-end.
 	 *
 	 * Handles admin-ajax.php?action=nfeio_nf_issue&order_id=N, signed
-	 * with the woo_nfe_issue nonce.
+	 * with the nfeio_nf_issue nonce.
 	 *
 	 * @return void
 	 */
 	public static function front_issue() {
-		$order = self::get_request_order( 'woo_nfe_issue' );
+		$order = self::get_request_order( 'nfeio_nf_issue' );
 
 		if ( ! $order ) {
 			self::deny_request();
@@ -144,12 +144,12 @@ class NFEIO_NF_Ajax {
 	 * Download NFe from the Front-end.
 	 *
 	 * Handles admin-ajax.php?action=nfeio_nf_download&order_id=N, signed
-	 * with the woo_nfe_download nonce.
+	 * with the nfeio_nf_download nonce.
 	 *
 	 * @return void
 	 */
 	public static function front_download_pdf() {
-		$order = self::get_request_order( 'woo_nfe_download' );
+		$order = self::get_request_order( 'nfeio_nf_download' );
 
 		if ( ! $order ) {
 			self::deny_request();

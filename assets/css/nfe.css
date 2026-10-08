@@ -1,29 +1,29 @@
-#woocommerce_dashboard_status .wc_status_list li.nfe-issued-orders a:before {
+#woocommerce_dashboard_status .wc_status_list li.nfeio-nf-issued-orders a:before {
     content: "\e015";
     color: #7ad03a;
 }
 
-#woocommerce_dashboard_status .wc_status_list li.nfe-cancelled-orders a:before {
+#woocommerce_dashboard_status .wc_status_list li.nfeio-nf-cancelled-orders a:before {
     content: "\e013";
     color: #ffba00;
 }
 
-#woocommerce_dashboard_status .wc_status_list li.nfe-processing-orders a:before {
+#woocommerce_dashboard_status .wc_status_list li.nfeio-nf-processing-orders a:before {
     content: "\e011";
     color: #999;
 }
 
-#woocommerce_dashboard_status .wc_status_list li.nfe-error-orders a:before {
+#woocommerce_dashboard_status .wc_status_list li.nfeio-nf-error-orders a:before {
     content: "\e016";
     color: #a00;
 }
 
-.nfe_receipts .button {
+.nfeio_nf_receipts .button {
     display: block;
     text-align: center;
 }
 
-span.woo_nfe_actions {
+span.nfeio_nf_actions {
     padding: 3px 7px;
     color: white;
     display: block;
@@ -33,27 +33,27 @@ span.woo_nfe_actions {
     text-align: center;
 }
 
-span.woo_nfe_issue {
+span.nfeio_nf_issue {
 	background-color: #444;
 }
 
-span.woo_nfe_expired {
+span.nfeio_nf_expired {
 	background-color: grey;
 }
 
-span.woo_nfe_pending_address {
+span.nfeio_nf_pending_address {
 	background-color: orange;
 }
 
-span.woo_nfe_cancelled {
+span.nfeio_nf_cancelled {
 	background-color: #e62f2f;
 }
 
-span.woo_nfe_issuing {
+span.nfeio_nf_issuing {
     background-color: blue;
 }
 
-span.woo_nfe_emitida {
+span.nfeio_nf_emitida {
 	background-color: #56b356;
     margin-top: 10px;
 }
