@@ -31,7 +31,7 @@ class NFEIO_NF_Webhook_Handler {
 	/**
 	 * Prefix of the option rows that record which events were already applied.
 	 *
-	 * @since 1.5.0
+	 * @since 1.5.1
 	 *
 	 * @var string
 	 */
@@ -40,7 +40,7 @@ class NFEIO_NF_Webhook_Handler {
 	/**
 	 * How long a claim keeps an event id from being processed again.
 	 *
-	 * @since 1.5.0
+	 * @since 1.5.1
 	 *
 	 * @var int
 	 */

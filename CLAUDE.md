@@ -89,6 +89,26 @@ Ficam de fora, por decisão registrada na change `revisao-wporg-rodada-2`:
 Nomes antigos que ainda aparecem no código estão todos em `nfeio_nf_migrate_legacy_names()`, que os lê
 para apagá-los.
 
+### Estado do webhook é comparável, não booleano
+
+`NFEIO_NF_Webhook_Provisioner::needs_provisioning()` é a **única** pergunta sobre o assunto — quem
+decide provisionar e quem decide avisar o lojista têm de usar a mesma. Ela compara a URL guardada em
+`ENDPOINT_OPTION` com a atual, além de checar segredo e id.
+
+Segredo presente **não** significa webhook alcançável: `provision()` restaura o segredo anterior
+quando falha, então um reprovisionamento quebrado deixa a loja com segredo válido e um webhook
+registrado apontando para lugar nenhum. Foi assim que a troca do callback na rodada 2 criou uma falha
+muda. `ENDPOINT_OPTION` só é gravada quando a chamada **passa** — é o que faz a tentativa seguinte
+acontecer. Nenhum ponto do código deve reprovisionar de tiro único nem decidir por conta própria se o
+webhook está bem.
+
+### Quando subir a versão
+
+A versão sobe quando um artefato **sai de casa** — release no GitHub ou envio ao WP.org —, não por
+rodada de revisão. Reenviar o mesmo número para a fila de revisão é normal; re-publicar o mesmo
+número com conteúdo diferente não é. Hoje o GitHub é o único canal de distribuição, então todo
+release de lá conta como versão publicada.
+
 ## Code Conventions
 
 - All files start with `defined( 'ABSPATH' ) || exit;`

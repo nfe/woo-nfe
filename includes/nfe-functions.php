@@ -306,7 +306,7 @@ const NFEIO_NF_CLAIM_PURGE_HOOK = 'nfeio_nf_purge_event_claims_event';
  * secret there means deliveries start being refused with nothing on screen to
  * say why.
  *
- * @since 1.5.0
+ * @since 1.5.1
  *
  * @return array<string,string>
  */
@@ -333,7 +333,7 @@ function nfeio_nf_legacy_option_names() {
  * Guarded by an autoloaded flag: once it has run, the check costs a lookup in
  * the alloptions array already in memory, not a query.
  *
- * @since 1.5.0
+ * @since 1.5.1
  *
  * @return void
  */
@@ -341,8 +341,6 @@ function nfeio_nf_migrate_legacy_names() {
 	if ( 'yes' === get_option( 'nfeio_nf_names_migrated', '' ) ) {
 		return;
 	}
-
-	$had_secret = false;
 
 	foreach ( nfeio_nf_legacy_option_names() as $old => $new ) {
 		$value = get_option( $old, null );
@@ -355,10 +353,6 @@ function nfeio_nf_migrate_legacy_names() {
 		// one in use, so it wins and the old row is simply dropped.
 		if ( null === get_option( $new, null ) ) {
 			update_option( $new, $value, false );
-
-			if ( 'nfe_webhook_secret' === $old ) {
-				$had_secret = true;
-			}
 		}
 
 		delete_option( $old );
@@ -386,13 +380,22 @@ function nfeio_nf_migrate_legacy_names() {
 
 	update_option( 'nfeio_nf_names_migrated', 'yes' );
 
-	// The endpoint URL derives from the callback name, which changed with
-	// everything else, so the webhook registered at NFE.io now points nowhere.
-	// provision() reads the id migrated just above and retires that webhook by
-	// id -- matching by URI would not find it, since the URI is what moved.
-	if ( $had_secret && class_exists( 'NFEIO_NF_Webhook_Provisioner' ) ) {
-		NFEIO_NF_Webhook_Provisioner::maybe_provision( true );
-	}
+	/*
+	 * The endpoint URL derives from the callback name, which moved with
+	 * everything else, so the webhook NFE.io has on file now points at an
+	 * address this store no longer answers.
+	 *
+	 * Nothing is re-provisioned here on purpose. This function runs once and
+	 * then never again -- its flag is already written above -- so a call made
+	 * from here would get exactly one attempt, and an attempt that failed
+	 * (rotated key, API unreachable, outbound HTTP blocked) would leave the
+	 * store silently cut off with no second chance. Provisioning is driven by
+	 * NFEIO_NF_Webhook_Provisioner::needs_provisioning() instead, which compares
+	 * the recorded endpoint against the current one. That comparison is false
+	 * here and stays false until a provisioning call actually succeeds, so every
+	 * later trigger -- the 'nfeio_nf_upgraded' action firing just after this,
+	 * any settings save, the button in the admin notice -- retries it.
+	 */
 }
 
 /**
@@ -402,7 +405,7 @@ function nfeio_nf_migrate_legacy_names() {
  * NFEIO_NF_Webhook_Handler::claim_event() for why -- so nothing expires them on
  * its own. A busy store would otherwise keep every claim it ever made.
  *
- * @since 1.5.0
+ * @since 1.5.1
  *
  * @return void
  */
@@ -425,7 +428,7 @@ function nfeio_nf_purge_event_claims() {
 /**
  * Keeps the claim sweep scheduled.
  *
- * @since 1.5.0
+ * @since 1.5.1
  *
  * @return void
  */
@@ -443,7 +446,7 @@ function nfeio_nf_maybe_schedule_claim_purge() {
  * They are this plugin's own, so they must not be left behind in the cron array
  * once the plugin stops being loaded.
  *
- * @since 1.5.0
+ * @since 1.5.1
  *
  * @return void
  */

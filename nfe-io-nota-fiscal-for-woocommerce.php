@@ -12,7 +12,7 @@
  * Plugin Name:       NFE.io Nota Fiscal for WooCommerce
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFE.io API.
- * Version:           1.5.0
+ * Version:           1.5.1
  * Author:            NFE.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -306,7 +306,7 @@ if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 
 			// Drives the upgrade routine. Keep in step with the Version header.
 			if ( ! defined( 'NFEIO_NF_VERSION' ) ) {
-				define( 'NFEIO_NF_VERSION', '1.5.0' );
+				define( 'NFEIO_NF_VERSION', '1.5.1' );
 			}
 
 			// WooCommerce Webhook Callback.
