@@ -336,7 +336,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		/**
 		 * Display message to user if there is an issue when fetching the companies.
 		 */
-		public function nfe_api_error_msg() {
+		public function nfeio_nf_api_error_msg() {
 			echo wp_kses_post( $this->get_message( '<strong>' . esc_html__( 'WooCommerce NFE.io', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</strong>: ' . esc_html__( 'Unable to load the companies list from NFE.io.', 'nfe-io-nota-fiscal-for-woocommerce' ) ) );
 		}
 
@@ -347,7 +347,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 */
 		protected function get_companies() {
 			$key          = nfeio_nf_get_field( 'api_key' );
-			$cache_key    = 'woo_nfecompanylist_' . md5( $key );
+			$cache_key    = 'nfeio_nf_company_list_' . md5( $key );
 			$company_list = get_transient( $cache_key );
 
 			// If there is a list from cache, load it.
@@ -366,15 +366,15 @@ if ( class_exists( 'WC_Integration' ) ) {
 				$client    = new \Nfe\Client( apiKey: (string) $key, environment: \Nfe\Environment::Production );
 				$companies = $client->companies->listAll();
 			} catch ( \Nfe\Exception\ApiErrorException $e ) {
-				add_action( 'admin_notices', array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'admin_notices', array( $this, 'nfeio_nf_api_error_msg' ) );
+				add_action( 'network_admin_notices', array( $this, 'nfeio_nf_api_error_msg' ) );
 
 				return false;
 			}
 
 			if ( empty( $companies ) ) {
-				add_action( 'admin_notices', array( $this, 'nfe_api_error_msg' ) );
-				add_action( 'network_admin_notices', array( $this, 'nfe_api_error_msg' ) );
+				add_action( 'admin_notices', array( $this, 'nfeio_nf_api_error_msg' ) );
+				add_action( 'network_admin_notices', array( $this, 'nfeio_nf_api_error_msg' ) );
 
 				return false;
 			}
@@ -425,7 +425,7 @@ if ( class_exists( 'WC_Integration' ) ) {
 		 * @return string
 		 */
 		protected function get_webhook_action_link() {
-			$url = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
+			$url = wp_nonce_url( admin_url( 'admin-post.php?action=nfeio_nf_provision_webhook' ), 'nfeio_nf_provision_webhook' );
 
 			$label = '' === NFEIO_NF_Webhook_Provisioner::secret()
 				? __( 'Set up the webhook', 'nfe-io-nota-fiscal-for-woocommerce' )

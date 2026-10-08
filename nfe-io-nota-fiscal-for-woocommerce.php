@@ -12,7 +12,7 @@
  * Plugin Name:       NFE.io Nota Fiscal for WooCommerce
  * Plugin URI:        https://github.com/nfe/woo-nfe
  * Description:       Issue Brazilian service invoices (NFS-e) from WooCommerce orders through the NFE.io API.
- * Version:           1.5.0
+ * Version:           1.5.1
  * Author:            NFE.io
  * Author URI:        https://nfe.io
  * Developer:         Project contributors
@@ -55,7 +55,7 @@ if ( ! defined( 'NFEIO_NF_MINIMUM_PHP' ) ) {
 
 if ( version_compare( PHP_VERSION, NFEIO_NF_MINIMUM_PHP, '<' ) ) {
 
-	// A closure, not a named function: this file already declares nfeio_nota_fiscal()
+	// A closure, not a named function: this file already declares nfeio_nf_instance()
 	// alongside the plugin class, and a second named function would break the
 	// one-kind-of-declaration-per-file rule for no benefit.
 	add_action(
@@ -238,7 +238,7 @@ if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 		 * @return array
 		 * @since 1.0.0
 		 */
-		public function nfe_integration( $integrations ) {
+		public function nfeio_nf_integration( $integrations ) {
 			$integrations[] = 'NFEIO_NF_Integration';
 
 			return $integrations;
@@ -306,12 +306,12 @@ if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 
 			// Drives the upgrade routine. Keep in step with the Version header.
 			if ( ! defined( 'NFEIO_NF_VERSION' ) ) {
-				define( 'NFEIO_NF_VERSION', '1.5.0' );
+				define( 'NFEIO_NF_VERSION', '1.5.1' );
 			}
 
 			// WooCommerce Webhook Callback.
 			if ( ! defined( 'NFEIO_NF_API_CALLBACK' ) ) {
-				define( 'NFEIO_NF_API_CALLBACK', 'nfe_webhook' );
+				define( 'NFEIO_NF_API_CALLBACK', 'nfeio_nf_webhook' );
 			}
 		}
 
@@ -496,19 +496,24 @@ if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 				define( 'NFEIO_NF_FILE', $this->file );
 			}
 
-			// Backfills '_nfe_invoice_id' on orders issued before the flat meta
-			// existed, so the webhook can still find them. Hooked on 'init' and
-			// not 'admin_init' so a store updated over WP-CLI, with nobody ever
-			// opening wp-admin, still gets the migration.
+			// Maintenance the store never asks for: the upgrade routine (which
+			// also moves anything still stored under the old prefix), the
+			// backfill of '_nfe_invoice_id' on orders issued before the flat
+			// meta existed, and the sweep of expired webhook event claims.
+			// Hooked on 'init' and not 'admin_init' so a store updated over
+			// WP-CLI, with nobody ever opening wp-admin, still gets them.
 			add_action( 'init', 'nfeio_nf_maybe_upgrade' );
 			add_action( 'init', 'nfeio_nf_maybe_schedule_backfill' );
+			add_action( 'init', 'nfeio_nf_maybe_schedule_claim_purge' );
 			add_action( NFEIO_NF_BACKFILL_HOOK, 'nfeio_nf_run_invoice_id_backfill' );
+			add_action( NFEIO_NF_CLAIM_PURGE_HOOK, 'nfeio_nf_purge_event_claims' );
 			register_activation_hook( $this->file, 'nfeio_nf_maybe_upgrade' );
 			register_activation_hook( $this->file, 'nfeio_nf_maybe_schedule_backfill' );
-			register_deactivation_hook( $this->file, 'nfeio_nf_clear_backfill_schedule' );
+			register_activation_hook( $this->file, 'nfeio_nf_maybe_schedule_claim_purge' );
+			register_deactivation_hook( $this->file, 'nfeio_nf_clear_scheduled_events' );
 
 			// Filters.
-			add_filter( 'woocommerce_integrations', array( $this, 'nfe_integration' ) );
+			add_filter( 'woocommerce_integrations', array( $this, 'nfeio_nf_integration' ) );
 			add_filter( 'plugin_action_links_' . $this->basename, array( $this, 'plugin_action_links' ) );
 		}
 
@@ -555,11 +560,11 @@ if ( ! class_exists( 'NFEIO_NF_Plugin' ) ) {
 	 * @return NFEIO_NF_Plugin
 	 * @since 1.0.0
 	 */
-	function nfeio_nota_fiscal() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed -- Public accessor lives beside the class it bootstraps.
+	function nfeio_nf_instance() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed -- Public accessor lives beside the class it bootstraps.
 		return NFEIO_NF_Plugin::instance();
 	}
 
-	add_action( 'plugins_loaded', 'nfeio_nota_fiscal' );
+	add_action( 'plugins_loaded', 'nfeio_nf_instance' );
 
 	/*
 	 * Declares compatibility with WooCommerce features.

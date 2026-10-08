@@ -29,6 +29,24 @@ defined( 'ABSPATH' ) || exit;
  */
 class NFEIO_NF_Webhook_Handler {
 	/**
+	 * Prefix of the option rows that record which events were already applied.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @var string
+	 */
+	const CLAIM_PREFIX = 'nfeio_nf_hook_';
+
+	/**
+	 * How long a claim keeps an event id from being processed again.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @var int
+	 */
+	const CLAIM_LIFETIME = WEEK_IN_SECONDS;
+
+	/**
 	 * WC_Logger Logger instance.
 	 *
 	 * @var bool
@@ -80,11 +98,22 @@ class NFEIO_NF_Webhook_Handler {
 		$event_type = isset( $_SERVER['HTTP_X_HOOK_EVENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_HOOK_EVENT'] ) ) : '';
 
 		// At-least-once delivery: a repeat of an event already applied is a
-		// success, not work to redo.
-		if ( '' !== $event_id && ! $this->claim_event( $event_id ) ) {
-			$this->logger( sprintf( 'Ignored a repeated delivery of event %s.', $event_id ) );
+		// success, not work to redo. An event with no id cannot be deduplicated
+		// and is processed as it arrives.
+		if ( '' !== $event_id ) {
+			$claim = $this->claim_event( $event_id );
 
-			$this->respond( 200, 'Already processed.' );
+			if ( 'duplicate' === $claim ) {
+				$this->logger( sprintf( 'Ignored a repeated delivery of event %s.', $event_id ) );
+
+				$this->respond( 200, 'Already processed.' );
+			}
+
+			if ( 'error' === $claim ) {
+				$this->logger( sprintf( 'Could not record the claim for event %s; asking for a redelivery.', $event_id ) );
+
+				$this->respond( 503, 'Could not record the delivery.' );
+			}
 		}
 
 		$body = json_decode( $raw_body, true );
@@ -114,24 +143,57 @@ class NFEIO_NF_Webhook_Handler {
 	}
 
 	/**
-	 * Claims an event id, returning false when it was already handled.
+	 * Claims an event id so that only one delivery of it is ever applied.
+	 *
+	 * Deliveries of the same event can be in flight at the same time -- NFE.io
+	 * redelivers on any non-2xx answer, and a slow issuing keeps the first
+	 * delivery running while the retry arrives. A read followed by a write is
+	 * not enough here: both deliveries read "not seen yet" before either writes,
+	 * both go on to process_event(), and the order gets two invoice updates and
+	 * the customer two e-mails. The check and the record have to be one step.
+	 *
+	 * WordPress offers no public test-and-set: set_transient() always
+	 * overwrites, and add_option() inserts with ON DUPLICATE KEY UPDATE, which
+	 * overwrites too. What does exist is the UNIQUE index on options.option_name,
+	 * and INSERT IGNORE against it: exactly one of two concurrent statements
+	 * inserts the row, the other affects no rows and loses the race. Core claims
+	 * its own upgrade lock the same way -- see WP_Upgrader::create_lock() in
+	 * wp-admin/includes/class-wp-upgrader.php.
+	 *
+	 * A transient is not used for the same reason: with a persistent object
+	 * cache it never reaches the options table at all, so the lock and the
+	 * record would live in different places. The rows are swept by
+	 * nfeio_nf_purge_event_claims() instead of expiring on their own.
 	 *
 	 * @since 1.5.0
 	 *
 	 * @param string $event_id value of the X-Hook-Id header.
 	 *
-	 * @return bool True when this is the first time the event is seen.
+	 * @return string 'claimed' the first time the event is seen, 'duplicate' when
+	 *                another delivery already has it, 'error' when the claim could
+	 *                not be recorded at all.
 	 */
 	protected function claim_event( $event_id ) {
-		$key = 'nfe_hook_' . md5( $event_id );
+		global $wpdb;
 
-		if ( false !== get_transient( $key ) ) {
-			return false;
+		$key = self::CLAIM_PREFIX . md5( $event_id );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- INSERT IGNORE on the UNIQUE option_name index is the only atomic claim WordPress exposes; the API alternatives all overwrite, and caching a claim would defeat it.
+		$claimed = $wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO `$wpdb->options` ( `option_name`, `option_value`, `autoload` ) VALUES ( %s, %s, 'no' )",
+				$key,
+				(string) time()
+			)
+		);
+
+		// A failed statement is not a duplicate. Answering 200 to it would drop
+		// the event for good, since a 2xx tells NFE.io never to send it again.
+		if ( false === $claimed ) {
+			return 'error';
 		}
 
-		set_transient( $key, 1, WEEK_IN_SECONDS );
-
-		return true;
+		return 1 === (int) $claimed ? 'claimed' : 'duplicate';
 	}
 
 	/**
@@ -290,7 +352,7 @@ class NFEIO_NF_Webhook_Handler {
 	 * @return bool
 	 */
 	protected function environment_matches( $document ) {
-		$expected = (string) get_option( 'nfe_company_environment', '' );
+		$expected = (string) get_option( 'nfeio_nf_company_environment', '' );
 		$actual   = isset( $document['environment'] ) && is_scalar( $document['environment'] ) ? (string) $document['environment'] : '';
 
 		if ( '' === $expected || '' === $actual ) {
@@ -377,7 +439,7 @@ class NFEIO_NF_Webhook_Handler {
 			self::$logger = wc_get_logger();
 		}
 
-		self::$logger->debug( $message, array( 'source' => 'nfe_webhook' ) );
+		self::$logger->debug( $message, array( 'source' => 'nfeio_nf_webhook' ) );
 	}
 }
 

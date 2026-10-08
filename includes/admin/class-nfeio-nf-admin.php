@@ -39,13 +39,13 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 
 			// Addings NFe actions to the order edit screen.
 			add_filter( 'woocommerce_order_actions', array( $this, 'download_and_issue_actions' ), 10, 2 );
-			add_action( 'woocommerce_order_action_nfe_download_order_action', array( $this, 'download_issue_action' ) );
-			add_action( 'woocommerce_order_action_nfe_issue_order_action', array( $this, 'issue_order_action' ) );
+			add_action( 'woocommerce_order_action_nfeio_nf_download_order_action', array( $this, 'download_issue_action' ) );
+			add_action( 'woocommerce_order_action_nfeio_nf_issue_order_action', array( $this, 'issue_order_action' ) );
 
 			// NFE.io Order Details Preview.
 			add_action( 'woocommerce_admin_order_data_after_shipping_address', array( $this, 'display_order_data_preview_in_admin' ), 20 );
-			add_action( 'woocommerce_admin_order_preview_start', array( $this, 'nfe_admin_order_preview' ) );
-			add_filter( 'woocommerce_admin_order_preview_get_order_details', array( $this, 'nfe_admin_order_preview_details' ), 20, 2 );
+			add_action( 'woocommerce_admin_order_preview_start', array( $this, 'nfeio_nf_admin_order_preview' ) );
+			add_filter( 'woocommerce_admin_order_preview_get_order_details', array( $this, 'nfeio_nf_admin_order_preview_details' ), 20, 2 );
 
 			add_filter( 'woocommerce_product_data_tabs', array( $this, 'product_data_tab' ) );
 			add_action( 'woocommerce_product_after_variable_attributes', array( $this, 'variation_fields' ), 10, 3 );
@@ -54,7 +54,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 			add_action( 'woocommerce_process_product_meta', array( $this, 'product_data_fields_save' ) );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'register_enqueue_css' ) );
-			add_action( 'woocommerce_after_dashboard_status_widget', array( $this, 'nfe_status_widget_order_rows' ) );
+			add_action( 'woocommerce_after_dashboard_status_widget', array( $this, 'nfeio_nf_status_widget_order_rows' ) );
 
 			// NFe issue triggers.
 			add_action( 'woocommerce_order_status_pending', array( $this, 'issue_trigger' ) );
@@ -122,7 +122,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		/**
 		 * Show NFE.io order data is status widget.
 		 */
-		public function nfe_status_widget_order_rows() {
+		public function nfeio_nf_status_widget_order_rows() {
 			if ( ! current_user_can( 'edit_shop_orders' ) ) {
 				return;
 			}
@@ -136,7 +136,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 			$orders_url = $this->orders_list_url();
 			?>
 
-			<li class="nfe-issued-orders">
+			<li class="nfeio-nf-issued-orders">
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
@@ -145,7 +145,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 				</a>
 			</li>
 
-			<li class="nfe-processing-orders">
+			<li class="nfeio-nf-processing-orders">
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
@@ -154,7 +154,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 				</a>
 			</li>
 
-			<li class="nfe-error-orders">
+			<li class="nfeio-nf-error-orders">
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
@@ -163,7 +163,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 				</a>
 			</li>
 
-			<li class="nfe-cancelled-orders">
+			<li class="nfeio-nf-cancelled-orders">
 				<a href="<?php echo esc_url( $orders_url ); ?>">
 					<?php
 					// translators: %s: order count.
@@ -182,9 +182,9 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		 * @return array Array with product data tabs.
 		 */
 		public function product_data_tab( $product_data_tabs ) {
-			$product_data_tabs['nfe-product-info-tab'] = array(
+			$product_data_tabs['nfeio-nf-product-info-tab'] = array(
 				'label'  => esc_html__( 'WooCommerce NFe', 'nfe-io-nota-fiscal-for-woocommerce' ),
-				'target' => 'nfe_product_info_data',
+				'target' => 'nfeio_nf_product_info_data',
 				'class'  => array( 'hide_if_variable' ),
 			);
 
@@ -197,7 +197,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		public function product_data_fields() {
 			$post_id = get_the_ID();
 			?>
-			<div id="nfe_product_info_data" class="panel woocommerce_options_panel">
+			<div id="nfeio_nf_product_info_data" class="panel woocommerce_options_panel">
 				<?php
 				woocommerce_wp_text_input(
 					array(
@@ -735,11 +735,11 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 
 			// Load the download action if there is a issue to download.
 			if ( ! empty( $download['id'] ) && 'Issued' === $download['status'] ) {
-				$actions['nfe_download_order_action'] = __( 'Download NFe receipt', 'nfe-io-nota-fiscal-for-woocommerce' );
+				$actions['nfeio_nf_download_order_action'] = __( 'Download NFe receipt', 'nfe-io-nota-fiscal-for-woocommerce' );
 			}
 
 			if ( $this->should_we_issue( $download, $order ) ) {
-				$actions['nfe_issue_order_action'] = __( 'Issue NFe receipt', 'nfe-io-nota-fiscal-for-woocommerce' );
+				$actions['nfeio_nf_issue_order_action'] = __( 'Issue NFe receipt', 'nfe-io-nota-fiscal-for-woocommerce' );
 			}
 
 			return $actions;
@@ -781,7 +781,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		public function order_status_column_header( $columns ) {
 			$column_header = '<span class="tips" data-tip="' . esc_attr__( 'Sales Receipt updated via NFE.io API', 'nfe-io-nota-fiscal-for-woocommerce' ) . '">' . esc_attr__( 'Sales Receipt', 'nfe-io-nota-fiscal-for-woocommerce' ) . '</span>';
 
-			return $this->array_insert_after( 'order_total', $columns, 'nfe_receipts', $column_header );
+			return $this->array_insert_after( 'order_total', $columns, 'nfeio_nf_receipts', $column_header );
 		}
 
 		/**
@@ -795,7 +795,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		 */
 		public function order_status_column_content( $column, $order = 0 ) {
 			// Bail early.
-			if ( 'nfe_receipts' !== $column ) {
+			if ( 'nfeio_nf_receipts' !== $column ) {
 				return;
 			}
 
@@ -814,68 +814,68 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 				$actions = array();
 
 				if ( ! empty( $nfe ) && 'Cancelled' === $nfe['status'] ) {
-					$actions['woo_nfe_cancelled'] = array(
+					$actions['nfeio_nf_cancelled'] = array(
 						'name'   => __( 'NFe Cancelled', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_cancelled',
+						'action' => 'nfeio_nf_cancelled',
 					);
 				} elseif ( ! empty( $nfe ) && 'Issued' === $nfe['status'] ) {
-					$actions['woo_nfe_emitida'] = array(
+					$actions['nfeio_nf_emitida'] = array(
 						'name'   => __( 'NFe Issued', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_emitida',
+						'action' => 'nfeio_nf_emitida',
 					);
 				} elseif ( ! empty( $nfe ) && 'CancelFailed' === $nfe['status'] ) {
-					$actions['woo_nfe_issue'] = array(
+					$actions['nfeio_nf_issue'] = array(
 						'name'   => __( 'NFe Cancelling Failed', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_issue',
+						'action' => 'nfeio_nf_issue',
 					);
 				} elseif ( ! empty( $nfe ) && 'IssueFailed' === $nfe['status'] ) {
-					$actions['woo_nfe_issue'] = array(
+					$actions['nfeio_nf_issue'] = array(
 						'name'   => __( 'NFe Issuing Failed', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_issue',
+						'action' => 'nfeio_nf_issue',
 					);
 				} elseif ( ! empty( $nfe ) && in_array( $nfe['status'], nfeio_nf_processing_status(), true ) ) {
-					$actions['woo_nfe_issuing'] = array(
+					$actions['nfeio_nf_issuing'] = array(
 						'name'   => __( 'Processing NFe', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_issuing',
+						'action' => 'nfeio_nf_issuing',
 					);
 				} elseif ( ! empty( $nfe ) && 'Processing' === $nfe['status'] ) {
-					$actions['woo_nfe_issue'] = array(
+					$actions['nfeio_nf_issue'] = array(
 						'url'    => '#',
 						'name'   => __( 'NFe Processing', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_issue',
+						'action' => 'nfeio_nf_issue',
 					);
 				} elseif ( $order->get_total() === '0.00' ) {
-					$actions['woo_nfe_pending_address'] = array(
+					$actions['nfeio_nf_pending_address'] = array(
 						'name'   => __( 'Zero Order', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_pending_address',
+						'action' => 'nfeio_nf_pending_address',
 					);
 				} elseif ( ! nfeio_nf_order_address_filled( $order_id ) ) {
-					$actions['woo_nfe_pending_address'] = array(
+					$actions['nfeio_nf_pending_address'] = array(
 						'name'   => __( 'Pending Address', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_pending_address',
+						'action' => 'nfeio_nf_pending_address',
 					);
 				} elseif ( nfeio_nf_get_field( 'issue_past_notes' ) === 'yes' ) {
 					if ( nfeio_nf_issue_past_orders( $order ) && empty( $nfe['id'] ) ) {
-						$actions['woo_nfe_issue'] = array(
+						$actions['nfeio_nf_issue'] = array(
 							'name'   => __( 'Issue NFe', 'nfe-io-nota-fiscal-for-woocommerce' ),
-							'action' => 'woo_nfe_issue',
+							'action' => 'nfeio_nf_issue',
 						);
 					} else {
-						$actions['woo_nfe_expired'] = array(
+						$actions['nfeio_nf_expired'] = array(
 							'name'   => __( 'Issue Expired', 'nfe-io-nota-fiscal-for-woocommerce' ),
-							'action' => 'woo_nfe_expired',
+							'action' => 'nfeio_nf_expired',
 						);
 					}
 				} else {
-					$actions['woo_nfe_issue'] = array(
+					$actions['nfeio_nf_issue'] = array(
 						'name'   => __( 'Issue NFe', 'nfe-io-nota-fiscal-for-woocommerce' ),
-						'action' => 'woo_nfe_issue',
+						'action' => 'nfeio_nf_issue',
 					);
 				}
 
 				foreach ( $actions as $action ) {
 					printf(
-						'<span class="woo_nfe_actions %s">%s</span>',
+						'<span class="nfeio_nf_actions %s">%s</span>',
 						esc_attr( $action['action'] ),
 						esc_attr( $action['name'] )
 					);
@@ -968,7 +968,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		 *
 		 * @return array modified order details.
 		 */
-		public function nfe_admin_order_preview_details( $fields, $order ) {
+		public function nfeio_nf_admin_order_preview_details( $fields, $order ) {
 			$nfe = nfeio_nf_get_order_meta( $order, 'nfe_issued' );
 
 			if ( isset( $fields ) ) {
@@ -992,7 +992,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		 *
 		 * @since 1.0.8
 		 */
-		public function nfe_admin_order_preview() {
+		public function nfeio_nf_admin_order_preview() {
 			?>
 			<# if ( data.nfe ) { #>
 			<div class="wc-order-preview-addresses">
@@ -1030,7 +1030,7 @@ if ( ! class_exists( 'NFEIO_NF_Admin' ) ) {
 		public function register_enqueue_css() {
 			// Derived from the main plugin file, not from a hardcoded folder name --
 			// the folder was renamed once and this line broke silently with a 404.
-			wp_enqueue_style( 'nfe-woo-admin-css', plugins_url( 'assets/css/nfe.css', NFEIO_NF_FILE ), array(), '1.2.8', false );
+			wp_enqueue_style( 'nfeio-nf-admin-css', plugins_url( 'assets/css/nfe.css', NFEIO_NF_FILE ), array(), '1.2.8', false );
 		}
 
 		/**

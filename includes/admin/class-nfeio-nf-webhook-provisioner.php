@@ -23,28 +23,44 @@ class NFEIO_NF_Webhook_Provisioner {
 	 *
 	 * @var string
 	 */
-	const SECRET_OPTION = 'nfe_webhook_secret';
+	const SECRET_OPTION = 'nfeio_nf_webhook_secret';
 
 	/**
 	 * Option holding the id of the webhook this store provisioned.
 	 *
 	 * @var string
 	 */
-	const WEBHOOK_OPTION = 'nfe_webhook_id';
+	const WEBHOOK_OPTION = 'nfeio_nf_webhook_id';
 
 	/**
 	 * Option holding the last provisioning outcome, for the admin notice.
 	 *
 	 * @var string
 	 */
-	const NOTICE_OPTION = 'nfe_webhook_notice';
+	const NOTICE_OPTION = 'nfeio_nf_webhook_notice';
+
+	/**
+	 * Option holding the URL the provisioned webhook actually points at.
+	 *
+	 * Provisioning state has to be comparable, not just present. A stored secret
+	 * and webhook id say a webhook was created once; they say nothing about
+	 * whether NFE.io is still posting somewhere this store answers. The site can
+	 * move domain, switch to https, or -- as happened when the callback name
+	 * changed -- have the endpoint renamed underneath it. In every one of those
+	 * cases the webhook keeps existing and keeps delivering into a 404.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @var string
+	 */
+	const ENDPOINT_OPTION = 'nfeio_nf_webhook_endpoint';
 
 	/**
 	 * Transient set while a creation call is in flight.
 	 *
 	 * @var string
 	 */
-	const PROVISIONING_TRANSIENT = 'nfe_webhook_provisioning';
+	const PROVISIONING_TRANSIENT = 'nfeio_nf_webhook_provisioning';
 
 	/**
 	 * Bootstraps the class and hooks required actions.
@@ -61,7 +77,7 @@ class NFEIO_NF_Webhook_Provisioner {
 		add_action( 'update_option_woocommerce_woo-nfe_settings', array( __CLASS__, 'maybe_provision' ) );
 
 		add_action( 'admin_notices', array( __CLASS__, 'render_notice' ) );
-		add_action( 'admin_post_nfe_provision_webhook', array( __CLASS__, 'handle_manual_request' ) );
+		add_action( 'admin_post_nfeio_nf_provision_webhook', array( __CLASS__, 'handle_manual_request' ) );
 	}
 
 	/**
@@ -97,6 +113,33 @@ class NFEIO_NF_Webhook_Provisioner {
 	}
 
 	/**
+	 * Whether the store is missing a webhook that would actually reach it.
+	 *
+	 * One question, asked in one place, so the admin notice and the provisioning
+	 * call can never disagree about whether something is wrong -- which is how a
+	 * failed re-provisioning used to end up invisible: the secret was rolled back
+	 * to its previous value, the notice only looked at the secret, and nothing on
+	 * screen said the webhook was pointing at an address that no longer existed.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @return bool
+	 */
+	public static function needs_provisioning() {
+		if ( '' === self::secret() ) {
+			return true;
+		}
+
+		if ( '' === (string) get_option( self::WEBHOOK_OPTION, '' ) ) {
+			return true;
+		}
+
+		// Absent for a store provisioned before this option existed, which is
+		// exactly a store whose endpoint moved and needs provisioning again.
+		return self::endpoint_url() !== (string) get_option( self::ENDPOINT_OPTION, '' );
+	}
+
+	/**
 	 * Event filters this plugin subscribes to.
 	 *
 	 * The seven published `service_invoice` events. What the account actually
@@ -127,7 +170,7 @@ class NFEIO_NF_Webhook_Provisioner {
 	public static function maybe_provision( $force = false ) {
 		$force = true === $force;
 
-		if ( ! $force && '' !== self::secret() && '' !== (string) get_option( self::WEBHOOK_OPTION, '' ) ) {
+		if ( ! $force && ! self::needs_provisioning() ) {
 			return true;
 		}
 
@@ -157,6 +200,11 @@ class NFEIO_NF_Webhook_Provisioner {
 	protected static function provision( $api_key ) {
 		$previous_secret  = self::secret();
 		$previous_webhook = (string) get_option( self::WEBHOOK_OPTION, '' );
+
+		// Read once: the URL sent to NFE.io and the URL recorded as provisioned
+		// have to be the same string, or the comparison that drives
+		// needs_provisioning() would report a mismatch that does not exist.
+		$endpoint = self::endpoint_url();
 
 		// 48 hex characters, inside the 32-64 range the API requires.
 		$secret = bin2hex( random_bytes( 24 ) );
@@ -188,7 +236,7 @@ class NFEIO_NF_Webhook_Provisioner {
 
 			$webhook = $client->webhooks->createAccountWebhook(
 				array(
-					'uri'         => self::endpoint_url(),
+					'uri'         => $endpoint,
 					'contentType' => 'json',
 					'secret'      => $secret,
 					'filters'     => $filters,
@@ -219,6 +267,7 @@ class NFEIO_NF_Webhook_Provisioner {
 		delete_transient( self::PROVISIONING_TRANSIENT );
 
 		update_option( self::WEBHOOK_OPTION, (string) $webhook->id, false );
+		update_option( self::ENDPOINT_OPTION, $endpoint, false );
 
 		// Only now that the replacement is live does the old one go away.
 		self::remove_stale_webhooks( $client, (string) $webhook->id, $previous_webhook );
@@ -264,7 +313,7 @@ class NFEIO_NF_Webhook_Provisioner {
 		}
 
 		if ( ! empty( $company->environment ) ) {
-			update_option( 'nfe_company_environment', (string) $company->environment, false );
+			update_option( 'nfeio_nf_company_environment', (string) $company->environment, false );
 		}
 	}
 
@@ -330,7 +379,7 @@ class NFEIO_NF_Webhook_Provisioner {
 			);
 		}
 
-		check_admin_referer( 'nfe_provision_webhook' );
+		check_admin_referer( 'nfeio_nf_provision_webhook' );
 
 		self::maybe_provision( true );
 
@@ -386,15 +435,27 @@ class NFEIO_NF_Webhook_Provisioner {
 
 		$notice = get_option( self::NOTICE_OPTION, array() );
 
-		// A store with an API key but no secret cannot receive status updates
-		// at all, so that state is reported until it is resolved.
-		if ( '' === self::secret() && '' !== (string) nfeio_nf_get_field( 'api_key' ) ) {
-			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfe_provision_webhook' ), 'nfe_provision_webhook' );
+		/*
+		 * A store that is not reachable by a signed webhook cannot receive
+		 * status updates at all, so that state is reported until it is resolved.
+		 * The test is needs_provisioning() and not "is the secret empty",
+		 * because the worst version of this state leaves a secret in place: a
+		 * re-provisioning that fails rolls the previous secret back, and the
+		 * webhook NFE.io still has on file keeps pointing at an address this
+		 * store no longer answers. Nothing used to say so on screen.
+		 */
+		if ( '' !== (string) nfeio_nf_get_field( 'api_key' ) && self::needs_provisioning() ) {
+			$action = wp_nonce_url( admin_url( 'admin-post.php?action=nfeio_nf_provision_webhook' ), 'nfeio_nf_provision_webhook' );
 
 			echo '<div class="notice notice-warning"><p><strong>';
 			echo esc_html__( 'NFE.io Nota Fiscal for WooCommerce', 'nfe-io-nota-fiscal-for-woocommerce' );
 			echo '</strong> ';
-			echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
+
+			if ( '' === self::secret() ) {
+				echo esc_html__( 'has no signed webhook yet, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
+			} else {
+				echo esc_html__( 'is registered with NFE.io at an address this store no longer answers, so invoice status updates are not being applied.', 'nfe-io-nota-fiscal-for-woocommerce' );
+			}
 
 			if ( is_array( $notice ) && ! empty( $notice['message'] ) ) {
 				echo ' <em>' . esc_html( $notice['message'] ) . '</em>';

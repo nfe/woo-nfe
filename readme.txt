@@ -3,7 +3,7 @@ Contributors: nfe
 Tags: nfse, nota fiscal, invoice, brazil, nfe
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 Requires PHP: 8.2
 Requires Plugins: woocommerce
 WC requires at least: 9.0
@@ -115,6 +115,12 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 4. The customer's account page, where each order with a receipt offers the PDF for download.
 
 == Changelog ==
+
+= 1.5.1 =
+* Fixed: two status notifications for the same event arriving at the same moment could both be applied, recording the invoice twice on the order and sending the customer two e-mails. An event is now claimed atomically before anything is applied to the order.
+* Fixed: the plugin could end up unreachable by NFE.io without saying so. It now records the address its webhook was registered at, warns in the admin area whenever that address no longer matches the store, and keeps retrying the registration until it succeeds. This also repairs stores whose site address changed after the webhook was created.
+* Everything the plugin registers or stores -- options, scheduled events, admin actions, order actions, the notification endpoint -- now uses a single `nfeio_nf` prefix, so it cannot collide with another plugin. Values written by earlier builds are moved across automatically on update.
+* The address NFE.io posts status updates to changed as part of that. The plugin re-registers it on update; if you allow-list the endpoint in a firewall or WAF, update the rule to the address shown in the plugin settings.
 
 = 1.5.0 =
 * Renamed: the plugin is now "NFE.io Nota Fiscal for WooCommerce". Deactivate the previous "NFe for Woocommerce" -- your settings and recorded invoices are kept.

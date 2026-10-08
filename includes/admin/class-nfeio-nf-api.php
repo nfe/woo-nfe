@@ -849,7 +849,7 @@ if ( ! class_exists( 'NFEIO_NF_API' ) ) {
 					self::$logger = wc_get_logger();
 				}
 
-				self::$logger->info( $message, array( 'source' => 'nfe_api' ) );
+				self::$logger->info( $message, array( 'source' => 'nfeio_nf_api' ) );
 			}
 		}
 

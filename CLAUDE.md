@@ -29,7 +29,7 @@ The `.wp-env.json` config maps the repo root to `wp-content/plugins/woo-nfe` ins
 ```
 
 ### Tests
-PHPUnit requires a WordPress test environment. Tests live in `/var/www/html/wp-content/plugins/woo-nfe/tests` (inside the wp-env container). Bootstrap is `tests/bootstrap.php`. There is no standalone `tests/` directory in this repo yet.
+PHPUnit requires a WordPress test environment. Tests live in `/var/www/html/wp-content/plugins/nfe-io-nota-fiscal-for-woocommerce/tests` (inside the wp-env container). Bootstrap is `tests/bootstrap.php`. There is no standalone `tests/` directory in this repo yet.
 
 ### Translations / i18n
 ```bash
@@ -40,32 +40,74 @@ npx grunt makepot          # Generate .pot file
 
 ## Architecture
 
-### Initialization flow (`woo-nfe.php`)
-The `WooCommerce_NFe` singleton initializes via `plugins_loaded` in this order:
-1. `setup_globals()` — defines paths and constants (`WOOCOMMERCE_NFE_SETTINGS_URL`, `WOOCOMMERCE_NFE_PATH`, `WC_API_CALLBACK`)
-2. `dependencies()` — checks for SoapClient and WooCommerce
-3. `includes()` — requires all class files
-4. `setup_hooks()` — registers WooCommerce integration filter and plugin action links
+### Initialization flow (`nfe-io-nota-fiscal-for-woocommerce.php`)
+The `NFEIO_NF_Plugin` singleton initializes via `plugins_loaded` in this order:
+1. `setup_globals()` — defines paths and constants (`NFEIO_NF_VERSION`, `NFEIO_NF_API_CALLBACK`, `NFEIO_NF_SETTINGS_URL`, `NFEIO_NF_PATH`, `NFEIO_NF_FILE`)
+2. `dependencies()` — checks the Composer autoload, the required PHP extensions and WooCommerce
+3. `includes()` — requires the SDK autoload and all class files
+4. `setup_hooks()` — registers the maintenance callbacks (upgrade, backfill, claim sweep), the WooCommerce integration filter and the plugin action links
 
 ### Key classes
 
 | File | Class | Role |
 |---|---|---|
-| `includes/admin/class-settings.php` | `WC_NFe_Integration` | WooCommerce Integration settings page; stores API key, company ID, and all plugin options |
-| `includes/admin/class-api.php` | `NFe_Woo` | Singleton; wraps all NFE.io API calls (issue/cancel invoices, fetch companies). Uses `li/client-php` SDK |
-| `includes/admin/class-admin.php` | `WC_NFe_Admin` | Admin UI: order metaboxes, order list columns, bulk actions for issuing/canceling invoices |
-| `includes/admin/class-ajax.php` | `WC_NFe_Ajax` | AJAX handlers for admin invoice actions |
-| `includes/admin/class-webhook.php` | `WC_NFe_Webhook_Handler` | Listens on `woocommerce_api_nfe_webhook`; processes NFE.io status callbacks and updates order meta/notes |
-| `includes/admin/class-emails.php` | `WC_NFe_Emails` | Hooks into WooCommerce email system; adds NFe receipt PDF link to order emails |
-| `includes/admin/emails/class-nfe-email-receipt-issued.php` | `NFe_Email_Receipt_Issued` | Custom WooCommerce email class sent to customer when a receipt is issued |
-| `includes/frontend/class-frontend.php` | `WC_NFe_Frontend` | Frontend: adds CPF/CNPJ fields to checkout, stores them in order meta |
-| `includes/nfe-functions.php` | — | Shared helper functions used across admin and frontend classes |
+| `includes/admin/class-nfeio-nf-integration.php` | `NFEIO_NF_Integration` | WooCommerce Integration settings page; stores API key, company ID, and all plugin options |
+| `includes/admin/class-nfeio-nf-api.php` | `NFEIO_NF_API` | Singleton; wraps all NFE.io API calls (issue/cancel invoices, fetch companies). Uses the `nfe/nfe` SDK |
+| `includes/admin/class-nfeio-nf-admin.php` | `NFEIO_NF_Admin` | Admin UI: order metaboxes, order list columns, order actions for issuing/downloading invoices |
+| `includes/admin/class-nfeio-nf-ajax.php` | `NFEIO_NF_Ajax` | AJAX handlers for the front-end invoice actions |
+| `includes/admin/class-nfeio-nf-webhook-provisioner.php` | `NFEIO_NF_Webhook_Provisioner` | Creates the signed NFE.io account webhook and owns the shared secret |
+| `includes/admin/class-nfeio-nf-webhook-handler.php` | `NFEIO_NF_Webhook_Handler` | Listens on `woocommerce_api_nfeio_nf_webhook`; verifies the signature, claims the event and updates order meta/notes |
+| `includes/admin/class-nfeio-nf-emails.php` | `NFEIO_NF_Emails` | Hooks into WooCommerce email system; adds NFe receipt PDF link to order emails |
+| `includes/admin/emails/class-nfeio-nf-email-receipt-issued.php` | `NFEIO_NF_Email_Receipt_Issued` | Custom WooCommerce email class sent to customer when a receipt is issued |
+| `includes/frontend/class-nfeio-nf-frontend.php` | `NFEIO_NF_Frontend` | Frontend: receipt column and actions on the customer's account pages |
+| `includes/nfe-functions.php` | — | Shared helper functions, the upgrade/migration routine and the scheduled maintenance |
 
 ### Bundled SDK
-`li/client-php/lib/` is the NFE.io PHP client SDK, loaded directly via `require`. It is treated as vendored code — do not modify it unless the task is specifically about the SDK.
+`nfe/nfe` is the official NFE.io PHP SDK, installed by Composer into `vendor/`. It is vendored code — do not modify it unless the task is specifically about the SDK.
 
 ### Webhook endpoint
-The plugin registers a WooCommerce API callback at `/?wc-api=nfe_webhook`. NFE.io posts status updates (issued, cancelled, error) to this URL. `WC_NFe_Webhook_Handler` reads the JSON body and updates the corresponding WooCommerce order.
+The plugin registers a WooCommerce API callback at `/?wc-api=nfeio_nf_webhook`. NFE.io posts status updates (issued, cancelled, error) to this URL. `NFEIO_NF_Webhook_Handler` verifies the HMAC signature over the raw body, claims the `X-Hook-Id`, and updates the corresponding WooCommerce order.
+
+### Prefixo global
+
+**Todo** identificador que o plugin publica em espaço de nomes compartilhado usa `nfeio_nf_` / `NFEIO_NF_`
+— opções, transients, eventos de cron, ações `admin_post`, nonces, o callback `wc-api`, chaves de ação
+de pedido, ids de coluna, fontes de log, handles de asset e classes CSS. Um segundo prefixo em escopo
+global reprova a revisão do diretório: o analisador reduz ao prefixo comum entre os grupos que encontra,
+e foi assim que `nfe_` (3 caracteres) pendenciou a rodada 2.
+
+Ficam de fora, por decisão registrada na change `revisao-wporg-rodada-2`:
+
+- **metadados de pedido e de produto** (`nfe_issued`, `_nfe_invoice_id`, `_simple_nfe_*`) — a diretriz
+  cobre funções, classes, defines e opções; renomear `postmeta` significaria migrar o registro fiscal
+  linha a linha;
+- **chaves do formulário de configuração** (`nfe_enable`, `nfe_rtc_*`) — vivem dentro do array de uma
+  única opção;
+- **`woocommerce_woo-nfe_settings`** — nome montado pelo `WC_Integration` a partir do prefixo do
+  WooCommerce; trocar o `id` da integração muda a URL da tela e arrisca órfã de credencial.
+
+Nomes antigos que ainda aparecem no código estão todos em `nfeio_nf_migrate_legacy_names()`, que os lê
+para apagá-los.
+
+### Estado do webhook é comparável, não booleano
+
+`NFEIO_NF_Webhook_Provisioner::needs_provisioning()` é a **única** pergunta sobre o assunto — quem
+decide provisionar e quem decide avisar o lojista têm de usar a mesma. Ela compara a URL guardada em
+`ENDPOINT_OPTION` com a atual, além de checar segredo e id.
+
+Segredo presente **não** significa webhook alcançável: `provision()` restaura o segredo anterior
+quando falha, então um reprovisionamento quebrado deixa a loja com segredo válido e um webhook
+registrado apontando para lugar nenhum. Foi assim que a troca do callback na rodada 2 criou uma falha
+muda. `ENDPOINT_OPTION` só é gravada quando a chamada **passa** — é o que faz a tentativa seguinte
+acontecer. Nenhum ponto do código deve reprovisionar de tiro único nem decidir por conta própria se o
+webhook está bem.
+
+### Quando subir a versão
+
+A versão sobe quando um artefato **sai de casa** — release no GitHub ou envio ao WP.org —, não por
+rodada de revisão. Reenviar o mesmo número para a fila de revisão é normal; re-publicar o mesmo
+número com conteúdo diferente não é. Hoje o GitHub é o único canal de distribuição, então todo
+release de lá conta como versão publicada.
 
 ## Code Conventions
 
@@ -95,7 +137,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.2-cli \
   includes/ templates/ woo-nfe.php
 ```
 
-**Baseline vigente: 9 erros**, todos `WordPress.Files.FileName.InvalidClassFileName` — adiados por decisão para a change de renomeação do plugin (`submeter-nova-listagem-wporg`, task 2.5a), para não fazer churn estrutural em duas entregas. Qualquer erro **fora** dessa categoria é regressão e deve ser corrigido antes do merge.
+**Baseline vigente: 0 erros, 0 avisos.** Os 9 erros de `WordPress.Files.FileName.InvalidClassFileName` caíram com a renomeação dos arquivos de classe. Qualquer erro novo é regressão e deve ser corrigido antes do merge.
 
 Toda supressão `phpcs:ignore` precisa de justificativa inline explicando por que a regra não se aplica naquele ponto.
 
@@ -131,4 +173,21 @@ PATH="$PWD/bin:$PATH" bash bin/build-zip.sh
 
 ### Gate do Plugin Check
 
-O PCP roda sobre o **pacote extraído**, nunca sobre a árvore de desenvolvimento (que carrega `openspec/`, `docs/`, `node_modules/` e faria o `file_type` disparar). Baseline vigente: **0 erros, 1 aviso** — `load_plugin_textdomain()` discouraged, mantido de propósito enquanto não existir language pack para o slug novo, com justificativa no comentário acima da chamada.
+O PCP roda sobre o **pacote extraído**, nunca sobre a árvore de desenvolvimento (que carrega `openspec/`, `docs/`, `node_modules/` e faria o `file_type` disparar). O diretório do plugin dentro do WordPress precisa ter **exatamente o nome do slug** — com outro nome o PCP acusa `TextDomainMismatch` em cada string traduzível.
+
+Receita, sem precisar de PHP no host:
+
+```bash
+PATH="$PWD/bin:$PATH" bash bin/build-zip.sh
+rm -rf dist && mkdir dist && unzip -q nfe-io-nota-fiscal-for-woocommerce-*.zip -d dist
+cat > .wp-env.override.json <<'JSON'
+{ "mappings": { "wp-content/plugins/nfe-io-nota-fiscal-for-woocommerce": "./dist/nfe-io-nota-fiscal-for-woocommerce" } }
+JSON
+PATH="$PWD/bin:$PATH" npx wp-env start
+PATH="$PWD/bin:$PATH" npx wp-env run cli wp plugin check nfe-io-nota-fiscal-for-woocommerce --format=csv
+rm -f .wp-env.override.json && PATH="$PWD/bin:$PATH" npx wp-env start   # volta para a árvore de desenvolvimento
+```
+
+`.wp-env.override.json` e `dist/` são ignorados pelo git. `bin/docker-compose` é o shim que o `wp-env` precisa neste host.
+
+Baseline vigente: **0 erros, 3 avisos** — `NonPrefixedHooknameFound` para `woocommerce_email_header`, `woocommerce_email_footer` e `woocommerce_email_footer_text`. São hooks do próprio WooCommerce, disparados pelos nossos templates de e-mail como os do core fazem; declarados como falso positivo na resposta da rodada 1.
