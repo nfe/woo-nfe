@@ -3,7 +3,7 @@ Contributors: nfe
 Tags: nfse, nota fiscal, invoice, brazil, nfe
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 Requires PHP: 8.2
 Requires Plugins: woocommerce
 WC requires at least: 9.0
@@ -115,6 +115,11 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 4. The customer's account page, where each order with a receipt offers the PDF for download.
 
 == Changelog ==
+
+= 1.5.2 =
+* Fixed: no invoice could be issued for any order that had a postal code. Resolving the postal code to the city code the invoice requires was calling an endpoint that needs a separate data credential, and answered HTTP 403 to the API key stores actually have. The lookup now uses the public endpoint, which takes no credential at all.
+* The note left on the order when the city code cannot be determined no longer blames your postal code. It points at the NFe log, where the real reason is recorded.
+* Only the postal code is now sent for that lookup -- the previous call also carried your API key, which the external-services disclosure in this readme never promised.
 
 = 1.5.1 =
 * Fixed: two status notifications for the same event arriving at the same moment could both be applied, recording the invoice twice on the order and sending the customer two e-mails. An event is now claimed atomically before anything is applied to the order.
