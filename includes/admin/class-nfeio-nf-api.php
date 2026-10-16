@@ -35,15 +35,29 @@ if ( ! class_exists( 'NFEIO_NF_API' ) ) {
 		const ISSUE_TIMEOUT = 15;
 
 		/**
-		 * Address API host used for postal-code lookups.
+		 * Endpoint that resolves a postal code to its IBGE city code.
 		 *
-		 * Deliberately not the SDK default (address.api.nfe.io/v2): that host
-		 * requires a separate data key, while this one accepts the invoice API
-		 * key the store already has. See ibge_code().
+		 * Public: it takes no credential at all, which is the whole reason it is
+		 * the one used. See ibge_code().
+		 *
+		 * @since 1.5.2
 		 *
 		 * @var string
 		 */
-		const ADDRESS_BASE_URL = 'https://open.nfe.io/v1';
+		const POSTAL_CODE_URL = 'https://open.nfe.io/v1/cities/%s/postalcode';
+
+		/**
+		 * How long to wait for the postal-code lookup, in seconds.
+		 *
+		 * Short on purpose: this call sits in front of issuing an invoice, and a
+		 * slow answer is worse than no answer -- the city code can still come
+		 * from the order's own data on the next attempt.
+		 *
+		 * @since 1.5.2
+		 *
+		 * @var int
+		 */
+		const POSTAL_CODE_TIMEOUT = 8;
 
 		/**
 		 * Shared NFE.io SDK client, built on first use.
@@ -495,7 +509,11 @@ if ( ! class_exists( 'NFEIO_NF_API' ) ) {
 
 				// Check if there was a problem while fetching the city code from IBGE. And if the address is required.
 				if ( nfeio_nf_require_address() && empty( $datainvoice['borrower']['address']['city']['code'] ) ) {
-					$log = __( 'There was a problem fetching IBGE code! Check your CEP information.', 'nfe-io-nota-fiscal-for-woocommerce' );
+					// The reason is already in the log line that ibge_code() wrote;
+					// this one goes on the order, where the shop manager sees it.
+					// It no longer blames the postal code: the lookup fails for
+					// its own reasons far more often than the address is wrong.
+					$log = __( 'The city code for this order could not be determined, so no invoice was issued. See the NFe log for the reason.', 'nfe-io-nota-fiscal-for-woocommerce' );
 					$this->logger( $log );
 					$order->add_order_note( $log );
 
@@ -901,44 +919,69 @@ if ( ! class_exists( 'NFEIO_NF_API' ) ) {
 				return null;
 			}
 
+			$digits = preg_replace( '/\D/', '', (string) $post_code );
+
+			if ( 8 !== strlen( (string) $digits ) ) {
+				// translators: %s: postal code as it is stored on the order.
+				$this->logger( sprintf( __( 'Cannot look up a city code: "%s" is not a valid postal code.', 'nfe-io-nota-fiscal-for-woocommerce' ), $post_code ) );
+
+				return null;
+			}
+
 			/*
-			 * Resolved through the SDK, but against the address host this plugin
-			 * has always used.
+			 * Deliberately not the SDK, and deliberately without a credential.
 			 *
-			 * The SDK defaults to address.api.nfe.io/v2, which answers 403 to the
-			 * invoice API key and wants a separate data key. open.nfe.io/v1
-			 * accepts the invoice key, so pointing the call there keeps the store
-			 * on the single credential it has always had -- while still going
-			 * through the SDK, which sends the key in an Authorization header
-			 * instead of the `?api_key=` query string the old code used, where it
-			 * landed in every access log and proxy on the way.
+			 * The SDK's addresses resource targets /addresses/{cep}, which -- on
+			 * open.nfe.io/v1 and on address.api.nfe.io/v2 alike -- answers 403 to
+			 * the invoice API key, because it wants a separate data key that the
+			 * store has no reason to own. That is how this call spent a release
+			 * failing on every order that had a postal code: with
+			 * `require_address` on by default, no city code means no invoice at
+			 * all.
 			 *
-			 * The v1 body is a bare address object, which the SDK's parser (built
-			 * for the v2 `{address:{...}}` envelope) leaves out of ->addresses, so
-			 * the value is read from ->raw. ->addresses is tried first so this
-			 * keeps working if the shapes ever converge.
+			 * This endpoint is the one the NFE.io WHMCS module has used in
+			 * production for years. It is public -- sending no key is not an
+			 * oversight, it is why it works -- and it answers with exactly the
+			 * one field needed: {"city":{"code":"3550308","name":"São Paulo"}}.
+			 *
+			 * Sending nothing but the postal code is also what the readme's
+			 * external-services disclosure promises, which the authenticated call
+			 * quietly broke by shipping the store's key along with it.
 			 */
-			try {
-				$lookup = $this->client()->addresses->lookupByPostalCode(
-					(string) $post_code,
-					new \Nfe\Http\RequestOptions( baseUrl: self::ADDRESS_BASE_URL )
-				);
-			} catch ( \Nfe\Exception\ApiErrorException $e ) {
-				// translators: 1: postal code, 2: error message returned by the API.
-				$this->logger( sprintf( __( 'Could not resolve the IBGE city code for postal code %1$s: %2$s', 'nfe-io-nota-fiscal-for-woocommerce' ), $post_code, $e->getMessage() ) );
+			$response = wp_remote_get(
+				sprintf( self::POSTAL_CODE_URL, rawurlencode( $digits ) ),
+				array(
+					'timeout' => self::POSTAL_CODE_TIMEOUT,
+					'headers' => array( 'Accept' => 'application/json' ),
+				)
+			);
+
+			if ( is_wp_error( $response ) ) {
+				// translators: 1: postal code, 2: transport error message.
+				$this->logger( sprintf( __( 'Could not reach the city code service for postal code %1$s: %2$s', 'nfe-io-nota-fiscal-for-woocommerce' ), $post_code, $response->get_error_message() ) );
 
 				return null;
 			}
 
-			$address = isset( $lookup->addresses[0] ) && is_array( $lookup->addresses[0] )
-				? $lookup->addresses[0]
-				: (array) $lookup->raw;
+			$status = (int) wp_remote_retrieve_response_code( $response );
 
-			if ( empty( $address['city']['code'] ) ) {
+			if ( 200 !== $status ) {
+				// translators: 1: postal code, 2: HTTP status code.
+				$this->logger( sprintf( __( 'The city code service refused postal code %1$s with HTTP %2$d.', 'nfe-io-nota-fiscal-for-woocommerce' ), $post_code, $status ) );
+
 				return null;
 			}
 
-			return $address['city']['code'];
+			$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+			if ( empty( $body['city']['code'] ) ) {
+				// translators: %s: postal code.
+				$this->logger( sprintf( __( 'The city code service answered for postal code %s without a city code.', 'nfe-io-nota-fiscal-for-woocommerce' ), $post_code ) );
+
+				return null;
+			}
+
+			return (string) $body['city']['code'];
 		}
 
 		/**
