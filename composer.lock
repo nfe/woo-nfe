@@ -154,16 +154,16 @@
         },
         {
             "name": "nfe/nfe",
-            "version": "v3.5.0",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nfe/client-php.git",
-                "reference": "6efabbfe6ca0244cc0c6e4d3223c93083f4ed9db"
+                "reference": "ade03be93fd38e9476bb6af1d7e9ae0ed4edddde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nfe/client-php/zipball/6efabbfe6ca0244cc0c6e4d3223c93083f4ed9db",
-                "reference": "6efabbfe6ca0244cc0c6e4d3223c93083f4ed9db",
+                "url": "https://api.github.com/repos/nfe/client-php/zipball/ade03be93fd38e9476bb6af1d7e9ae0ed4edddde",
+                "reference": "ade03be93fd38e9476bb6af1d7e9ae0ed4edddde",
                 "shasum": ""
             },
             "require": {
@@ -221,7 +221,7 @@
                 "issues": "https://github.com/nfe/client-php/issues",
                 "source": "https://github.com/nfe/client-php"
             },
-            "time": "2026-08-01T00:55:34+00:00"
+            "time": "2026-10-28T11:42:55+00:00"
         }
     ],
     "packages-dev": [

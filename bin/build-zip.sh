@@ -131,6 +131,33 @@ for forbidden in phpunit squizlabs wp-coding-standards phpcompatibility; do
 done
 
 # ---------------------------------------------------------------------------
+# Syntax gate over everything that ships, vendor/ included
+#
+# The WordPress.org pre-commit hook runs `php -l` on every PHP file it receives
+# and refuses the whole commit on the first failure. Linting only our own files
+# is not enough: v3.5.0 of the SDK shipped a generated enum that declared the
+# same case name twice, and the directory rejected the release because of it.
+# Whatever goes in the zip is what gets linted here.
+#
+# PHP is reached through the same container shim the rest of the build uses, so
+# a host without PHP still runs the gate.
+# ---------------------------------------------------------------------------
+echo "==> Linting every PHP file in the package"
+
+LINT_FAILURES=$(
+    docker run --rm -v "$PLUGIN_DIR":/pkg -w /pkg php:8.2-cli sh -c '
+        find . -name "*.php" -print0 | xargs -0 -n1 -P4 php -l 2>&1 | grep -v "^No syntax errors" || true
+    '
+)
+
+if [[ -n "$LINT_FAILURES" ]]; then
+    echo "ERROR: the package contains PHP files that do not parse." >&2
+    echo "$LINT_FAILURES" >&2
+    rm -rf "$BUILD_DIR"
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
 # Create ZIP (plugin folder must be the top-level entry inside the archive)
 # ---------------------------------------------------------------------------
 cd "$BUILD_DIR"
