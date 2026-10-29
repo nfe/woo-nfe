@@ -3,7 +3,7 @@ Contributors: nfe
 Tags: nfse, nota fiscal, invoice, brazil, nfe
 Requires at least: 6.5
 Tested up to: 7.1
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 Requires PHP: 8.2
 Requires Plugins: woocommerce
 WC requires at least: 9.0
@@ -115,6 +115,9 @@ WooCommerce and its associated designs are trademarks of Automattic Inc. This pl
 4. The customer's account page, where each order with a receipt offers the PDF for download.
 
 == Changelog ==
+
+= 1.5.3 =
+* Updated the bundled NFE.io SDK to 3.5.1, which fixes a generated file that was not valid PHP. Nothing in the plugin used it, but it travelled inside the package.
 
 = 1.5.2 =
 * Fixed: no invoice could be issued for any order that had a postal code. Resolving the postal code to the city code the invoice requires was calling an endpoint that needs a separate data credential, and answered HTTP 403 to the API key stores actually have. The lookup now uses the public endpoint, which takes no credential at all.
